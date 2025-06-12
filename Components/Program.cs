@@ -10,7 +10,7 @@ namespace HRAdmin
     {
         /// <summary> syazwan
         /// The main entry point for the application.
-        /// </summary>
+        /// </summary> ss
         [STAThread]
         static void Main()
         {
