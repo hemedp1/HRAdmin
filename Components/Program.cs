@@ -8,7 +8,7 @@ namespace HRAdmin
 {
     internal static class Program
     {
-        /// <summary>
+        /// <summary> syazwan
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
