@@ -1,0 +1,328 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace HRAdmin.UserControl
+{
+    public partial class UC_C_Verify : System.Windows.Forms.UserControl
+    {
+        private string loggedInUser;
+        private string loggedInIndex;
+        private string loggedInDepart;
+        public UC_C_Verify(string username, string index, string Depart)
+        {
+            InitializeComponent();
+            loggedInUser = username;
+            loggedInIndex = index;
+            loggedInDepart = Depart;
+            //MessageBox.Show($"loggedInUser: {loggedInUser}");
+            //MessageBox.Show($"loggedInIndex: {loggedInIndex}");
+            //MessageBox.Show($"loggedInDepart: {loggedInDepart}");
+            loadCars();
+            loadUserData();
+            cmbCar.SelectedIndexChanged += cmbCar_SelectedIndexChanged;
+
+        }
+
+        private void btnAcknowledge_Click(object sender, EventArgs e)
+        {
+            if (dataGridView2.CurrentRow == null)
+            {
+                MessageBox.Show("No row selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int rowIndex = dataGridView2.CurrentRow.Index;
+            string IDStr = dataGridView2.Rows[rowIndex].Cells[0]?.Value?.ToString();
+            string selectedPerson = dataGridView2.Rows[rowIndex].Cells[1]?.Value?.ToString();
+
+            if (string.IsNullOrEmpty(selectedPerson) || string.IsNullOrEmpty(IDStr))
+            {
+                MessageBox.Show("Error retrieving reservation details. Please check column names.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!int.TryParse(IDStr, out int meetingID))
+            {
+                MessageBox.Show("Invalid ID format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            DialogResult confirm = MessageBox.Show($"Do you agree to these terms and conditions?",
+                                                   $"Verify Confirmation",
+                                                   MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes) return;
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    string updateQuery;
+                    
+                    updateQuery = "UPDATE tbl_CarBookings SET Acknowledgement = 'Acknowledged' WHERE BookingID = @BookingID";
+                    
+                    using (SqlCommand cmd = new SqlCommand(updateQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@BookingID", meetingID);
+                        cmd.Parameters.AddWithValue("@loggedInUser", loggedInUser);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    dataGridView2.Refresh();
+
+                }
+                loadUserData();
+                MessageBox.Show("Terms and condition successfully acknowledged.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while acknowledging the terms and condition: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void loadUserData()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    string query = @"
+                                    SELECT 
+                                        BookingID, 
+                                        DriverName, 
+                                        IndexNo, 
+                                        Destination, 
+                                        RequestDate, 
+                                        Purpose, 
+                                        AssignedCar, 
+                                        StatusCheck, 
+                                        CheckBy,
+                                        DateChecked,
+                                        Status, 
+                                        ApproveBy,
+                                        DateApprove,
+                                        Depart,
+                                        CompleteUseStatus,
+                                        CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
+                                        CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
+                                    FROM tbl_CarBookings 
+                                    WHERE DriverName = @DriverName AND Depart = @Depart AND CompleteUseStatus IS NULL AND Status = 'Approved' AND Acknowledgement IS NULL";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@DriverName", loggedInUser);
+                        cmd.Parameters.AddWithValue("@Depart", loggedInDepart);
+
+                        DataTable dt = new DataTable();
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+
+                        dataGridView2.Columns.Clear();
+                        dataGridView2.AutoGenerateColumns = false;
+
+                        // Enable scrolling
+                        dataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+                        dataGridView2.ScrollBars = ScrollBars.Both; // Enable both vertical & horizontal scrolling
+
+                        dataGridView2.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+                        {
+                            Font = new Font("Arial", 11, FontStyle.Bold),
+                        };
+
+                        string[] columnNames = { "BookingID", "DriverName", "Depart", "IndexNo", "RequestDate", "Destination", "Purpose", "StartDate", "EndDate", "StatusCheck", "CheckBy", "DateChecked", "Status", "ApproveBy", "DateApprove", "AssignedCar" };
+
+                        for (int i = 0; i < columnNames.Length; i++)
+                        {
+                            string col = columnNames[i];
+                            string headerText;
+
+                            if (col == "BookingID")
+                                headerText = "Id";
+                            else if (col == "DriverName")
+                                headerText = "Driver";
+                            else if (col == "Depart")
+                                headerText = "Department";
+                            else if (col == "IndexNo")
+                                headerText = "Index No";
+                            else if (col == "RequestDate")
+                                headerText = "Request Date";
+                            else if (col == "Destination")
+                                headerText = "Destination";
+                            else if (col == "StartDate")
+                                headerText = "Start Time";
+                            else if (col == "EndDate")
+                                headerText = "End Time";
+                            else if (col == "Status")
+                                headerText = "Approved Status";
+                            else if (col == "Purpose")
+                                headerText = "Purpose";
+                            else if (col == "StatusCheck")
+                                headerText = "Check Status";
+                            else if (col == "CheckBy")
+                                headerText = "Check By";
+                            else if (col == "DateChecked")
+                                headerText = "Checked Date";
+                            else if (col == "ApproveBy")
+                                headerText = "Approve By";
+                            else if (col == "DateApprove")
+                                headerText = "Approved Date";
+                            else if (col == "AssignedCar")
+                                headerText = "Car";
+                            //else if (col == "CompleteUseStatus")
+                            //    headerText = "Trip Status";
+                            else
+                                headerText = col.Replace("_", " "); // Default formatting
+
+                            var column = new DataGridViewTextBoxColumn()
+                            {
+                                HeaderText = headerText,
+                                DataPropertyName = col,
+                                Width = 130,
+                                //AutoSizeMode = i == columnNames.Length - 1  ? DataGridViewAutoSizeColumnMode.Fill : DataGridViewAutoSizeColumnMode.None,
+                                DefaultCellStyle = new DataGridViewCellStyle
+                                {
+                                    ForeColor = Color.MidnightBlue,
+                                    Font = new Font("Arial", 11)
+                                }
+                            };
+
+                            dataGridView2.Columns.Add(column);
+                        }
+                        dataGridView2.DataSource = dt;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
+        }
+        private void loadCars()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    // Load Room Data
+                    string query = "SELECT DISTINCT CarPlate FROM tbl_Cars where CarPlate <> 'Not Available'";
+                    SqlDataAdapter da = new SqlDataAdapter(query, con);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    // Debugging: Check if data exists
+                    if (dt.Rows.Count == 0)
+                    {
+                        MessageBox.Show("Car not found!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    cmbCar.DataSource = dt;
+                    cmbCar.DisplayMember = "CarPlate";
+                    cmbCar.ValueMember = "CarPlate";
+
+                    cmbCar.SelectedIndex = -1; // Ensure nothing is pre-selected
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error on Car Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void cmbCar_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbCar.SelectedValue != null)
+            {
+                string selectedCar = cmbCar.SelectedValue.ToString();
+
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    try
+                    {
+                        con.Open();
+                        string query = "SELECT ID, Person, DateInspect, Milleage, Brakes, Signal_light, Head_light, Body, Front_Bumper, Rear_Bumper, View_Mirror, Tyres, Others FROM tbl_CarInspection WHERE CarType = @Plat";
+
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@Plat", selectedCar);
+
+                            DataTable dtt = new DataTable();
+                            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                            {
+                                da.Fill(dtt);
+                            }
+
+                            dataGridView1.Columns.Clear();
+                            dataGridView1.AutoGenerateColumns = false;
+
+
+                            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+                            dataGridView1.ScrollBars = ScrollBars.Both; // Enable both vertical & horizontal scrolling
+
+
+                            dataGridView1.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+                            {
+                                Font = new Font("Arial", 11, FontStyle.Bold),
+                            };
+
+                            string[] columnNames = { "Person", "DateInspect", "Milleage", "Brakes", "Signal_light", "Head_light", "Body", "Front_Bumper", "Rear_Bumper", "View_Mirror", "Tyres" };
+
+                            foreach (var col in columnNames)
+                            {
+                                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                                {
+                                    HeaderText = col.Replace("_", " "), // Format headers
+                                    DataPropertyName = col,
+                                    Width = 120,
+                                    AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                                    DefaultCellStyle = new DataGridViewCellStyle
+                                    {
+                                        ForeColor = Color.MidnightBlue,
+                                        Font = new Font("Arial", 11)
+                                    }
+                                });
+                            }
+
+                            // Add "Others" column (fills remaining space)
+                            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                            {
+                                HeaderText = "Others",
+                                DataPropertyName = "Others",
+                                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, // This will take up remaining space
+                                DefaultCellStyle = new DataGridViewCellStyle
+                                {
+                                    ForeColor = Color.MidnightBlue,
+                                    Font = new Font("Arial", 11)
+                                }
+                            });
+
+                            // Bind data
+                            dataGridView1.DataSource = dtt;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error loading inspection log: " + ex.Message);
+                    }
+                }
+            }
+        }
+    }
+}
