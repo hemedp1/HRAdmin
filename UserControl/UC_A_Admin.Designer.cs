@@ -34,6 +34,7 @@
             this.btnCarBooking = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnMSC = new System.Windows.Forms.Button();
+            this.btnMeal = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -97,6 +98,7 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
+            this.groupBox1.Controls.Add(this.btnMeal);
             this.groupBox1.Controls.Add(this.btnMSC);
             this.groupBox1.Controls.Add(this.btnWB);
             this.groupBox1.Controls.Add(this.btnCarBooking);
@@ -120,7 +122,7 @@
             this.btnMSC.ForeColor = System.Drawing.Color.Black;
             this.btnMSC.Image = ((System.Drawing.Image)(resources.GetObject("btnMSC.Image")));
             this.btnMSC.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMSC.Location = new System.Drawing.Point(690, 41);
+            this.btnMSC.Location = new System.Drawing.Point(909, 41);
             this.btnMSC.Name = "btnMSC";
             this.btnMSC.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnMSC.Size = new System.Drawing.Size(222, 73);
@@ -129,6 +131,26 @@
             this.btnMSC.Text = "MSC";
             this.btnMSC.UseVisualStyleBackColor = true;
             this.btnMSC.Click += new System.EventHandler(this.btnMSC_Click);
+            // 
+            // btnMeal
+            // 
+            this.btnMeal.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.btnMeal.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnMeal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMeal.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9F);
+            this.btnMeal.ForeColor = System.Drawing.Color.Black;
+            this.btnMeal.Image = ((System.Drawing.Image)(resources.GetObject("btnMeal.Image")));
+            this.btnMeal.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnMeal.Location = new System.Drawing.Point(681, 42);
+            this.btnMeal.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnMeal.Name = "btnMeal";
+            this.btnMeal.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnMeal.Size = new System.Drawing.Size(222, 72);
+            this.btnMeal.TabIndex = 9;
+            this.btnMeal.Tag = "Meal Request";
+            this.btnMeal.Text = "Meal Request";
+            this.btnMeal.UseVisualStyleBackColor = true;
+            this.btnMeal.Click += new System.EventHandler(this.btnMeal_Click);
             // 
             // UC_A_Admin
             // 
@@ -149,5 +171,6 @@
         private System.Windows.Forms.Button btnCarBooking;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnMSC;
+        private System.Windows.Forms.Button btnMeal;
     }
 }

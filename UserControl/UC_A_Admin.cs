@@ -226,5 +226,10 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
+
+        private void btnMeal_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

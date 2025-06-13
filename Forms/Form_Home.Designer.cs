@@ -70,7 +70,7 @@
             this.panel1.ForeColor = System.Drawing.Color.White;
             this.panel1.Location = new System.Drawing.Point(0, 934);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(3320, 41);
+            this.panel1.Size = new System.Drawing.Size(3499, 41);
             this.panel1.TabIndex = 0;
             // 
             // label3
@@ -87,7 +87,7 @@
             // 
             this.panel6.Controls.Add(this.lblUsername);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(3026, 0);
+            this.panel6.Location = new System.Drawing.Point(3205, 0);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(294, 41);
             this.panel6.TabIndex = 0;
@@ -207,7 +207,7 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(220, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(3100, 73);
+            this.panel4.Size = new System.Drawing.Size(3279, 73);
             this.panel4.TabIndex = 2;
             this.panel4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel4_MouseDown);
             // 
@@ -221,7 +221,7 @@
             this.btnCarCondition.ForeColor = System.Drawing.Color.White;
             this.btnCarCondition.Image = ((System.Drawing.Image)(resources.GetObject("btnCarCondition.Image")));
             this.btnCarCondition.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCarCondition.Location = new System.Drawing.Point(594, 0);
+            this.btnCarCondition.Location = new System.Drawing.Point(773, 0);
             this.btnCarCondition.Name = "btnCarCondition";
             this.btnCarCondition.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnCarCondition.Size = new System.Drawing.Size(229, 73);
@@ -241,7 +241,7 @@
             this.btn_AccidentPDF.ForeColor = System.Drawing.Color.White;
             this.btn_AccidentPDF.Image = ((System.Drawing.Image)(resources.GetObject("btn_AccidentPDF.Image")));
             this.btn_AccidentPDF.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_AccidentPDF.Location = new System.Drawing.Point(823, 0);
+            this.btn_AccidentPDF.Location = new System.Drawing.Point(1002, 0);
             this.btn_AccidentPDF.Name = "btn_AccidentPDF";
             this.btn_AccidentPDF.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btn_AccidentPDF.Size = new System.Drawing.Size(229, 73);
@@ -261,7 +261,7 @@
             this.btn_Accident.ForeColor = System.Drawing.Color.White;
             this.btn_Accident.Image = ((System.Drawing.Image)(resources.GetObject("btn_Accident.Image")));
             this.btn_Accident.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_Accident.Location = new System.Drawing.Point(1052, 0);
+            this.btn_Accident.Location = new System.Drawing.Point(1231, 0);
             this.btn_Accident.Name = "btn_Accident";
             this.btn_Accident.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btn_Accident.Size = new System.Drawing.Size(229, 73);
@@ -281,7 +281,7 @@
             this.btnInspect.ForeColor = System.Drawing.Color.White;
             this.btnInspect.Image = ((System.Drawing.Image)(resources.GetObject("btnInspect.Image")));
             this.btnInspect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnInspect.Location = new System.Drawing.Point(1281, 0);
+            this.btnInspect.Location = new System.Drawing.Point(1460, 0);
             this.btnInspect.Name = "btnInspect";
             this.btnInspect.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnInspect.Size = new System.Drawing.Size(229, 73);
@@ -301,7 +301,7 @@
             this.btnWDcar.ForeColor = System.Drawing.Color.White;
             this.btnWDcar.Image = ((System.Drawing.Image)(resources.GetObject("btnWDcar.Image")));
             this.btnWDcar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnWDcar.Location = new System.Drawing.Point(1510, 0);
+            this.btnWDcar.Location = new System.Drawing.Point(1689, 0);
             this.btnWDcar.Name = "btnWDcar";
             this.btnWDcar.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnWDcar.Size = new System.Drawing.Size(229, 73);
@@ -321,7 +321,7 @@
             this.btnApp.ForeColor = System.Drawing.Color.White;
             this.btnApp.Image = ((System.Drawing.Image)(resources.GetObject("btnApp.Image")));
             this.btnApp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnApp.Location = new System.Drawing.Point(1739, 0);
+            this.btnApp.Location = new System.Drawing.Point(1918, 0);
             this.btnApp.Name = "btnApp";
             this.btnApp.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnApp.Size = new System.Drawing.Size(223, 73);
@@ -341,7 +341,7 @@
             this.btn_New.ForeColor = System.Drawing.Color.White;
             this.btn_New.Image = ((System.Drawing.Image)(resources.GetObject("btn_New.Image")));
             this.btn_New.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_New.Location = new System.Drawing.Point(1962, 0);
+            this.btn_New.Location = new System.Drawing.Point(2141, 0);
             this.btn_New.Name = "btn_New";
             this.btn_New.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btn_New.Size = new System.Drawing.Size(222, 73);
@@ -361,7 +361,7 @@
             this.button3.ForeColor = System.Drawing.Color.White;
             this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
             this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button3.Location = new System.Drawing.Point(2184, 0);
+            this.button3.Location = new System.Drawing.Point(2363, 0);
             this.button3.Name = "button3";
             this.button3.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.button3.Size = new System.Drawing.Size(229, 73);
@@ -381,7 +381,7 @@
             this.button2.ForeColor = System.Drawing.Color.White;
             this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
             this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button2.Location = new System.Drawing.Point(2413, 0);
+            this.button2.Location = new System.Drawing.Point(2592, 0);
             this.button2.Name = "button2";
             this.button2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.button2.Size = new System.Drawing.Size(229, 73);
@@ -401,7 +401,7 @@
             this.btnAddpeople.ForeColor = System.Drawing.Color.White;
             this.btnAddpeople.Image = ((System.Drawing.Image)(resources.GetObject("btnAddpeople.Image")));
             this.btnAddpeople.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAddpeople.Location = new System.Drawing.Point(2642, 0);
+            this.btnAddpeople.Location = new System.Drawing.Point(2821, 0);
             this.btnAddpeople.Name = "btnAddpeople";
             this.btnAddpeople.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnAddpeople.Size = new System.Drawing.Size(229, 73);
@@ -421,7 +421,7 @@
             this.btnBookCar.ForeColor = System.Drawing.Color.White;
             this.btnBookCar.Image = ((System.Drawing.Image)(resources.GetObject("btnBookCar.Image")));
             this.btnBookCar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnBookCar.Location = new System.Drawing.Point(2871, 0);
+            this.btnBookCar.Location = new System.Drawing.Point(3050, 0);
             this.btnBookCar.Name = "btnBookCar";
             this.btnBookCar.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnBookCar.Size = new System.Drawing.Size(229, 73);
@@ -447,7 +447,7 @@
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(220, 73);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(3100, 861);
+            this.panel5.Size = new System.Drawing.Size(3279, 861);
             this.panel5.TabIndex = 3;
             this.panel5.Paint += new System.Windows.Forms.PaintEventHandler(this.panel5_Paint);
             // 
@@ -455,7 +455,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(3320, 975);
+            this.ClientSize = new System.Drawing.Size(3499, 975);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel2);
