@@ -162,6 +162,36 @@
     <Compile Include="UserControl\UC_C_Verify.Designer.cs">
       <DependentUpon>UC_C_Verify.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\UC_Meal_External.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_External.Designer.cs">
+      <DependentUpon>UC_Meal_External.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_ExternalMenu.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_ExternalMenu.Designer.cs">
+      <DependentUpon>UC_Meal_ExternalMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_Internal.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_Internal.Designer.cs">
+      <DependentUpon>UC_Meal_Internal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_InternalMenu.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_InternalMenu.Designer.cs">
+      <DependentUpon>UC_Meal_InternalMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_ViewReport.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_ViewReport.Designer.cs">
+      <DependentUpon>UC_Meal_ViewReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\UC_M_Benefit.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -222,6 +252,12 @@
     <Compile Include="UserControl\UC_R_WithDraw.Designer.cs">
       <DependentUpon>UC_R_WithDraw.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\UC_Meal_Food.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_Meal_Food.Designer.cs">
+      <DependentUpon>UC_Meal_Food.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="CrystalReport\CR_AccidentReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CR_AccidentReport.cs</LastGenOutput>
@@ -275,6 +311,21 @@
     <EmbeddedResource Include="UserControl\UC_C_Verify.resx">
       <DependentUpon>UC_C_Verify.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_Meal_External.resx">
+      <DependentUpon>UC_Meal_External.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_Meal_ExternalMenu.resx">
+      <DependentUpon>UC_Meal_ExternalMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_Meal_Internal.resx">
+      <DependentUpon>UC_Meal_Internal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_Meal_InternalMenu.resx">
+      <DependentUpon>UC_Meal_InternalMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_Meal_ViewReport.resx">
+      <DependentUpon>UC_Meal_ViewReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_Benefit.resx">
       <DependentUpon>UC_M_Benefit.cs</DependentUpon>
     </EmbeddedResource>
@@ -304,6 +355,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_R_WithDraw.resx">
       <DependentUpon>UC_R_WithDraw.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_Meal_Food.resx">
+      <DependentUpon>UC_Meal_Food.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

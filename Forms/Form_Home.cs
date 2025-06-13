@@ -172,7 +172,7 @@ namespace HRAdmin.Forms
             btn_AccidentPDF.Visible = false;
             btnInspect.Visible = false;
             btn_Accident.Visible = false;
-            UC_A_Admin ug = new UC_A_Admin(loggedInUser);
+            UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
         private void panel5_Paint(object sender, PaintEventArgs e)
@@ -507,8 +507,8 @@ namespace HRAdmin.Forms
             button5.Visible = false;
             button6.Visible = false;
 
-            //UC_InternalMenu ug = new UC_InternalMenu(loggedInUser, loggedInDepart);
-            //addControls(ug);
+            UC_Meal_InternalMenu ug = new UC_Meal_InternalMenu(loggedInUser, loggedInDepart);
+            addControls(ug);
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -523,8 +523,8 @@ namespace HRAdmin.Forms
             button5.Visible = false;
             button6.Visible = false;
 
-            //UC_ExternalMenu ug = new UC_ExternalMenu(loggedInUser, loggedInDepart);
-            //addControls(ug);
+            UC_Meal_ExternalMenu ug = new UC_Meal_ExternalMenu(loggedInUser, loggedInDepart);
+            addControls(ug);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -541,8 +541,8 @@ namespace HRAdmin.Forms
             btnVisitor.Visible = false;
 
 
-            //UC_ViewReport ug = new UC_ViewReport(loggedInUser, loggedInDepart);
-            //addControls(ug);
+            UC_Meal_ViewReport ug = new UC_Meal_ViewReport(loggedInUser, loggedInDepart);
+            addControls(ug);
         }
     }
 }

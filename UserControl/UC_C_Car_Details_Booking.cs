@@ -17,6 +17,8 @@ namespace HRAdmin.UserControl
     public partial class UC_C_Car_Details_Booking : System.Windows.Forms.UserControl
     {
         private string loggedInUser;
+        private string loggedInDepart;
+        
         public UC_C_Car_Details_Booking(string username)
         {
             InitializeComponent();
@@ -58,7 +60,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButtonbtnWDcar.Visible = false;
             Form_Home.sharedbuttonInspect.Visible = false;
             Form_Home.sharedbtn_Accident.Visible = false;
-            UC_A_Admin ug = new UC_A_Admin(loggedInUser);
+            UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
 

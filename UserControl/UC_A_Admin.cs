@@ -18,17 +18,22 @@ using System.Windows.Forms;
 namespace HRAdmin.UserControl
 {
     public partial class UC_A_Admin : System.Windows.Forms.UserControl
-    {
+    {  //loggedInUser, loggedInDepart);
         private string loggedInUser;
+        private string loggedInDepart;
         public static Panel sharedPanel;
         public static Panel sharedPanele;
         public static Button sharedBtnTest;
+        private string EventDetails;
+        private DateTime EventTime;
 
-        public UC_A_Admin(string username)
+        public UC_A_Admin(string username, string Depart)
         {
             loggedInUser = username;
+            loggedInDepart = Depart;
             //MessageBox.Show($"DDSDSDDWDWWD: {username}");
             InitializeComponent();
+            
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -80,19 +85,43 @@ namespace HRAdmin.UserControl
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = true;
                                     Form_Home.sharedbuttonInspect.Visible = true;
+                                    Form_Home.sharedButton4.Visible = true;
+                                    Form_Home.sharedButton5.Visible = true;
+                                    //Form_Home.sharedbtnVisitor.Visible = true;
+                                    //Form_Home.sharedbtnWithdrawEntry.Visible = true;
+                                    //Form_Home.sharedbtnNewVisitor.Visible = true;
+                                    //Form_Home.sharedbtnUpdate.Visible = true;
                                 }
                                 else if (MA == "2")
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = true;
+                                    Form_Home.sharedButton4.Visible = true;
+                                    Form_Home.sharedButton5.Visible = true;
+                                    //Form_Home.sharedbtnVisitor.Visible = false;
+                                    //Form_Home.sharedbtnWithdrawEntry.Visible = false;
+                                    //Form_Home.sharedbtnNewVisitor.Visible = false;
+                                    //Form_Home.sharedbtnUpdate.Visible = false;
                                 }
                                 else
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = false;
+                                    Form_Home.sharedButton4.Visible = false;
+                                    Form_Home.sharedButton5.Visible = false;
+                                    //Form_Home.sharedbtnVisitor.Visible = false;
+                                    //Form_Home.sharedbtnWithdrawEntry.Visible = false;
+                                    //Form_Home.sharedbtnNewVisitor.Visible = false;
+                                    //Form_Home.sharedbtnUpdate.Visible = false;
                                 }
                             }
                             else
                             {
-                                Form_Home.sharedButtonbtnApp.Visible = false; 
+                                Form_Home.sharedButtonbtnApp.Visible = false;
+                                Form_Home.sharedButton4.Visible = false;
+                                Form_Home.sharedButton5.Visible = false;
+                                //Form_Home.sharedbtnVisitor.Visible = false;
+                                //Form_Home.sharedbtnWithdrawEntry.Visible = false;
+                                //Form_Home.sharedbtnNewVisitor.Visible = false;
+                                //Form_Home.sharedbtnUpdate.Visible = false;
                             }
                         }
                     }
@@ -244,8 +273,8 @@ namespace HRAdmin.UserControl
             //Form_Home.sharedbtnNewVisitor.Visible = false;
             //Form_Home.sharedbtnUpdate.Visible = false;
 
-            //UC_Food ug = new UC_Food(EventDetails, EventTime, loggedInUser, loggedInDepart);
-            //addControls(ug);
+            UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, loggedInUser, loggedInDepart);
+            addControls(ug);
         }
     }
 }

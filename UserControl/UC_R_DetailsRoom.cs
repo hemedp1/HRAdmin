@@ -16,6 +16,7 @@ namespace HRAdmin.UserControl
     public partial class UC_R_DetailsRoom : System.Windows.Forms.UserControl
     {
         private string loggedInUser;
+        private string loggedInDepart;
         private List<MeetingSpace> _meetingSpaces = new List<MeetingSpace>();
         private static List<MeetingSpaceConfig> _spaceConfigs = new List<MeetingSpaceConfig>();
         private static readonly string ConfigFilePath = Path.Combine(
@@ -618,7 +619,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButtonbtnWDcar.Visible = false;
             Form_Home.sharedbuttonInspect.Visible = false;
             Form_Home.sharedbtn_Accident.Visible = false;
-            UC_A_Admin ug = new UC_A_Admin(loggedInUser);
+            UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
 
