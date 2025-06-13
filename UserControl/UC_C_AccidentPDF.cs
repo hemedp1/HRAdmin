@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using CrystalDecisions.Shared;
+//using CrystalDecisions.Shared;
 using HRAdmin.Forms;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
