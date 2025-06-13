@@ -36,6 +36,9 @@ namespace HRAdmin.Forms
         public static Button sharedbtn_Accident;
         public static Button sharedbtn_AccidentPDF;
         public static Button sharedbtn_verify;
+        public static Button sharedButton4; //external
+        public static Button sharedButton5; //internal
+        public static Button sharedButton6; //view report
 
         public Form_Home(string username, string depart, string index)
         {
@@ -56,6 +59,9 @@ namespace HRAdmin.Forms
             btn_Accident.Visible = false;
             btn_AccidentPDF.Visible = false; 
             btnCarCondition.Visible = false;
+            button4.Visible = false; //external
+            button5.Visible = false; //internal
+            button6.Visible = false; //view report
             //CollapseMenu();
             this.Padding = new Padding(borderSize);//Border size
             sharedPanel = panel5;  // Assign shared panel
@@ -65,6 +71,9 @@ namespace HRAdmin.Forms
             sharedButtonBC = btnBookCar;
             sharedButton2 = button2;
             sharedButton3 = button3;
+            sharedButton4 = button4;  //external
+            sharedButton5 = button5;  //internal
+            sharedButton6 = button6;  //view report
             sharedButtonbtnApp = btnApp;
             sharedButtonbtnWDcar = btnWDcar;
             sharedbuttonInspect = btnInspect;
@@ -484,6 +493,56 @@ namespace HRAdmin.Forms
             btn_Accident.Visible = false;
             UC_A_Account ug = new UC_A_Account(loggedInUser, loggedInDepart);
             addControls(ug);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Meal Request > Internal Menu Edit";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+
+            //UC_InternalMenu ug = new UC_InternalMenu(loggedInUser, loggedInDepart);
+            //addControls(ug);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Meal Request > External Menu Edit";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+
+            //UC_ExternalMenu ug = new UC_ExternalMenu(loggedInUser, loggedInDepart);
+            //addControls(ug);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Meal Request > View report";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+
+
+            //UC_ViewReport ug = new UC_ViewReport(loggedInUser, loggedInDepart);
+            //addControls(ug);
         }
     }
 }
