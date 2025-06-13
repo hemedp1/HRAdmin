@@ -21,6 +21,7 @@ namespace HRAdmin.UserControl
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
+            dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
         }
     private void addControls(System.Windows.Forms.UserControl userControl)
         {

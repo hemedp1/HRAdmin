@@ -56,6 +56,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.cmbType = new System.Windows.Forms.ComboBox();
             this.gbExternal = new System.Windows.Forms.GroupBox();
+            this.dtRequest = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -334,7 +337,7 @@
             this.btnNext.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNext.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnNext.Location = new System.Drawing.Point(662, 51);
+            this.btnNext.Location = new System.Drawing.Point(1004, 47);
             this.btnNext.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(124, 34);
@@ -378,6 +381,9 @@
             // gbExternal
             // 
             this.gbExternal.BackColor = System.Drawing.Color.White;
+            this.gbExternal.Controls.Add(this.dtRequest);
+            this.gbExternal.Controls.Add(this.label2);
+            this.gbExternal.Controls.Add(this.label4);
             this.gbExternal.Controls.Add(this.btnNext);
             this.gbExternal.Controls.Add(this.label6);
             this.gbExternal.Controls.Add(this.label3);
@@ -390,6 +396,36 @@
             this.gbExternal.TabIndex = 137;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Miscellaneous Claim";
+            // 
+            // dtRequest
+            // 
+            this.dtRequest.AutoSize = true;
+            this.dtRequest.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtRequest.Location = new System.Drawing.Point(785, 54);
+            this.dtRequest.Name = "dtRequest";
+            this.dtRequest.Size = new System.Drawing.Size(125, 27);
+            this.dtRequest.TabIndex = 167;
+            this.dtRequest.Text = "current date";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label2.Location = new System.Drawing.Point(623, 54);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(132, 27);
+            this.label2.TabIndex = 165;
+            this.label2.Text = "Request date";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label4.Location = new System.Drawing.Point(761, 54);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(18, 27);
+            this.label4.TabIndex = 166;
+            this.label4.Text = ":";
             // 
             // UC_M_MiscellaneousClaim
             // 
@@ -442,5 +478,8 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button btnWithdraw;
+        private System.Windows.Forms.Label dtRequest;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label4;
     }
 }
