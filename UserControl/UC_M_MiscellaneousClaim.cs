@@ -80,5 +80,10 @@ namespace HRAdmin.UserControl
                 addControls(ug);
             }
         }
+
+        private void btnApprove_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

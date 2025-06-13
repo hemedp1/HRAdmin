@@ -101,6 +101,7 @@
             this.btnApprove.TabIndex = 100;
             this.btnApprove.Text = "Approve";
             this.btnApprove.UseVisualStyleBackColor = false;
+            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
             // 
             // btnCheck
             // 
