@@ -468,5 +468,22 @@ namespace HRAdmin.Forms
             //groupBox6.Visible = false;
             addControls(ug);
         }
+
+        private void btnAccount_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Account";
+            btn_New.Visible = false;
+            btnAddpeople.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;   //withdra
+            button3.Visible = false;  //replace
+            btnWDcar.Visible = false;
+            btnApp.Visible = false;
+            btn_AccidentPDF.Visible = false;
+            btnInspect.Visible = false;
+            btn_Accident.Visible = false;
+            UC_A_Account ug = new UC_A_Account(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
     }
 }

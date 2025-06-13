@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using HRAdmin.Forms;
+
+namespace HRAdmin.UserControl
+{
+    public partial class UC_A_Account: System.Windows.Forms.UserControl
+    {
+        private string loggedInUser;
+        private string loggedInDepart;
+        public UC_A_Account(string username, string department)
+        {
+            InitializeComponent();
+            loggedInUser = username;
+            loggedInDepart = department;
+        }
+
+        private void btnMClaim_Click(object sender, EventArgs e)
+        {
+            Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
+
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+        private void addControls(System.Windows.Forms.UserControl userControl)
+        {
+            if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
+            {
+                Form_Home.sharedPanel.Controls.Clear();
+                userControl.Dock = DockStyle.Fill;
+                Form_Home.sharedPanel.Controls.Add(userControl);
+                userControl.BringToFront();
+                // Update label text if needed
+            }
+            else if (UC_MC_Issue.sharedPanele != null)
+            {
+
+                UC_MC_Issue.sharedPanele.Controls.Clear();
+                userControl.Dock = DockStyle.Fill;
+                UC_MC_Issue.sharedPanele.Controls.Add(userControl);
+                //CheckUserAccess2(loggedInUser);
+                userControl.BringToFront();
+
+            }
+            else
+            {
+                MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+    }
+}
