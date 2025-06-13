@@ -162,12 +162,6 @@
     <Compile Include="UserControl\UC_C_Verify.Designer.cs">
       <DependentUpon>UC_C_Verify.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControl\UC_MC_Issue.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControl\UC_MC_Issue.Designer.cs">
-      <DependentUpon>UC_MC_Issue.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControl\UC_M_Benefit.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -280,9 +274,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_C_Verify.resx">
       <DependentUpon>UC_C_Verify.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControl\UC_MC_Issue.resx">
-      <DependentUpon>UC_MC_Issue.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_Benefit.resx">
       <DependentUpon>UC_M_Benefit.cs</DependentUpon>

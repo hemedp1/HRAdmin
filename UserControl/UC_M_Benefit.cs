@@ -32,16 +32,6 @@ namespace HRAdmin.UserControl
                 userControl.BringToFront();
                 // Update label text if needed
             }
-            else if (UC_MC_Issue.sharedPanele != null)
-            {
-
-                UC_MC_Issue.sharedPanele.Controls.Clear();
-                userControl.Dock = DockStyle.Fill;
-                UC_MC_Issue.sharedPanele.Controls.Add(userControl);
-                //CheckUserAccess2(loggedInUser);
-                userControl.BringToFront();
-
-            }
             else
             {
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -54,6 +44,11 @@ namespace HRAdmin.UserControl
 
             UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
             addControls(ug);
+        }
+
+        private void btnSubmit_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

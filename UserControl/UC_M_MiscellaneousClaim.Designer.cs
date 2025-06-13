@@ -369,6 +369,7 @@
             // 
             // cmbType
             // 
+            this.cmbType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbType.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbType.FormattingEnabled = true;
             this.cmbType.Items.AddRange(new object[] {

@@ -40,7 +40,8 @@ namespace HRAdmin.UserControl
                 userControl.BringToFront();
                 // Update label text if needed
             }
-            else if (UC_MC_Issue.sharedPanele != null) 
+            /*
+             * else if (UC_MC_Issue.sharedPanele != null) 
             {
                 
                 UC_MC_Issue.sharedPanele.Controls.Clear();
@@ -49,7 +50,7 @@ namespace HRAdmin.UserControl
                 CheckUserAccess2(loggedInUser);
                 userControl.BringToFront();
                 
-            }
+            } */
             else
             {
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -172,8 +173,8 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButton3.Visible = false;
             Form_Home.sharedbtn_Accident.Visible = true;
 
-            UC_MC_Issue ug = new UC_MC_Issue(loggedInUser);
-            addControls(ug);
+            //UC_MC_Issue ug = new UC_MC_Issue(loggedInUser);
+            //addControls(ug);
             
             //UC_MC_Issue.ShowButton1 = true;
         }
@@ -205,7 +206,7 @@ namespace HRAdmin.UserControl
                                 else if (MA == "2")
                                 {
                                       // Button1 will be visible
-                                    UC_MC_Issue.sharedBtnTest.Visible = false;          // 3
+                                    //UC_MC_Issue.sharedBtnTest.Visible = false;          // 3
                                     //UC_MC_Issue.sharedButtonbtnApp.Visible = true;
                                 }
                                 else
