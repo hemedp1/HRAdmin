@@ -229,7 +229,22 @@ namespace HRAdmin.UserControl
 
         private void btnMeal_Click(object sender, EventArgs e)
         {
+            CheckUserAccess(loggedInUser);
 
+            Form_Home.sharedLabel.Text = "Admin > Meal Request";
+            Form_Home.sharedButton.Visible = false;
+            Form_Home.sharedButtonew.Visible = false;
+            Form_Home.sharedButtonBC.Visible = false;
+            Form_Home.sharedButton2.Visible = false;
+            Form_Home.sharedButton3.Visible = false;
+            Form_Home.sharedButton6.Visible = true;
+            //Form_Home.sharedbtnVisitor.Visible = false;
+            //Form_Home.sharedbtnWithdrawEntry.Visible = false;
+            //Form_Home.sharedbtnNewVisitor.Visible = false;
+            //Form_Home.sharedbtnUpdate.Visible = false;
+
+            //UC_Food ug = new UC_Food(EventDetails, EventTime, loggedInUser, loggedInDepart);
+            //addControls(ug);
         }
     }
 }
