@@ -39,6 +39,11 @@ namespace HRAdmin.Forms
         public static Button sharedButton4; //external
         public static Button sharedButton5; //internal
         public static Button sharedButton6; //view report
+        public static Button sharedbtnVisitor;
+        public static Button sharedbtnWithdrawEntry;
+        public static Button sharedbtnNewVisitor;
+        public static Button sharedbtnUpdate;
+
 
         public Form_Home(string username, string depart, string index)
         {
@@ -62,6 +67,10 @@ namespace HRAdmin.Forms
             button4.Visible = false; //external
             button5.Visible = false; //internal
             button6.Visible = false; //view report
+            btnVisitor.Visible = false; //visitor
+            btnWithdrawEntry.Visible = false; //withdraw entry
+            btnNewVisitor.Visible = false; //new visitor
+            btnUpdate.Visible = false; //update
             //CollapseMenu();
             this.Padding = new Padding(borderSize);//Border size
             sharedPanel = panel5;  // Assign shared panel
@@ -80,6 +89,10 @@ namespace HRAdmin.Forms
             sharedbtn_Accident = btn_Accident;
             sharedbtn_AccidentPDF = btn_AccidentPDF;
             sharedbtn_verify = btnCarCondition;
+            sharedbtnVisitor = btnVisitor;
+            sharedbtnWithdrawEntry = btnWithdrawEntry;
+            sharedbtnNewVisitor = btnNewVisitor;
+            sharedbtnUpdate = btnUpdate;
 
         }
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]

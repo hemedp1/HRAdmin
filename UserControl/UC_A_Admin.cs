@@ -148,6 +148,9 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButton3.Visible = false;
             Form_Home.sharedbtn_verify.Visible = false;
             Form_Home.sharedbtn_Accident.Visible = true;
+            Form_Home.sharedButton4.Visible = false;
+            Form_Home.sharedButton5.Visible = false;
+            Form_Home.sharedButton6.Visible = false;
 
             UC_C_Car_Details_Booking ug = new UC_C_Car_Details_Booking(loggedInUser);
             addControls(ug);
@@ -162,10 +165,13 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButtonBC.Visible = false;
             Form_Home.sharedButton2.Visible = true;
             Form_Home.sharedButton3.Visible = true;
+            Form_Home.sharedButton4.Visible = false;
+            Form_Home.sharedButton5.Visible = false;
+            Form_Home.sharedButton6.Visible = false;
             UC_R_DetailsRoom ug = new UC_R_DetailsRoom(loggedInUser);
             addControls(ug);
         }
-
+    
         private void btnWB_Click(object sender, EventArgs e)
         {
             //label1.Text = "Welcome Board";
@@ -268,10 +274,12 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButton2.Visible = false;
             Form_Home.sharedButton3.Visible = false;
             Form_Home.sharedButton6.Visible = true;
-            //Form_Home.sharedbtnVisitor.Visible = false;
-            //Form_Home.sharedbtnWithdrawEntry.Visible = false;
-            //Form_Home.sharedbtnNewVisitor.Visible = false;
-            //Form_Home.sharedbtnUpdate.Visible = false;
+            Form_Home.sharedbtnVisitor.Visible = false;
+            Form_Home.sharedbtnWithdrawEntry.Visible = false;
+            Form_Home.sharedbtnNewVisitor.Visible = false;
+            Form_Home.sharedbtnUpdate.Visible = false;
+            Form_Home.sharedButtonbtnApp.Visible= false; 
+            Form_Home.sharedbuttonInspect.Visible = false; 
 
             UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, loggedInUser, loggedInDepart);
             addControls(ug);
