@@ -240,6 +240,24 @@
     <Compile Include="UserControl\UC_C_WithDrawCar.Designer.cs">
       <DependentUpon>UC_C_WithDrawCar.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\UC_W_InputVisitor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_W_InputVisitor.Designer.cs">
+      <DependentUpon>UC_W_InputVisitor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_W_RegisterVisitor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_W_RegisterVisitor.Designer.cs">
+      <DependentUpon>UC_W_RegisterVisitor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_W_UpdateCompany.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_W_UpdateCompany.Designer.cs">
+      <DependentUpon>UC_W_UpdateCompany.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\UC_W_WelcomeBoard.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -257,6 +275,12 @@
     </Compile>
     <Compile Include="UserControl\UC_Meal_Food.Designer.cs">
       <DependentUpon>UC_Meal_Food.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_W_WithdrawVisitor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_W_WithdrawVisitor.Designer.cs">
+      <DependentUpon>UC_W_WithdrawVisitor.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="CrystalReport\CR_AccidentReport.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
@@ -350,6 +374,15 @@
     <EmbeddedResource Include="UserControl\UC_C_WithDrawCar.resx">
       <DependentUpon>UC_C_WithDrawCar.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_W_InputVisitor.resx">
+      <DependentUpon>UC_W_InputVisitor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_W_RegisterVisitor.resx">
+      <DependentUpon>UC_W_RegisterVisitor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_W_UpdateCompany.resx">
+      <DependentUpon>UC_W_UpdateCompany.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_W_WelcomeBoard.resx">
       <DependentUpon>UC_W_WelcomeBoard.cs</DependentUpon>
     </EmbeddedResource>
@@ -358,6 +391,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_Meal_Food.resx">
       <DependentUpon>UC_Meal_Food.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_W_WithdrawVisitor.resx">
+      <DependentUpon>UC_W_WithdrawVisitor.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

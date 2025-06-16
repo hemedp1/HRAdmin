@@ -276,6 +276,7 @@
             this.btnUpdate.Tag = "";
             this.btnUpdate.Text = "Update";
             this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // btnWithdrawEntry
             // 
@@ -296,6 +297,7 @@
             this.btnWithdrawEntry.Tag = "";
             this.btnWithdrawEntry.Text = "Withdraw";
             this.btnWithdrawEntry.UseVisualStyleBackColor = true;
+            this.btnWithdrawEntry.Click += new System.EventHandler(this.btnWithdrawEntry_Click);
             // 
             // btnVisitor
             // 
@@ -316,6 +318,7 @@
             this.btnVisitor.Tag = "";
             this.btnVisitor.Text = "Display Visitor";
             this.btnVisitor.UseVisualStyleBackColor = true;
+            this.btnVisitor.Click += new System.EventHandler(this.btnVisitor_Click);
             // 
             // btnNewVisitor
             // 
@@ -336,6 +339,7 @@
             this.btnNewVisitor.Tag = "";
             this.btnNewVisitor.Text = "New Visitor";
             this.btnNewVisitor.UseVisualStyleBackColor = true;
+            this.btnNewVisitor.Click += new System.EventHandler(this.btnNewVisitor_Click);
             // 
             // button6
             // 

@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace HRAdmin.UserControl
 {
@@ -87,30 +88,30 @@ namespace HRAdmin.UserControl
                                     Form_Home.sharedbuttonInspect.Visible = true;
                                     Form_Home.sharedButton4.Visible = true;
                                     Form_Home.sharedButton5.Visible = true;
-                                    //Form_Home.sharedbtnVisitor.Visible = true;
-                                    //Form_Home.sharedbtnWithdrawEntry.Visible = true;
-                                    //Form_Home.sharedbtnNewVisitor.Visible = true;
-                                    //Form_Home.sharedbtnUpdate.Visible = true;
+                                    Form_Home.sharedbtnVisitor.Visible = true;
+                                    Form_Home.sharedbtnWithdrawEntry.Visible = true;
+                                    Form_Home.sharedbtnNewVisitor.Visible = true;
+                                    Form_Home.sharedbtnUpdate.Visible = true;
                                 }
                                 else if (MA == "2")
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = true;
                                     Form_Home.sharedButton4.Visible = true;
                                     Form_Home.sharedButton5.Visible = true;
-                                    //Form_Home.sharedbtnVisitor.Visible = false;
-                                    //Form_Home.sharedbtnWithdrawEntry.Visible = false;
-                                    //Form_Home.sharedbtnNewVisitor.Visible = false;
-                                    //Form_Home.sharedbtnUpdate.Visible = false;
+                                    Form_Home.sharedbtnVisitor.Visible = false;
+                                    Form_Home.sharedbtnWithdrawEntry.Visible = false;
+                                    Form_Home.sharedbtnNewVisitor.Visible = false;
+                                    Form_Home.sharedbtnUpdate.Visible = false;
                                 }
                                 else
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = false;
                                     Form_Home.sharedButton4.Visible = false;
                                     Form_Home.sharedButton5.Visible = false;
-                                    //Form_Home.sharedbtnVisitor.Visible = false;
-                                    //Form_Home.sharedbtnWithdrawEntry.Visible = false;
-                                    //Form_Home.sharedbtnNewVisitor.Visible = false;
-                                    //Form_Home.sharedbtnUpdate.Visible = false;
+                                    Form_Home.sharedbtnVisitor.Visible = false;
+                                    Form_Home.sharedbtnWithdrawEntry.Visible = false;
+                                    Form_Home.sharedbtnNewVisitor.Visible = false;
+                                    Form_Home.sharedbtnUpdate.Visible = false;
                                 }
                             }
                             else
@@ -118,10 +119,10 @@ namespace HRAdmin.UserControl
                                 Form_Home.sharedButtonbtnApp.Visible = false;
                                 Form_Home.sharedButton4.Visible = false;
                                 Form_Home.sharedButton5.Visible = false;
-                                //Form_Home.sharedbtnVisitor.Visible = false;
-                                //Form_Home.sharedbtnWithdrawEntry.Visible = false;
-                                //Form_Home.sharedbtnNewVisitor.Visible = false;
-                                //Form_Home.sharedbtnUpdate.Visible = false;
+                                Form_Home.sharedbtnVisitor.Visible = false;
+                                Form_Home.sharedbtnWithdrawEntry.Visible = false;
+                                Form_Home.sharedbtnNewVisitor.Visible = false;
+                                Form_Home.sharedbtnUpdate.Visible = false;
                             }
                         }
                     }
@@ -151,6 +152,10 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButton4.Visible = false;
             Form_Home.sharedButton5.Visible = false;
             Form_Home.sharedButton6.Visible = false;
+            Form_Home.sharedbtnVisitor.Visible = false;
+            Form_Home.sharedbtnWithdrawEntry.Visible = false;
+            Form_Home.sharedbtnNewVisitor.Visible = false;
+            Form_Home.sharedbtnUpdate.Visible = false;
 
             UC_C_Car_Details_Booking ug = new UC_C_Car_Details_Booking(loggedInUser);
             addControls(ug);
@@ -174,14 +179,19 @@ namespace HRAdmin.UserControl
     
         private void btnWB_Click(object sender, EventArgs e)
         {
-            //label1.Text = "Welcome Board";
-            Form_Home.sharedLabel.Text = "Hosiden Electronic(M) Sdn.Bhd.";
+            CheckUserAccess(loggedInUser);
+
+            Form_Home.sharedLabel.Text = "Welcome Board";
             //Form_Home.sharedLabel.Text = "Administrator ➢ New Room";
             Form_Home.sharedButton.Visible = false;
             Form_Home.sharedButtonew.Visible = false;
             Form_Home.sharedButtonBC.Visible = false;
+            Form_Home.sharedButton4.Visible = false;
+            Form_Home.sharedButton5.Visible = false;
+            Form_Home.sharedButtonbtnApp.Visible = false;
+            Form_Home.sharedbuttonInspect.Visible = false;
 
-            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
+            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard(loggedInUser, loggedInDepart);
             addControls(ug);
         }
 
@@ -195,24 +205,7 @@ namespace HRAdmin.UserControl
 
         }
 
-        private void btnMSC_Click(object sender, EventArgs e)
-        {
 
-            CheckUserAccess2(loggedInUser);
-            Form_Home.sharedLabel.Text = "Admin > Car Reservation";
-            Form_Home.sharedButton.Visible = false;
-            Form_Home.sharedButtonew.Visible = false;
-            Form_Home.sharedButtonBC.Visible = true;
-            Form_Home.sharedButtonbtnWDcar.Visible = true;
-            Form_Home.sharedButton2.Visible = false;
-            Form_Home.sharedButton3.Visible = false;
-            Form_Home.sharedbtn_Accident.Visible = true;
-
-            //UC_MC_Issue ug = new UC_MC_Issue(loggedInUser);
-            //addControls(ug);
-            
-            //UC_MC_Issue.ShowButton1 = true;
-        }
         private void CheckUserAccess2(string username)
         {
             try

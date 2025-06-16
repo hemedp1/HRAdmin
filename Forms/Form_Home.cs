@@ -19,6 +19,7 @@ namespace HRAdmin.Forms
 {
     public partial class Form_Home : Form
     {
+        private UC_W_WelcomeBoard currentWelcomeBoard;
         private string loggedInIndex;
         private string loggedInUser;
         private string loggedInDepart;
@@ -200,8 +201,8 @@ namespace HRAdmin.Forms
             btn_New.Visible = false;
             btnAddpeople.Visible = false;
 
-            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
-            addControls(ug);
+            //UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
+            //addControls(ug);
             //UC_CarDetails ug = new UC_CarDetails();
             //addControls(ug);
         }
@@ -213,8 +214,8 @@ namespace HRAdmin.Forms
             btn_New.Visible = false;
             btnAddpeople.Visible = false;
 
-            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
-            addControls(ug);
+            //UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
+            //addControls(ug);
         }
         private void btnAdmin_Click(object sender, EventArgs e)
         {
@@ -222,8 +223,8 @@ namespace HRAdmin.Forms
             btnBookCar.Visible = false;
             btn_New.Visible = false;
             btnAddpeople.Visible = false;
-            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
-            addControls(ug);
+            //UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
+            //addControls(ug);
         }
         private void Form_Home_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -555,6 +556,86 @@ namespace HRAdmin.Forms
 
 
             UC_Meal_ViewReport ug = new UC_Meal_ViewReport(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+
+        private void btnNewVisitor_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Register New Visitor ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_RegisterVisitor ug = new UC_W_RegisterVisitor(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+
+        private void btnVisitor_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Display Visitor ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_InputVisitor ug = new UC_W_InputVisitor(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+
+        private void btnWithdrawEntry_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Withdraw ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_WithdrawVisitor ug = new UC_W_WithdrawVisitor(loggedInUser, loggedInDepart, currentWelcomeBoard);
+            addControls(ug);
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Update Company ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_UpdateCompany ug = new UC_W_UpdateCompany(loggedInUser, loggedInDepart);
             addControls(ug);
         }
     }
