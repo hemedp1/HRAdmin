@@ -83,7 +83,7 @@
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1504, 46);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1504, 57);
             this.flowLayoutPanel1.TabIndex = 123;
             // 
             // button2
@@ -119,18 +119,19 @@
             this.gbExternal.Controls.Add(this.label97);
             this.gbExternal.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbExternal.Font = new System.Drawing.Font("Calibri", 14F);
-            this.gbExternal.Location = new System.Drawing.Point(0, 46);
+            this.gbExternal.Location = new System.Drawing.Point(0, 57);
             this.gbExternal.Name = "gbExternal";
             this.gbExternal.Size = new System.Drawing.Size(1504, 250);
             this.gbExternal.TabIndex = 124;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Internal food order";
+            this.gbExternal.Enter += new System.EventHandler(this.gbExternal_Enter_1);
             // 
             // label46
             // 
             this.label46.AutoSize = true;
             this.label46.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label46.Location = new System.Drawing.Point(199, 177);
+            this.label46.Location = new System.Drawing.Point(213, 177);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(21, 32);
             this.label46.TabIndex = 124;
@@ -150,23 +151,24 @@
             // 
             this.cmb_Meal.BackColor = System.Drawing.Color.White;
             this.cmb_Meal.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmb_Meal.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmb_Meal.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_Meal.FormattingEnabled = true;
             this.cmb_Meal.Items.AddRange(new object[] {
             "Breakfast",
             "Lunch",
             "Tea",
             "Dinner"});
-            this.cmb_Meal.Location = new System.Drawing.Point(228, 174);
+            this.cmb_Meal.Location = new System.Drawing.Point(241, 177);
             this.cmb_Meal.Name = "cmb_Meal";
-            this.cmb_Meal.Size = new System.Drawing.Size(148, 40);
+            this.cmb_Meal.Size = new System.Drawing.Size(164, 37);
             this.cmb_Meal.TabIndex = 122;
+            this.cmb_Meal.SelectedIndexChanged += new System.EventHandler(this.cmb_Meal_SelectedIndexChanged);
             // 
             // lblDeliveryDate1
             // 
             this.lblDeliveryDate1.AutoSize = true;
             this.lblDeliveryDate1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.lblDeliveryDate1.Location = new System.Drawing.Point(223, 134);
+            this.lblDeliveryDate1.Location = new System.Drawing.Point(241, 134);
             this.lblDeliveryDate1.Name = "lblDeliveryDate1";
             this.lblDeliveryDate1.Size = new System.Drawing.Size(153, 32);
             this.lblDeliveryDate1.TabIndex = 121;
@@ -176,7 +178,7 @@
             // 
             this.lblRequestDate1.AutoSize = true;
             this.lblRequestDate1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.lblRequestDate1.Location = new System.Drawing.Point(223, 91);
+            this.lblRequestDate1.Location = new System.Drawing.Point(244, 91);
             this.lblRequestDate1.Name = "lblRequestDate1";
             this.lblRequestDate1.Size = new System.Drawing.Size(150, 32);
             this.lblRequestDate1.TabIndex = 120;
@@ -186,7 +188,7 @@
             // 
             this.lblEvent1.AutoSize = true;
             this.lblEvent1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.lblEvent1.Location = new System.Drawing.Point(223, 48);
+            this.lblEvent1.Location = new System.Drawing.Point(244, 48);
             this.lblEvent1.Name = "lblEvent1";
             this.lblEvent1.Size = new System.Drawing.Size(75, 32);
             this.lblEvent1.TabIndex = 119;
@@ -196,7 +198,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label17.Location = new System.Drawing.Point(199, 134);
+            this.label17.Location = new System.Drawing.Point(213, 134);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(21, 32);
             this.label17.TabIndex = 118;
@@ -209,19 +211,20 @@
             this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSubmit.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnSubmit.Location = new System.Drawing.Point(470, 175);
+            this.btnSubmit.Location = new System.Drawing.Point(427, 177);
             this.btnSubmit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(124, 34);
+            this.btnSubmit.Size = new System.Drawing.Size(124, 43);
             this.btnSubmit.TabIndex = 101;
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = false;
+            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
             // 
             // label16
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label16.Location = new System.Drawing.Point(199, 91);
+            this.label16.Location = new System.Drawing.Point(213, 91);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(21, 32);
             this.label16.TabIndex = 116;
@@ -231,7 +234,7 @@
             // 
             this.label65.AutoSize = true;
             this.label65.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label65.Location = new System.Drawing.Point(199, 48);
+            this.label65.Location = new System.Drawing.Point(213, 48);
             this.label65.Name = "label65";
             this.label65.Size = new System.Drawing.Size(21, 32);
             this.label65.TabIndex = 114;
@@ -269,16 +272,16 @@
             // 
             // panel3
             // 
-            this.panel3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel3.BackColor = System.Drawing.Color.White;
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(0, 296);
+            this.panel3.Location = new System.Drawing.Point(0, 307);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(50, 467);
+            this.panel3.Size = new System.Drawing.Size(50, 456);
             this.panel3.TabIndex = 125;
             // 
             // groupBox1
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox1.BackColor = System.Drawing.Color.White;
             this.groupBox1.Controls.Add(this.label53);
             this.groupBox1.Controls.Add(this.cmb_HC2);
             this.groupBox1.Controls.Add(this.label51);
@@ -291,7 +294,7 @@
             this.groupBox1.Controls.Add(this.label42);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.groupBox1.Location = new System.Drawing.Point(50, 296);
+            this.groupBox1.Location = new System.Drawing.Point(50, 307);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(1454, 150);
             this.groupBox1.TabIndex = 126;
@@ -310,14 +313,16 @@
             // 
             // cmb_HC2
             // 
+            this.cmb_HC2.BackColor = System.Drawing.Color.White;
             this.cmb_HC2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_HC2.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_HC2.FormattingEnabled = true;
             this.cmb_HC2.Items.AddRange(new object[] {
             "Hot",
             "Cold"});
-            this.cmb_HC2.Location = new System.Drawing.Point(1066, 76);
+            this.cmb_HC2.Location = new System.Drawing.Point(1066, 81);
             this.cmb_HC2.Name = "cmb_HC2";
-            this.cmb_HC2.Size = new System.Drawing.Size(180, 40);
+            this.cmb_HC2.Size = new System.Drawing.Size(180, 37);
             this.cmb_HC2.TabIndex = 126;
             // 
             // label51
@@ -332,32 +337,38 @@
             // 
             // cmb_Drink2
             // 
+            this.cmb_Drink2.BackColor = System.Drawing.Color.White;
             this.cmb_Drink2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_Drink2.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_Drink2.FormattingEnabled = true;
-            this.cmb_Drink2.Location = new System.Drawing.Point(844, 76);
+            this.cmb_Drink2.Location = new System.Drawing.Point(844, 81);
             this.cmb_Drink2.Name = "cmb_Drink2";
-            this.cmb_Drink2.Size = new System.Drawing.Size(200, 40);
+            this.cmb_Drink2.Size = new System.Drawing.Size(200, 37);
             this.cmb_Drink2.TabIndex = 124;
             // 
             // cmb_HC1
             // 
+            this.cmb_HC1.BackColor = System.Drawing.Color.White;
             this.cmb_HC1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_HC1.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_HC1.FormattingEnabled = true;
             this.cmb_HC1.Items.AddRange(new object[] {
             "Hot",
             "Cold"});
-            this.cmb_HC1.Location = new System.Drawing.Point(642, 76);
+            this.cmb_HC1.Location = new System.Drawing.Point(642, 81);
             this.cmb_HC1.Name = "cmb_HC1";
-            this.cmb_HC1.Size = new System.Drawing.Size(180, 40);
+            this.cmb_HC1.Size = new System.Drawing.Size(180, 37);
             this.cmb_HC1.TabIndex = 123;
             // 
             // cmb_Drink1
             // 
+            this.cmb_Drink1.BackColor = System.Drawing.Color.White;
             this.cmb_Drink1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_Drink1.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_Drink1.FormattingEnabled = true;
-            this.cmb_Drink1.Location = new System.Drawing.Point(420, 76);
+            this.cmb_Drink1.Location = new System.Drawing.Point(420, 81);
             this.cmb_Drink1.Name = "cmb_Drink1";
-            this.cmb_Drink1.Size = new System.Drawing.Size(200, 40);
+            this.cmb_Drink1.Size = new System.Drawing.Size(200, 37);
             this.cmb_Drink1.TabIndex = 122;
             // 
             // label18
@@ -372,12 +383,15 @@
             // 
             // cmb_Menu
             // 
+            this.cmb_Menu.BackColor = System.Drawing.Color.White;
             this.cmb_Menu.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_Menu.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_Menu.FormattingEnabled = true;
-            this.cmb_Menu.Location = new System.Drawing.Point(16, 76);
+            this.cmb_Menu.Location = new System.Drawing.Point(16, 81);
             this.cmb_Menu.Name = "cmb_Menu";
-            this.cmb_Menu.Size = new System.Drawing.Size(382, 40);
+            this.cmb_Menu.Size = new System.Drawing.Size(382, 37);
             this.cmb_Menu.TabIndex = 0;
+            this.cmb_Menu.SelectedIndexChanged += new System.EventHandler(this.cmb_Menu_SelectedIndexChanged);
             // 
             // label20
             // 
@@ -401,12 +415,12 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox2.BackColor = System.Drawing.Color.White;
             this.groupBox2.Controls.Add(this.label41);
             this.groupBox2.Controls.Add(this.cmb_Snack);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 13F);
-            this.groupBox2.Location = new System.Drawing.Point(50, 446);
+            this.groupBox2.Location = new System.Drawing.Point(50, 457);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(1454, 150);
             this.groupBox2.TabIndex = 127;
@@ -425,16 +439,18 @@
             // 
             // cmb_Snack
             // 
+            this.cmb_Snack.BackColor = System.Drawing.Color.White;
             this.cmb_Snack.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_Snack.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_Snack.FormattingEnabled = true;
-            this.cmb_Snack.Location = new System.Drawing.Point(16, 76);
+            this.cmb_Snack.Location = new System.Drawing.Point(16, 81);
             this.cmb_Snack.Name = "cmb_Snack";
-            this.cmb_Snack.Size = new System.Drawing.Size(180, 40);
+            this.cmb_Snack.Size = new System.Drawing.Size(180, 37);
             this.cmb_Snack.TabIndex = 124;
             // 
             // groupBox3
             // 
-            this.groupBox3.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox3.BackColor = System.Drawing.Color.White;
             this.groupBox3.Controls.Add(this.label47);
             this.groupBox3.Controls.Add(this.label45);
             this.groupBox3.Controls.Add(this.txt_Remark);
@@ -445,9 +461,9 @@
             this.groupBox3.Controls.Add(this.cmb_DeliveryT);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox3.Font = new System.Drawing.Font("Calibri", 13F);
-            this.groupBox3.Location = new System.Drawing.Point(50, 596);
+            this.groupBox3.Location = new System.Drawing.Point(50, 607);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1454, 150);
+            this.groupBox3.Size = new System.Drawing.Size(1454, 164);
             this.groupBox3.TabIndex = 128;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Order details";
@@ -456,7 +472,8 @@
             // 
             this.label47.AutoSize = true;
             this.label47.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label47.Location = new System.Drawing.Point(746, 76);
+            this.label47.ForeColor = System.Drawing.Color.Red;
+            this.label47.Location = new System.Drawing.Point(746, 81);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(27, 32);
             this.label47.TabIndex = 127;
@@ -467,7 +484,7 @@
             this.label45.AutoSize = true;
             this.label45.Font = new System.Drawing.Font("Calibri", 10F);
             this.label45.ForeColor = System.Drawing.Color.DarkGray;
-            this.label45.Location = new System.Drawing.Point(416, 113);
+            this.label45.Location = new System.Drawing.Point(416, 126);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(372, 24);
             this.label45.TabIndex = 126;
@@ -475,7 +492,8 @@
             // 
             // txt_Remark
             // 
-            this.txt_Remark.Location = new System.Drawing.Point(420, 76);
+            this.txt_Remark.BackColor = System.Drawing.Color.White;
+            this.txt_Remark.Location = new System.Drawing.Point(420, 81);
             this.txt_Remark.Name = "txt_Remark";
             this.txt_Remark.Size = new System.Drawing.Size(320, 39);
             this.txt_Remark.TabIndex = 125;
@@ -492,9 +510,11 @@
             // 
             // txt_Npax
             // 
-            this.txt_Npax.Location = new System.Drawing.Point(16, 76);
+            this.txt_Npax.BackColor = System.Drawing.Color.White;
+            this.txt_Npax.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txt_Npax.Location = new System.Drawing.Point(16, 81);
             this.txt_Npax.Name = "txt_Npax";
-            this.txt_Npax.Size = new System.Drawing.Size(180, 39);
+            this.txt_Npax.Size = new System.Drawing.Size(180, 37);
             this.txt_Npax.TabIndex = 121;
             // 
             // label57
@@ -519,7 +539,9 @@
             // 
             // cmb_DeliveryT
             // 
+            this.cmb_DeliveryT.BackColor = System.Drawing.Color.White;
             this.cmb_DeliveryT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_DeliveryT.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_DeliveryT.FormattingEnabled = true;
             this.cmb_DeliveryT.Items.AddRange(new object[] {
             "08:00",
@@ -547,15 +569,16 @@
             "19:00",
             "19:30",
             "20:00"});
-            this.cmb_DeliveryT.Location = new System.Drawing.Point(218, 76);
+            this.cmb_DeliveryT.Location = new System.Drawing.Point(218, 81);
             this.cmb_DeliveryT.Name = "cmb_DeliveryT";
-            this.cmb_DeliveryT.Size = new System.Drawing.Size(180, 40);
+            this.cmb_DeliveryT.Size = new System.Drawing.Size(180, 37);
             this.cmb_DeliveryT.TabIndex = 0;
             // 
             // UC_Meal_Internal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

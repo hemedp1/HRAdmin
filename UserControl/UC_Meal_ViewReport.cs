@@ -1082,6 +1082,9 @@ namespace HRAdmin.UserControl
 
         }
 
-   
+        private void cmbOrderIds_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

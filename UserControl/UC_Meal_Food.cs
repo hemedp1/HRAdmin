@@ -1179,21 +1179,7 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-        private void panel2_Paint_1(object sender, PaintEventArgs e) { }
-        private void cmbOccasion_SelectedIndexChanged(object sender, EventArgs rilasciato) { }
-        private void label2_Click(object sender, EventArgs e) { }
-        private void txtEvent_TextChanged(object sender, EventArgs e) { }
-        private void dtRequest_ValueChanged(object sender, EventArgs e) { }
-        private void dtDelivery_ValueChanged(object sender, EventArgs e) { }
-        private void panel2_Paint(object sender, PaintEventArgs e) { }
-        private void groupBox2_Enter(object sender, EventArgs e) { }
-        private void dtRequest_Click(object sender, EventArgs e) { }
-        private void EventOccasion_Click(object sender, EventArgs e) { }
-        private void gbFoodrequest_Enter(object sender, EventArgs e) { }
-        private void cmbRequester_SelectedIndexChanged_1(object sender, EventArgs e) { }
-        private void dgv_OS_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
-        private void label14_Click(object sender, EventArgs e) { }
-        private void label15_Click(object sender, EventArgs e) { }
+
 
         private void dtDelivery_ValueChanged_1(object sender, EventArgs e)
         {
@@ -1289,5 +1275,146 @@ namespace HRAdmin.UserControl
         {
 
         }
+
+        private void btNext_Click(object sender, EventArgs e)
+        {
+            string selectedOccasion = cmbOccasion.SelectedItem?.ToString();
+            string eventText = txtEvent.Text.Trim();
+            DateTime eventDate;
+            if (!DateTime.TryParse(dtRequest.Text, out eventDate))
+            {
+                MessageBox.Show("Invalid request date format. Please use dd.MM.yyyy.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            DateTime? deliveryTime = dtDelivery.Value;
+
+            if (string.IsNullOrEmpty(selectedOccasion))
+            {
+                MessageBox.Show("Please select an occasion before proceeding.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(eventText))
+            {
+                MessageBox.Show("Please enter an event before proceeding.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (eventDate.Date >= deliveryTime?.Date)
+            {
+                MessageBox.Show("Delivery date cannot be on or before the request date.", "Invalid Date Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selectedOccasion == "Internal")
+            {
+                Form_Home.sharedLabel.Text = "Admin > Meal Request > Internal";
+                Form_Home.sharedButton4.Visible = false;
+                Form_Home.sharedButton5.Visible = false;
+                Form_Home.sharedButton6.Visible = false;
+                UC_Meal_Internal ug = new UC_Meal_Internal(eventText, eventDate, deliveryTime, loggedInUser, loggedInDepart);
+                addControls(ug);
+            }
+            else if (selectedOccasion == "External")
+            {
+                Form_Home.sharedLabel.Text = "Admin > Meal Request > External";
+                Form_Home.sharedButton4.Visible = false;
+                Form_Home.sharedButton5.Visible = false;
+                Form_Home.sharedButton6.Visible = false;
+                UC_Meal_External ug = new UC_Meal_External(eventText, eventDate, deliveryTime, loggedInUser, loggedInDepart);
+                addControls(ug);
+            }
+        }
+
+        private void btnCheck_Click(object sender, EventArgs e)
+        {
+            if (dgv_OS.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Please select a cell in the order row to check.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DataGridViewCell selectedCell = dgv_OS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
+            string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
+            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
+            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString();
+
+            if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource))
+            {
+                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Prevent re-checking if already checked or approved
+            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Checked")
+            {
+                MessageBox.Show("This order has already been checked.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
+            {
+                MessageBox.Show("This order has already been approved and cannot be checked again.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    string query = $@"UPDATE {tableName} 
+                             SET CheckStatus = @CheckStatus, 
+                                 CheckedBy = @CheckedBy, 
+                                 CheckedDate = @CheckedDate, 
+                                 CheckedDepartment = @CheckedDepartment
+                             WHERE OrderID = @OrderID";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@CheckStatus", "Checked");
+                        cmd.Parameters.AddWithValue("@CheckedBy", loggedInUser);
+                        cmd.Parameters.AddWithValue("@CheckedDate", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@CheckedDepartment", loggedInDepart);
+                        cmd.Parameters.AddWithValue("@OrderID", orderId);
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Order status updated to Checked.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to update order status.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        private void panel2_Paint_1(object sender, PaintEventArgs e) { }
+        private void cmbOccasion_SelectedIndexChanged(object sender, EventArgs rilasciato) { }
+        private void label2_Click(object sender, EventArgs e) { }
+        private void txtEvent_TextChanged(object sender, EventArgs e) { }
+        private void dtRequest_ValueChanged(object sender, EventArgs e) { }
+        private void dtDelivery_ValueChanged(object sender, EventArgs e) { }
+        private void panel2_Paint(object sender, PaintEventArgs e) { }
+        private void groupBox2_Enter(object sender, EventArgs e) { }
+        private void dtRequest_Click(object sender, EventArgs e) { }
+        private void EventOccasion_Click(object sender, EventArgs e) { }
+        private void gbFoodrequest_Enter(object sender, EventArgs e) { }
+        private void cmbRequester_SelectedIndexChanged_1(object sender, EventArgs e) { }
+        private void dgv_OS_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+        private void label14_Click(object sender, EventArgs e) { }
+        private void label15_Click(object sender, EventArgs e) { }
+
     }
 }

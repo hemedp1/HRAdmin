@@ -57,7 +57,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1416, 58);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1416, 57);
             this.flowLayoutPanel1.TabIndex = 124;
             // 
             // button2
@@ -93,11 +93,11 @@
             this.gbExternal.Controls.Add(this.btnViewPDF);
             this.gbExternal.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbExternal.Font = new System.Drawing.Font("Calibri", 14F);
-            this.gbExternal.Location = new System.Drawing.Point(0, 58);
+            this.gbExternal.Location = new System.Drawing.Point(0, 57);
             this.gbExternal.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.gbExternal.Name = "gbExternal";
             this.gbExternal.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.gbExternal.Size = new System.Drawing.Size(1416, 375);
+            this.gbExternal.Size = new System.Drawing.Size(1416, 305);
             this.gbExternal.TabIndex = 125;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "View Report";
@@ -106,7 +106,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label3.Location = new System.Drawing.Point(70, 279);
+            this.label3.Location = new System.Drawing.Point(70, 233);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(141, 32);
             this.label3.TabIndex = 139;
@@ -135,19 +135,20 @@
             // comboBox1
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.Font = new System.Drawing.Font("Calibri", 13F);
+            this.comboBox1.Font = new System.Drawing.Font("Calibri", 12F);
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(307, 64);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(281, 40);
+            this.comboBox1.Size = new System.Drawing.Size(281, 37);
             this.comboBox1.TabIndex = 136;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label52
             // 
             this.label52.AutoSize = true;
             this.label52.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label52.Location = new System.Drawing.Point(280, 212);
+            this.label52.Location = new System.Drawing.Point(280, 182);
             this.label52.Name = "label52";
             this.label52.Size = new System.Drawing.Size(21, 32);
             this.label52.TabIndex = 135;
@@ -157,7 +158,7 @@
             // 
             this.label50.AutoSize = true;
             this.label50.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label50.Location = new System.Drawing.Point(280, 279);
+            this.label50.Location = new System.Drawing.Point(280, 233);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(21, 32);
             this.label50.TabIndex = 133;
@@ -167,7 +168,7 @@
             // 
             this.label48.AutoSize = true;
             this.label48.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label48.Location = new System.Drawing.Point(280, 142);
+            this.label48.Location = new System.Drawing.Point(280, 126);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(21, 32);
             this.label48.TabIndex = 132;
@@ -177,7 +178,7 @@
             // 
             this.label47.AutoSize = true;
             this.label47.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label47.Location = new System.Drawing.Point(70, 212);
+            this.label47.Location = new System.Drawing.Point(70, 182);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(181, 32);
             this.label47.TabIndex = 130;
@@ -187,7 +188,7 @@
             // 
             this.label45.AutoSize = true;
             this.label45.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label45.Location = new System.Drawing.Point(70, 142);
+            this.label45.Location = new System.Drawing.Point(70, 126);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(212, 32);
             this.label45.TabIndex = 129;
@@ -195,36 +196,39 @@
             // 
             // dtpToDate
             // 
-            this.dtpToDate.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpToDate.Font = new System.Drawing.Font("Calibri", 12F);
             this.dtpToDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpToDate.Location = new System.Drawing.Point(307, 205);
+            this.dtpToDate.Location = new System.Drawing.Point(307, 175);
             this.dtpToDate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dtpToDate.Name = "dtpToDate";
-            this.dtpToDate.Size = new System.Drawing.Size(281, 39);
+            this.dtpToDate.Size = new System.Drawing.Size(281, 37);
             this.dtpToDate.TabIndex = 128;
+            this.dtpToDate.ValueChanged += new System.EventHandler(this.dtpToDate_ValueChanged);
             // 
             // dtpFromDate
             // 
-            this.dtpFromDate.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpFromDate.Font = new System.Drawing.Font("Calibri", 12F);
             this.dtpFromDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpFromDate.Location = new System.Drawing.Point(307, 135);
+            this.dtpFromDate.Location = new System.Drawing.Point(307, 119);
             this.dtpFromDate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dtpFromDate.Name = "dtpFromDate";
-            this.dtpFromDate.Size = new System.Drawing.Size(281, 39);
+            this.dtpFromDate.Size = new System.Drawing.Size(281, 37);
             this.dtpFromDate.TabIndex = 127;
+            this.dtpFromDate.ValueChanged += new System.EventHandler(this.dtpFromDate_ValueChanged);
             // 
             // cmbOrderIds
             // 
             this.cmbOrderIds.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbOrderIds.DropDownWidth = 200;
-            this.cmbOrderIds.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbOrderIds.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbOrderIds.FormattingEnabled = true;
             this.cmbOrderIds.IntegralHeight = false;
-            this.cmbOrderIds.Location = new System.Drawing.Point(307, 275);
+            this.cmbOrderIds.Location = new System.Drawing.Point(307, 229);
             this.cmbOrderIds.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbOrderIds.Name = "cmbOrderIds";
-            this.cmbOrderIds.Size = new System.Drawing.Size(281, 40);
+            this.cmbOrderIds.Size = new System.Drawing.Size(281, 37);
             this.cmbOrderIds.TabIndex = 24;
+            this.cmbOrderIds.SelectedIndexChanged += new System.EventHandler(this.cmbOrderIds_SelectedIndexChanged);
             // 
             // btnViewPDF
             // 
@@ -232,7 +236,7 @@
             this.btnViewPDF.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnViewPDF.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnViewPDF.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnViewPDF.Location = new System.Drawing.Point(657, 276);
+            this.btnViewPDF.Location = new System.Drawing.Point(621, 233);
             this.btnViewPDF.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnViewPDF.Name = "btnViewPDF";
             this.btnViewPDF.Size = new System.Drawing.Size(140, 42);

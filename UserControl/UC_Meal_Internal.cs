@@ -52,162 +52,7 @@ namespace HRAdmin.UserControl
 
         private void btNext_Click(object sender, EventArgs e)
         {
-            // Validate meal selection
-            if (cmb_Meal.Enabled && cmb_Meal.Visible && cmb_Meal.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a meal.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
-            // Validate number of pax
-            if (string.IsNullOrWhiteSpace(txt_Npax.Text))
-            {
-                MessageBox.Show("No. of Pax required", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Validate delivery time
-            if (cmb_DeliveryT.SelectedItem == null)
-            {
-                MessageBox.Show("Delivery Time required.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Validate remark
-            if (string.IsNullOrWhiteSpace(txt_Remark.Text))
-            {
-                MessageBox.Show("Remark required", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Validate that at least one of cmb_Menu or cmb_Drink1 is selected when txt_Npax and cmb_DeliveryT are selected
-            if (!string.IsNullOrWhiteSpace(txt_Npax.Text) && cmb_DeliveryT.SelectedItem != null)
-            {
-                if (cmb_Menu.SelectedItem == null && cmb_Drink1.SelectedItem == null)
-                {
-                    MessageBox.Show("Please select at least a Dish or Drink.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-            }
-
-            // Validate Drink1 hot/cold selection only if cmb_HC1 is enabled
-            if (cmb_Drink1.SelectedItem != null && cmb_HC1.Enabled)
-            {
-                string selectedDrink1 = cmb_Drink1.SelectedItem.ToString();
-                if (selectedDrink1 != "Mineral water 500ML" && (cmb_HC1.SelectedItem == null || string.IsNullOrEmpty(cmb_HC1.SelectedItem.ToString())))
-                {
-                    MessageBox.Show("Please select Hot or Cold for Drink 1.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-            }
-
-            // Validate Drink2 hot/cold selection only if cmb_HC2 is enabled
-            if (cmb_Drink2.SelectedItem != null && cmb_HC2.Enabled)
-            {
-                string selectedDrink2 = cmb_Drink2.SelectedItem.ToString();
-                if (selectedDrink2 != "Mineral water 500ML" && (cmb_HC2.SelectedItem == null || string.IsNullOrEmpty(cmb_HC2.SelectedItem.ToString())))
-                {
-                    MessageBox.Show("Please select Hot or Cold for Drink 2.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-            }
-
-            // Add the new validation here
-            if ((cmb_Menu.SelectedItem?.ToString() == "-" || cmb_Menu.SelectedItem == null) &&
-                (cmb_Drink1.SelectedItem?.ToString() == "-" || cmb_Drink1.SelectedItem == null) &&
-                (cmb_Drink2.SelectedItem?.ToString() == "-" || cmb_Drink2.SelectedItem == null) &&
-                (cmb_Snack.SelectedItem?.ToString() == "-" || cmb_Snack.SelectedItem == null))
-            {
-                MessageBox.Show("Please select at least one item (Dish, Drink1, Drink2, or Snack).",
-                    "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Proceed with database insertion and PDF generation
-            string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                con.Open();
-
-                string insertQuery = @"
-INSERT INTO tbl_InternalFoodOrder (OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails, Menu, Snack, Drink1, HOTorCOLD1, Drink2, HOTorCOLD2, No_pax, DeliveryTime, Remark, OrderType) 
-VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @DeliveryDate, @EventDetails, @Menu, @Snack, @Drink1, @HOTorCOLD1, @Drink2, @HOTorCOLD2, @No_pax, @DeliveryTime, @Remark, @OrderType)";
-
-                SqlCommand insertCmd = new SqlCommand(insertQuery, con);
-
-                string mealCode;
-                string selectedMeal = cmb_Meal.SelectedItem?.ToString();
-                switch (selectedMeal)
-                {
-                    case "Breakfast":
-                        mealCode = "B";
-                        break;
-                    case "Lunch":
-                        mealCode = "L";
-                        break;
-                    case "Tea":
-                        mealCode = "T";
-                        break;
-                    case "Dinner":
-                        mealCode = "D";
-                        break;
-                    default:
-                        mealCode = "N";
-                        break;
-                }
-
-                string combinedValue = $"{DateTime.Now:ddMmyyyy_HHmmss}_{mealCode}";
-
-                insertCmd.Parameters.AddWithValue("@OrderID", combinedValue);
-                insertCmd.Parameters.AddWithValue("@RequesterID", loggedInUser);
-                insertCmd.Parameters.AddWithValue("@Department", loggedInDepart);
-                insertCmd.Parameters.AddWithValue("@OccasionType", cmbOccasion);
-                insertCmd.Parameters.AddWithValue("@RequestDate", eventText);
-                insertCmd.Parameters.AddWithValue("@DeliveryDate", deliveryTime);
-                insertCmd.Parameters.AddWithValue("@EventDetails", eventDetails);
-                insertCmd.Parameters.AddWithValue("@Menu", cmb_Menu.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@Snack", cmb_Snack.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@Drink1", cmb_Drink1.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@HOTorCOLD1", cmb_HC1.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@Drink2", cmb_Drink2.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@HOTorCOLD2", cmb_HC2.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@No_pax", string.IsNullOrEmpty(txt_Npax.Text) ? (object)DBNull.Value : txt_Npax.Text);
-                insertCmd.Parameters.AddWithValue("@DeliveryTime", cmb_DeliveryT.SelectedItem?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("@Remark", string.IsNullOrEmpty(txt_Remark.Text) ? (object)DBNull.Value : txt_Remark.Text);
-                insertCmd.Parameters.AddWithValue("@OrderType", cmb_Meal.SelectedItem?.ToString() ?? (object)DBNull.Value);
-
-                insertCmd.ExecuteNonQuery();
-
-                // Generate and store PDF
-                byte[] pdfBytes = GeneratePDF(combinedValue, selectedMeal);
-                if (pdfBytes != null)
-                {
-                    StorePdfInDatabase(combinedValue, pdfBytes);
-
-                    // Show success message with "View in PDF" option
-                    DialogResult result = MessageBox.Show("Submitted Successfully! Would you like to view the order in PDF?",
-                        "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-                    if (result == DialogResult.Yes)
-                    {
-                        ViewPdf(pdfBytes);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Failed to generate PDF. Order submitted but PDF not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                // Return to main page
-                CheckUserAccess(loggedInUser);
-
-                Form_Home.sharedLabel.Text = "Admin > Meal Request > Internal";
-                Form_Home.sharedButton4.Visible = false;
-                Form_Home.sharedButton5.Visible = false;
-                Form_Home.sharedButton6.Visible = false;
-                UC_Meal_Internal ug = new UC_Meal_Internal(eventDetails, eventText, deliveryTime, loggedInUser, loggedInDepart);
-                addControls(ug);
-            }
         }
         private void CheckUserAccess(string username)
         {
@@ -846,6 +691,176 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
         }
 
         private void lblRequestDate1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSubmit_Click(object sender, EventArgs e)
+        {
+            // Validate meal selection
+            if (cmb_Meal.Enabled && cmb_Meal.Visible && cmb_Meal.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a meal.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validate number of pax
+            if (string.IsNullOrWhiteSpace(txt_Npax.Text))
+            {
+                MessageBox.Show("No. of Pax required", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validate delivery time
+            if (cmb_DeliveryT.SelectedItem == null)
+            {
+                MessageBox.Show("Delivery Time required.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validate remark
+            if (string.IsNullOrWhiteSpace(txt_Remark.Text))
+            {
+                MessageBox.Show("Remark required", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Validate that at least one of cmb_Menu or cmb_Drink1 is selected when txt_Npax and cmb_DeliveryT are selected
+            if (!string.IsNullOrWhiteSpace(txt_Npax.Text) && cmb_DeliveryT.SelectedItem != null)
+            {
+                if (cmb_Menu.SelectedItem == null && cmb_Drink1.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select at least a Dish or Drink.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            // Validate Drink1 hot/cold selection only if cmb_HC1 is enabled
+            if (cmb_Drink1.SelectedItem != null && cmb_HC1.Enabled)
+            {
+                string selectedDrink1 = cmb_Drink1.SelectedItem.ToString();
+                if (selectedDrink1 != "Mineral water 500ML" && (cmb_HC1.SelectedItem == null || string.IsNullOrEmpty(cmb_HC1.SelectedItem.ToString())))
+                {
+                    MessageBox.Show("Please select Hot or Cold for Drink 1.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            // Validate Drink2 hot/cold selection only if cmb_HC2 is enabled
+            if (cmb_Drink2.SelectedItem != null && cmb_HC2.Enabled)
+            {
+                string selectedDrink2 = cmb_Drink2.SelectedItem.ToString();
+                if (selectedDrink2 != "Mineral water 500ML" && (cmb_HC2.SelectedItem == null || string.IsNullOrEmpty(cmb_HC2.SelectedItem.ToString())))
+                {
+                    MessageBox.Show("Please select Hot or Cold for Drink 2.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            // Add the new validation here
+            if ((cmb_Menu.SelectedItem?.ToString() == "-" || cmb_Menu.SelectedItem == null) &&
+                (cmb_Drink1.SelectedItem?.ToString() == "-" || cmb_Drink1.SelectedItem == null) &&
+                (cmb_Drink2.SelectedItem?.ToString() == "-" || cmb_Drink2.SelectedItem == null) &&
+                (cmb_Snack.SelectedItem?.ToString() == "-" || cmb_Snack.SelectedItem == null))
+            {
+                MessageBox.Show("Please select at least one item (Dish, Drink1, Drink2, or Snack).",
+                    "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Proceed with database insertion and PDF generation
+            string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+
+                string insertQuery = @"
+                INSERT INTO tbl_InternalFoodOrder (OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails, Menu, Snack, Drink1, HOTorCOLD1, Drink2, HOTorCOLD2, No_pax, DeliveryTime, Remark, OrderType) 
+                VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @DeliveryDate, @EventDetails, @Menu, @Snack, @Drink1, @HOTorCOLD1, @Drink2, @HOTorCOLD2, @No_pax, @DeliveryTime, @Remark, @OrderType)";
+
+                SqlCommand insertCmd = new SqlCommand(insertQuery, con);
+
+                string mealCode;
+                string selectedMeal = cmb_Meal.SelectedItem?.ToString();
+                switch (selectedMeal)
+                {
+                    case "Breakfast":
+                        mealCode = "B";
+                        break;
+                    case "Lunch":
+                        mealCode = "L";
+                        break;
+                    case "Tea":
+                        mealCode = "T";
+                        break;
+                    case "Dinner":
+                        mealCode = "D";
+                        break;
+                    default:
+                        mealCode = "N";
+                        break;
+                }
+
+                string combinedValue = $"{DateTime.Now:ddMmyyyy_HHmmss}_{mealCode}";
+
+                insertCmd.Parameters.AddWithValue("@OrderID", combinedValue);
+                insertCmd.Parameters.AddWithValue("@RequesterID", loggedInUser);
+                insertCmd.Parameters.AddWithValue("@Department", loggedInDepart);
+                insertCmd.Parameters.AddWithValue("@OccasionType", cmbOccasion);
+                insertCmd.Parameters.AddWithValue("@RequestDate", eventText);
+                insertCmd.Parameters.AddWithValue("@DeliveryDate", deliveryTime);
+                insertCmd.Parameters.AddWithValue("@EventDetails", eventDetails);
+                insertCmd.Parameters.AddWithValue("@Menu", cmb_Menu.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@Snack", cmb_Snack.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@Drink1", cmb_Drink1.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@HOTorCOLD1", cmb_HC1.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@Drink2", cmb_Drink2.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@HOTorCOLD2", cmb_HC2.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@No_pax", string.IsNullOrEmpty(txt_Npax.Text) ? (object)DBNull.Value : txt_Npax.Text);
+                insertCmd.Parameters.AddWithValue("@DeliveryTime", cmb_DeliveryT.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@Remark", string.IsNullOrEmpty(txt_Remark.Text) ? (object)DBNull.Value : txt_Remark.Text);
+                insertCmd.Parameters.AddWithValue("@OrderType", cmb_Meal.SelectedItem?.ToString() ?? (object)DBNull.Value);
+
+                insertCmd.ExecuteNonQuery();
+
+                // Generate and store PDF
+                byte[] pdfBytes = GeneratePDF(combinedValue, selectedMeal);
+                if (pdfBytes != null)
+                {
+                    StorePdfInDatabase(combinedValue, pdfBytes);
+
+                    // Show success message with "View in PDF" option
+                    DialogResult result = MessageBox.Show("Submitted Successfully! Would you like to view the order in PDF?",
+                        "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        ViewPdf(pdfBytes);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Failed to generate PDF. Order submitted but PDF not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                // Return to main page
+                CheckUserAccess(loggedInUser);
+
+                Form_Home.sharedLabel.Text = "Admin > Meal Request > Internal";
+                Form_Home.sharedButton4.Visible = false;
+                Form_Home.sharedButton5.Visible = false;
+                Form_Home.sharedButton6.Visible = false;
+                UC_Meal_Internal ug = new UC_Meal_Internal(eventDetails, eventText, deliveryTime, loggedInUser, loggedInDepart);
+                addControls(ug);
+            }
+        }
+
+        private void cmb_Menu_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void gbExternal_Enter_1(object sender, EventArgs e)
         {
 
         }

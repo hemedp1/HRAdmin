@@ -1070,5 +1070,30 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
         private void label26_Click(object sender, EventArgs e) { }
         private void panel15_Paint(object sender, PaintEventArgs e) { }
         private void label44_Click(object sender, EventArgs e) { }
+
+        private void txtE_Remark_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtB_Pack_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbB_DT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbL_DT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvA_B_P_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

@@ -38,8 +38,8 @@
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.btnWithdraw = new System.Windows.Forms.Button();
-            this.label15 = new System.Windows.Forms.Label();
             this.btnApprove = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
             this.btnCheck = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -92,11 +92,11 @@
             this.groupBox2.Controls.Add(this.panel3);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox2.Location = new System.Drawing.Point(0, 283);
+            this.groupBox2.Location = new System.Drawing.Point(0, 282);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox2.Size = new System.Drawing.Size(1920, 606);
+            this.groupBox2.Size = new System.Drawing.Size(1920, 607);
             this.groupBox2.TabIndex = 128;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Order status";
@@ -109,7 +109,7 @@
             this.panel3.Location = new System.Drawing.Point(3, 37);
             this.panel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1914, 567);
+            this.panel3.Size = new System.Drawing.Size(1914, 568);
             this.panel3.TabIndex = 18;
             // 
             // dgv_OS
@@ -132,7 +132,7 @@
             this.dgv_OS.RowHeadersVisible = false;
             this.dgv_OS.RowHeadersWidth = 51;
             this.dgv_OS.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgv_OS.Size = new System.Drawing.Size(1914, 392);
+            this.dgv_OS.Size = new System.Drawing.Size(1914, 393);
             this.dgv_OS.TabIndex = 0;
             // 
             // panel4
@@ -140,10 +140,10 @@
             this.panel4.Controls.Add(this.label17);
             this.panel4.Controls.Add(this.label16);
             this.panel4.Controls.Add(this.btnWithdraw);
-            this.panel4.Controls.Add(this.label15);
-            this.panel4.Controls.Add(this.label14);
             this.panel4.Controls.Add(this.btnApprove);
+            this.panel4.Controls.Add(this.label15);
             this.panel4.Controls.Add(this.btnCheck);
+            this.panel4.Controls.Add(this.label14);
             this.panel4.Controls.Add(this.label13);
             this.panel4.Controls.Add(this.label11);
             this.panel4.Controls.Add(this.label10);
@@ -187,13 +187,30 @@
             this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(279, 94);
+            this.btnWithdraw.Location = new System.Drawing.Point(279, 93);
             this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdraw.Name = "btnWithdraw";
-            this.btnWithdraw.Size = new System.Drawing.Size(140, 42);
+            this.btnWithdraw.Size = new System.Drawing.Size(140, 43);
             this.btnWithdraw.TabIndex = 108;
             this.btnWithdraw.Text = "Withdraw";
             this.btnWithdraw.UseVisualStyleBackColor = false;
+            this.btnWithdraw.Click += new System.EventHandler(this.btnWithdraw_Click);
+            // 
+            // btnApprove
+            // 
+            this.btnApprove.BackColor = System.Drawing.Color.White;
+            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnApprove.Location = new System.Drawing.Point(915, 93);
+            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApprove.Name = "btnApprove";
+            this.btnApprove.Size = new System.Drawing.Size(140, 43);
+            this.btnApprove.TabIndex = 100;
+            this.btnApprove.Text = "Approve";
+            this.btnApprove.UseVisualStyleBackColor = false;
+            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
             // 
             // label15
             // 
@@ -205,21 +222,6 @@
             this.label15.TabIndex = 107;
             this.label15.Text = ":";
             // 
-            // btnApprove
-            // 
-            this.btnApprove.BackColor = System.Drawing.Color.White;
-            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnApprove.Location = new System.Drawing.Point(899, 94);
-            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnApprove.Name = "btnApprove";
-            this.btnApprove.Size = new System.Drawing.Size(140, 42);
-            this.btnApprove.TabIndex = 100;
-            this.btnApprove.Text = "Approve";
-            this.btnApprove.UseVisualStyleBackColor = false;
-            // 
             // btnCheck
             // 
             this.btnCheck.BackColor = System.Drawing.Color.White;
@@ -227,13 +229,14 @@
             this.btnCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCheck.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnCheck.Location = new System.Drawing.Point(753, 94);
+            this.btnCheck.Location = new System.Drawing.Point(753, 93);
             this.btnCheck.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnCheck.Name = "btnCheck";
-            this.btnCheck.Size = new System.Drawing.Size(140, 42);
+            this.btnCheck.Size = new System.Drawing.Size(140, 43);
             this.btnCheck.TabIndex = 101;
             this.btnCheck.Text = "Check";
             this.btnCheck.UseVisualStyleBackColor = false;
+            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
             // 
             // label13
             // 
@@ -268,7 +271,7 @@
             // cmbPeriod
             // 
             this.cmbPeriod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPeriod.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbPeriod.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbPeriod.FormattingEnabled = true;
             this.cmbPeriod.Items.AddRange(new object[] {
             "Daily",
@@ -277,19 +280,21 @@
             this.cmbPeriod.Location = new System.Drawing.Point(1362, 24);
             this.cmbPeriod.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbPeriod.Name = "cmbPeriod";
-            this.cmbPeriod.Size = new System.Drawing.Size(281, 40);
+            this.cmbPeriod.Size = new System.Drawing.Size(281, 37);
             this.cmbPeriod.TabIndex = 25;
+            this.cmbPeriod.SelectedIndexChanged += new System.EventHandler(this.cmbPeriod_SelectedIndexChanged);
             // 
             // cmbDepart
             // 
-            this.cmbDepart.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbDepart.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbDepart.FormattingEnabled = true;
-            this.cmbDepart.ItemHeight = 32;
+            this.cmbDepart.ItemHeight = 29;
             this.cmbDepart.Location = new System.Drawing.Point(238, 24);
             this.cmbDepart.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbDepart.Name = "cmbDepart";
-            this.cmbDepart.Size = new System.Drawing.Size(281, 40);
+            this.cmbDepart.Size = new System.Drawing.Size(281, 37);
             this.cmbDepart.TabIndex = 24;
+            this.cmbDepart.SelectedIndexChanged += new System.EventHandler(this.cmbDepart_SelectedIndexChanged);
             // 
             // label9
             // 
@@ -313,15 +318,16 @@
             // 
             // cmbRequester
             // 
-            this.cmbRequester.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbRequester.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbRequester.FormattingEnabled = true;
             this.cmbRequester.IntegralHeight = false;
-            this.cmbRequester.ItemHeight = 32;
+            this.cmbRequester.ItemHeight = 29;
             this.cmbRequester.Location = new System.Drawing.Point(741, 24);
             this.cmbRequester.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbRequester.Name = "cmbRequester";
-            this.cmbRequester.Size = new System.Drawing.Size(281, 40);
+            this.cmbRequester.Size = new System.Drawing.Size(281, 37);
             this.cmbRequester.TabIndex = 24;
+            this.cmbRequester.SelectedIndexChanged += new System.EventHandler(this.cmbRequester_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -339,7 +345,7 @@
             this.gbFoodrequest.Controls.Add(this.panel2);
             this.gbFoodrequest.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbFoodrequest.Font = new System.Drawing.Font("Calibri", 14F);
-            this.gbFoodrequest.Location = new System.Drawing.Point(0, 58);
+            this.gbFoodrequest.Location = new System.Drawing.Point(0, 57);
             this.gbFoodrequest.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.gbFoodrequest.Name = "gbFoodrequest";
             this.gbFoodrequest.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -373,13 +379,14 @@
             // dtDelivery
             // 
             this.dtDelivery.CalendarFont = new System.Drawing.Font("Calibri", 13F);
-            this.dtDelivery.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtDelivery.Font = new System.Drawing.Font("Calibri", 12F);
             this.dtDelivery.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtDelivery.Location = new System.Drawing.Point(772, 96);
             this.dtDelivery.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dtDelivery.Name = "dtDelivery";
-            this.dtDelivery.Size = new System.Drawing.Size(281, 39);
+            this.dtDelivery.Size = new System.Drawing.Size(183, 37);
             this.dtDelivery.TabIndex = 128;
+            this.dtDelivery.ValueChanged += new System.EventHandler(this.dtDelivery_ValueChanged);
             // 
             // dtRequest
             // 
@@ -398,13 +405,14 @@
             this.btNext.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btNext.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btNext.Location = new System.Drawing.Point(1179, 96);
+            this.btNext.Location = new System.Drawing.Point(979, 96);
             this.btNext.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btNext.Name = "btNext";
-            this.btNext.Size = new System.Drawing.Size(140, 42);
+            this.btNext.Size = new System.Drawing.Size(140, 43);
             this.btNext.TabIndex = 100;
             this.btNext.Text = "Next";
             this.btNext.UseVisualStyleBackColor = false;
+            this.btNext.Click += new System.EventHandler(this.btNext_Click);
             // 
             // label7
             // 
@@ -489,7 +497,7 @@
             // cmbOccasion
             // 
             this.cmbOccasion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbOccasion.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbOccasion.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbOccasion.FormattingEnabled = true;
             this.cmbOccasion.Items.AddRange(new object[] {
             "Internal",
@@ -497,17 +505,19 @@
             this.cmbOccasion.Location = new System.Drawing.Point(238, 24);
             this.cmbOccasion.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbOccasion.Name = "cmbOccasion";
-            this.cmbOccasion.Size = new System.Drawing.Size(281, 40);
+            this.cmbOccasion.Size = new System.Drawing.Size(322, 37);
             this.cmbOccasion.TabIndex = 0;
+            this.cmbOccasion.SelectedIndexChanged += new System.EventHandler(this.cmbOccasion_SelectedIndexChanged);
             // 
             // txtEvent
             // 
-            this.txtEvent.Font = new System.Drawing.Font("Calibri", 13F);
+            this.txtEvent.Font = new System.Drawing.Font("Calibri", 12F);
             this.txtEvent.Location = new System.Drawing.Point(238, 96);
             this.txtEvent.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtEvent.Name = "txtEvent";
-            this.txtEvent.Size = new System.Drawing.Size(281, 39);
+            this.txtEvent.Size = new System.Drawing.Size(322, 37);
             this.txtEvent.TabIndex = 35;
+            this.txtEvent.TextChanged += new System.EventHandler(this.txtEvent_TextChanged);
             // 
             // button2
             // 
@@ -526,22 +536,23 @@
             // 
             // flowLayoutPanel1
             // 
+            this.flowLayoutPanel1.BackColor = System.Drawing.Color.White;
             this.flowLayoutPanel1.Controls.Add(this.button2);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1920, 58);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1920, 57);
             this.flowLayoutPanel1.TabIndex = 127;
             // 
-            // UserControl1
+            // UC_Meal_Food
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.gbFoodrequest);
             this.Controls.Add(this.flowLayoutPanel1);
-            this.Name = "UserControl1";
+            this.Name = "UC_Meal_Food";
             this.Size = new System.Drawing.Size(1920, 889);
             this.groupBox2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
