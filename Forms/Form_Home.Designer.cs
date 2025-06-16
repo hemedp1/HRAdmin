@@ -142,7 +142,7 @@
             this.btnAccount.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnAccount.Size = new System.Drawing.Size(220, 61);
             this.btnAccount.TabIndex = 6;
-            this.btnAccount.Tag = "    HR && Admin";
+            this.btnAccount.Tag = "    Account";
             this.btnAccount.Text = "Account";
             this.btnAccount.UseVisualStyleBackColor = true;
             this.btnAccount.Click += new System.EventHandler(this.btnAccount_Click);
