@@ -82,8 +82,3 @@ namespace HRAdmin.UserControl
 
     }
 }
-
-
-
-
-
