@@ -225,6 +225,7 @@
             this.dgv_Visitor.RowTemplate.Height = 24;
             this.dgv_Visitor.Size = new System.Drawing.Size(1826, 460);
             this.dgv_Visitor.TabIndex = 0;
+            this.dgv_Visitor.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Visitor_CellContentClick);
             // 
             // panel6
             // 
@@ -328,6 +329,7 @@
             // 
             // UC_W_WelcomeBoard
             // 
+            this.Load += new System.EventHandler(this.UC_WelcomeBoard_Load);
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;

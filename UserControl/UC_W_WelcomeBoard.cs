@@ -249,5 +249,10 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
         {
 
         }
+
+        private void dgv_Visitor_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
