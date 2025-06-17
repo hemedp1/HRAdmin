@@ -83,7 +83,7 @@
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1504, 57);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1576, 57);
             this.flowLayoutPanel1.TabIndex = 123;
             // 
             // button2
@@ -121,7 +121,7 @@
             this.gbExternal.Font = new System.Drawing.Font("Calibri", 14F);
             this.gbExternal.Location = new System.Drawing.Point(0, 57);
             this.gbExternal.Name = "gbExternal";
-            this.gbExternal.Size = new System.Drawing.Size(1504, 250);
+            this.gbExternal.Size = new System.Drawing.Size(1576, 250);
             this.gbExternal.TabIndex = 124;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Internal food order";
@@ -296,7 +296,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 13F);
             this.groupBox1.Location = new System.Drawing.Point(50, 307);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1454, 150);
+            this.groupBox1.Size = new System.Drawing.Size(1526, 150);
             this.groupBox1.TabIndex = 126;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Main selections";
@@ -305,7 +305,7 @@
             // 
             this.label53.AutoSize = true;
             this.label53.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label53.Location = new System.Drawing.Point(1061, 46);
+            this.label53.Location = new System.Drawing.Point(1306, 46);
             this.label53.Name = "label53";
             this.label53.Size = new System.Drawing.Size(111, 32);
             this.label53.TabIndex = 127;
@@ -320,7 +320,7 @@
             this.cmb_HC2.Items.AddRange(new object[] {
             "Hot",
             "Cold"});
-            this.cmb_HC2.Location = new System.Drawing.Point(1066, 81);
+            this.cmb_HC2.Location = new System.Drawing.Point(1311, 81);
             this.cmb_HC2.Name = "cmb_HC2";
             this.cmb_HC2.Size = new System.Drawing.Size(180, 37);
             this.cmb_HC2.TabIndex = 126;
@@ -329,7 +329,7 @@
             // 
             this.label51.AutoSize = true;
             this.label51.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label51.Location = new System.Drawing.Point(839, 46);
+            this.label51.Location = new System.Drawing.Point(1024, 46);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(90, 32);
             this.label51.TabIndex = 125;
@@ -341,9 +341,9 @@
             this.cmb_Drink2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_Drink2.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_Drink2.FormattingEnabled = true;
-            this.cmb_Drink2.Location = new System.Drawing.Point(844, 81);
+            this.cmb_Drink2.Location = new System.Drawing.Point(1030, 81);
             this.cmb_Drink2.Name = "cmb_Drink2";
-            this.cmb_Drink2.Size = new System.Drawing.Size(200, 37);
+            this.cmb_Drink2.Size = new System.Drawing.Size(256, 37);
             this.cmb_Drink2.TabIndex = 124;
             // 
             // cmb_HC1
@@ -355,7 +355,7 @@
             this.cmb_HC1.Items.AddRange(new object[] {
             "Hot",
             "Cold"});
-            this.cmb_HC1.Location = new System.Drawing.Point(642, 81);
+            this.cmb_HC1.Location = new System.Drawing.Point(827, 81);
             this.cmb_HC1.Name = "cmb_HC1";
             this.cmb_HC1.Size = new System.Drawing.Size(180, 37);
             this.cmb_HC1.TabIndex = 123;
@@ -366,9 +366,9 @@
             this.cmb_Drink1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_Drink1.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmb_Drink1.FormattingEnabled = true;
-            this.cmb_Drink1.Location = new System.Drawing.Point(420, 81);
+            this.cmb_Drink1.Location = new System.Drawing.Point(548, 81);
             this.cmb_Drink1.Name = "cmb_Drink1";
-            this.cmb_Drink1.Size = new System.Drawing.Size(200, 37);
+            this.cmb_Drink1.Size = new System.Drawing.Size(257, 37);
             this.cmb_Drink1.TabIndex = 122;
             // 
             // label18
@@ -389,7 +389,7 @@
             this.cmb_Menu.FormattingEnabled = true;
             this.cmb_Menu.Location = new System.Drawing.Point(16, 81);
             this.cmb_Menu.Name = "cmb_Menu";
-            this.cmb_Menu.Size = new System.Drawing.Size(382, 37);
+            this.cmb_Menu.Size = new System.Drawing.Size(508, 37);
             this.cmb_Menu.TabIndex = 0;
             this.cmb_Menu.SelectedIndexChanged += new System.EventHandler(this.cmb_Menu_SelectedIndexChanged);
             // 
@@ -397,7 +397,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label20.Location = new System.Drawing.Point(637, 46);
+            this.label20.Location = new System.Drawing.Point(822, 46);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(111, 32);
             this.label20.TabIndex = 112;
@@ -407,7 +407,7 @@
             // 
             this.label42.AutoSize = true;
             this.label42.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label42.Location = new System.Drawing.Point(415, 46);
+            this.label42.Location = new System.Drawing.Point(543, 46);
             this.label42.Name = "label42";
             this.label42.Size = new System.Drawing.Size(90, 32);
             this.label42.TabIndex = 113;
@@ -422,7 +422,7 @@
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 13F);
             this.groupBox2.Location = new System.Drawing.Point(50, 457);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1454, 150);
+            this.groupBox2.Size = new System.Drawing.Size(1526, 150);
             this.groupBox2.TabIndex = 127;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Add-ons";
@@ -463,7 +463,7 @@
             this.groupBox3.Font = new System.Drawing.Font("Calibri", 13F);
             this.groupBox3.Location = new System.Drawing.Point(50, 607);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1454, 164);
+            this.groupBox3.Size = new System.Drawing.Size(1526, 164);
             this.groupBox3.TabIndex = 128;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Order details";
@@ -586,7 +586,7 @@
             this.Controls.Add(this.gbExternal);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Name = "UC_Meal_Internal";
-            this.Size = new System.Drawing.Size(1504, 763);
+            this.Size = new System.Drawing.Size(1576, 763);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.gbExternal.ResumeLayout(false);
             this.gbExternal.PerformLayout();

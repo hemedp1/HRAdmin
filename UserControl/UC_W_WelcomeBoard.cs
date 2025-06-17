@@ -128,8 +128,8 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
                         var currentCompanyInfo = companyInfo[currentCompanyIndex];
                         lblCompany.Text = currentCompanyInfo.Company;
                         lblPurpose.Text = currentCompanyInfo.Purpose;
-                        lblStartDate.Text = currentCompanyInfo.StartDate?.ToString("dd.MM.yyyy") ?? "";
-                        lblEndDate.Text = currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "";
+                        lblStartDate.Text = "From   " + currentCompanyInfo.StartDate?.ToString("dd.MM.yyyy") ?? "" ;
+                        lblEndDate.Text = "  To   " + currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "";
                         LoadVisitorsForCompany(currentCompanyInfo.Company, currentCompanyInfo.Purpose); // Load visitors for the first company and purpose
                         if (companyInfo.Count > 1)
                         {
@@ -210,7 +210,7 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
             dgv.AllowUserToResizeRows = false;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgv.AllowUserToAddRows = false;
-            dgv.RowTemplate.Height = 43; // Increase to 40 pixels (default is typically 22 pixels)
+            dgv.RowTemplate.Height = 37; // Increase to 40 pixels (default is typically 22 pixels)
             dgv.ReadOnly = true;
 
             foreach (DataGridViewColumn column in dgv.Columns)
@@ -233,11 +233,6 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
         private void UC_WelcomeBoard_Load(object sender, EventArgs e)
         {
             LoadVisitorNamesToDataGridView();
-        }
-
-        private void lblStartDate_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void label1_Click(object sender, EventArgs e)
