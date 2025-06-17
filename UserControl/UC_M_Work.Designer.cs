@@ -51,6 +51,7 @@
             this.dgvW.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvW.Location = new System.Drawing.Point(0, 0);
             this.dgvW.Name = "dgvW";
+            this.dgvW.RowHeadersVisible = false;
             this.dgvW.RowHeadersWidth = 51;
             this.dgvW.RowTemplate.Height = 24;
             this.dgvW.Size = new System.Drawing.Size(1852, 400);
@@ -144,7 +145,6 @@
             // 
             // UC_M_Work
             // 
-            //this.Load += UC_M_Work_Load;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
