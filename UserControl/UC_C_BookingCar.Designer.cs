@@ -51,21 +51,23 @@ namespace HRAdmin.UserControl
             this.txtDes = new System.Windows.Forms.TextBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.label11 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel2.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel6.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
+            this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.btnSubmit);
             this.groupBox1.Controls.Add(this.cmbIn);
             this.groupBox1.Controls.Add(this.dTDay);
@@ -86,7 +88,7 @@ namespace HRAdmin.UserControl
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1098, 233);
+            this.groupBox1.Size = new System.Drawing.Size(1098, 291);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Reservation details";
@@ -332,7 +334,7 @@ namespace HRAdmin.UserControl
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(1098, 323);
+            this.dataGridView1.Size = new System.Drawing.Size(1098, 265);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -347,13 +349,22 @@ namespace HRAdmin.UserControl
             this.panel2.Size = new System.Drawing.Size(1098, 556);
             this.panel2.TabIndex = 1;
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.dataGridView1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 291);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1098, 265);
+            this.panel1.TabIndex = 3;
+            // 
             // panel3
             // 
             this.panel3.Controls.Add(this.groupBox1);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1098, 233);
+            this.panel3.Size = new System.Drawing.Size(1098, 291);
             this.panel3.TabIndex = 2;
             // 
             // panel6
@@ -380,14 +391,17 @@ namespace HRAdmin.UserControl
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
-            // panel1
+            // label11
             // 
-            this.panel1.Controls.Add(this.dataGridView1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 233);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1098, 323);
-            this.panel1.TabIndex = 3;
+            this.label11.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label11.Font = new System.Drawing.Font("Calibri", 10F);
+            this.label11.ForeColor = System.Drawing.Color.Red;
+            this.label11.Location = new System.Drawing.Point(3, 206);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(1092, 82);
+            this.label11.TabIndex = 23;
+            this.label11.Text = resources.GetString("label11.Text");
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // UC_C_BookingCar
             // 
@@ -401,9 +415,9 @@ namespace HRAdmin.UserControl
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel2.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -434,5 +448,6 @@ namespace HRAdmin.UserControl
         private System.Windows.Forms.DataGridView dataGridView1;
         private Panel panel3;
         private Panel panel1;
+        private Label label11;
     }
 }

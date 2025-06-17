@@ -28,15 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_Verify));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_Verify));
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.btnAcknowledge = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            this.cmbCar = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.cmbCar = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -44,19 +47,16 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.panel4.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
-            this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -82,6 +82,37 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Car Inspection log";
             // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.label1);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel4.Location = new System.Drawing.Point(406, 38);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1091, 300);
+            this.panel4.TabIndex = 29;
+            // 
+            // label1
+            // 
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(1091, 300);
+            this.label1.TabIndex = 28;
+            this.label1.Text = resources.GetString("label1.Text");
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.btnAcknowledge);
+            this.panel3.Controls.Add(this.label12);
+            this.panel3.Controls.Add(this.cmbCar);
+            this.panel3.Controls.Add(this.label11);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Location = new System.Drawing.Point(3, 38);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(403, 300);
+            this.panel3.TabIndex = 28;
+            // 
             // btnAcknowledge
             // 
             this.btnAcknowledge.BackColor = System.Drawing.Color.White;
@@ -97,15 +128,15 @@
             this.btnAcknowledge.UseVisualStyleBackColor = false;
             this.btnAcknowledge.Click += new System.EventHandler(this.btnAcknowledge_Click);
             // 
-            // label11
+            // label12
             // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label11.Location = new System.Drawing.Point(17, 32);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(49, 32);
-            this.label11.TabIndex = 24;
-            this.label11.Text = "Car";
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label12.Location = new System.Drawing.Point(72, 31);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(21, 32);
+            this.label12.TabIndex = 23;
+            this.label12.Text = ":";
             // 
             // cmbCar
             // 
@@ -122,15 +153,15 @@
             this.cmbCar.TabIndex = 25;
             this.cmbCar.SelectedIndexChanged += new System.EventHandler(this.cmbCar_SelectedIndexChanged);
             // 
-            // label12
+            // label11
             // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label12.Location = new System.Drawing.Point(72, 31);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(21, 32);
-            this.label12.TabIndex = 23;
-            this.label12.Text = ":";
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label11.Location = new System.Drawing.Point(17, 32);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(49, 32);
+            this.label11.TabIndex = 24;
+            this.label11.Text = "Car";
             // 
             // panel6
             // 
@@ -239,37 +270,6 @@
             this.dataGridView2.Size = new System.Drawing.Size(1494, 214);
             this.dataGridView2.TabIndex = 1;
             // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.btnAcknowledge);
-            this.panel3.Controls.Add(this.label12);
-            this.panel3.Controls.Add(this.cmbCar);
-            this.panel3.Controls.Add(this.label11);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(3, 38);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(403, 300);
-            this.panel3.TabIndex = 28;
-            // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.label1);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(406, 38);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1091, 300);
-            this.panel4.TabIndex = 29;
-            // 
-            // label1
-            // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(1637, 450);
-            this.label1.TabIndex = 28;
-            this.label1.Text = resources.GetString("label1.Text");
-            // 
             // UC_C_Verify
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -281,15 +281,15 @@
             this.Size = new System.Drawing.Size(1500, 781);
             this.panel1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
-            this.panel4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

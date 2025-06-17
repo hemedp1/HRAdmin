@@ -120,14 +120,15 @@
   <data name="label1.Text" xml:space="preserve">
     <value>
 By submitting this booking request, you acknowledge and agree to the following:
- 1) The vehicle must be returned in the same condition it was received.
- 2)  I responsible for any damage, fines, or violations incurred during the booking period.
- 3) The company reserves the right to cancel or reschedule the booking based on vehicle availability or urgent requirements.
- 4) Failure to comply with these terms may result in suspension or revocation of booking privileges.
-               
+1. Use of vehicles is for official company business only.
+2. HR &amp; Administration reserves the right to cancel or reschedule the booking based on vehicle availability or urgent requirements.
+3. The vehicle must be returned in the same condition it was received.
+4. You are responsible for any damage, fines, or violations incurred during the booking period.
+5. Employees using company vehicles are not eligible to make a claim for such as travel and toll claim.
+6. Failure to comply with these terms may result in suspension or revocation of booking privileges.               
+
 Acknowledgment:
-You acknowledge that you have reviewed the vehicle’s condition based on the inspection log provided below and agree to proceed with the booking accordingly.
-</value>
+I acknowledge that I have reviewed the vehicle’s condition based on the inspection log provided below and agree to proceed with the booking accordingly.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btnBack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
