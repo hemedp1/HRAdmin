@@ -1,6 +1,6 @@
 ﻿namespace HRAdmin.UserControl
 {
-    partial class UC_A_Account
+    partial class UC_Acc_Account
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_A_Account));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Acc_Account));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnMClaim = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();

@@ -11,11 +11,11 @@ using HRAdmin.Forms;
 
 namespace HRAdmin.UserControl
 {
-    public partial class UC_A_Account: System.Windows.Forms.UserControl
+    public partial class UC_Acc_Account: System.Windows.Forms.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
-        public UC_A_Account(string username, string department)
+        public UC_Acc_Account(string username, string department)
         {
             InitializeComponent();
             loggedInUser = username;

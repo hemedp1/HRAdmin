@@ -505,7 +505,7 @@ namespace HRAdmin.Forms
             btn_AccidentPDF.Visible = false;
             btnInspect.Visible = false;
             btn_Accident.Visible = false;
-            UC_A_Account ug = new UC_A_Account(loggedInUser, loggedInDepart);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart);
             addControls(ug);
         }
 

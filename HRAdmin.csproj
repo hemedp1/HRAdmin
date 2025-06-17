@@ -108,11 +108,11 @@
     <Compile Include="UserControl\PdfViewer.Designer.cs">
       <DependentUpon>PdfViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControl\UC_A_Account.cs">
+    <Compile Include="UserControl\UC_Acc_Account.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControl\UC_A_Account.Designer.cs">
-      <DependentUpon>UC_A_Account.cs</DependentUpon>
+    <Compile Include="UserControl\UC_Acc_Account.Designer.cs">
+      <DependentUpon>UC_Acc_Account.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControl\UC_A_Admin.cs">
       <SubType>UserControl</SubType>
@@ -308,8 +308,8 @@
     <EmbeddedResource Include="UserControl\PdfViewer.resx">
       <DependentUpon>PdfViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControl\UC_A_Account.resx">
-      <DependentUpon>UC_A_Account.cs</DependentUpon>
+    <EmbeddedResource Include="UserControl\UC_Acc_Account.resx">
+      <DependentUpon>UC_Acc_Account.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_A_Admin.resx">
       <DependentUpon>UC_A_Admin.cs</DependentUpon>

@@ -43,7 +43,7 @@ namespace HRAdmin.UserControl
         {
             Form_Home.sharedLabel.Text = "Account";
 
-            UC_A_Account ug = new UC_A_Account(loggedInUser, loggedInDepart);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart);
             addControls(ug);
         }
 
