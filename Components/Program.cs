@@ -10,7 +10,7 @@ namespace HRAdmin
     {
         /// <summary> syazwan
         /// The main entry point for the application.
-        /// </summary> sagi syazwan 130625
+        /// </summary> callmewan
         [STAThread]
         static void Main()
         {

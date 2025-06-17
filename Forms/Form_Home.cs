@@ -19,6 +19,7 @@ namespace HRAdmin.Forms
 {
     public partial class Form_Home : Form
     {
+        private UC_W_WelcomeBoard currentWelcomeBoard;
         private string loggedInIndex;
         private string loggedInUser;
         private string loggedInDepart;
@@ -39,6 +40,11 @@ namespace HRAdmin.Forms
         public static Button sharedButton4; //external
         public static Button sharedButton5; //internal
         public static Button sharedButton6; //view report
+        public static Button sharedbtnVisitor;
+        public static Button sharedbtnWithdrawEntry;
+        public static Button sharedbtnNewVisitor;
+        public static Button sharedbtnUpdate;
+
 
         public Form_Home(string username, string depart, string index)
         {
@@ -62,6 +68,10 @@ namespace HRAdmin.Forms
             button4.Visible = false; //external
             button5.Visible = false; //internal
             button6.Visible = false; //view report
+            btnVisitor.Visible = false; //visitor
+            btnWithdrawEntry.Visible = false; //withdraw entry
+            btnNewVisitor.Visible = false; //new visitor
+            btnUpdate.Visible = false; //update
             //CollapseMenu();
             this.Padding = new Padding(borderSize);//Border size
             sharedPanel = panel5;  // Assign shared panel
@@ -80,6 +90,10 @@ namespace HRAdmin.Forms
             sharedbtn_Accident = btn_Accident;
             sharedbtn_AccidentPDF = btn_AccidentPDF;
             sharedbtn_verify = btnCarCondition;
+            sharedbtnVisitor = btnVisitor;
+            sharedbtnWithdrawEntry = btnWithdrawEntry;
+            sharedbtnNewVisitor = btnNewVisitor;
+            sharedbtnUpdate = btnUpdate;
 
         }
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]
@@ -172,7 +186,7 @@ namespace HRAdmin.Forms
             btn_AccidentPDF.Visible = false;
             btnInspect.Visible = false;
             btn_Accident.Visible = false;
-            UC_A_Admin ug = new UC_A_Admin(loggedInUser);
+            UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
         private void panel5_Paint(object sender, PaintEventArgs e)
@@ -187,8 +201,8 @@ namespace HRAdmin.Forms
             btn_New.Visible = false;
             btnAddpeople.Visible = false;
 
-            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
-            addControls(ug);
+            //UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
+            //addControls(ug);
             //UC_CarDetails ug = new UC_CarDetails();
             //addControls(ug);
         }
@@ -200,8 +214,8 @@ namespace HRAdmin.Forms
             btn_New.Visible = false;
             btnAddpeople.Visible = false;
 
-            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
-            addControls(ug);
+            //UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
+            //addControls(ug);
         }
         private void btnAdmin_Click(object sender, EventArgs e)
         {
@@ -209,8 +223,8 @@ namespace HRAdmin.Forms
             btnBookCar.Visible = false;
             btn_New.Visible = false;
             btnAddpeople.Visible = false;
-            UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
-            addControls(ug);
+            //UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard();
+            //addControls(ug);
         }
         private void Form_Home_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -507,8 +521,8 @@ namespace HRAdmin.Forms
             button5.Visible = false;
             button6.Visible = false;
 
-            //UC_InternalMenu ug = new UC_InternalMenu(loggedInUser, loggedInDepart);
-            //addControls(ug);
+            UC_Meal_InternalMenu ug = new UC_Meal_InternalMenu(loggedInUser, loggedInDepart);
+            addControls(ug);
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -523,8 +537,8 @@ namespace HRAdmin.Forms
             button5.Visible = false;
             button6.Visible = false;
 
-            //UC_ExternalMenu ug = new UC_ExternalMenu(loggedInUser, loggedInDepart);
-            //addControls(ug);
+            UC_Meal_ExternalMenu ug = new UC_Meal_ExternalMenu(loggedInUser, loggedInDepart);
+            addControls(ug);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -541,8 +555,88 @@ namespace HRAdmin.Forms
             btnVisitor.Visible = false;
 
 
-            //UC_ViewReport ug = new UC_ViewReport(loggedInUser, loggedInDepart);
-            //addControls(ug);
+            UC_Meal_ViewReport ug = new UC_Meal_ViewReport(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+
+        private void btnNewVisitor_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Register New Visitor ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_RegisterVisitor ug = new UC_W_RegisterVisitor(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+
+        private void btnVisitor_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Display Visitor ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_InputVisitor ug = new UC_W_InputVisitor(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+
+        private void btnWithdrawEntry_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Withdraw ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_WithdrawVisitor ug = new UC_W_WithdrawVisitor(loggedInUser, loggedInDepart, currentWelcomeBoard);
+            addControls(ug);
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Admin > Update Company ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+
+            UC_W_UpdateCompany ug = new UC_W_UpdateCompany(loggedInUser, loggedInDepart);
+            addControls(ug);
         }
     }
 }

@@ -33,7 +33,6 @@
             this.btnMeeting = new System.Windows.Forms.Button();
             this.btnCarBooking = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnMSC = new System.Windows.Forms.Button();
             this.btnMeal = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -99,7 +98,6 @@
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
             this.groupBox1.Controls.Add(this.btnMeal);
-            this.groupBox1.Controls.Add(this.btnMSC);
             this.groupBox1.Controls.Add(this.btnWB);
             this.groupBox1.Controls.Add(this.btnCarBooking);
             this.groupBox1.Controls.Add(this.btnMeeting);
@@ -112,25 +110,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Admin";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
-            // 
-            // btnMSC
-            // 
-            this.btnMSC.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this.btnMSC.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnMSC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMSC.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9F);
-            this.btnMSC.ForeColor = System.Drawing.Color.Black;
-            this.btnMSC.Image = ((System.Drawing.Image)(resources.GetObject("btnMSC.Image")));
-            this.btnMSC.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMSC.Location = new System.Drawing.Point(909, 41);
-            this.btnMSC.Name = "btnMSC";
-            this.btnMSC.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnMSC.Size = new System.Drawing.Size(222, 73);
-            this.btnMSC.TabIndex = 8;
-            this.btnMSC.Tag = " Car Booking";
-            this.btnMSC.Text = "MSC";
-            this.btnMSC.UseVisualStyleBackColor = true;
-            this.btnMSC.Click += new System.EventHandler(this.btnMSC_Click);
             // 
             // btnMeal
             // 
@@ -170,7 +149,6 @@
         private System.Windows.Forms.Button btnMeeting;
         private System.Windows.Forms.Button btnCarBooking;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button btnMSC;
         private System.Windows.Forms.Button btnMeal;
     }
 }
