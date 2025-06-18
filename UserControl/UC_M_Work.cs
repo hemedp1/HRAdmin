@@ -10,16 +10,14 @@ using System.Windows.Forms;
 using HRAdmin.Forms;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.IO;
 
 namespace HRAdmin.UserControl
 {
-    public partial class UC_M_Work : System.Windows.Forms.UserControl
+    public partial class UC_M_Work: System.Windows.Forms.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
         private string expensesType; // To store the selected ExpensesType
-        private OpenFileDialog openFileDialog;
 
         public UC_M_Work(string username, string department, string selectedType)
         {
@@ -30,12 +28,7 @@ namespace HRAdmin.UserControl
             InitializeDataTable();
             ConfigureDataGridView();
             StyleDataGridView(dgvW); // Apply styling to the DataGridView
-            dgvW.AllowUserToAddRows = true; // Ensure users can add rows
-            // Attach the CellFormatting event to handle the RM prefix display
-            dgvW.CellFormatting += new DataGridViewCellFormattingEventHandler(dgvW_CellFormatting);
-            openFileDialog = new OpenFileDialog { Filter = "PDF files (*.pdf)|*.pdf", Title = "Select Invoice PDF" };
         }
-
         private void InitializeDataTable()
         {
             // Initialize an empty DataTable with all columns
@@ -50,9 +43,9 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("RequestDate", typeof(DateTime));
             dt.Columns.Add("Vendor", typeof(string));
             dt.Columns.Add("Item", typeof(string));
-            dt.Columns.Add("InvoiceAmount", typeof(decimal)); // Changed to decimal for proper numeric handling
-            dt.Columns.Add("Invoice No", typeof(string));
-            dt.Columns.Add("Invoice", typeof(byte[])); // Store as byte array
+            dt.Columns.Add("InvoiceAmount", typeof(string));
+            dt.Columns.Add("InvoiceNo", typeof(string));
+            dt.Columns.Add("Invoice", typeof(string));
             dt.Columns.Add("HODApprovalStatus", typeof(string));
             dt.Columns.Add("ApprovedByHOD", typeof(string));
             dt.Columns.Add("HODApprovedDate", typeof(DateTime));
@@ -64,7 +57,6 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("AccountApprovedDate", typeof(DateTime));
             dgvW.DataSource = dt;
         }
-
         private void ConfigureDataGridView()
         {
             // Hide columns that should not be edited by the user
@@ -82,26 +74,14 @@ namespace HRAdmin.UserControl
             dgvW.Columns["AccountApprovalStatus"].Visible = false;
             dgvW.Columns["ApprovedByAccount"].Visible = false;
             dgvW.Columns["AccountApprovedDate"].Visible = false;
-
-            // Add button column for uploading/viewing PDF
-            DataGridViewButtonColumn btnCol = new DataGridViewButtonColumn
-            {
-                Name = "UploadViewInvoice",
-                HeaderText = "Invoice",
-                Text = "Upload/View",
-                UseColumnTextForButtonValue = true
-            };
-            dgvW.Columns.Add(btnCol);
-            dgvW.CellContentClick += new DataGridViewCellEventHandler(dgvW_CellContentClick);
         }
-
         private void StyleDataGridView(DataGridView dgv)
         {
             dgv.ColumnHeadersVisible = true;
             dgv.Dock = DockStyle.Fill;
             dgv.AllowUserToResizeRows = false;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgv.AllowUserToAddRows = false; // Override to false as per method, but set to true in constructor
+            dgv.AllowUserToAddRows = true; // Override to false as per method, but set to true in constructor
             dgv.ReadOnly = false; // Allow editing
 
             // Increase header font size and height
@@ -118,13 +98,6 @@ namespace HRAdmin.UserControl
                 dgvW.Columns["ID"].Width = 50;
             }
 
-            // Configure InvoiceAmount column to show RM prefix
-            if (dgvW.Columns.Contains("InvoiceAmount"))
-            {
-                dgvW.Columns["InvoiceAmount"].DefaultCellStyle.Format = "RM #,##0.00";
-                dgvW.Columns["InvoiceAmount"].DefaultCellStyle.NullValue = "RM 0.00"; // Default to 0.00 if null
-            }
-
             foreach (DataGridViewColumn column in dgv.Columns)
             {
                 column.DefaultCellStyle = new DataGridViewCellStyle
@@ -133,57 +106,6 @@ namespace HRAdmin.UserControl
                     Font = new Font("Helvetica", 12),
                     BackColor = Color.WhiteSmoke
                 };
-                column.Resizable = DataGridViewTriState.False;
-                column.ReadOnly = false; // Ensure columns are editable
-            }
-        }
-
-        private void dgvW_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            // Apply RM prefix to InvoiceAmount column
-            if (e.ColumnIndex == dgvW.Columns["InvoiceAmount"].Index && e.RowIndex >= 0)
-            {
-                if (e.Value == null || e.Value == DBNull.Value)
-                {
-                    e.Value = "RM 0.00";
-                    e.FormattingApplied = true;
-                }
-                else if (e.Value is decimal amount)
-                {
-                    e.Value = "RM " + amount.ToString("#,##0.00");
-                    e.FormattingApplied = true;
-                }
-            }
-        }
-
-        private void dgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dgvW.Columns[e.ColumnIndex].Name == "UploadViewInvoice")
-            {
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string filePath = openFileDialog.FileName;
-                    byte[] fileBytes = File.ReadAllBytes(filePath);
-                    dgvW.Rows[e.RowIndex].Cells["Invoice"].Value = fileBytes; // Store byte array
-                    MessageBox.Show("Invoice uploaded successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            else if (dgvW.Columns[e.ColumnIndex].Name == "UploadViewInvoice" && dgvW.Rows[e.RowIndex].Cells["Invoice"].Value != null)
-            {
-                byte[] fileBytes = (byte[])dgvW.Rows[e.RowIndex].Cells["Invoice"].Value;
-                SaveFileDialog saveFileDialog = new SaveFileDialog
-                {
-                    Filter = "PDF files (*.pdf)|*.pdf",
-                    Title = "Save Invoice PDF",
-                    FileName = "Invoice_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".pdf"
-                };
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    File.WriteAllBytes(saveFileDialog.FileName, fileBytes);
-                    // Optionally open the file after saving
-                    System.Diagnostics.Process.Start(saveFileDialog.FileName);
-                    MessageBox.Show("Invoice saved and opened successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
             }
         }
 
@@ -208,101 +130,101 @@ namespace HRAdmin.UserControl
 
             UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
             addControls(ug);
-        }
 
+        }
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                con.Open();
-
-                string insertQuery = "INSERT INTO tbl_MiscellaneousClaim (SerialNo, Requester, Department, ExpensesType, RequestDate, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice, " +
-                                     "HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) " +
-                                     "VALUES (@SerialNo, @Requester, @Department, @ExpensesType, @RequestDate, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @Invoice, " +
-                                     "@HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
-                using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                try
                 {
-                    using (SqlDataAdapter adapter = new SqlDataAdapter())
+                    con.Open();
+
+                    string insertQuery = @"INSERT INTO tbl_MiscellaneousClaim 
+                                         (SerialNo, Requester, Department, ExpensesType, RequestDate, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice, 
+                                         HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
+                                         VALUES (@SerialNo, @Requester, @Department, @ExpensesType, @RequestDate, @Vendor, @Item, @InvoiceAmount, 
+                                         @InvoiceNo, @Invoice, @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
+
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                     {
-                        adapter.InsertCommand = cmd;
-
                         DataTable dt = (DataTable)dgvW.DataSource;
-                        DataTable newRows = dt.GetChanges(DataRowState.Added);
+                        DataTable newRows = dt?.GetChanges(DataRowState.Added);
 
-                        try
+                        if (newRows == null || newRows.Rows.Count == 0)
                         {
-                            if (newRows != null && newRows.Rows.Count > 0)
-                            {
-                                foreach (DataRow row in newRows.Rows)
-                                {
-                                    if (row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"].ToString()))
-                                        row["Requester"] = loggedInUser;
-                                    if (row["Department"] == DBNull.Value || string.IsNullOrEmpty(row["Department"].ToString()))
-                                        row["Department"] = loggedInDepart;
-                                    if (row["RequestDate"] == DBNull.Value)
-                                        row["RequestDate"] = DateTime.Now; // Use DateTime.Now directly
-                                    if (row["ExpensesType"] == DBNull.Value || string.IsNullOrEmpty(row["ExpensesType"].ToString()))
-                                        row["ExpensesType"] = expensesType;
-                                    if (row["HODApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["HODApprovalStatus"].ToString()))
-                                        row["HODApprovalStatus"] = "Pending";
-                                    if (row["HRApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["HRApprovalStatus"].ToString()))
-                                        row["HRApprovalStatus"] = "Pending";
-                                    if (row["AccountApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["AccountApprovalStatus"].ToString()))
-                                        row["AccountApprovalStatus"] = "Pending";
-
-                                    // Handle InvoiceAmount
-                                    if (row["InvoiceAmount"] == DBNull.Value || row["InvoiceAmount"] == null)
-                                    {
-                                        row["InvoiceAmount"] = 0.00m; // Default to 0.00 if null
-                                    }
-
-                                    // Generate SerialNo
-                                    int id = (int)row["ID"];
-                                    string combinedValue = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy_HHmmss}_{id}";
-                                    row["SerialNo"] = combinedValue;
-
-                                    // Add parameters dynamically for each row
-                                    cmd.Parameters.Clear();
-                                    cmd.Parameters.AddWithValue("@SerialNo", combinedValue);
-                                    cmd.Parameters.AddWithValue("@Requester", row["Requester"]);
-                                    cmd.Parameters.AddWithValue("@Department", row["Department"]);
-                                    cmd.Parameters.AddWithValue("@ExpensesType", row["ExpensesType"]);
-                                    cmd.Parameters.AddWithValue("@RequestDate", row["RequestDate"]);
-                                    cmd.Parameters.AddWithValue("@Vendor", row["Vendor"] ?? (object)DBNull.Value);
-                                    cmd.Parameters.AddWithValue("@Item", row["Item"] ?? (object)DBNull.Value);
-                                    cmd.Parameters.AddWithValue("@InvoiceAmount", row["InvoiceAmount"] ?? (object)0.00m);
-                                    cmd.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"] ?? (object)DBNull.Value);
-                                    cmd.Parameters.AddWithValue("@Invoice", row["Invoice"] ?? (object)DBNull.Value);
-                                    cmd.Parameters.AddWithValue("@HODApprovalStatus", row["HODApprovalStatus"]);
-                                    cmd.Parameters.AddWithValue("@HRApprovalStatus", row["HRApprovalStatus"]);
-                                    cmd.Parameters.AddWithValue("@AccountApprovalStatus", row["AccountApprovalStatus"]);
-
-                                    cmd.ExecuteNonQuery(); // Execute insert for each row
-                                }
-                                dt.AcceptChanges();
-                                MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-                            else
-                            {
-                                MessageBox.Show("No new rows to add.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                return;
-                            }
+                            MessageBox.Show("No new rows to add.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
                         }
-                        catch (SqlException ex)
+
+                        foreach (DataRow row in newRows.Rows)
                         {
-                            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            // Set default values for null or empty fields
+                            row["Requester"] = row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"]?.ToString())
+                                ? loggedInUser : row["Requester"];
+                            row["Department"] = row["Department"] == DBNull.Value || string.IsNullOrEmpty(row["Department"]?.ToString())
+                                ? loggedInDepart : row["Department"];
+                            row["RequestDate"] = row["RequestDate"] == DBNull.Value ? DateTime.Now : row["RequestDate"];
+                            row["ExpensesType"] = row["ExpensesType"] == DBNull.Value || string.IsNullOrEmpty(row["ExpensesType"]?.ToString())
+                                ? expensesType : row["ExpensesType"];
+                            row["HODApprovalStatus"] = row["HODApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["HODApprovalStatus"]?.ToString())
+                                ? "Pending" : row["HODApprovalStatus"];
+                            row["HRApprovalStatus"] = row["HRApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["HRApprovalStatus"]?.ToString())
+                                ? "Pending" : row["HRApprovalStatus"];
+                            row["AccountApprovalStatus"] = row["AccountApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["AccountApprovalStatus"]?.ToString())
+                                ? "Pending" : row["AccountApprovalStatus"];
+
+                            // Generate SerialNo (assuming ID column exists or using a counter)
+                            int id = dt.Rows.IndexOf(row) + 1; // Fallback if ID column is unavailable
+                            if (row.Table.Columns.Contains("ID"))
+                                id = Convert.ToInt32(row["ID"]);
+                            string combinedValue = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy_HHmmss}_{id}";
+                            row["SerialNo"] = combinedValue;
+
+                            // Clear previous parameters
+                            cmd.Parameters.Clear();
+
+                            // Add parameters with explicit types
+                            cmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = combinedValue;
+                            cmd.Parameters.Add("@Requester", SqlDbType.NVarChar).Value = row["Requester"];
+                            cmd.Parameters.Add("@Department", SqlDbType.NVarChar).Value = row["Department"];
+                            cmd.Parameters.Add("@ExpensesType", SqlDbType.NVarChar).Value = row["ExpensesType"];
+                            cmd.Parameters.Add("@RequestDate", SqlDbType.DateTime).Value = row["RequestDate"];
+                            cmd.Parameters.Add("@Vendor", SqlDbType.NVarChar).Value = row["Vendor"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@Item", SqlDbType.NVarChar).Value = row["Item"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@InvoiceAmount", SqlDbType.NVarChar).Value = row["InvoiceAmount"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@InvoiceNo", SqlDbType.NVarChar).Value = row["InvoiceNo"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@Invoice", SqlDbType.NVarChar).Value = row["Invoice"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@HODApprovalStatus", SqlDbType.NVarChar).Value = row["HODApprovalStatus"];
+                            cmd.Parameters.Add("@HRApprovalStatus", SqlDbType.NVarChar).Value = row["HRApprovalStatus"];
+                            cmd.Parameters.Add("@AccountApprovalStatus", SqlDbType.NVarChar).Value = row["AccountApprovalStatus"];
+
+                            cmd.ExecuteNonQuery(); // Execute insert for each row
                         }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+
+                        dt.AcceptChanges();
+                        MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Update UI after successful insertion
+                        Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
+                        UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, expensesType);
+                        addControls(ug);
                     }
                 }
-
-                Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
-                UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, expensesType);
-                addControls(ug);
+                catch (SqlException ex)
+                {
+                    MessageBox.Show($"A database error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    if (con.State == ConnectionState.Open)
+                        con.Close();
+                }
             }
         }
     }
