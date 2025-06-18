@@ -195,7 +195,7 @@ namespace HRAdmin.UserControl
                             cmd.Parameters.Add("@Item", SqlDbType.NVarChar).Value = row["Item"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@InvoiceAmount", SqlDbType.NVarChar).Value = row["InvoiceAmount"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@InvoiceNo", SqlDbType.NVarChar).Value = row["InvoiceNo"] ?? (object)DBNull.Value;
-                            cmd.Parameters.Add("@Invoice", SqlDbType.NVarChar).Value = row["Invoice"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@Invoice", SqlDbType.VarBinary).Value = row["Invoice"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@HODApprovalStatus", SqlDbType.NVarChar).Value = row["HODApprovalStatus"];
                             cmd.Parameters.Add("@HRApprovalStatus", SqlDbType.NVarChar).Value = row["HRApprovalStatus"];
                             cmd.Parameters.Add("@AccountApprovalStatus", SqlDbType.NVarChar).Value = row["AccountApprovalStatus"];
