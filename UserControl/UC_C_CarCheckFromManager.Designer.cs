@@ -125,7 +125,7 @@
             this.btnCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCheck.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnCheck.Location = new System.Drawing.Point(308, 119);
+            this.btnCheck.Location = new System.Drawing.Point(308, 122);
             this.btnCheck.Name = "btnCheck";
             this.btnCheck.Size = new System.Drawing.Size(139, 43);
             this.btnCheck.TabIndex = 29;

@@ -284,7 +284,7 @@ namespace HRAdmin.Forms
             btn_Accident.Visible = false;
             btnCarCondition.Visible = true;
             label1.Text = "Admin > Car Reservation > Reservation";
-            UC_C_BookingCar ug = new UC_C_BookingCar(loggedInUser, loggedInIndex);
+            UC_C_BookingCar ug = new UC_C_BookingCar(loggedInUser, loggedInIndex, loggedInDepart);
             addControls(ug);
         }
         private void CheckUserAccess(string username)   // for Approve and Check

@@ -195,7 +195,8 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButton5.Visible = false;
             Form_Home.sharedButtonbtnApp.Visible = false;
             Form_Home.sharedbuttonInspect.Visible = false;
-
+            Form_Home.sharedbtn_Accident.Visible = false;
+            Form_Home.sharedButtonbtnWDcar.Visible = false;
             UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard(loggedInUser, loggedInDepart);
             addControls(ug);
         }
@@ -278,7 +279,8 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnUpdate.Visible = false;
             Form_Home.sharedButtonbtnApp.Visible= false; 
             Form_Home.sharedbuttonInspect.Visible = false; 
-
+            Form_Home.sharedbtn_Accident.Visible = false;
+            Form_Home.sharedButtonbtnWDcar.Visible = false;
             UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, loggedInUser, loggedInDepart);
             addControls(ug);
         }

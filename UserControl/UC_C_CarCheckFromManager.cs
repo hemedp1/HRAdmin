@@ -112,6 +112,9 @@ namespace HRAdmin.UserControl
                         object resultt = checkCmd.ExecuteScalar();
                         string department = resultt?.ToString();
 
+                        //MessageBox.Show($"department: {department}");
+                        //MessageBox.Show($"loggedInDepart: {loggedInDepart}");
+
                         if (string.IsNullOrEmpty(department) || department != loggedInDepart)
                         {
                             MessageBox.Show("Cannot proceed. Must be on the same department.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
