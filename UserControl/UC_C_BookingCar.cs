@@ -22,11 +22,13 @@ namespace HRAdmin.UserControl
         DbConnector db;
         private string loggedInUser;
         private string loggedInIndex;
-        public UC_C_BookingCar(string username, string index)
+        private string loggedInDepart;
+        public UC_C_BookingCar(string username, string index, string depart)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInIndex = index;
+            loggedInDepart = depart;
             LoadData();
             dTDay.ValueChanged += dTDay_ValueChanged;
         }
@@ -139,6 +141,7 @@ namespace HRAdmin.UserControl
         }
         private void btnSubmit_Click(object sender, EventArgs e)
         {
+            //MessageBox.Show($"loggedInDepart: {loggedInDepart}");
             DateTime selectedDate = dTDay.Value.Date;
             if (string.IsNullOrWhiteSpace(txtDes.Text))
             {
@@ -210,8 +213,8 @@ namespace HRAdmin.UserControl
 
                     // Insert new booking
                     string insertQuery = @"
-                INSERT INTO tbl_CarBookings (DriverName, IndexNo, RequestDate, Destination, StartDate, EndDate, Purpose, StatusCheck, CheckBy, Status, ApproveBy, AssignedCar) " +
-                                "VALUES (@DriverName, @IndexNo, @RequestDate, @Destination, @StartDate, @EndDate, @Purpose, 'Pending', 'Pending', 'Pending','Pending','Pending')";
+                INSERT INTO tbl_CarBookings (DriverName, IndexNo, Depart, RequestDate, Destination, StartDate, EndDate, Purpose, StatusCheck, CheckBy, Status, ApproveBy, AssignedCar) " +
+                                "VALUES (@DriverName, @IndexNo, @Depart, @RequestDate, @Destination, @StartDate, @EndDate, @Purpose, 'Pending', 'Pending', 'Pending','Pending','Pending')";
 
 
 
@@ -219,6 +222,7 @@ namespace HRAdmin.UserControl
                     SqlCommand insertCmd = new SqlCommand(insertQuery, con);
                     insertCmd.Parameters.AddWithValue("@DriverName", loggedInUser);
                     insertCmd.Parameters.AddWithValue("@IndexNo", loggedInIndex);
+                    insertCmd.Parameters.AddWithValue("@Depart", loggedInDepart);
                     insertCmd.Parameters.AddWithValue("@RequestDate", selectedDate);
                     insertCmd.Parameters.AddWithValue("@Destination", txtDes.Text);
                     insertCmd.Parameters.AddWithValue("@StartDate", cmbOut.Text);

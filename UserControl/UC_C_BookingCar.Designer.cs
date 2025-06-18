@@ -30,9 +30,10 @@ namespace HRAdmin.UserControl
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_BookingCar));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.btnSubmit = new System.Windows.Forms.Button();
             this.cmbIn = new System.Windows.Forms.ComboBox();
             this.dTDay = new System.Windows.Forms.DateTimePicker();
@@ -55,7 +56,6 @@ namespace HRAdmin.UserControl
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -93,6 +93,18 @@ namespace HRAdmin.UserControl
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Reservation details";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // label11
+            // 
+            this.label11.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.label11.Font = new System.Drawing.Font("Calibri", 10F);
+            this.label11.ForeColor = System.Drawing.Color.Red;
+            this.label11.Location = new System.Drawing.Point(3, 206);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(1092, 82);
+            this.label11.TabIndex = 23;
+            this.label11.Text = resources.GetString("label11.Text");
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnSubmit
             // 
@@ -390,18 +402,6 @@ namespace HRAdmin.UserControl
             this.btnBack.TabIndex = 21;
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
-            // 
-            // label11
-            // 
-            this.label11.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label11.Font = new System.Drawing.Font("Calibri", 10F);
-            this.label11.ForeColor = System.Drawing.Color.Red;
-            this.label11.Location = new System.Drawing.Point(3, 206);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(1092, 82);
-            this.label11.TabIndex = 23;
-            this.label11.Text = resources.GetString("label11.Text");
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // UC_C_BookingCar
             // 

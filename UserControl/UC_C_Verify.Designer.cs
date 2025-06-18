@@ -66,7 +66,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1500, 398);
+            this.panel1.Size = new System.Drawing.Size(1747, 386);
             this.panel1.TabIndex = 0;
             // 
             // groupBox2
@@ -77,7 +77,7 @@
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox2.Location = new System.Drawing.Point(0, 57);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1500, 341);
+            this.groupBox2.Size = new System.Drawing.Size(1747, 329);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Car Inspection log";
@@ -88,16 +88,17 @@
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(406, 38);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1091, 300);
+            this.panel4.Size = new System.Drawing.Size(1338, 288);
             this.panel4.TabIndex = 29;
             // 
             // label1
             // 
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label1.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.label1.Location = new System.Drawing.Point(0, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(1091, 300);
+            this.label1.Size = new System.Drawing.Size(1338, 288);
             this.label1.TabIndex = 28;
             this.label1.Text = resources.GetString("label1.Text");
             // 
@@ -110,7 +111,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel3.Location = new System.Drawing.Point(3, 38);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(403, 300);
+            this.panel3.Size = new System.Drawing.Size(403, 288);
             this.panel3.TabIndex = 28;
             // 
             // btnAcknowledge
@@ -170,7 +171,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1500, 57);
+            this.panel6.Size = new System.Drawing.Size(1747, 57);
             this.panel6.TabIndex = 15;
             // 
             // btnBack
@@ -185,15 +186,16 @@
             this.btnBack.Size = new System.Drawing.Size(54, 46);
             this.btnBack.TabIndex = 21;
             this.btnBack.UseVisualStyleBackColor = false;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.groupBox3);
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 398);
+            this.panel2.Location = new System.Drawing.Point(0, 386);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1500, 383);
+            this.panel2.Size = new System.Drawing.Size(1747, 518);
             this.panel2.TabIndex = 1;
             // 
             // groupBox3
@@ -201,9 +203,9 @@
             this.groupBox3.Controls.Add(this.dataGridView1);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox3.Location = new System.Drawing.Point(0, 255);
+            this.groupBox3.Location = new System.Drawing.Point(0, 196);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1500, 128);
+            this.groupBox3.Size = new System.Drawing.Size(1747, 322);
             this.groupBox3.TabIndex = 18;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Car Inspection log";
@@ -230,7 +232,7 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(1494, 87);
+            this.dataGridView1.Size = new System.Drawing.Size(1741, 281);
             this.dataGridView1.TabIndex = 1;
             // 
             // groupBox1
@@ -240,7 +242,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1500, 255);
+            this.groupBox1.Size = new System.Drawing.Size(1747, 196);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Car Reservation Overview";
@@ -267,7 +269,7 @@
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.RowHeadersWidth = 62;
             this.dataGridView2.RowTemplate.Height = 28;
-            this.dataGridView2.Size = new System.Drawing.Size(1494, 214);
+            this.dataGridView2.Size = new System.Drawing.Size(1741, 155);
             this.dataGridView2.TabIndex = 1;
             // 
             // UC_C_Verify
@@ -278,7 +280,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "UC_C_Verify";
-            this.Size = new System.Drawing.Size(1500, 781);
+            this.Size = new System.Drawing.Size(1747, 904);
             this.panel1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.panel4.ResumeLayout(false);

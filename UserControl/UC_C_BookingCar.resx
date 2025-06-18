@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label11.Text" xml:space="preserve">
-    <value># Application company car for business trip :
+    <value>*Application company car for business trip :
 Please submit your application to use the car at least  three working days in advance. This allows us sufficient time to ensure the vehicle is prepared and in ready condition.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />

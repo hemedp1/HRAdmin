@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRAdmin.Forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -323,6 +324,48 @@ namespace HRAdmin.UserControl
                     }
                 }
             }
+        }
+        private void addControls(System.Windows.Forms.UserControl userControl)
+        {
+            if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
+            {
+                Form_Home.sharedPanel.Controls.Clear();
+                userControl.Dock = DockStyle.Fill;
+                Form_Home.sharedPanel.Controls.Add(userControl);
+                userControl.BringToFront();
+            }
+            else
+            {
+                MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            Form_Home.sharedLabel.Text = "Admin > Car Reservation > Reservation";
+            Form_Home.sharedbtn_verify.Visible = true;
+            UC_C_BookingCar ug = new UC_C_BookingCar(loggedInUser, loggedInDepart, loggedInDepart);
+            addControls(ug);
+            //sharedButtonbtnWDcar.Visible = false;
+            ///btnAddpeople.Visible = false;
+            //btn_New.Visible = false;
+            //btnBookCar.Visible = false;
+            //button2.Visible = false;
+            //button3.Visible = false;
+            //btnInspect.Visible = false;
+            //btn_Accident.Visible = false;
+            //btnCarCondition.Visible = true;
+            //label1.Text = "Admin > Car Reservation > Reservation";
+
+            //sharedButtonbtnApp = btnApp;
+            //sharedButtonbtnWDcar = btnWDcar;
+            //sharedbuttonInspect = btnInspect;
+            //sharedbtn_Accident = btn_Accident;
+            //sharedbtn_AccidentPDF = btn_AccidentPDF;
+            //sharedbtn_verify = btnCarCondition;
+            //sharedbtnVisitor = btnVisitor;
+            //sharedbtnWithdrawEntry = btnWithdrawEntry;
+            //sharedbtnNewVisitor = btnNewVisitor;
+            //sharedbtnUpdate = btnUpdate;
         }
     }
 }
