@@ -104,7 +104,7 @@ namespace HRAdmin.UserControl
                                     cmbTimeRep.Visible = false;
                                     dtRep.Visible = false;
                                     btnAttachemnt.Visible = false;
-                                    btnChecked.Visible = false;
+                                    //btnChecked.Visible = false;
                                     UC_C_Car_Details_Booking ug = new UC_C_Car_Details_Booking(loggedInUser);
                                     addControls(ug);
 
@@ -699,7 +699,7 @@ namespace HRAdmin.UserControl
                                 byte[] imgData = (byte[])reader["Attachment"];
                                 pictureBox1.Image = ByteArrayToImage(imgData); 
                                 pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // Adjust image display
-                                txtRemarksAdmin.Text = reader["Explanation"]?.ToString();
+                                //txtRemarksAdmin.Text = reader["Explanation"]?.ToString();
                                 reader.Close();
                                 string query1 = "SELECT AA, MA, AC FROM tbl_Users WHERE Username = @Username";
                                 using (SqlCommand cmd1 = new SqlCommand(query1, con))
@@ -716,15 +716,16 @@ namespace HRAdmin.UserControl
 
                                             if (AA == "1")
                                             {
-                                                if (!string.IsNullOrWhiteSpace(txtRemarksAdmin.Text))
-                                                {
-                                                    
-                                                }
-                                                else
-                                                {
-                                                    MakeUserSectionReadOnly(groupBox6);
+                                                //if (!string.IsNullOrWhiteSpace(txtRemarksAdmin.Text))
+                                                //{
+                                                    //MakeUserSectionReadOnly(groupBox6);
+                                                    //btnApp_Admin.Enabled = true;
+                                                //}
+                                                //else
+                                                //{
+                                                    //MakeUserSectionReadOnly(groupBox6);
                                                     btnApp_Admin.Enabled = true;
-                                                }
+                                                //}
                                                 
                                             }
                                             else if (AC == "11")

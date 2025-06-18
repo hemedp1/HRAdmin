@@ -200,7 +200,7 @@
             this.btnApp_Admin.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnApp_Admin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnApp_Admin.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnApp_Admin.Location = new System.Drawing.Point(913, 229);
+            this.btnApp_Admin.Location = new System.Drawing.Point(913, 225);
             this.btnApp_Admin.Name = "btnApp_Admin";
             this.btnApp_Admin.Size = new System.Drawing.Size(139, 43);
             this.btnApp_Admin.TabIndex = 67;
@@ -215,7 +215,7 @@
             this.btnChecked.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnChecked.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChecked.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnChecked.Location = new System.Drawing.Point(913, 229);
+            this.btnChecked.Location = new System.Drawing.Point(759, 225);
             this.btnChecked.Name = "btnChecked";
             this.btnChecked.Size = new System.Drawing.Size(139, 43);
             this.btnChecked.TabIndex = 66;
