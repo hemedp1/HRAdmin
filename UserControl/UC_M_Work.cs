@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using HRAdmin.Forms;
 using System.Configuration;
 using System.Data.SqlClient;
-
+using System.IO;                 /////////////////////////   Add on 10:57 18/06/25 to regonized File class
 namespace HRAdmin.UserControl
 {
     public partial class UC_M_Work: System.Windows.Forms.UserControl
@@ -74,6 +74,44 @@ namespace HRAdmin.UserControl
             dgvW.Columns["AccountApprovalStatus"].Visible = false;
             dgvW.Columns["ApprovedByAccount"].Visible = false;
             dgvW.Columns["AccountApprovedDate"].Visible = false;
+
+            DataGridViewButtonColumn attachButtonColumn = new DataGridViewButtonColumn       /////////////////////////   Add on 10:57 18/06/25 to handle file attachments:
+            {
+                Name = "AttachInvoice",
+                HeaderText = "Attach PDF",
+                Text = "Attach",
+                UseColumnTextForButtonValue = true,
+                Width = 80
+            };
+            dgvW.Columns.Add(attachButtonColumn);
+
+            // Handle the button click event
+            dgvW.CellContentClick += DgvW_CellContentClick;
+        }
+        private void DgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)     /////////////////////////   Add on 10:57 18/06/25 to handle file attachments:
+        {
+            if (e.ColumnIndex == dgvW.Columns["AttachInvoice"].Index && e.RowIndex >= 0)
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Filter = "PDF Files (*.pdf)|*.pdf",
+                    Title = "Select an Invoice PDF"
+                };
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = openFileDialog.FileName;
+                    byte[] fileBytes = File.ReadAllBytes(filePath);
+
+                    // Store the PDF bytes in the Invoice column
+                    DataTable dt = (DataTable)dgvW.DataSource;
+                    dt.Rows[e.RowIndex]["Invoice"] = fileBytes;
+
+                    // Optional: Show a confirmation
+                    MessageBox.Show("PDF attached successfully!", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
         }
         private void StyleDataGridView(DataGridView dgv)
         {
@@ -182,6 +220,24 @@ namespace HRAdmin.UserControl
                             string combinedValue = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy_HHmmss}_{id}";
                             row["SerialNo"] = combinedValue;
 
+                            byte[] invoiceBytes = null;                                                                                 /////////////////////////   Add on 10:57 18/06/25 to handle the varbinary data:
+                            if (row["Invoice"] != DBNull.Value && row["Invoice"] != null)
+                            {
+                                if (row["Invoice"] is byte[])
+                                {
+                                    invoiceBytes = (byte[])row["Invoice"];
+                                }
+                                else if (row["Invoice"] is string)
+                                {
+                                    // If it's a string path (alternative approach)
+                                    string filePath = row["Invoice"].ToString();
+                                    if (File.Exists(filePath))
+                                    {
+                                        invoiceBytes = File.ReadAllBytes(filePath);
+                                    }
+                                }
+                            }
+
                             // Clear previous parameters
                             cmd.Parameters.Clear();
 
@@ -195,7 +251,7 @@ namespace HRAdmin.UserControl
                             cmd.Parameters.Add("@Item", SqlDbType.NVarChar).Value = row["Item"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@InvoiceAmount", SqlDbType.NVarChar).Value = row["InvoiceAmount"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@InvoiceNo", SqlDbType.NVarChar).Value = row["InvoiceNo"] ?? (object)DBNull.Value;
-                            cmd.Parameters.Add("@Invoice", SqlDbType.NVarChar).Value = row["Invoice"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@Invoice", SqlDbType.VarBinary).Value = row["Invoice"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@HODApprovalStatus", SqlDbType.NVarChar).Value = row["HODApprovalStatus"];
                             cmd.Parameters.Add("@HRApprovalStatus", SqlDbType.NVarChar).Value = row["HRApprovalStatus"];
                             cmd.Parameters.Add("@AccountApprovalStatus", SqlDbType.NVarChar).Value = row["AccountApprovalStatus"];

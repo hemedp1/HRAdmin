@@ -92,6 +92,11 @@ namespace HRAdmin.UserControl
                                     Form_Home.sharedbtnWithdrawEntry.Visible = true;
                                     Form_Home.sharedbtnNewVisitor.Visible = true;
                                     Form_Home.sharedbtnUpdate.Visible = true;
+                                    //
+                                    Form_Home.sharedButtonbtnApp.Visible = true;
+                                    Form_Home.sharedButtonBC.Visible = true;
+                                    Form_Home.sharedButtonbtnWDcar.Visible = true;
+                                    Form_Home.sharedbtn_Accident.Visible = true;
                                 }
                                 else if (MA == "2")
                                 {

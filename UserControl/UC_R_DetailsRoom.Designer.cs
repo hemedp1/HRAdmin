@@ -34,12 +34,12 @@ namespace HRAdmin.UserControl
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_R_DetailsRoom));
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnShowALL = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbDWM = new System.Windows.Forms.ComboBox();
             this.btnBack = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnShowALL = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -66,6 +66,21 @@ namespace HRAdmin.UserControl
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(525, 57);
             this.panel3.TabIndex = 23;
+            // 
+            // btnShowALL
+            // 
+            this.btnShowALL.BackColor = System.Drawing.Color.White;
+            this.btnShowALL.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnShowALL.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnShowALL.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnShowALL.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnShowALL.Location = new System.Drawing.Point(3, 9);
+            this.btnShowALL.Name = "btnShowALL";
+            this.btnShowALL.Size = new System.Drawing.Size(139, 43);
+            this.btnShowALL.TabIndex = 24;
+            this.btnShowALL.Text = "Show All";
+            this.btnShowALL.UseVisualStyleBackColor = false;
+            this.btnShowALL.Click += new System.EventHandler(this.btnShowALL_Click);
             // 
             // label1
             // 
@@ -123,21 +138,6 @@ namespace HRAdmin.UserControl
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(1371, 716);
             this.flowLayoutPanel1.TabIndex = 0;
-            // 
-            // btnShowALL
-            // 
-            this.btnShowALL.BackColor = System.Drawing.Color.White;
-            this.btnShowALL.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnShowALL.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnShowALL.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnShowALL.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnShowALL.Location = new System.Drawing.Point(3, 8);
-            this.btnShowALL.Name = "btnShowALL";
-            this.btnShowALL.Size = new System.Drawing.Size(139, 43);
-            this.btnShowALL.TabIndex = 24;
-            this.btnShowALL.Text = "Show All";
-            this.btnShowALL.UseVisualStyleBackColor = false;
-            this.btnShowALL.Click += new System.EventHandler(this.btnShowALL_Click);
             // 
             // UC_R_DetailsRoom
             // 
