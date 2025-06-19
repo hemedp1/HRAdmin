@@ -125,6 +125,7 @@ namespace HRAdmin.UserControl
                     {
                         cmd.Parameters.AddWithValue("@DriverName", loggedInUser);
                         cmd.Parameters.AddWithValue("@Depart", loggedInDepart);
+                        cmd.Parameters.AddWithValue("RequestDate", DateTime.Now.ToString("dd.MM.yyyy")); 
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))

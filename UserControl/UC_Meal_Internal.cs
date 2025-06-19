@@ -124,7 +124,7 @@ namespace HRAdmin.UserControl
                     iTextSharp.text.Font italicBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
 
                     // Add company logo or name
-                    string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logo hosiden.jpg");
+                    string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hosiden.jpg");
                     if (File.Exists(logoPath))
                     {
                         iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
