@@ -180,15 +180,15 @@ namespace HRAdmin.UserControl
                     }
 
                     
-                    if (rB_App.Checked)
-                    {
-                        string updateCarQuery = "UPDATE tbl_Cars SET Status = 'Not Available' WHERE CarPlate = @CarPlate";          // If approved, update car availability
-                        using (SqlCommand cmd = new SqlCommand(updateCarQuery, con))
-                        {
-                            cmd.Parameters.AddWithValue("@CarPlate", selectedCar);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                    //if (rB_App.Checked)
+                    //{
+                    //    string updateCarQuery = "UPDATE tbl_Cars SET Status = 'Not Available' WHERE CarPlate = @CarPlate";          // If approved, update car availability
+                    //    using (SqlCommand cmd = new SqlCommand(updateCarQuery, con))
+                    //    {
+                    //        cmd.Parameters.AddWithValue("@CarPlate", selectedCar);
+                    //        cmd.ExecuteNonQuery();
+                    //    }
+                    //}
 
                     LoadPendingBookings(selectedDate); // Refresh DataGridView
                     dataGridView1.Refresh();
