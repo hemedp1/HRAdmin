@@ -32,6 +32,7 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.button2 = new System.Windows.Forms.Button();
             this.gbExternal = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.label46 = new System.Windows.Forms.Label();
             this.label44 = new System.Windows.Forms.Label();
             this.cmb_Meal = new System.Windows.Forms.ComboBox();
@@ -61,20 +62,19 @@
             this.label41 = new System.Windows.Forms.Label();
             this.cmb_Snack = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.txt_Remark = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cmb_DeliveryP = new System.Windows.Forms.ComboBox();
             this.label47 = new System.Windows.Forms.Label();
-            this.label45 = new System.Windows.Forms.Label();
             this.label43 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
             this.txt_Npax = new System.Windows.Forms.TextBox();
             this.label57 = new System.Windows.Forms.Label();
             this.label59 = new System.Windows.Forms.Label();
             this.cmb_DeliveryT = new System.Windows.Forms.ComboBox();
-            this.cmb_DeliveryP = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txt_Remark = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1.SuspendLayout();
             this.gbExternal.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -136,6 +136,17 @@
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Internal food order";
             this.gbExternal.Enter += new System.EventHandler(this.gbExternal_Enter_1);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label2.ForeColor = System.Drawing.Color.Red;
+            this.label2.Location = new System.Drawing.Point(118, 143);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(23, 27);
+            this.label2.TabIndex = 128;
+            this.label2.Text = "*";
             // 
             // label46
             // 
@@ -498,6 +509,77 @@
             this.groupBox3.Text = "Order details";
             this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
+            // txt_Remark
+            // 
+            this.txt_Remark.BackColor = System.Drawing.Color.White;
+            this.txt_Remark.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txt_Remark.Location = new System.Drawing.Point(591, 65);
+            this.txt_Remark.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txt_Remark.Name = "txt_Remark";
+            this.txt_Remark.Size = new System.Drawing.Size(304, 32);
+            this.txt_Remark.TabIndex = 133;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label5.ForeColor = System.Drawing.Color.Red;
+            this.label5.Location = new System.Drawing.Point(324, 37);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(23, 27);
+            this.label5.TabIndex = 131;
+            this.label5.Text = "*";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label3.ForeColor = System.Drawing.Color.Red;
+            this.label3.Location = new System.Drawing.Point(122, 37);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(23, 27);
+            this.label3.TabIndex = 130;
+            this.label3.Text = "*";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label6.ForeColor = System.Drawing.Color.Red;
+            this.label6.Location = new System.Drawing.Point(511, 37);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(23, 27);
+            this.label6.TabIndex = 132;
+            this.label6.Text = "*";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label1.Location = new System.Drawing.Point(366, 37);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(139, 27);
+            this.label1.TabIndex = 129;
+            this.label1.Text = "Delivery place";
+            // 
+            // cmb_DeliveryP
+            // 
+            this.cmb_DeliveryP.BackColor = System.Drawing.Color.White;
+            this.cmb_DeliveryP.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmb_DeliveryP.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmb_DeliveryP.FormattingEnabled = true;
+            this.cmb_DeliveryP.Items.AddRange(new object[] {
+            "Conference room 1",
+            "Conference room 2",
+            "Guest room",
+            "Canteen "});
+            this.cmb_DeliveryP.Location = new System.Drawing.Point(371, 65);
+            this.cmb_DeliveryP.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.cmb_DeliveryP.Name = "cmb_DeliveryP";
+            this.cmb_DeliveryP.Size = new System.Drawing.Size(200, 32);
+            this.cmb_DeliveryP.TabIndex = 128;
+            // 
             // label47
             // 
             this.label47.AutoSize = true;
@@ -510,6 +592,16 @@
             this.label47.Text = "*";
             this.label47.Click += new System.EventHandler(this.label47_Click);
             // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label43.Location = new System.Drawing.Point(586, 37);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(82, 27);
+            this.label43.TabIndex = 124;
+            this.label43.Text = "Remark";
+            // 
             // label45
             // 
             this.label45.AutoSize = true;
@@ -520,16 +612,6 @@
             this.label45.Size = new System.Drawing.Size(207, 21);
             this.label45.TabIndex = 126;
             this.label45.Text = "(example: Food preferences)";
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label43.Location = new System.Drawing.Point(586, 37);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(82, 27);
-            this.label43.TabIndex = 124;
-            this.label43.Text = "Remark";
             // 
             // txt_Npax
             // 
@@ -598,88 +680,6 @@
             this.cmb_DeliveryT.Name = "cmb_DeliveryT";
             this.cmb_DeliveryT.Size = new System.Drawing.Size(160, 32);
             this.cmb_DeliveryT.TabIndex = 0;
-            // 
-            // cmb_DeliveryP
-            // 
-            this.cmb_DeliveryP.BackColor = System.Drawing.Color.White;
-            this.cmb_DeliveryP.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmb_DeliveryP.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmb_DeliveryP.FormattingEnabled = true;
-            this.cmb_DeliveryP.Items.AddRange(new object[] {
-            "Conference room 1",
-            "Conference room 2",
-            "Guest room",
-            "Canteen "});
-            this.cmb_DeliveryP.Location = new System.Drawing.Point(371, 65);
-            this.cmb_DeliveryP.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.cmb_DeliveryP.Name = "cmb_DeliveryP";
-            this.cmb_DeliveryP.Size = new System.Drawing.Size(200, 32);
-            this.cmb_DeliveryP.TabIndex = 128;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label1.Location = new System.Drawing.Point(366, 37);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(139, 27);
-            this.label1.TabIndex = 129;
-            this.label1.Text = "Delivery place";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(118, 143);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(23, 27);
-            this.label2.TabIndex = 128;
-            this.label2.Text = "*";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(122, 37);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(23, 27);
-            this.label3.TabIndex = 130;
-            this.label3.Text = "*";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label5.ForeColor = System.Drawing.Color.Red;
-            this.label5.Location = new System.Drawing.Point(324, 37);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(23, 27);
-            this.label5.TabIndex = 131;
-            this.label5.Text = "*";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(511, 37);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(23, 27);
-            this.label6.TabIndex = 132;
-            this.label6.Text = "*";
-            // 
-            // txt_Remark
-            // 
-            this.txt_Remark.BackColor = System.Drawing.Color.White;
-            this.txt_Remark.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txt_Remark.Location = new System.Drawing.Point(591, 65);
-            this.txt_Remark.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txt_Remark.Name = "txt_Remark";
-            this.txt_Remark.Size = new System.Drawing.Size(304, 32);
-            this.txt_Remark.TabIndex = 133;
             // 
             // UC_Meal_Internal
             // 

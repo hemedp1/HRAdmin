@@ -264,7 +264,7 @@ namespace HRAdmin.UserControl
                     detailsTable2.WidthPercentage = 100;
                     detailsTable2.SetWidths(new float[] { 0.5f, 3f });
 
-                    AddStyledTableRow(detailsTable2, "Meal type:", selectedMeal ?? "-", bodyFont, italicBodyFont, 0);
+                    AddStyledTableRow(detailsTable2, "Meal Type:", selectedMeal ?? "-", bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Dish:", cmb_Menu.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Other:", cmb_Snack.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 0);
 
@@ -287,8 +287,8 @@ namespace HRAdmin.UserControl
                     AddStyledTableRow(detailsTable2, "Drink2 (Hot/Cold):", combinedDrink2Value, bodyFont, italicBodyFont, 0);
 
                     AddStyledTableRow(detailsTable2, "No. of Pax:", txt_Npax.Text ?? "-", bodyFont, italicBodyFont, 1);
-                    AddStyledTableRow(detailsTable2, "Delivery time:", cmb_DeliveryT.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 1);
-                    AddStyledTableRow(detailsTable2, "Delivery place:", cmb_DeliveryP.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery Time:", cmb_DeliveryT.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery Place:", cmb_DeliveryP.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Remarks:", txt_Remark.Text ?? "-", bodyFont, italicBodyFont, 0, true);
 
                     document.Add(detailsTable2);

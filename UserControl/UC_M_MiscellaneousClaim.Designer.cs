@@ -32,7 +32,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.btnApprove = new System.Windows.Forms.Button();
-            this.btnCheck = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -59,6 +58,7 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.btnReject = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -103,21 +103,6 @@
             this.btnApprove.UseVisualStyleBackColor = false;
             this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
             // 
-            // btnCheck
-            // 
-            this.btnCheck.BackColor = System.Drawing.Color.White;
-            this.btnCheck.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCheck.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnCheck.Location = new System.Drawing.Point(799, 75);
-            this.btnCheck.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnCheck.Name = "btnCheck";
-            this.btnCheck.Size = new System.Drawing.Size(124, 34);
-            this.btnCheck.TabIndex = 101;
-            this.btnCheck.Text = "Reject";
-            this.btnCheck.UseVisualStyleBackColor = false;
-            // 
             // label13
             // 
             this.label13.AutoSize = true;
@@ -161,6 +146,7 @@
             this.cmbPeriod.Name = "cmbPeriod";
             this.cmbPeriod.Size = new System.Drawing.Size(250, 35);
             this.cmbPeriod.TabIndex = 25;
+            this.cmbPeriod.SelectedIndexChanged += new System.EventHandler(this.cmbPeriod_SelectedIndexChanged);
             // 
             // cmbDepart
             // 
@@ -171,6 +157,7 @@
             this.cmbDepart.Name = "cmbDepart";
             this.cmbDepart.Size = new System.Drawing.Size(250, 35);
             this.cmbDepart.TabIndex = 24;
+            this.cmbDepart.SelectedIndexChanged += new System.EventHandler(this.cmbDepart_SelectedIndexChanged);
             // 
             // label9
             // 
@@ -202,6 +189,7 @@
             this.cmbRequester.Name = "cmbRequester";
             this.cmbRequester.Size = new System.Drawing.Size(250, 35);
             this.cmbRequester.TabIndex = 24;
+            this.cmbRequester.SelectedIndexChanged += new System.EventHandler(this.cmbRequester_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -219,7 +207,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 172);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1853, 451);
+            this.panel1.Size = new System.Drawing.Size(1853, 743);
             this.panel1.TabIndex = 2;
             // 
             // dgvMS
@@ -229,9 +217,10 @@
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
+            this.dgvMS.RowHeadersVisible = false;
             this.dgvMS.RowHeadersWidth = 51;
             this.dgvMS.RowTemplate.Height = 24;
-            this.dgvMS.Size = new System.Drawing.Size(1853, 451);
+            this.dgvMS.Size = new System.Drawing.Size(1853, 743);
             this.dgvMS.TabIndex = 133;
             // 
             // groupBox1
@@ -239,24 +228,24 @@
             this.groupBox1.BackColor = System.Drawing.Color.White;
             this.groupBox1.Controls.Add(this.panel1);
             this.groupBox1.Controls.Add(this.panel4);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 171);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1859, 626);
+            this.groupBox1.Size = new System.Drawing.Size(1859, 918);
             this.groupBox1.TabIndex = 138;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Claim Status";
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.btnReject);
             this.panel4.Controls.Add(this.label17);
             this.panel4.Controls.Add(this.label16);
             this.panel4.Controls.Add(this.btnWithdraw);
             this.panel4.Controls.Add(this.label15);
             this.panel4.Controls.Add(this.label14);
             this.panel4.Controls.Add(this.btnApprove);
-            this.panel4.Controls.Add(this.btnCheck);
             this.panel4.Controls.Add(this.label13);
             this.panel4.Controls.Add(this.label11);
             this.panel4.Controls.Add(this.label10);
@@ -306,6 +295,7 @@
             this.btnWithdraw.TabIndex = 111;
             this.btnWithdraw.Text = "Withdraw";
             this.btnWithdraw.UseVisualStyleBackColor = false;
+            this.btnWithdraw.Click += new System.EventHandler(this.btnWithdraw_Click);
             // 
             // btnBack
             // 
@@ -429,6 +419,22 @@
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
             // 
+            // btnReject
+            // 
+            this.btnReject.BackColor = System.Drawing.Color.White;
+            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnReject.Location = new System.Drawing.Point(799, 75);
+            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnReject.Name = "btnReject";
+            this.btnReject.Size = new System.Drawing.Size(124, 34);
+            this.btnReject.TabIndex = 114;
+            this.btnReject.Text = "Reject";
+            this.btnReject.UseVisualStyleBackColor = false;
+            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
+            // 
             // UC_M_MiscellaneousClaim
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -456,7 +462,6 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button btnApprove;
-        private System.Windows.Forms.Button btnCheck;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
@@ -483,5 +488,6 @@
         private System.Windows.Forms.Label dtRequest;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnReject;
     }
 }
