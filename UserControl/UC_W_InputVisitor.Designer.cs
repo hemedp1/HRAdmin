@@ -69,9 +69,8 @@
             this.flowLayoutPanel1.Controls.Add(this.button2);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1731, 57);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1539, 46);
             this.flowLayoutPanel1.TabIndex = 126;
             // 
             // button2
@@ -84,7 +83,7 @@
             this.button2.Location = new System.Drawing.Point(3, 2);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(54, 46);
+            this.button2.Size = new System.Drawing.Size(48, 37);
             this.button2.TabIndex = 103;
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -122,21 +121,18 @@
             this.gbExternal.Controls.Add(this.dtpStartDate);
             this.gbExternal.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbExternal.Font = new System.Drawing.Font("Calibri", 14F);
-            this.gbExternal.Location = new System.Drawing.Point(0, 57);
-            this.gbExternal.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.gbExternal.Location = new System.Drawing.Point(0, 46);
             this.gbExternal.Name = "gbExternal";
-            this.gbExternal.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.gbExternal.Size = new System.Drawing.Size(1731, 664);
+            this.gbExternal.Size = new System.Drawing.Size(1539, 531);
             this.gbExternal.TabIndex = 127;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Display visitor";
             // 
             // txtPurpose
             // 
-            this.txtPurpose.Location = new System.Drawing.Point(256, 134);
-            this.txtPurpose.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtPurpose.Location = new System.Drawing.Point(228, 107);
             this.txtPurpose.Name = "txtPurpose";
-            this.txtPurpose.Size = new System.Drawing.Size(281, 42);
+            this.txtPurpose.Size = new System.Drawing.Size(250, 36);
             this.txtPurpose.TabIndex = 171;
             this.txtPurpose.TextChanged += new System.EventHandler(this.txtPurpose_TextChanged);
             // 
@@ -144,9 +140,9 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label8.Location = new System.Drawing.Point(70, 139);
+            this.label8.Location = new System.Drawing.Point(62, 111);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(101, 32);
+            this.label8.Size = new System.Drawing.Size(87, 27);
             this.label8.TabIndex = 170;
             this.label8.Text = "Purpose";
             // 
@@ -154,9 +150,9 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label7.Location = new System.Drawing.Point(230, 139);
+            this.label7.Location = new System.Drawing.Point(204, 111);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(21, 32);
+            this.label7.Size = new System.Drawing.Size(18, 27);
             this.label7.TabIndex = 169;
             this.label7.Text = ":";
             // 
@@ -164,110 +160,100 @@
             // 
             this.cmbVisitor10.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor10.FormattingEnabled = true;
-            this.cmbVisitor10.Location = new System.Drawing.Point(1408, 329);
-            this.cmbVisitor10.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor10.Location = new System.Drawing.Point(1252, 263);
             this.cmbVisitor10.Name = "cmbVisitor10";
-            this.cmbVisitor10.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor10.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor10.TabIndex = 167;
             // 
             // cmbVisitor5
             // 
             this.cmbVisitor5.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor5.FormattingEnabled = true;
-            this.cmbVisitor5.Location = new System.Drawing.Point(1408, 278);
-            this.cmbVisitor5.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor5.Location = new System.Drawing.Point(1252, 222);
             this.cmbVisitor5.Name = "cmbVisitor5";
-            this.cmbVisitor5.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor5.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor5.TabIndex = 166;
             // 
             // cmbVisitor9
             // 
             this.cmbVisitor9.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor9.FormattingEnabled = true;
-            this.cmbVisitor9.Location = new System.Drawing.Point(1120, 329);
-            this.cmbVisitor9.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor9.Location = new System.Drawing.Point(996, 263);
             this.cmbVisitor9.Name = "cmbVisitor9";
-            this.cmbVisitor9.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor9.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor9.TabIndex = 165;
             // 
             // cmbVisitor8
             // 
             this.cmbVisitor8.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor8.FormattingEnabled = true;
-            this.cmbVisitor8.Location = new System.Drawing.Point(832, 329);
-            this.cmbVisitor8.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor8.Location = new System.Drawing.Point(740, 263);
             this.cmbVisitor8.Name = "cmbVisitor8";
-            this.cmbVisitor8.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor8.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor8.TabIndex = 164;
             // 
             // cmbVisitor7
             // 
             this.cmbVisitor7.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor7.FormattingEnabled = true;
-            this.cmbVisitor7.Location = new System.Drawing.Point(544, 329);
-            this.cmbVisitor7.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor7.Location = new System.Drawing.Point(484, 263);
             this.cmbVisitor7.Name = "cmbVisitor7";
-            this.cmbVisitor7.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor7.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor7.TabIndex = 163;
             // 
             // cmbVisitor6
             // 
             this.cmbVisitor6.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor6.FormattingEnabled = true;
-            this.cmbVisitor6.Location = new System.Drawing.Point(256, 329);
-            this.cmbVisitor6.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor6.Location = new System.Drawing.Point(228, 263);
             this.cmbVisitor6.Name = "cmbVisitor6";
-            this.cmbVisitor6.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor6.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor6.TabIndex = 162;
             // 
             // cmbVisitor4
             // 
             this.cmbVisitor4.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor4.FormattingEnabled = true;
-            this.cmbVisitor4.Location = new System.Drawing.Point(1120, 278);
-            this.cmbVisitor4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor4.Location = new System.Drawing.Point(996, 222);
             this.cmbVisitor4.Name = "cmbVisitor4";
-            this.cmbVisitor4.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor4.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor4.TabIndex = 161;
             // 
             // cmbVisitor3
             // 
             this.cmbVisitor3.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor3.FormattingEnabled = true;
-            this.cmbVisitor3.Location = new System.Drawing.Point(832, 278);
-            this.cmbVisitor3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor3.Location = new System.Drawing.Point(740, 222);
             this.cmbVisitor3.Name = "cmbVisitor3";
-            this.cmbVisitor3.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor3.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor3.TabIndex = 160;
             // 
             // cmbVisitor2
             // 
             this.cmbVisitor2.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor2.FormattingEnabled = true;
-            this.cmbVisitor2.Location = new System.Drawing.Point(544, 278);
-            this.cmbVisitor2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor2.Location = new System.Drawing.Point(484, 222);
             this.cmbVisitor2.Name = "cmbVisitor2";
-            this.cmbVisitor2.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor2.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor2.TabIndex = 159;
             // 
             // cmbVisitor1
             // 
             this.cmbVisitor1.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor1.FormattingEnabled = true;
-            this.cmbVisitor1.Location = new System.Drawing.Point(256, 278);
-            this.cmbVisitor1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbVisitor1.Location = new System.Drawing.Point(228, 222);
             this.cmbVisitor1.Name = "cmbVisitor1";
-            this.cmbVisitor1.Size = new System.Drawing.Size(281, 40);
+            this.cmbVisitor1.Size = new System.Drawing.Size(250, 35);
             this.cmbVisitor1.TabIndex = 158;
             // 
             // cmbCompany
             // 
+            this.cmbCompany.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCompany.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbCompany.FormattingEnabled = true;
-            this.cmbCompany.Location = new System.Drawing.Point(256, 64);
-            this.cmbCompany.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmbCompany.Location = new System.Drawing.Point(228, 51);
             this.cmbCompany.Name = "cmbCompany";
-            this.cmbCompany.Size = new System.Drawing.Size(281, 40);
+            this.cmbCompany.Size = new System.Drawing.Size(250, 35);
             this.cmbCompany.TabIndex = 157;
             this.cmbCompany.SelectedIndexChanged += new System.EventHandler(this.cmbCompany_SelectedIndexChanged);
             // 
@@ -275,9 +261,9 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label6.Location = new System.Drawing.Point(230, 68);
+            this.label6.Location = new System.Drawing.Point(204, 54);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(21, 32);
+            this.label6.Size = new System.Drawing.Size(18, 27);
             this.label6.TabIndex = 147;
             this.label6.Text = ":";
             // 
@@ -285,9 +271,9 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label5.Location = new System.Drawing.Point(70, 210);
+            this.label5.Location = new System.Drawing.Point(62, 168);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(160, 32);
+            this.label5.Size = new System.Drawing.Size(136, 27);
             this.label5.TabIndex = 146;
             this.label5.Text = "No. of people";
             // 
@@ -307,10 +293,9 @@
             "8",
             "9",
             "10"});
-            this.cmb_NOP.Location = new System.Drawing.Point(256, 206);
-            this.cmb_NOP.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.cmb_NOP.Location = new System.Drawing.Point(228, 165);
             this.cmb_NOP.Name = "cmb_NOP";
-            this.cmb_NOP.Size = new System.Drawing.Size(281, 40);
+            this.cmb_NOP.Size = new System.Drawing.Size(250, 35);
             this.cmb_NOP.TabIndex = 143;
             this.cmb_NOP.SelectedIndexChanged += new System.EventHandler(this.cmb_NOP_SelectedIndexChanged);
             // 
@@ -318,9 +303,9 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label4.Location = new System.Drawing.Point(230, 210);
+            this.label4.Location = new System.Drawing.Point(204, 168);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(21, 32);
+            this.label4.Size = new System.Drawing.Size(18, 27);
             this.label4.TabIndex = 140;
             this.label4.Text = ":";
             // 
@@ -328,9 +313,9 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label3.Location = new System.Drawing.Point(70, 68);
+            this.label3.Location = new System.Drawing.Point(62, 54);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(115, 32);
+            this.label3.Size = new System.Drawing.Size(99, 27);
             this.label3.TabIndex = 139;
             this.label3.Text = "Company";
             // 
@@ -338,9 +323,9 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label2.Location = new System.Drawing.Point(230, 281);
+            this.label2.Location = new System.Drawing.Point(204, 225);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(21, 32);
+            this.label2.Size = new System.Drawing.Size(18, 27);
             this.label2.TabIndex = 138;
             this.label2.Text = ":";
             // 
@@ -348,9 +333,9 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label1.Location = new System.Drawing.Point(70, 281);
+            this.label1.Location = new System.Drawing.Point(62, 225);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(149, 32);
+            this.label1.Size = new System.Drawing.Size(127, 27);
             this.label1.TabIndex = 137;
             this.label1.Text = "Visitor name";
             // 
@@ -358,9 +343,9 @@
             // 
             this.label50.AutoSize = true;
             this.label50.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label50.Location = new System.Drawing.Point(230, 478);
+            this.label50.Location = new System.Drawing.Point(204, 382);
             this.label50.Name = "label50";
-            this.label50.Size = new System.Drawing.Size(21, 32);
+            this.label50.Size = new System.Drawing.Size(18, 27);
             this.label50.TabIndex = 133;
             this.label50.Text = ":";
             // 
@@ -368,9 +353,9 @@
             // 
             this.label48.AutoSize = true;
             this.label48.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label48.Location = new System.Drawing.Point(230, 408);
+            this.label48.Location = new System.Drawing.Point(204, 326);
             this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(21, 32);
+            this.label48.Size = new System.Drawing.Size(18, 27);
             this.label48.TabIndex = 132;
             this.label48.Text = ":";
             // 
@@ -380,10 +365,9 @@
             this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSubmit.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnSubmit.Location = new System.Drawing.Point(75, 590);
-            this.btnSubmit.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnSubmit.Location = new System.Drawing.Point(67, 472);
             this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(140, 42);
+            this.btnSubmit.Size = new System.Drawing.Size(124, 34);
             this.btnSubmit.TabIndex = 131;
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = true;
@@ -393,9 +377,9 @@
             // 
             this.label47.AutoSize = true;
             this.label47.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label47.Location = new System.Drawing.Point(70, 478);
+            this.label47.Location = new System.Drawing.Point(62, 382);
             this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(109, 32);
+            this.label47.Size = new System.Drawing.Size(93, 27);
             this.label47.TabIndex = 130;
             this.label47.Text = "End date";
             // 
@@ -403,9 +387,9 @@
             // 
             this.label45.AutoSize = true;
             this.label45.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label45.Location = new System.Drawing.Point(70, 408);
+            this.label45.Location = new System.Drawing.Point(62, 326);
             this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(119, 32);
+            this.label45.Size = new System.Drawing.Size(101, 27);
             this.label45.TabIndex = 129;
             this.label45.Text = "Start date";
             // 
@@ -413,31 +397,30 @@
             // 
             this.dtpEndDate.Font = new System.Drawing.Font("Calibri", 13F);
             this.dtpEndDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEndDate.Location = new System.Drawing.Point(256, 470);
-            this.dtpEndDate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.dtpEndDate.Location = new System.Drawing.Point(228, 376);
             this.dtpEndDate.Name = "dtpEndDate";
-            this.dtpEndDate.Size = new System.Drawing.Size(281, 39);
+            this.dtpEndDate.Size = new System.Drawing.Size(250, 34);
             this.dtpEndDate.TabIndex = 128;
             // 
             // dtpStartDate
             // 
             this.dtpStartDate.Font = new System.Drawing.Font("Calibri", 13F);
             this.dtpStartDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStartDate.Location = new System.Drawing.Point(256, 400);
-            this.dtpStartDate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.dtpStartDate.Location = new System.Drawing.Point(228, 320);
             this.dtpStartDate.Name = "dtpStartDate";
-            this.dtpStartDate.Size = new System.Drawing.Size(281, 39);
+            this.dtpStartDate.Size = new System.Drawing.Size(250, 34);
             this.dtpStartDate.TabIndex = 127;
             // 
             // UC_W_InputVisitor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.gbExternal);
             this.Controls.Add(this.flowLayoutPanel1);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "UC_W_InputVisitor";
-            this.Size = new System.Drawing.Size(1731, 745);
+            this.Size = new System.Drawing.Size(1539, 596);
             this.Load += new System.EventHandler(this.UC_InputVisitor_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.gbExternal.ResumeLayout(false);

@@ -512,6 +512,13 @@ namespace HRAdmin.Forms
             btn_AccidentPDF.Visible = false;
             btnInspect.Visible = false;
             btn_Accident.Visible = false;
+            button4.Visible = false; //external
+            button5.Visible = false; //internal
+            button6.Visible = false; //view report
+            btnVisitor.Visible = false; //visitor
+            btnWithdrawEntry.Visible = false; //withdraw entry
+            btnNewVisitor.Visible = false; //new visitor
+            btnUpdate.Visible = false; //update
             UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart);
             addControls(ug);
         }

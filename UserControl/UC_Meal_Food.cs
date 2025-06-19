@@ -1094,11 +1094,25 @@ namespace HRAdmin.UserControl
             string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
             string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
             string requesterID = selectedRow.Cells["RequesterID"].Value?.ToString();
+            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
+            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString();
 
             // Validate the selection
             if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource) || string.IsNullOrEmpty(requesterID))
             {
                 MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Check if the order is checked or approved
+            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Checked")
+            {
+                MessageBox.Show("This order has already been checked and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
+            {
+                MessageBox.Show("This order has already been approved and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1178,102 +1192,6 @@ namespace HRAdmin.UserControl
                     Debug.WriteLine($"Error withdrawing order: {ex.Message}");
                 }
             }
-        }
-
-
-        private void dtDelivery_ValueChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label7_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label12_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void panel3_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void groupBox2_Enter_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void panel4_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label17_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label16_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label13_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label11_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label10_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label8_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btNext_Click(object sender, EventArgs e)
@@ -1400,21 +1318,8 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-        private void panel2_Paint_1(object sender, PaintEventArgs e) { }
         private void cmbOccasion_SelectedIndexChanged(object sender, EventArgs rilasciato) { }
-        private void label2_Click(object sender, EventArgs e) { }
         private void txtEvent_TextChanged(object sender, EventArgs e) { }
-        private void dtRequest_ValueChanged(object sender, EventArgs e) { }
         private void dtDelivery_ValueChanged(object sender, EventArgs e) { }
-        private void panel2_Paint(object sender, PaintEventArgs e) { }
-        private void groupBox2_Enter(object sender, EventArgs e) { }
-        private void dtRequest_Click(object sender, EventArgs e) { }
-        private void EventOccasion_Click(object sender, EventArgs e) { }
-        private void gbFoodrequest_Enter(object sender, EventArgs e) { }
-        private void cmbRequester_SelectedIndexChanged_1(object sender, EventArgs e) { }
-        private void dgv_OS_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
-        private void label14_Click(object sender, EventArgs e) { }
-        private void label15_Click(object sender, EventArgs e) { }
-
     }
 }

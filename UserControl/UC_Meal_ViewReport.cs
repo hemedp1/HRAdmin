@@ -201,7 +201,7 @@ namespace HRAdmin.UserControl
                     conn.Open();
                     string query = @"
                      SELECT OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails,
-                     Menu, Fruit, Snack, Drink1, HOTorCOLD1, Drink2, HOTorCOLD2, No_pax, DeliveryTime, Remark,
+                     Menu, Fruit, Snack, Drink1, HOTorCOLD1, Drink2, HOTorCOLD2, No_pax, DeliveryTime, Remark, DeliveryPlace,
                      CheckStatus, CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, CheckedDepartment, ApprovedDepartment
                      FROM tbl_InternalFoodOrder
                      WHERE OrderID = @OrderID";
@@ -228,6 +228,7 @@ namespace HRAdmin.UserControl
                                 orderDetails["HOTorCOLD2"] = reader["HOTorCOLD2"] != DBNull.Value ? reader["HOTorCOLD2"].ToString() : "-";
                                 orderDetails["No_pax"] = reader["No_pax"] != DBNull.Value ? reader["No_pax"].ToString() : "-";
                                 orderDetails["DeliveryTime"] = reader["DeliveryTime"] != DBNull.Value ? reader["DeliveryTime"].ToString() : "-";
+                                orderDetails["DeliveryPlace"] = reader["DeliveryPlace"] != DBNull.Value ? reader["DeliveryPlace"].ToString() : "-";
                                 orderDetails["Remark"] = reader["Remark"] != DBNull.Value ? reader["Remark"].ToString() : "-";
                                 orderDetails["CheckStatus"] = reader["CheckStatus"] != DBNull.Value ? reader["CheckStatus"].ToString() : "";
                                 orderDetails["CheckedBy"] = reader["CheckedBy"] != DBNull.Value ? reader["CheckedBy"].ToString() : "";
@@ -414,8 +415,7 @@ namespace HRAdmin.UserControl
                             mealType = "Dinner";
                     }
 
-                    AddStyledTableRow(detailsTable2, "Meal type:", mealType, bodyFont, italicBodyFont, 0);
-                    AddStyledTableRow(detailsTable2, "Delivery time:", orderDetails["DeliveryTime"].ToString(), bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Meal Type:", mealType, bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Dish:", orderDetails["Menu"].ToString(), bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Fruit:", orderDetails["Fruit"].ToString(), bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Other:", orderDetails["Snack"].ToString(), bodyFont, italicBodyFont, 0);
@@ -439,6 +439,8 @@ namespace HRAdmin.UserControl
                     AddStyledTableRow(detailsTable2, "Drink2 (Hot/Cold):", combinedDrink2Value, bodyFont, italicBodyFont, 0);
 
                     AddStyledTableRow(detailsTable2, "No. of Pax:", orderDetails["No_pax"].ToString(), bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery Time:", orderDetails["DeliveryTime"].ToString(), bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery Place:", orderDetails["DeliveryPlace"].ToString(), bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Remarks:", orderDetails["Remark"].ToString(), bodyFont, italicBodyFont, 0, true);
 
                     document.Add(detailsTable2);
@@ -473,7 +475,7 @@ namespace HRAdmin.UserControl
                     conn.Open();
                     string query = @"
         SELECT OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails,
-               B_Nofpax_P, B_DeliveryTime, L_Nofpax_B, L_Nofpax_P, L_DeliveryTime, T_Nofpax_P, T_DeliveryTime, Remark,
+               B_Nofpax_P, B_DeliveryTime, L_Nofpax_B, L_Nofpax_P, L_DeliveryTime, T_Nofpax_P, T_DeliveryTime, Remark, DeliveryPlace,
                CheckStatus, CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, CheckedDepartment, ApprovedDepartment, BreakfastPackage, LunchPackage, TeaPackage
         FROM tbl_ExternalFoodOrder
         WHERE OrderID = @OrderID";
@@ -498,6 +500,7 @@ namespace HRAdmin.UserControl
                                 orderDetails["L_DeliveryTime"] = reader["L_DeliveryTime"] != DBNull.Value ? reader["L_DeliveryTime"].ToString() : "-";
                                 orderDetails["T_Nofpax_P"] = reader["T_Nofpax_P"] != DBNull.Value ? reader["T_Nofpax_P"].ToString() : "-";
                                 orderDetails["T_DeliveryTime"] = reader["T_DeliveryTime"] != DBNull.Value ? reader["T_DeliveryTime"].ToString() : "-";
+                                orderDetails["DeliveryPlace"] = reader["DeliveryPlace"] != DBNull.Value ? reader["DeliveryPlace"].ToString() : "-";
                                 orderDetails["Remark"] = reader["Remark"] != DBNull.Value ? reader["Remark"].ToString() : "-";
                                 orderDetails["CheckStatus"] = reader["CheckStatus"] != DBNull.Value ? reader["CheckStatus"].ToString() : "";
                                 orderDetails["CheckedBy"] = reader["CheckedBy"] != DBNull.Value ? reader["CheckedBy"].ToString() : "";
@@ -728,6 +731,7 @@ namespace HRAdmin.UserControl
                     AddStyledTableRow(detailsTable2, "Tea Package:", teaPackage, bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Tea Packing Pax:", orderDetails["T_Nofpax_P"].ToString(), bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Tea Delivery Time:", orderDetails["T_DeliveryTime"].ToString(), bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery Place:", orderDetails["DeliveryPlace"].ToString(), bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Remarks:", orderDetails["Remark"].ToString(), bodyFont, italicBodyFont, 0, true);
 
                     document.Add(detailsTable2);

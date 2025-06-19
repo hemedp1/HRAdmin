@@ -106,6 +106,11 @@ namespace HRAdmin.UserControl
                     MessageBox.Show("Remark required.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+                if (cmb_DeliveryP.SelectedItem == null)
+                {
+                    MessageBox.Show("Delivery Place required.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
             }
 
             // Validate Lunch section
@@ -172,8 +177,8 @@ namespace HRAdmin.UserControl
                 con.Open();
 
                 string insertQuery = @"
-INSERT INTO tbl_ExternalFoodOrder (OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails, B_Nofpax_P, B_DeliveryTime, L_Nofpax_B, L_Nofpax_P, L_DeliveryTime, T_Nofpax_P, T_DeliveryTime, Remark, BreakfastPackage, LunchPackage, TeaPackage, OrderType) 
-VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @DeliveryDate, @EventDetails, @B_Nofpax_P, @B_DeliveryTime, @L_Nofpax_B, @L_Nofpax_P, @L_DeliveryTime, @T_Nofpax_P, @T_DeliveryTime, @Remark, @BreakfastPackage, @LunchPackage, @TeaPackage, @OrderType)";
+INSERT INTO tbl_ExternalFoodOrder (OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails, B_Nofpax_P, B_DeliveryTime, L_Nofpax_B, L_Nofpax_P, L_DeliveryTime, T_Nofpax_P, T_DeliveryTime, Remark, BreakfastPackage, LunchPackage, TeaPackage, OrderType, DeliveryPlace) 
+VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @DeliveryDate, @EventDetails, @B_Nofpax_P, @B_DeliveryTime, @L_Nofpax_B, @L_Nofpax_P, @L_DeliveryTime, @T_Nofpax_P, @T_DeliveryTime, @Remark, @BreakfastPackage, @LunchPackage, @TeaPackage, @OrderType, @DeliveryPlace)";
 
                 SqlCommand insertCmd = new SqlCommand(insertQuery, con);
 
@@ -198,6 +203,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 insertCmd.Parameters.AddWithValue("@T_DeliveryTime", cmbT_DT.SelectedItem?.ToString() ?? (object)DBNull.Value);
                 insertCmd.Parameters.AddWithValue("@Remark", string.IsNullOrEmpty(txtE_Remark.Text) ? (object)DBNull.Value : txtE_Remark.Text);
                 insertCmd.Parameters.AddWithValue("@OrderType", $"{cmbB_Package.SelectedItem?.ToString() ?? "-"},{cmbL_Package.SelectedItem?.ToString() ?? "-"},{cmbT_Package.SelectedItem?.ToString() ?? "-"}");
+                insertCmd.Parameters.AddWithValue("@DeliveryPlace", cmb_DeliveryP.SelectedItem?.ToString() ?? (object)DBNull.Value);
 
                 insertCmd.ExecuteNonQuery();
 
@@ -342,6 +348,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                     string lDeliveryTime = "";
                     string tNofpaxP = "";
                     string tDeliveryTime = "";
+                    string DeliveryP = ""; 
                     string remark = "";
 
                     using (SqlConnection conn = new SqlConnection(connectionString))
@@ -349,7 +356,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         conn.Open();
                         string query = @"
                     SELECT CheckStatus, ApproveStatus, B_Nofpax_P, B_DeliveryTime, L_Nofpax_B, L_Nofpax_P, 
-                           L_DeliveryTime, T_Nofpax_P, T_DeliveryTime, Remark
+                           L_DeliveryTime, T_Nofpax_P, T_DeliveryTime, DeliveryPlace, Remark
                     FROM tbl_ExternalFoodOrder 
                     WHERE OrderID = @OrderID";
                         using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -368,6 +375,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                                     lDeliveryTime = reader["L_DeliveryTime"] != DBNull.Value ? reader["L_DeliveryTime"].ToString() : "";
                                     tNofpaxP = reader["T_Nofpax_P"] != DBNull.Value ? reader["T_Nofpax_P"].ToString() : "";
                                     tDeliveryTime = reader["T_DeliveryTime"] != DBNull.Value ? reader["T_DeliveryTime"].ToString() : "";
+                                    DeliveryP = reader["DeliveryPlace"] != DBNull.Value ? reader["DeliveryPlace"].ToString() : "";
                                     remark = reader["Remark"] != DBNull.Value ? reader["Remark"].ToString() : "";
                                 }
                             }
@@ -383,6 +391,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                     lDeliveryTime = string.IsNullOrEmpty(lDeliveryTime) ? "-" : lDeliveryTime;
                     tNofpaxP = string.IsNullOrEmpty(tNofpaxP) ? "-" : tNofpaxP;
                     tDeliveryTime = string.IsNullOrEmpty(tDeliveryTime) ? "-" : tDeliveryTime;
+                    DeliveryP = string.IsNullOrEmpty(DeliveryP) ? "-" : DeliveryP;
                     remark = string.IsNullOrEmpty(remark) ? "-" : remark;
 
                     // Extract package from ComboBoxes, handling null SelectedItem
@@ -496,6 +505,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                     AddStyledTableRow(detailsTable2, "Tea Package:", teaPackage, bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Tea Packing Pax:", tNofpaxP, bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Tea Delivery Time:", tDeliveryTime, bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery Place:", DeliveryP, bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Remarks:", remark, bodyFont, italicBodyFont, 0, true);
 
                     document.Add(detailsTable2);
@@ -821,54 +831,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             addControls(ug);
         }
 
-        private void textBox2_TextChanged_1(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtB_Pack.Text))
-            {
-                if (!int.TryParse(txtB_Pack.Text, out int number) || number < 1 || number > 100)
-                {
-                    MessageBox.Show("Please enter a number between 0 and 100.");
-                    txtB_Pack.Text = "";
-                }
-            }
-        }
-
-        private void txtL_Pack_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtL_Pack.Text))
-            {
-                if (!int.TryParse(txtL_Pack.Text, out int number) || number < 1 || number > 100)
-                {
-                    MessageBox.Show("Please enter a number between 0 and 100.");
-                    txtL_Pack.Text = "";
-                }
-            }
-        }
-
-        private void textBox5_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtL_Buffet.Text))
-            {
-                if (!int.TryParse(txtL_Buffet.Text, out int number) || number < 1 || number > 100)
-                {
-                    MessageBox.Show("Please enter a number between 0 and 100.");
-                    txtL_Buffet.Text = "";
-                }
-            }
-        }
-
-        private void txtT_Pack_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txtT_Pack.Text))
-            {
-                if (!int.TryParse(txtT_Pack.Text, out int number) || number < 1 || number > 100)
-                {
-                    MessageBox.Show("Please enter a number between 0 and 100.");
-                    txtT_Pack.Text = "";
-                }
-            }
-        }
-
         private void loadmenu()
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -1055,45 +1017,57 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             }
         }
 
-        private void label105_Click(object sender, EventArgs e) { }
-        private void lblRequestDate2_Click(object sender, EventArgs e) { }
-        private void groupBox1_Enter(object sender, EventArgs e) { }
-        private void UC_Meal_External_Load(object sender, EventArgs e) { }
-        private void cmb_DeliveryT_SelectedIndexChanged(object sender, EventArgs e) { }
-        private void dataGridView1_CellContentClick_3(object sender, DataGridViewCellEventArgs e) { }
-        private void dgvC_B_P_CellContentClick_1(object sender, DataGridViewCellEventArgs e) { }
-        private void label21_Click(object sender, EventArgs e) { }
-        private void panel13_Paint(object sender, PaintEventArgs e) { }
-        private void label7_Click(object sender, EventArgs e) { }
-        private void label12_Click(object sender, EventArgs e) { }
-        private void label17_Click(object sender, EventArgs e) { }
-        private void label26_Click(object sender, EventArgs e) { }
-        private void panel15_Paint(object sender, PaintEventArgs e) { }
-        private void label44_Click(object sender, EventArgs e) { }
-
-        private void txtE_Remark_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void txtB_Pack_TextChanged(object sender, EventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(txtB_Pack.Text))
+            {
+                if (!int.TryParse(txtB_Pack.Text, out int number) || number < 0 || number > 100)
+                {
+                    MessageBox.Show("Please enter a number between 0 and 100.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtB_Pack.Text = "";
+                }
+            }
         }
-
-        private void cmbB_DT_SelectedIndexChanged(object sender, EventArgs e)
+        private void txtL_Buffet_TextChanged(object sender, EventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(txtL_Buffet.Text))
+            {
+                if (!int.TryParse(txtL_Buffet.Text, out int number) || number < 0 || number > 100)
+                {
+                    MessageBox.Show("Please enter a number between 0 and 100.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtL_Buffet.Text = "";
+                }
+            }
         }
 
-        private void cmbL_DT_SelectedIndexChanged(object sender, EventArgs e)
+        private void txtL_Pack_TextChanged(object sender, EventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(txtL_Pack.Text))
+            {
+                if (!int.TryParse(txtL_Pack.Text, out int number) || number < 0 || number > 100)
+                {
+                    MessageBox.Show("Please enter a number between 0 and 100.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtL_Pack.Text = "";
+                }
+            }
         }
 
-        private void dgvA_B_P_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void txtT_Pack_TextChanged(object sender, EventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(txtT_Pack.Text))
+            {
+                if (!int.TryParse(txtT_Pack.Text, out int number) || number < 0 || number > 100)
+                {
+                    MessageBox.Show("Please enter a number between 0 and 100.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtT_Pack.Text = "";
+                }
+            }
         }
+        private void lblRequestDate2_Click(object sender, EventArgs e) { }
+        private void UC_Meal_External_Load(object sender, EventArgs e) { }
+        private void txtE_Remark_TextChanged(object sender, EventArgs e) { }
+        private void cmbB_DT_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void cmbL_DT_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void dgvA_B_P_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
     }
 }
