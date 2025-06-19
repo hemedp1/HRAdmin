@@ -148,7 +148,7 @@ namespace HRAdmin.UserControl
 
                         if (count > 0)
                         {
-                            MessageBox.Show("This car is still in an active booking and cannot be marked as 'Available'.",
+                            MessageBox.Show("This car is still in an active booking and inspection cannot be done.",
                                             "Update Restricted", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                             return;  // Exit the function to prevent the update
