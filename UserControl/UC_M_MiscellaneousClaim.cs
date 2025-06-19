@@ -249,7 +249,7 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void LoadData(string requesterID = null, string department = null)
+        private void LoadData(string requester = null, string department = null)
         {
             if (dgvMS == null)
             {
@@ -270,7 +270,7 @@ namespace HRAdmin.UserControl
 	                   ApprovedByAccount, AccountApprovedDate 
                 FROM tbl_MiscellaneousClaim
                 WHERE CAST(RequestDate AS DATE) = @Today
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                      AND (@Requester IS NULL OR Requester = @Requester)
                       AND (@Department IS NULL OR Department = @Department)
                 ORDER BY RequestDate ASC";
                     break;
@@ -282,7 +282,7 @@ namespace HRAdmin.UserControl
 	                   ApprovedByAccount, AccountApprovedDate 
                 FROM tbl_MiscellaneousClaim
                 WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                      AND (@Requester IS NULL OR Requester = @Requester)
                       AND (@Department IS NULL OR Department = @Department)
                 ORDER BY RequestDate ASC";
 
@@ -295,7 +295,7 @@ namespace HRAdmin.UserControl
 	                   ApprovedByAccount, AccountApprovedDate 
                 FROM tbl_MiscellaneousClaim
                 WHERE YEAR(RequestDate) = @Year AND MONTH(RequestDate) = @Month
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                      AND (@Requester IS NULL OR Requester = @Requester)
                       AND (@Department IS NULL OR Department = @Department)
                 ORDER BY RequestDate ASC";
 
@@ -313,7 +313,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         // Add requester and department parameters
-                        cmd.Parameters.Add("@RequesterID", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(requesterID) ? (object)DBNull.Value : requesterID;
+                        cmd.Parameters.Add("@Requester", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(requester) ? (object)DBNull.Value : requester;
                         cmd.Parameters.Add("@Department", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(department) ? (object)DBNull.Value : department;
 
                         // Add date filter parameters
@@ -334,7 +334,7 @@ namespace HRAdmin.UserControl
                             cmd.Parameters.AddWithValue("@Month", today.Month);
                         }
 
-                        Debug.WriteLine($"Executing LoadData with RequesterID: {(string.IsNullOrEmpty(requesterID) ? "NULL" : requesterID)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, Filter: {filterType}");
+                        Debug.WriteLine($"Executing LoadData with Requester: {(string.IsNullOrEmpty(requester) ? "NULL" : requester)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, Filter: {filterType}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -348,7 +348,7 @@ namespace HRAdmin.UserControl
                         Debug.WriteLine($"Rows retrieved: {dt.Rows.Count}");
                         foreach (DataRow row in dt.Rows)
                         {
-                            Debug.WriteLine($"Row: OrderID={row["OrderID"]}, RequesterID={row["RequesterID"]}, Department={row["Department"]}, OrderSource={row["OrderSource"]}");
+                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, Requester={row["Requester"]}, Department={row["Department"]}");
                         }
 
                         // Bind to DataGridView
@@ -371,7 +371,7 @@ namespace HRAdmin.UserControl
             if (selectedUsername == "All Users" || string.IsNullOrEmpty(selectedUsername))
             {
                 selectedUsername = null;
-                Debug.WriteLine("Loading data with no RequesterID filter.");
+                Debug.WriteLine("Loading data with no Requester filter.");
             }
             if (selectedDepartment == "All Departments" || string.IsNullOrEmpty(selectedDepartment))
             {
@@ -639,9 +639,9 @@ namespace HRAdmin.UserControl
             // Add columns as in the original code
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "OrderID",
-                HeaderText = "Order ID",
-                DataPropertyName = "OrderID",
+                Name = "SerialNo",
+                HeaderText = "Serial No",
+                DataPropertyName = "SerialNo",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -652,9 +652,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "RequesterID",
+                Name = "Requester",
                 HeaderText = "Requester",
-                DataPropertyName = "RequesterID",
+                DataPropertyName = "Requester",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -678,35 +678,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "OrderSource",
-                HeaderText = "Occasion Type",
-                DataPropertyName = "OrderSource",
-                Width = fixedColumnWidth,
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
-                },
-            });
-
-            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
-            {
-                Name = "OrderType",
-                HeaderText = "Order Type",
-                DataPropertyName = "OrderType",
-                Width = fixedColumnWidth,
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
-                },
-            });
-
-            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
-            {
-                Name = "EventDetails",
-                HeaderText = "Event",
-                DataPropertyName = "EventDetails",
+                Name = "ExpensesType",
+                HeaderText = "Expenses Type",
+                DataPropertyName = "ExpensesType",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -730,9 +704,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "DeliveryDate",
-                HeaderText = "Delivery Date",
-                DataPropertyName = "DeliveryDate",
+                Name = "Vendor",
+                HeaderText = "Vendor",
+                DataPropertyName = "Vendor",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -743,9 +717,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "CheckStatus",
-                HeaderText = "Check Status",
-                DataPropertyName = "CheckStatus",
+                Name = "Item",
+                HeaderText = "Item",
+                DataPropertyName = "Item",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -756,9 +730,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "CheckedBy",
-                HeaderText = "Checked By",
-                DataPropertyName = "CheckedBy",
+                Name = "InvoiceAmount",
+                HeaderText = "Invoice Amount",
+                DataPropertyName = "InvoiceAmount",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -769,9 +743,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "CheckedDate",
-                HeaderText = "Checked Date",
-                DataPropertyName = "CheckedDate",
+                Name = "InvoiceNo",
+                HeaderText = "Invoice No",
+                DataPropertyName = "InvoiceNo",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -782,9 +756,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "ApproveStatus",
-                HeaderText = "Approval Status",
-                DataPropertyName = "ApproveStatus",
+                Name = "Invoice",
+                HeaderText = "Invoice",
+                DataPropertyName = "Invoice",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -795,9 +769,9 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "ApprovedBy",
-                HeaderText = "Approved By",
-                DataPropertyName = "ApprovedBy",
+                Name = "HODApprovalStatus",
+                HeaderText = "HOD Approval Status",
+                DataPropertyName = "HODApprovalStatus",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -808,9 +782,100 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "ApprovedDate",
-                HeaderText = "Approved Date",
-                DataPropertyName = "ApprovedDate",
+                Name = "ApprovedByHOD",
+                HeaderText = "Approved By HOD",
+                DataPropertyName = "ApprovedByHOD",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "HODApprovedDate",
+                HeaderText = "HOD Approved Date",
+                DataPropertyName = "HODApprovedDate",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "HRApprovalStatus",
+                HeaderText = "HR Approval Status",
+                DataPropertyName = "HRApprovalStatus",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "ApprovedByHR",
+                HeaderText = "Approved By HR",
+                DataPropertyName = "ApprovedByHR",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "HRApprovedDate",
+                HeaderText = "HR Approved Date",
+                DataPropertyName = "HRApprovedDate",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "AccountApprovalStatus",
+                HeaderText = "Account Approval Status",
+                DataPropertyName = "AccountApprovalStatus",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "ApprovedByAccount",
+                HeaderText = "Approved By Account",
+                DataPropertyName = "ApprovedByAccount",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "AccountApprovedDate",
+                HeaderText = "Account Approved Date",
+                DataPropertyName = "AccountApprovedDate",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
