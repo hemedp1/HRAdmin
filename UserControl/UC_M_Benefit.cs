@@ -16,11 +16,13 @@ namespace HRAdmin.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
-        public UC_M_Benefit(string username, string department)
+        private string expensesType; // To store the selected ExpensesType
+        public UC_M_Benefit(string username, string department, string selectedType)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
+            expensesType = selectedType; // Set ExpensesType based on navigation
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {

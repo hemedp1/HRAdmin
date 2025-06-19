@@ -81,35 +81,58 @@ namespace HRAdmin.UserControl
                 HeaderText = "Attach PDF",
                 Text = "Attach",
                 UseColumnTextForButtonValue = true,
-                Width = 80
+                Width = 50
             };
             dgvW.Columns.Add(attachButtonColumn);
 
             // Handle the button click event
             dgvW.CellContentClick += DgvW_CellContentClick;
         }
-        private void DgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)     /////////////////////////   Add on 10:57 18/06/25 to handle file attachments:
+        private void DgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == dgvW.Columns["AttachInvoice"].Index && e.RowIndex >= 0)
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog
+                // Ensure the row is not the new row placeholder
+                if (e.RowIndex < dgvW.Rows.Count - 1 || !dgvW.AllowUserToAddRows)
                 {
-                    Filter = "PDF Files (*.pdf)|*.pdf",
-                    Title = "Select an Invoice PDF"
-                };
+                    OpenFileDialog openFileDialog = new OpenFileDialog
+                    {
+                        Filter = "PDF Files (*.pdf)|*.pdf",
+                        Title = "Select an Invoice PDF"
+                    };
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string filePath = openFileDialog.FileName;
+                        byte[] fileBytes = File.ReadAllBytes(filePath);
+
+                        // Get the DataTable from DataSource
+                        DataTable dt = (DataTable)dgvW.DataSource;
+
+                        // Ensure the DataTable has enough rows
+                        if (dt.Rows.Count > e.RowIndex)
+                        {
+                            // Update the existing row
+                            dt.Rows[e.RowIndex]["Invoice"] = fileBytes;
+                        }
+                        else
+                        {
+                            // Handle the case where the row is new and needs to be added
+                            DataRow newRow = dt.NewRow();
+                            newRow["Invoice"] = fileBytes;
+                            dt.Rows.Add(newRow);
+                        }
+
+                        // Optional: Show a confirmation
+                        MessageBox.Show("PDF attached successfully!", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
                 {
-                    string filePath = openFileDialog.FileName;
-                    byte[] fileBytes = File.ReadAllBytes(filePath);
-
-                    // Store the PDF bytes in the Invoice column
-                    DataTable dt = (DataTable)dgvW.DataSource;
-                    dt.Rows[e.RowIndex]["Invoice"] = fileBytes;
-
-                    // Optional: Show a confirmation
-                    MessageBox.Show("PDF attached successfully!", "Success",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Inform the user to fill in the row first
+                    MessageBox.Show("Please fill in the row details before attaching a file.", "Warning",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -180,10 +203,10 @@ namespace HRAdmin.UserControl
                     con.Open();
 
                     string insertQuery = @"INSERT INTO tbl_MiscellaneousClaim 
-                                         (SerialNo, Requester, Department, ExpensesType, RequestDate, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice, 
-                                         HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
-                                         VALUES (@SerialNo, @Requester, @Department, @ExpensesType, @RequestDate, @Vendor, @Item, @InvoiceAmount, 
-                                         @InvoiceNo, @Invoice, @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
+                                 (SerialNo, Requester, Department, ExpensesType, RequestDate, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice, 
+                                 HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
+                                 VALUES (@SerialNo, @Requester, @Department, @ExpensesType, @RequestDate, @Vendor, @Item, @InvoiceAmount, 
+                                 @InvoiceNo, @Invoice, @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
 
                     using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                     {
@@ -192,7 +215,7 @@ namespace HRAdmin.UserControl
 
                         if (newRows == null || newRows.Rows.Count == 0)
                         {
-                            MessageBox.Show("No new rows to add.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show("No data to submit the claim.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             return;
                         }
 
@@ -213,14 +236,15 @@ namespace HRAdmin.UserControl
                             row["AccountApprovalStatus"] = row["AccountApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["AccountApprovalStatus"]?.ToString())
                                 ? "Pending" : row["AccountApprovalStatus"];
 
-                            // Generate SerialNo (assuming ID column exists or using a counter)
-                            int id = dt.Rows.IndexOf(row) + 1; // Fallback if ID column is unavailable
+                            // Generate SerialNo
+                            int id = dt.Rows.IndexOf(row) + 1;
                             if (row.Table.Columns.Contains("ID"))
                                 id = Convert.ToInt32(row["ID"]);
                             string combinedValue = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy_HHmmss}_{id}";
                             row["SerialNo"] = combinedValue;
 
-                            byte[] invoiceBytes = null;                                                                                 /////////////////////////   Add on 10:57 18/06/25 to handle the varbinary data:
+                            // Handle Invoice column
+                            byte[] invoiceBytes = null;
                             if (row["Invoice"] != DBNull.Value && row["Invoice"] != null)
                             {
                                 if (row["Invoice"] is byte[])
@@ -229,11 +253,15 @@ namespace HRAdmin.UserControl
                                 }
                                 else if (row["Invoice"] is string)
                                 {
-                                    // If it's a string path (alternative approach)
                                     string filePath = row["Invoice"].ToString();
                                     if (File.Exists(filePath))
                                     {
                                         invoiceBytes = File.ReadAllBytes(filePath);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show($"File not found: {filePath}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        continue; // Skip this row if file is invalid
                                     }
                                 }
                             }
@@ -251,12 +279,12 @@ namespace HRAdmin.UserControl
                             cmd.Parameters.Add("@Item", SqlDbType.NVarChar).Value = row["Item"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@InvoiceAmount", SqlDbType.NVarChar).Value = row["InvoiceAmount"] ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@InvoiceNo", SqlDbType.NVarChar).Value = row["InvoiceNo"] ?? (object)DBNull.Value;
-                            cmd.Parameters.Add("@Invoice", SqlDbType.VarBinary).Value = row["Invoice"] ?? (object)DBNull.Value;
+                            cmd.Parameters.Add("@Invoice", SqlDbType.VarBinary).Value = invoiceBytes ?? (object)DBNull.Value;
                             cmd.Parameters.Add("@HODApprovalStatus", SqlDbType.NVarChar).Value = row["HODApprovalStatus"];
                             cmd.Parameters.Add("@HRApprovalStatus", SqlDbType.NVarChar).Value = row["HRApprovalStatus"];
                             cmd.Parameters.Add("@AccountApprovalStatus", SqlDbType.NVarChar).Value = row["AccountApprovalStatus"];
 
-                            cmd.ExecuteNonQuery(); // Execute insert for each row
+                            cmd.ExecuteNonQuery();
                         }
 
                         dt.AcceptChanges();

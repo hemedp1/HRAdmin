@@ -265,7 +265,6 @@ namespace HRAdmin.UserControl
                     detailsTable2.SetWidths(new float[] { 0.5f, 3f });
 
                     AddStyledTableRow(detailsTable2, "Meal type:", selectedMeal ?? "-", bodyFont, italicBodyFont, 0);
-                    AddStyledTableRow(detailsTable2, "Delivery time:", cmb_DeliveryT.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Dish:", cmb_Menu.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Other:", cmb_Snack.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 0);
 
@@ -288,6 +287,8 @@ namespace HRAdmin.UserControl
                     AddStyledTableRow(detailsTable2, "Drink2 (Hot/Cold):", combinedDrink2Value, bodyFont, italicBodyFont, 0);
 
                     AddStyledTableRow(detailsTable2, "No. of Pax:", txt_Npax.Text ?? "-", bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery time:", cmb_DeliveryT.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 1);
+                    AddStyledTableRow(detailsTable2, "Delivery place:", cmb_DeliveryP.SelectedItem?.ToString() ?? "-", bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Remarks:", txt_Remark.Text ?? "-", bodyFont, italicBodyFont, 0, true);
 
                     document.Add(detailsTable2);
@@ -435,6 +436,7 @@ namespace HRAdmin.UserControl
                 cmb_Snack.Enabled = true;
                 txt_Npax.Enabled = true;
                 cmb_DeliveryT.Enabled = true;
+                cmb_DeliveryP.Enabled = true; 
                 txt_Remark.Enabled = true;
 
                 // Clear ComboBoxes
@@ -447,6 +449,7 @@ namespace HRAdmin.UserControl
                 cmb_HC2.Items.Clear();
                 cmb_Snack.Items.Clear();
                 cmb_DeliveryT.Items.Clear();
+                cmb_DeliveryP.Items.Clear();
 
                 // Database connection string
                 string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -484,6 +487,12 @@ namespace HRAdmin.UserControl
                                 {
                             "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
                                 });
+
+                                // Populate Delivery Places
+                                cmb_DeliveryP.Items.AddRange(new string[]
+                                {
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
+                                });
                                 break;
 
                             case "lunch":
@@ -510,6 +519,12 @@ namespace HRAdmin.UserControl
                                 cmb_DeliveryT.Items.AddRange(new string[]
                                 {
                             "12:00", "12:30", "13:00", "13:30", "14:00", "14:30"
+                                });
+
+                                // Populate Delivery Places
+                                cmb_DeliveryP.Items.AddRange(new string[]
+                                {
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
                                 });
                                 break;
 
@@ -538,6 +553,12 @@ namespace HRAdmin.UserControl
                                 {
                             "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"
                                 });
+
+                                // Populate Delivery Places
+                                cmb_DeliveryP.Items.AddRange(new string[]
+                                {
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
+                                });
                                 break;
 
                             case "dinner":
@@ -563,6 +584,12 @@ namespace HRAdmin.UserControl
                                 {
                             "19:00", "19:30", "20:00"
                                 });
+
+                                // Populate Delivery Places
+                                cmb_DeliveryP.Items.AddRange(new string[]
+                                {
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
+                                });
                                 break;
                         }
                     }
@@ -583,6 +610,7 @@ namespace HRAdmin.UserControl
                 cmb_Snack.Enabled = false;
                 txt_Npax.Enabled = false;
                 cmb_DeliveryT.Enabled = false;
+                cmb_DeliveryP.Enabled = false;
                 txt_Remark.Enabled = false;
             }
         }
@@ -718,6 +746,13 @@ namespace HRAdmin.UserControl
                 return;
             }
 
+            // Validate delivery place
+            if (cmb_DeliveryP.SelectedItem == null)
+            {
+                MessageBox.Show("Delivery Place required.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             // Validate remark
             if (string.IsNullOrWhiteSpace(txt_Remark.Text))
             {
@@ -775,8 +810,8 @@ namespace HRAdmin.UserControl
                 con.Open();
 
                 string insertQuery = @"
-                INSERT INTO tbl_InternalFoodOrder (OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails, Menu, Snack, Drink1, HOTorCOLD1, Drink2, HOTorCOLD2, No_pax, DeliveryTime, Remark, OrderType) 
-                VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @DeliveryDate, @EventDetails, @Menu, @Snack, @Drink1, @HOTorCOLD1, @Drink2, @HOTorCOLD2, @No_pax, @DeliveryTime, @Remark, @OrderType)";
+                INSERT INTO tbl_InternalFoodOrder (OrderID, RequesterID, Department, OccasionType, RequestDate, DeliveryDate, EventDetails, Menu, Snack, Drink1, HOTorCOLD1, Drink2, HOTorCOLD2, No_pax, DeliveryTime, Remark, OrderType, DeliveryPlace) 
+                VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @DeliveryDate, @EventDetails, @Menu, @Snack, @Drink1, @HOTorCOLD1, @Drink2, @HOTorCOLD2, @No_pax, @DeliveryTime, @Remark, @OrderType, @DeliveryPlace)";
 
                 SqlCommand insertCmd = new SqlCommand(insertQuery, con);
 
@@ -820,6 +855,7 @@ namespace HRAdmin.UserControl
                 insertCmd.Parameters.AddWithValue("@DeliveryTime", cmb_DeliveryT.SelectedItem?.ToString() ?? (object)DBNull.Value);
                 insertCmd.Parameters.AddWithValue("@Remark", string.IsNullOrEmpty(txt_Remark.Text) ? (object)DBNull.Value : txt_Remark.Text);
                 insertCmd.Parameters.AddWithValue("@OrderType", cmb_Meal.SelectedItem?.ToString() ?? (object)DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@DeliveryPlace", cmb_DeliveryP.SelectedItem?.ToString() ?? (object)DBNull.Value);
 
                 insertCmd.ExecuteNonQuery();
 
@@ -861,6 +897,21 @@ namespace HRAdmin.UserControl
         }
 
         private void gbExternal_Enter_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label47_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
         {
 
         }

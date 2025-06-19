@@ -66,7 +66,7 @@ namespace HRAdmin.UserControl
             else if (selectedType == "Benefit")
             {
                 Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Benefit";
-                UC_M_Benefit ug = new UC_M_Benefit(loggedInUser, loggedInDepart);
+                UC_M_Benefit ug = new UC_M_Benefit(loggedInUser, loggedInDepart, selectedType);
                 addControls(ug);
             }
         }
