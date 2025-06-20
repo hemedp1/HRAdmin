@@ -915,5 +915,10 @@ namespace HRAdmin.UserControl
         {
 
         }
+
+        private void cmb_DeliveryP_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

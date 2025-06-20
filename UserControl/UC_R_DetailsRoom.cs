@@ -514,10 +514,10 @@ namespace HRAdmin.UserControl
 
                 var btnRemove = new Button
                 {
-                    Text = "",
+                    //Text = "Hide",
                     Size = new Size(30, 30),
                     Location = new Point(Panel.Width - 35, 3),
-                    //Image = Image.FromFile("C:\\Users\\016-064-050\\Downloads\\hidden.png"),
+                    Image = Image.FromFile("C:\\Users\\016-064-050\\Downloads\\hidden.png"),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent
                 };

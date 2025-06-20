@@ -31,7 +31,7 @@ namespace HRAdmin.UserControl
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_BookingCar));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label11 = new System.Windows.Forms.Label();
             this.btnSubmit = new System.Windows.Forms.Button();
@@ -56,6 +56,8 @@ namespace HRAdmin.UserControl
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -67,6 +69,8 @@ namespace HRAdmin.UserControl
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
+            this.groupBox1.Controls.Add(this.label13);
+            this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.btnSubmit);
             this.groupBox1.Controls.Add(this.cmbIn);
@@ -88,7 +92,7 @@ namespace HRAdmin.UserControl
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1098, 291);
+            this.groupBox1.Size = new System.Drawing.Size(1196, 291);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Reservation details";
@@ -101,7 +105,7 @@ namespace HRAdmin.UserControl
             this.label11.ForeColor = System.Drawing.Color.Red;
             this.label11.Location = new System.Drawing.Point(3, 206);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(1092, 82);
+            this.label11.Size = new System.Drawing.Size(1190, 82);
             this.label11.TabIndex = 23;
             this.label11.Text = resources.GetString("label11.Text");
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -330,14 +334,14 @@ namespace HRAdmin.UserControl
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
@@ -346,7 +350,7 @@ namespace HRAdmin.UserControl
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(1098, 265);
+            this.dataGridView1.Size = new System.Drawing.Size(1196, 265);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -358,7 +362,7 @@ namespace HRAdmin.UserControl
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 57);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1098, 556);
+            this.panel2.Size = new System.Drawing.Size(1196, 556);
             this.panel2.TabIndex = 1;
             // 
             // panel1
@@ -367,7 +371,7 @@ namespace HRAdmin.UserControl
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 291);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1098, 265);
+            this.panel1.Size = new System.Drawing.Size(1196, 265);
             this.panel1.TabIndex = 3;
             // 
             // panel3
@@ -376,7 +380,7 @@ namespace HRAdmin.UserControl
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1098, 291);
+            this.panel3.Size = new System.Drawing.Size(1196, 291);
             this.panel3.TabIndex = 2;
             // 
             // panel6
@@ -386,7 +390,7 @@ namespace HRAdmin.UserControl
             this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1098, 57);
+            this.panel6.Size = new System.Drawing.Size(1196, 57);
             this.panel6.TabIndex = 13;
             // 
             // btnBack
@@ -403,6 +407,26 @@ namespace HRAdmin.UserControl
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label12.Location = new System.Drawing.Point(1016, 60);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(151, 32);
+            this.label12.TabIndex = 24;
+            this.label12.Text = "Available Car";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label13.Location = new System.Drawing.Point(1016, 109);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(135, 32);
+            this.label13.TabIndex = 25;
+            this.label13.Text = "Destination";
+            // 
             // UC_C_BookingCar
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -410,7 +434,7 @@ namespace HRAdmin.UserControl
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel6);
             this.Name = "UC_C_BookingCar";
-            this.Size = new System.Drawing.Size(1098, 613);
+            this.Size = new System.Drawing.Size(1196, 613);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -449,5 +473,7 @@ namespace HRAdmin.UserControl
         private Panel panel3;
         private Panel panel1;
         private Label label11;
+        private Label label13;
+        private Label label12;
     }
 }
