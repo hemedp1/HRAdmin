@@ -107,6 +107,7 @@ namespace HRAdmin.UserControl
                                     Form_Home.sharedbtnWithdrawEntry.Visible = false;
                                     Form_Home.sharedbtnNewVisitor.Visible = false;
                                     Form_Home.sharedbtnUpdate.Visible = false;
+                                    Form_Home.sharedbtnMCReport.Visible = false; // Car Booking
                                 }
                                 else
                                 {
