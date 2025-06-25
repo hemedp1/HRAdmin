@@ -18,21 +18,20 @@ namespace HRAdmin.UserControl
         private string loggedInUser;
         private string loggedInIndex;
         private string loggedInDepart;
+        public string car;
         public UC_C_Verify(string username, string index, string Depart)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInIndex = index;
             loggedInDepart = Depart;
-            //MessageBox.Show($"loggedInUser: {loggedInUser}");
-            //MessageBox.Show($"loggedInIndex: {loggedInIndex}");
-            //MessageBox.Show($"loggedInDepart: {loggedInDepart}");
-            loadCars();
             loadUserData();
-            cmbCar.SelectedIndexChanged += cmbCar_SelectedIndexChanged;
+            LoadCar();
+            loadInspect();
+            gbCarInspect();
+
 
         }
-
         private void btnAcknowledge_Click(object sender, EventArgs e)
         {
             if (dataGridView2.CurrentRow == null)
@@ -81,7 +80,15 @@ namespace HRAdmin.UserControl
 
                     dataGridView2.Refresh();
 
+                    string updateCarQuery = "UPDATE tbl_Cars SET Status = 'Not Available' WHERE CarPlate = @CarPlate";          // update car status
+                    using (SqlCommand cmd = new SqlCommand(updateCarQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@CarPlate", car);
+                        cmd.ExecuteNonQuery();
+                    }
+
                 }
+
                 loadUserData();
                 MessageBox.Show("Terms and condition successfully acknowledged.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -90,6 +97,47 @@ namespace HRAdmin.UserControl
             catch (Exception ex)
             {
                 MessageBox.Show("An error occurred while acknowledging the terms and condition: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void LoadCar()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    string query = @"
+                SELECT TOP 1 AssignedCar
+                FROM tbl_CarBookings
+                WHERE DriverName = @DriverName
+                  AND Depart = @Depart
+                  AND Status = 'Approved'
+                  AND Acknowledgement IS NULL
+                  AND CompleteUseStatus IS NULL
+                  AND CAST(RequestDate AS DATE) = CAST(GETDATE() AS DATE)"; 
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@DriverName", loggedInUser);
+                        cmd.Parameters.AddWithValue("@Depart", loggedInDepart);
+
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            car = result.ToString();
+                        }
+                        else
+                        {
+                            //label1.Text = "No car assigned.";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading Assigned Car: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void loadUserData()
@@ -154,34 +202,49 @@ namespace HRAdmin.UserControl
 
                             if (col == "BookingID")
                                 headerText = "Id";
+
                             else if (col == "DriverName")
                                 headerText = "Driver";
+
                             else if (col == "Depart")
                                 headerText = "Department";
+
                             else if (col == "IndexNo")
                                 headerText = "Index No";
+
                             else if (col == "RequestDate")
                                 headerText = "Request Date";
+
                             else if (col == "Destination")
                                 headerText = "Destination";
+
                             else if (col == "StartDate")
                                 headerText = "Start Time";
+
                             else if (col == "EndDate")
                                 headerText = "End Time";
+
                             else if (col == "Status")
-                                headerText = "Approved Status";
+                                headerText = "Admin Status Approval";
+
                             else if (col == "Purpose")
                                 headerText = "Purpose";
+
                             else if (col == "StatusCheck")
-                                headerText = "Check Status";
+                                headerText = "HOD Status Check";
+
                             else if (col == "CheckBy")
-                                headerText = "Check By";
+                                headerText = "Checked By";
+
                             else if (col == "DateChecked")
                                 headerText = "Checked Date";
+
                             else if (col == "ApproveBy")
-                                headerText = "Approve By";
+                                headerText = "Approved By";
+
                             else if (col == "DateApprove")
                                 headerText = "Approved Date";
+
                             else if (col == "AssignedCar")
                                 headerText = "Car";
                             //else if (col == "CompleteUseStatus")
@@ -193,7 +256,7 @@ namespace HRAdmin.UserControl
                             {
                                 HeaderText = headerText,
                                 DataPropertyName = col,
-                                Width = 130,
+                                Width = 180,
                                 //AutoSizeMode = i == columnNames.Length - 1  ? DataGridViewAutoSizeColumnMode.Fill : DataGridViewAutoSizeColumnMode.None,
                                 DefaultCellStyle = new DataGridViewCellStyle
                                 {
@@ -213,47 +276,10 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-        private void loadCars()
+        private void loadInspect()//private void cmbCar_SelectedIndexChanged(object sender, EventArgs e)
         {
-            try
+            if (car != null)
             {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-                {
-                    con.Open();
-
-                    // Load Room Data
-                    string query = "SELECT DISTINCT CarPlate FROM tbl_Cars where CarPlate <> 'Not Available'";
-                    SqlDataAdapter da = new SqlDataAdapter(query, con);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-
-                    // Debugging: Check if data exists
-                    if (dt.Rows.Count == 0)
-                    {
-                        MessageBox.Show("Car not found!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    cmbCar.DataSource = dt;
-                    cmbCar.DisplayMember = "CarPlate";
-                    cmbCar.ValueMember = "CarPlate";
-
-                    cmbCar.SelectedIndex = -1; // Ensure nothing is pre-selected
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error on Car Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        private void cmbCar_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmbCar.SelectedValue != null)
-            {
-                string selectedCar = cmbCar.SelectedValue.ToString();
-
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     try
@@ -263,7 +289,7 @@ namespace HRAdmin.UserControl
 
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
-                            cmd.Parameters.AddWithValue("@Plat", selectedCar);
+                            cmd.Parameters.AddWithValue("@Plat", car);
 
                             DataTable dtt = new DataTable();
                             using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -286,11 +312,25 @@ namespace HRAdmin.UserControl
 
                             string[] columnNames = { "Person", "DateInspect", "Milleage", "Brakes", "Signal_light", "Head_light", "Body", "Front_Bumper", "Rear_Bumper", "View_Mirror", "Tyres" };
 
+                            // Optional: custom display names for headers
+                            Dictionary<string, string> headerMappings = new Dictionary<string, string>
+                            {
+                                { "DateInspect", "Date Inspect" }
+                            };
+
                             foreach (var col in columnNames)
                             {
+                                string headerText;
+
+                                // Use custom header if available, otherwise replace underscores
+                                if (headerMappings.ContainsKey(col))
+                                    headerText = headerMappings[col];
+                                else
+                                    headerText = col.Replace("_", " ");
+
                                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
                                 {
-                                    HeaderText = col.Replace("_", " "), // Format headers
+                                    HeaderText = headerText,
                                     DataPropertyName = col,
                                     Width = 120,
                                     AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
@@ -301,6 +341,7 @@ namespace HRAdmin.UserControl
                                     }
                                 });
                             }
+
 
                             // Add "Others" column (fills remaining space)
                             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
@@ -367,6 +408,12 @@ namespace HRAdmin.UserControl
             //sharedbtnWithdrawEntry = btnWithdrawEntry;
             //sharedbtnNewVisitor = btnNewVisitor;
             //sharedbtnUpdate = btnUpdate;
+        }
+
+        private void gbCarInspect()
+        {
+            groupBox3.Text = car + " Inspection Log"; // This updates the title of the GroupBox
+
         }
     }
 }

@@ -34,12 +34,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.btnAcknowledge = new System.Windows.Forms.Button();
-            this.label12 = new System.Windows.Forms.Label();
-            this.cmbCar = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -50,7 +46,6 @@
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -66,53 +61,30 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1747, 386);
+            this.panel1.Size = new System.Drawing.Size(1805, 437);
             this.panel1.TabIndex = 0;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.panel4);
-            this.groupBox2.Controls.Add(this.panel3);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox2.Location = new System.Drawing.Point(0, 57);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1747, 329);
+            this.groupBox2.Size = new System.Drawing.Size(1805, 380);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Car Inspection log";
+            this.groupBox2.Text = "Acknowledgment";
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.btnAcknowledge);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(406, 38);
+            this.panel4.Location = new System.Drawing.Point(3, 38);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1338, 288);
+            this.panel4.Size = new System.Drawing.Size(1799, 339);
             this.panel4.TabIndex = 29;
-            // 
-            // label1
-            // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(1338, 288);
-            this.label1.TabIndex = 28;
-            this.label1.Text = resources.GetString("label1.Text");
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.btnAcknowledge);
-            this.panel3.Controls.Add(this.label12);
-            this.panel3.Controls.Add(this.cmbCar);
-            this.panel3.Controls.Add(this.label11);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(3, 38);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(403, 288);
-            this.panel3.TabIndex = 28;
             // 
             // btnAcknowledge
             // 
@@ -121,7 +93,7 @@
             this.btnAcknowledge.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnAcknowledge.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAcknowledge.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnAcknowledge.Location = new System.Drawing.Point(215, 89);
+            this.btnAcknowledge.Location = new System.Drawing.Point(22, 278);
             this.btnAcknowledge.Name = "btnAcknowledge";
             this.btnAcknowledge.Size = new System.Drawing.Size(158, 43);
             this.btnAcknowledge.TabIndex = 26;
@@ -129,40 +101,16 @@
             this.btnAcknowledge.UseVisualStyleBackColor = false;
             this.btnAcknowledge.Click += new System.EventHandler(this.btnAcknowledge_Click);
             // 
-            // label12
+            // label1
             // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label12.Location = new System.Drawing.Point(72, 31);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(21, 32);
-            this.label12.TabIndex = 23;
-            this.label12.Text = ":";
-            // 
-            // cmbCar
-            // 
-            this.cmbCar.DropDownHeight = 158;
-            this.cmbCar.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbCar.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmbCar.FormattingEnabled = true;
-            this.cmbCar.IntegralHeight = false;
-            this.cmbCar.ItemHeight = 29;
-            this.cmbCar.Location = new System.Drawing.Point(113, 27);
-            this.cmbCar.MaxLength = 8;
-            this.cmbCar.Name = "cmbCar";
-            this.cmbCar.Size = new System.Drawing.Size(260, 37);
-            this.cmbCar.TabIndex = 25;
-            this.cmbCar.SelectedIndexChanged += new System.EventHandler(this.cmbCar_SelectedIndexChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label11.Location = new System.Drawing.Point(17, 32);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(49, 32);
-            this.label11.TabIndex = 24;
-            this.label11.Text = "Car";
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(1799, 339);
+            this.label1.TabIndex = 28;
+            this.label1.Text = resources.GetString("label1.Text");
             // 
             // panel6
             // 
@@ -171,7 +119,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1747, 57);
+            this.panel6.Size = new System.Drawing.Size(1805, 57);
             this.panel6.TabIndex = 15;
             // 
             // btnBack
@@ -193,9 +141,9 @@
             this.panel2.Controls.Add(this.groupBox3);
             this.panel2.Controls.Add(this.groupBox1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 386);
+            this.panel2.Location = new System.Drawing.Point(0, 437);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1747, 518);
+            this.panel2.Size = new System.Drawing.Size(1805, 495);
             this.panel2.TabIndex = 1;
             // 
             // groupBox3
@@ -203,9 +151,9 @@
             this.groupBox3.Controls.Add(this.dataGridView1);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox3.Location = new System.Drawing.Point(0, 196);
+            this.groupBox3.Location = new System.Drawing.Point(0, 208);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1747, 322);
+            this.groupBox3.Size = new System.Drawing.Size(1805, 287);
             this.groupBox3.TabIndex = 18;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Car Inspection log";
@@ -232,7 +180,7 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(1741, 281);
+            this.dataGridView1.Size = new System.Drawing.Size(1799, 246);
             this.dataGridView1.TabIndex = 1;
             // 
             // groupBox1
@@ -242,7 +190,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1747, 196);
+            this.groupBox1.Size = new System.Drawing.Size(1805, 208);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Car Reservation Overview";
@@ -269,7 +217,7 @@
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.RowHeadersWidth = 62;
             this.dataGridView2.RowTemplate.Height = 28;
-            this.dataGridView2.Size = new System.Drawing.Size(1741, 155);
+            this.dataGridView2.Size = new System.Drawing.Size(1799, 167);
             this.dataGridView2.TabIndex = 1;
             // 
             // UC_C_Verify
@@ -280,12 +228,10 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "UC_C_Verify";
-            this.Size = new System.Drawing.Size(1747, 904);
+            this.Size = new System.Drawing.Size(1805, 932);
             this.panel1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -303,9 +249,6 @@
         private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox cmbCar;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button btnAcknowledge;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -313,6 +256,5 @@
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Panel panel3;
     }
 }

@@ -179,7 +179,7 @@ namespace HRAdmin.UserControl
                         cmd.ExecuteNonQuery();
                     }
 
-                    
+                    //+++++++++++++++++++++++++++ Car list
                     //if (rB_App.Checked)
                     //{
                     //    string updateCarQuery = "UPDATE tbl_Cars SET Status = 'Not Available' WHERE CarPlate = @CarPlate";          // If approved, update car availability
@@ -218,6 +218,8 @@ namespace HRAdmin.UserControl
                     // Load Room Data
                     string query = "SELECT DISTINCT CarPlate FROM tbl_Cars where Status = 'Available'";
                     SqlDataAdapter da = new SqlDataAdapter(query, con);
+
+                    //da.Parameters.AddWithValue("@SelectedDate", dTDay.Value.Date);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
 
