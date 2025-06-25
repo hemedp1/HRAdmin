@@ -204,6 +204,12 @@
     <Compile Include="UserControl\UC_M_MiscellaneousClaim.Designer.cs">
       <DependentUpon>UC_M_MiscellaneousClaim.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\UC_M_Report.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_M_Report.Designer.cs">
+      <DependentUpon>UC_M_Report.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\UC_M_Work.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -355,6 +361,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_MiscellaneousClaim.resx">
       <DependentUpon>UC_M_MiscellaneousClaim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_M_Report.resx">
+      <DependentUpon>UC_M_Report.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_Work.resx">
       <DependentUpon>UC_M_Work.cs</DependentUpon>

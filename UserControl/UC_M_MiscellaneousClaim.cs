@@ -60,6 +60,7 @@ namespace HRAdmin.UserControl
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account";
+            Form_Home.sharedbtnMCReport.Visible = false;
 
             UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart);
             addControls(ug);
@@ -891,12 +892,487 @@ namespace HRAdmin.UserControl
 
         private void btnApprove_Click(object sender, EventArgs e)
         {
+            // Check if a cell is selected in the DataGridView
+            if (dgvMS.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Please select a cell in the order row to approve.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            // Get the selected row
+            DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+            string requester = selectedRow.Cells["Requester"].Value?.ToString();
+            string department = selectedRow.Cells["Department"].Value?.ToString();
+            string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
+            string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
+            string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+
+            // Validate the selection
+            if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester) || string.IsNullOrEmpty(department))
+            {
+                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Check if HRApprovalStatus is Rejected
+            if (hrApprovalStatus == "Rejected")
+            {
+                MessageBox.Show("This order cannot be approved because HR has rejected it.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Check if AccountApprovalStatus is Rejected
+            if (accountApprovalStatus == "Rejected")
+            {
+                MessageBox.Show("This order cannot be approved because Account has rejected it.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Handle ACCOUNT department approval
+            if (loggedInDepart == "ACCOUNT")
+            {
+                // Check if HODApprovalStatus is Rejected or Pending
+                if (hodApprovalStatus == "Rejected" || hodApprovalStatus == "Pending")
+                {
+                    MessageBox.Show($"This order cannot be approved by Account because HOD approval is {hodApprovalStatus}.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if HRApprovalStatus is Pending
+                if (hrApprovalStatus == "Pending")
+                {
+                    MessageBox.Show("This order cannot be approved by Account because HR approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the order is already approved by Account
+                if (accountApprovalStatus == "Approved")
+                {
+                    MessageBox.Show("This order has already been approved by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Confirm Account approval with the user
+                DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // Update the database for Account approval
+                try
+                {
+                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                    {
+                        con.Open();
+                        string query = @"
+                    UPDATE tbl_MiscellaneousClaim 
+                    SET AccountApprovalStatus = @AccountApprovalStatus, 
+                        ApprovedByAccount = @ApprovedByAccount, 
+                        AccountApprovedDate = @AccountApprovedDate 
+                    WHERE SerialNo = @SerialNo AND AccountApprovalStatus = 'Pending'";
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInUser);
+                            cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Order approved successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // Refresh the DataGridView
+                                LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                         cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                            }
+                            else
+                            {
+                                MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error approving order: {ex.Message}");
+                }
+            }
+            // Handle HR & ADMIN department approval
+            else if (loggedInDepart == "HR & ADMIN")
+            {
+                // Check if HODApprovalStatus is Rejected or Pending
+                if (hodApprovalStatus == "Rejected" || hodApprovalStatus == "Pending")
+                {
+                    MessageBox.Show($"This order cannot be approved by HR because HOD approval is {hodApprovalStatus}.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the order is already approved by HR
+                if (hrApprovalStatus == "Approved")
+                {
+                    MessageBox.Show("This order has already been approved by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Confirm HR approval with the user
+                DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // Update the database for HR approval
+                try
+                {
+                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                    {
+                        con.Open();
+                        string query = @"
+                    UPDATE tbl_MiscellaneousClaim 
+                    SET HRApprovalStatus = @HRApprovalStatus, 
+                        ApprovedByHR = @ApprovedByHR, 
+                        HRApprovedDate = @HRApprovedDate 
+                    WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInUser);
+                            cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // Refresh the DataGridView
+                                LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                         cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                            }
+                            else
+                            {
+                                MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error approving order: {ex.Message}");
+                }
+            }
+            // Handle HOD approval for non-HR & ADMIN, non-ACCOUNT departments
+            else
+            {
+                // Check if the order is already approved by HOD
+                if (hodApprovalStatus == "Approved")
+                {
+                    MessageBox.Show("This order has already been approved by HOD.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the logged-in user's department matches the requester's department
+                if (department != loggedInDepart)
+                {
+                    MessageBox.Show("You can only approve orders from your own department.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Confirm HOD approval with the user
+                DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HOD?", "Confirm HOD Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // Update the database for HOD approval
+                try
+                {
+                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                    {
+                        con.Open();
+                        string query = @"
+                    UPDATE tbl_MiscellaneousClaim 
+                    SET HODApprovalStatus = @HODApprovalStatus, 
+                        ApprovedByHOD = @ApprovedByHOD, 
+                        HODApprovedDate = @HODApprovedDate 
+                    WHERE SerialNo = @SerialNo";
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInUser);
+                            cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Order approved successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // Refresh the DataGridView
+                                LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                         cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                            }
+                            else
+                            {
+                                MessageBox.Show("Failed to approve the order. It may not exist or has already been processed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error approving order: {ex.Message}");
+                }
+            }
         }
 
         private void btnReject_Click(object sender, EventArgs e)
         {
+            // Check if a cell is selected in the DataGridView
+            if (dgvMS.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Please select a cell in the order row to reject.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            // Get the selected row
+            DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+            string requester = selectedRow.Cells["Requester"].Value?.ToString();
+            string department = selectedRow.Cells["Department"].Value?.ToString();
+            string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
+            string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
+            string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+
+            // Validate the selection
+            if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester) || string.IsNullOrEmpty(department))
+            {
+                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Handle rejection based on department
+            if (loggedInDepart == "ACCOUNT")
+            {
+                // Check if HODApprovalStatus is Rejected or Pending
+                if (hodApprovalStatus == "Rejected" || hodApprovalStatus == "Pending")
+                {
+                    MessageBox.Show($"This order cannot be rejected by Account because HOD approval is {hodApprovalStatus}.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if HRApprovalStatus is Rejected or Pending
+                if (hrApprovalStatus == "Rejected" || hrApprovalStatus == "Pending")
+                {
+                    MessageBox.Show($"This order cannot be rejected by Account because HR approval is {hrApprovalStatus}.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the order is already approved by Account
+                if (accountApprovalStatus == "Approved")
+                {
+                    MessageBox.Show("This order cannot be rejected by Account because it has already been approved.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the order is already rejected by Account
+                if (accountApprovalStatus == "Rejected")
+                {
+                    MessageBox.Show("This order has already been rejected by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Confirm Account rejection with the user
+                DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as Account?", "Confirm Account Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // Update the database for Account rejection
+                try
+                {
+                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                    {
+                        con.Open();
+                        string query = @"
+                            UPDATE tbl_MiscellaneousClaim 
+                            SET AccountApprovalStatus = @AccountApprovalStatus, 
+                                ApprovedByAccount = @ApprovedByAccount, 
+                                AccountApprovedDate = @AccountApprovedDate 
+                            WHERE SerialNo = @SerialNo AND AccountApprovalStatus = 'Pending'";
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Rejected");
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInUser);
+                            cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Order rejected successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // Refresh the DataGridView
+                                LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                         cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                            }
+                            else
+                            {
+                                MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error rejecting order: {ex.Message}");
+                }
+            }
+            else if (loggedInDepart == "HR & ADMIN")
+            {
+                // Check if HODApprovalStatus is Rejected or Pending
+                if (hodApprovalStatus == "Rejected" || hodApprovalStatus == "Pending")
+                {
+                    MessageBox.Show($"This order cannot be rejected by HR because HOD approval is {hodApprovalStatus}.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the order is already approved by HR
+                if (hrApprovalStatus == "Approved")
+                {
+                    MessageBox.Show("This order cannot be rejected by HR because it has already been approved.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the order is already rejected by HR
+                if (hrApprovalStatus == "Rejected")
+                {
+                    MessageBox.Show("This order has already been rejected by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Confirm HR rejection with the user
+                DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as HR?", "Confirm HR Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // Update the database for HR rejection
+                try
+                {
+                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                    {
+                        con.Open();
+                        string query = @"
+                            UPDATE tbl_MiscellaneousClaim 
+                            SET HRApprovalStatus = @HRApprovalStatus, 
+                                ApprovedByHR = @ApprovedByHR, 
+                                HRApprovedDate = @HRApprovedDate 
+                            WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInUser);
+                            cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Order rejected successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // Refresh the DataGridView
+                                LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                         cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                            }
+                            else
+                            {
+                                MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error rejecting order: {ex.Message}");
+                }
+            }
+            else
+            {
+                // Check if the order is already rejected or approved by HOD
+                if (hodApprovalStatus == "Rejected")
+                {
+                    MessageBox.Show("This order has already been rejected.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                if (hodApprovalStatus == "Approved")
+                {
+                    MessageBox.Show("This order has already been approved and cannot be rejected.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if the logged-in user's department matches the requester's department
+                if (department != loggedInDepart)
+                {
+                    MessageBox.Show("You can only reject orders from your own department.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Confirm rejection with the user
+                DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo}?", "Confirm Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                // Update the database for HOD rejection
+                try
+                {
+                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                    {
+                        con.Open();
+                        string query = @"
+                            UPDATE tbl_MiscellaneousClaim 
+                            SET HODApprovalStatus = @HODApprovalStatus, 
+                                ApprovedByHOD = @ApprovedByHOD, 
+                                HODApprovedDate = @HODApprovedDate 
+                            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInUser);
+                            cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Order rejected successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // Refresh the DataGridView
+                                LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                         cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                            }
+                            else
+                            {
+                                MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error rejecting order: {ex.Message}");
+                }
+            }
         }
 
         private void btnWithdraw_Click(object sender, EventArgs e)
@@ -911,28 +1387,23 @@ namespace HRAdmin.UserControl
             // Get the selected row
             DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
             DataGridViewRow selectedRow = selectedCell.OwningRow;
-            string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
-            string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
-            string requesterID = selectedRow.Cells["RequesterID"].Value?.ToString();
-            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
-            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString();
+            string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+            string requester = selectedRow.Cells["Requester"].Value?.ToString();
+            string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
+            string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
+            string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
 
             // Validate the selection
-            if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource) || string.IsNullOrEmpty(requesterID))
+            if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
             {
                 MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            // Check if the order is checked or approved
-            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Checked")
+            // Check if the order has been approved by any department
+            if (hodApprovalStatus == "Approved" || hrApprovalStatus == "Approved" || accountApprovalStatus == "Approved")
             {
-                MessageBox.Show("This order has already been checked and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
-            {
-                MessageBox.Show("This order has already been approved and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("This order cannot be withdrawn because it has been approved.", "Withdrawal Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -966,17 +1437,14 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict non-HR & Admin users to only deleting their own orders
-            if (!isHRAdmin && requesterID != loggedInUser)
+            if (!isHRAdmin && requester != loggedInUser)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Determine the table name based on order source
-            string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
-
             // Confirm deletion with the user
-            DialogResult result = MessageBox.Show($"Are you sure you want to withdraw Order ID: {orderId}?", "Confirm Withdrawal", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult result = MessageBox.Show($"Are you sure you want to withdraw Serial No: {serialNo}?", "Confirm Withdrawal", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result != DialogResult.Yes)
             {
                 return;
@@ -988,10 +1456,10 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = $"DELETE FROM {tableName} WHERE OrderID = @OrderID";
+                    string query = $"DELETE FROM tbl_MiscellaneousClaim WHERE SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@OrderID", orderId);
+                        cmd.Parameters.AddWithValue("@SerialNo", serialNo);
                         int rowsAffected = cmd.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {

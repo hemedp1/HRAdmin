@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -45,6 +46,7 @@
             this.dgvMS = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnReject = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.btnWithdraw = new System.Windows.Forms.Button();
@@ -58,7 +60,6 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnReject = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -214,6 +215,14 @@
             // 
             this.dgvMS.BackgroundColor = System.Drawing.Color.White;
             this.dgvMS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
@@ -260,6 +269,22 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1853, 140);
             this.panel4.TabIndex = 1;
+            // 
+            // btnReject
+            // 
+            this.btnReject.BackColor = System.Drawing.Color.White;
+            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnReject.Location = new System.Drawing.Point(799, 75);
+            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnReject.Name = "btnReject";
+            this.btnReject.Size = new System.Drawing.Size(124, 34);
+            this.btnReject.TabIndex = 114;
+            this.btnReject.Text = "Reject";
+            this.btnReject.UseVisualStyleBackColor = false;
+            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
             // 
             // label17
             // 
@@ -418,22 +443,6 @@
             this.label4.Size = new System.Drawing.Size(18, 27);
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
-            // 
-            // btnReject
-            // 
-            this.btnReject.BackColor = System.Drawing.Color.White;
-            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnReject.Location = new System.Drawing.Point(799, 75);
-            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnReject.Name = "btnReject";
-            this.btnReject.Size = new System.Drawing.Size(124, 34);
-            this.btnReject.TabIndex = 114;
-            this.btnReject.Text = "Reject";
-            this.btnReject.UseVisualStyleBackColor = false;
-            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
             // 
             // UC_M_MiscellaneousClaim
             // 

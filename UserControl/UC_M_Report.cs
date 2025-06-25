@@ -7,28 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using HRAdmin.Forms;
 
 namespace HRAdmin.UserControl
 {
-    public partial class UC_Acc_Account: System.Windows.Forms.UserControl
+    public partial class UC_M_Report: System.Windows.Forms.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
-        public UC_Acc_Account(string username, string department)
+        public UC_M_Report(string username, string department)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
-        }
-
-        private void btnMClaim_Click(object sender, EventArgs e)
-        {
-            Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            Form_Home.sharedbtnMCReport.Visible = true;
-
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
-            addControls(ug);
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -46,6 +38,13 @@ namespace HRAdmin.UserControl
             }
         }
 
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
+            Form_Home.sharedbtnMCReport.Visible = true;
 
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
     }
 }

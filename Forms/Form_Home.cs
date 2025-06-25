@@ -44,6 +44,7 @@ namespace HRAdmin.Forms
         public static Button sharedbtnWithdrawEntry;
         public static Button sharedbtnNewVisitor;
         public static Button sharedbtnUpdate;
+        public static Button sharedbtnMCReport; //miscellaneous claim report
 
 
         public Form_Home(string username, string depart, string index)
@@ -72,6 +73,7 @@ namespace HRAdmin.Forms
             btnWithdrawEntry.Visible = false; //withdraw entry
             btnNewVisitor.Visible = false; //new visitor
             btnUpdate.Visible = false; //update
+            btnMCReport.Visible = false;
             //CollapseMenu();
             this.Padding = new Padding(borderSize);//Border size
             sharedPanel = panel5;  // Assign shared panel
@@ -94,6 +96,7 @@ namespace HRAdmin.Forms
             sharedbtnWithdrawEntry = btnWithdrawEntry;
             sharedbtnNewVisitor = btnNewVisitor;
             sharedbtnUpdate = btnUpdate;
+            sharedbtnMCReport = btnMCReport; //miscellaneous claim report
 
         }
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]
@@ -193,6 +196,7 @@ namespace HRAdmin.Forms
             btnWithdrawEntry.Visible = false; //withdraw entry
             btnNewVisitor.Visible = false; //new visitor
             btnUpdate.Visible = false; //update
+            btnMCReport.Visible = false; //miscellaneous claim report
             UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
@@ -519,6 +523,7 @@ namespace HRAdmin.Forms
             btnWithdrawEntry.Visible = false; //withdraw entry
             btnNewVisitor.Visible = false; //new visitor
             btnUpdate.Visible = false; //update
+            btnMCReport.Visible = false; //miscellaneous claim report
             UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart);
             addControls(ug);
         }
@@ -650,6 +655,27 @@ namespace HRAdmin.Forms
             btnUpdate.Visible = false;
 
             UC_W_UpdateCompany ug = new UC_W_UpdateCompany(loggedInUser, loggedInDepart);
+            addControls(ug);
+        }
+
+        private void btnMCReport_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Account > Miscellaneous Claim > Report ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+            btnMCReport.Visible = false;
+
+            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart);
             addControls(ug);
         }
     }
