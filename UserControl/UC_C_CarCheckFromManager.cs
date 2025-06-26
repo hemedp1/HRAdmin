@@ -20,13 +20,13 @@ namespace HRAdmin.UserControl
         public UC_C_CarCheckFromManager(string username, string Depart)
         {
             InitializeComponent();
-            LoadPendingBookings();
+            
             loggedInDepart = Depart;
             loggedInUser = username;
+            LoadPendingBookings();
             LoadData();
             dTDay.ValueChanged += dTDay_ValueChanged;
             LoadPendingBookings();
-            //MessageBox.Show($"DDSDSDDWDWWD: {loggedInDepart}");
         }
         private void UC_C_CarCheckFromManager_Load(object sender, EventArgs e)
         {
@@ -35,48 +35,64 @@ namespace HRAdmin.UserControl
         }
         private void LoadPendingBookings()
         {
+           
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
             {
-                string query = @"
-                                SELECT 
-                                    BookingID, 
-                                    DriverName, 
-                                    IndexNo, 
-                                    Destination, 
-                                    RequestDate, 
-                                    Purpose, 
-                                    AssignedCar, 
-                                    StatusCheck, 
-                                    CheckBy, 
-                                    CASE 
-                                        WHEN DateChecked IS NULL THEN 'Pending'
-                                        ELSE CONVERT(VARCHAR, DateChecked, 120)
-                                    END AS DateChecked, 
-                                    Status, 
-                                    ApproveBy, 
-                                    CASE 
-                                        WHEN DateApprove IS NULL THEN 'Pending'
-                                        ELSE CONVERT(VARCHAR, DateApprove, 120)
-                                    END AS DateApprove,
-                                    CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
-                                    CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
-                                FROM tbl_CarBookings 
-                                WHERE StatusCheck = 'Pending'";
-                
-                /*
-                string query = @"
-                    SELECT BookingID, DriverName, IndexNo, RequestDate, Destination, Purpose, AssignedCar, Status, ApproveBy, DateApprove, StatusCheck, CheckBy, DateChecked,
-                           CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
-                           CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
-                    FROM tbl_CarBookings 
-                    WHERE StatusCheck = 'Pending'"; 
-                 */
-                SqlDataAdapter da = new SqlDataAdapter(query, con);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dataGridView1.DataSource = dt;
+                try
+                {
+                    con.Open();
+                    string query = @"
+                SELECT 
+                    BookingID, 
+                    DriverName, 
+                    IndexNo, 
+                    Destination, 
+                    RequestDate, 
+                    Purpose, 
+                    AssignedCar, 
+                    StatusCheck, 
+                    CheckBy, 
+                    CASE 
+                        WHEN DateChecked IS NULL THEN 'Pending'
+                        ELSE CONVERT(VARCHAR, DateChecked, 120)
+                    END AS DateChecked, 
+                    Status, 
+                    ApproveBy, 
+                    CASE 
+                        WHEN DateApprove IS NULL THEN 'Pending'
+                        ELSE CONVERT(VARCHAR, DateApprove, 120)
+                    END AS DateApprove,
+                    CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
+                    CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
+                FROM tbl_CarBookings 
+                WHERE StatusCheck = 'Pending' AND Depart = @Depart";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        // Check the value before assigning
+                        if (string.IsNullOrWhiteSpace(loggedInDepart))
+                        {
+                            MessageBox.Show("loggedInDepart is null or empty.");
+                            return;
+                        }
+
+                        cmd.Parameters.AddWithValue("@Depart", loggedInDepart);
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            da.Fill(dt);
+                            dataGridView1.DataSource = dt;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
             }
         }
+
         private void btnCheck_Click(object sender, EventArgs e)
         {
             if (dataGridView1.CurrentRow == null)
