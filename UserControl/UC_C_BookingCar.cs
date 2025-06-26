@@ -31,6 +31,7 @@ namespace HRAdmin.UserControl
             loggedInDepart = depart;
             LoadData();
             dTDay.ValueChanged += dTDay_ValueChanged;
+            PopulateTimeComboBoxes();
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -130,10 +131,7 @@ namespace HRAdmin.UserControl
         {
             CheckUserAccess(loggedInUser);
         }
-        private void dTDay_ValueChanged(object sender, EventArgs e)
-        {
-            LoadData();
-        }
+
         private void UC_BookingCar_Load(object sender, EventArgs e)
         {
             dTDay.ValueChanged += dTDay_ValueChanged;
@@ -369,20 +367,89 @@ namespace HRAdmin.UserControl
         {
 
         }
-
         private void groupBox2_Enter(object sender, EventArgs e)
         {
 
         }
-
         private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
-
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
+        }
+
+        private void PopulateTimeComboBoxes()
+        {
+            for (int hour = 8; hour < 24; hour++)
+            {
+                for (int minute = 0; minute < 60; minute += 15) // 15-minute intervals
+                {
+                    string time = $"{hour:00}:{minute:00}";
+                    cmbOut.Items.Add(time);
+                    cmbIn.Items.Add(time);
+                }
+            }
+            cmbOut.SelectedIndex = cmbOut.FindStringExact(""); // Default start time
+            cmbIn.SelectedIndex = cmbIn.FindStringExact("");  // Default end time
+            dTDay.Value = DateTime.Today; // Default to current date (2025-06-23)
+        }
+        private void LoadData1()
+        {
+            string requestDate = dTDay.Value.ToString("yyyy-MM-dd");
+            string startTime = cmbOut.SelectedItem?.ToString() ?? "11:00";
+            string endTime = cmbIn.SelectedItem?.ToString() ?? "15:00";
+
+            string query = $@"
+                SELECT COUNT(*) AS TotalAvailableCars
+                FROM tbl_Cars c
+                LEFT JOIN tbl_CarBookings cb
+                ON c.CarPlate = cb.AssignedCar
+                AND cb.RequestDate = @RequestDate
+                AND cb.StartDate <= @EndTime
+                AND cb.EndDate >= @StartTime
+                WHERE cb.AssignedCar IS NULL";
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@RequestDate", requestDate);
+                        cmd.Parameters.AddWithValue("@StartTime", startTime);
+                        cmd.Parameters.AddWithValue("@EndTime", endTime);
+
+                        int totalAvailableCars = (int)cmd.ExecuteScalar();
+                        TotalAvailablCar.Text = totalAvailableCars.ToString(); // Display result
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
+        }
+        private void dTDay_ValueChanged(object sender, EventArgs e)   //RequestDate
+        {
+            LoadData();
+            LoadData1();
+        }
+        private void cmbOut_SelectedIndexChanged(object sender, EventArgs e)  //StartDate
+        {
+            LoadData1();
+        }
+
+        private void cmbIn_SelectedIndexChanged(object sender, EventArgs e)  //EndDate
+        {
+            LoadData1();
+        }
+
+        private void TotalAvailablCar_Click(object sender, EventArgs e)
+        {
+            LoadData1();
         }
     }
     
