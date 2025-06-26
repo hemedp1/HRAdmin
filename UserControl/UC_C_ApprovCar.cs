@@ -14,19 +14,25 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace HRAdmin.UserControl
 {
+    
+
     public partial class UC_C_ApprovCar : System.Windows.Forms.UserControl
     {
         private string loggedInUser;
+        private bool isFirstLoad = true;
         public UC_C_ApprovCar(string username)
         {
             InitializeComponent();
             loggedInUser = username;
-            cmbCarSelection.SelectedIndexChanged += cmbCarSelection_SelectedIndexChanged;
+
             dTDay.ValueChanged += dTDay_ValueChanged;
-            loadCars();
-            LoadData();
-            LoadPendingBookingsall();
+            cmbCarSelection.SelectedIndexChanged += cmbCarSelection_SelectedIndexChanged;
+
+            PopulateTimeComboBoxes();
+            LoadData();                // Prepare grid structure
+            dTDay_ValueChanged(null, null);  // Trigger correct first-time load
         }
+
         private void LoadPendingBookings(DateTime selectedDate)
         {
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -78,13 +84,6 @@ namespace HRAdmin.UserControl
                                 FROM tbl_CarBookings 
                                 WHERE Status = 'Pending'";
 
-                /*
-            string query = @"SELECT BookingID, DriverName, IndexNo, RequestDate, Destination, Purpose, AssignedCar, Status, ApproveBy, DateApprove, StatusCheck, CheckBy, DateChecked,
-                   CONVERT(VARCHAR(5), StartDate, 108) AS StartDate,
-                   CONVERT(VARCHAR(5), EndDate, 108) AS EndDate
-            FROM tbl_CarBookings
-            WHERE Status = 'Pending'";
-                */
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     
@@ -179,17 +178,6 @@ namespace HRAdmin.UserControl
                         cmd.ExecuteNonQuery();
                     }
 
-                    //+++++++++++++++++++++++++++ Car list
-                    //if (rB_App.Checked)
-                    //{
-                    //    string updateCarQuery = "UPDATE tbl_Cars SET Status = 'Not Available' WHERE CarPlate = @CarPlate";          // If approved, update car availability
-                    //    using (SqlCommand cmd = new SqlCommand(updateCarQuery, con))
-                    //    {
-                    //        cmd.Parameters.AddWithValue("@CarPlate", selectedCar);
-                    //        cmd.ExecuteNonQuery();
-                    //    }
-                    //}
-
                     LoadPendingBookings(selectedDate); // Refresh DataGridView
                     dataGridView1.Refresh();
 
@@ -205,47 +193,7 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"Error {action}ing reservation: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
-        private void loadCars()
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-                {
-                    con.Open();
-
-                    // Load Room Data
-                    string query = "SELECT DISTINCT CarPlate FROM tbl_Cars where Status = 'Available'";
-                    SqlDataAdapter da = new SqlDataAdapter(query, con);
-
-                    //da.Parameters.AddWithValue("@SelectedDate", dTDay.Value.Date);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-
-                    // Debugging: Check if data exists
-                    if (dt.Rows.Count == 0)
-                    {
-                        MessageBox.Show("No Car found in the database!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    cmbCarSelection.DataSource = dt;
-                    cmbCarSelection.DisplayMember = "CarPlate";
-                    cmbCarSelection.ValueMember = "CarPlate";
-
-                    cmbCarSelection.SelectedIndex = -1; // Ensure nothing is pre-selected
-
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error on Room Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-       private void CheckUserAccess(string username)
+        private void CheckUserAccess(string username)
         {
             try
             {
@@ -437,18 +385,10 @@ namespace HRAdmin.UserControl
         {
 
         }
-        private void dTDay_ValueChanged(object sender, EventArgs e)
-        {
-            LoadData();
-        }
-
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
-
-        
-
         private void rB_App_CheckedChanged(object sender, EventArgs e)
         {
             cmbCarSelection.Visible = true;
@@ -465,6 +405,99 @@ namespace HRAdmin.UserControl
             label3.Visible = false;
             panel9.Visible = false;
             
+        }
+        private void PopulateTimeComboBoxes()
+        {
+            for (int hour = 8; hour < 24; hour++)
+            {
+                for (int minute = 0; minute < 60; minute += 15) // 15-minute intervals
+                {
+                    string time = $"{hour:00}:{minute:00}";
+                    cmbOut.Items.Add(time);
+                    cmbIn.Items.Add(time);
+                }
+            }
+            cmbOut.SelectedIndex = cmbOut.FindStringExact(""); // Default start time
+            cmbIn.SelectedIndex = cmbIn.FindStringExact("");  // Default end time
+            dTDay.Value = DateTime.Today; // Default to current date (2025-06-23)
+        }
+        private void LoadData1()
+        {
+            string requestDate = dTDay.Value.ToString("yyyy-MM-dd");
+            string startTime = cmbOut.SelectedItem?.ToString() ?? "11:00";
+            string endTime = cmbIn.SelectedItem?.ToString() ?? "15:00";
+
+            string query = @"
+        SELECT c.CarPlate
+        FROM tbl_Cars c
+        LEFT JOIN tbl_CarBookings cb
+            ON c.CarPlate = cb.AssignedCar
+            AND cb.RequestDate = @RequestDate
+            AND cb.StartDate <= @StartTime
+            AND cb.EndDate >= @EndTime
+        WHERE cb.AssignedCar IS NULL AND c.Status = 'Available'";
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@RequestDate", requestDate);
+                        cmd.Parameters.AddWithValue("@StartTime", startTime);
+                        cmd.Parameters.AddWithValue("@EndTime", endTime);
+
+                        DataTable dt = new DataTable();
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+
+                        cmbCarSelection.DataSource = null; // Reset before rebinding
+                        cmbCarSelection.DisplayMember = "CarPlate";
+                        cmbCarSelection.ValueMember = "CarPlate";
+                        cmbCarSelection.DataSource = dt;
+                        cmbCarSelection.SelectedIndex = -1; 
+                        if (dt.Rows.Count == 0)
+                        {
+                            cmbCarSelection.Text = "No cars available";
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
+        }
+        private void dTDay_ValueChanged(object sender, EventArgs e)
+        {
+            if (isFirstLoad)
+            {
+                LoadPendingBookingsall();  // Show all on first load
+                isFirstLoad = false;
+            }
+            else
+            {
+                LoadPendingBookings(dTDay.Value.Date);  // Apply filter after first load
+            }
+
+            LoadData();  // Keeps columns and formatting intact
+            LoadData1(); // Updates car availability
+        }
+
+        private void cmbOut_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadData1();
+        }
+        private void cmbIn_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadData1();
+        }
+        private void button1_Click(object sender, EventArgs e) //refresh button
+        {
+            LoadPendingBookingsall();
         }
     }
 }

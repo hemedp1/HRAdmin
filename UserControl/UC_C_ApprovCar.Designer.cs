@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_ApprovCar));
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -46,11 +46,18 @@
             this.rB_Rej = new System.Windows.Forms.RadioButton();
             this.rB_App = new System.Windows.Forms.RadioButton();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.dTDay = new System.Windows.Forms.DateTimePicker();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
+            this.cmbIn = new System.Windows.Forms.ComboBox();
+            this.cmbOut = new System.Windows.Forms.ComboBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -80,23 +87,23 @@
             this.panel5.BackColor = System.Drawing.Color.White;
             this.panel5.Controls.Add(this.dataGridView1);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(0, 346);
+            this.panel5.Location = new System.Drawing.Point(0, 439);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(1192, 311);
+            this.panel5.Size = new System.Drawing.Size(1192, 218);
             this.panel5.TabIndex = 1;
             // 
             // dataGridView1
             // 
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
@@ -104,7 +111,7 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(1192, 311);
+            this.dataGridView1.Size = new System.Drawing.Size(1192, 218);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -115,7 +122,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 57);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1192, 289);
+            this.panel2.Size = new System.Drawing.Size(1192, 382);
             this.panel2.TabIndex = 0;
             // 
             // groupBox1
@@ -126,7 +133,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1192, 286);
+            this.groupBox1.Size = new System.Drawing.Size(1192, 644);
             this.groupBox1.TabIndex = 23;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Approve/Reject";
@@ -140,16 +147,17 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(3, 38);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1186, 245);
+            this.panel6.Size = new System.Drawing.Size(1186, 603);
             this.panel6.TabIndex = 36;
             // 
             // panel10
             // 
+            this.panel10.Controls.Add(this.button1);
             this.panel10.Controls.Add(this.btnApprove);
             this.panel10.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel10.Location = new System.Drawing.Point(0, 176);
+            this.panel10.Location = new System.Drawing.Point(0, 276);
             this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(1186, 66);
+            this.panel10.Size = new System.Drawing.Size(1186, 61);
             this.panel10.TabIndex = 2;
             // 
             // btnApprove
@@ -173,9 +181,9 @@
             this.panel9.Controls.Add(this.label3);
             this.panel9.Controls.Add(this.label2);
             this.panel9.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel9.Location = new System.Drawing.Point(0, 125);
+            this.panel9.Location = new System.Drawing.Point(0, 220);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(1186, 51);
+            this.panel9.Size = new System.Drawing.Size(1186, 56);
             this.panel9.TabIndex = 1;
             // 
             // cmbCarSelection
@@ -183,10 +191,6 @@
             this.cmbCarSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCarSelection.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbCarSelection.FormattingEnabled = true;
-            this.cmbCarSelection.Items.AddRange(new object[] {
-            "Daily",
-            "Weekly",
-            "Monthly"});
             this.cmbCarSelection.Location = new System.Drawing.Point(290, 6);
             this.cmbCarSelection.Name = "cmbCarSelection";
             this.cmbCarSelection.Size = new System.Drawing.Size(284, 37);
@@ -218,9 +222,9 @@
             this.panel8.Controls.Add(this.rB_Rej);
             this.panel8.Controls.Add(this.rB_App);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel8.Location = new System.Drawing.Point(0, 67);
+            this.panel8.Location = new System.Drawing.Point(0, 168);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(1186, 58);
+            this.panel8.Size = new System.Drawing.Size(1186, 52);
             this.panel8.TabIndex = 1;
             // 
             // rB_Rej
@@ -251,14 +255,60 @@
             // 
             // panel7
             // 
+            this.panel7.Controls.Add(this.cmbIn);
+            this.panel7.Controls.Add(this.cmbOut);
+            this.panel7.Controls.Add(this.label5);
+            this.panel7.Controls.Add(this.label6);
+            this.panel7.Controls.Add(this.label1);
+            this.panel7.Controls.Add(this.label4);
             this.panel7.Controls.Add(this.dTDay);
             this.panel7.Controls.Add(this.label10);
             this.panel7.Controls.Add(this.label9);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel7.Location = new System.Drawing.Point(0, 0);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(1186, 67);
+            this.panel7.Size = new System.Drawing.Size(1186, 168);
             this.panel7.TabIndex = 0;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label5.Location = new System.Drawing.Point(33, 104);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(94, 32);
+            this.label5.TabIndex = 32;
+            this.label5.Text = "Time In";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label6.Location = new System.Drawing.Point(237, 104);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(21, 32);
+            this.label6.TabIndex = 31;
+            this.label6.Text = ":";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label1.Location = new System.Drawing.Point(33, 59);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(113, 32);
+            this.label1.TabIndex = 30;
+            this.label1.Text = "Time Out";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label4.Location = new System.Drawing.Point(237, 59);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(21, 32);
+            this.label4.TabIndex = 29;
+            this.label4.Text = ":";
             // 
             // dTDay
             // 
@@ -316,6 +366,54 @@
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
+            // cmbIn
+            // 
+            this.cmbIn.DropDownHeight = 158;
+            this.cmbIn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbIn.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbIn.FormattingEnabled = true;
+            this.cmbIn.IntegralHeight = false;
+            this.cmbIn.ItemHeight = 29;
+            this.cmbIn.Location = new System.Drawing.Point(290, 110);
+            this.cmbIn.MaxLength = 8;
+            this.cmbIn.Name = "cmbIn";
+            this.cmbIn.Size = new System.Drawing.Size(284, 37);
+            this.cmbIn.TabIndex = 34;
+            this.cmbIn.SelectedIndexChanged += new System.EventHandler(this.cmbIn_SelectedIndexChanged);
+            // 
+            // cmbOut
+            // 
+            this.cmbOut.DropDownHeight = 158;
+            this.cmbOut.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOut.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbOut.FormattingEnabled = true;
+            this.cmbOut.IntegralHeight = false;
+            this.cmbOut.ItemHeight = 29;
+            this.cmbOut.Location = new System.Drawing.Point(290, 59);
+            this.cmbOut.MaxLength = 8;
+            this.cmbOut.Name = "cmbOut";
+            this.cmbOut.Size = new System.Drawing.Size(284, 37);
+            this.cmbOut.TabIndex = 33;
+            this.cmbOut.SelectedIndexChanged += new System.EventHandler(this.cmbOut_SelectedIndexChanged);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Calibri", 12F);
+            this.button1.ForeColor = System.Drawing.Color.Black;
+            this.button1.Location = new System.Drawing.Point(1066, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(120, 61);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Show All";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // UC_C_ApprovCar
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -364,5 +462,12 @@
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Panel panel10;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox cmbIn;
+        private System.Windows.Forms.ComboBox cmbOut;
+        private System.Windows.Forms.Button button1;
     }
 }
