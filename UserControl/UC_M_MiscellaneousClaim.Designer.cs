@@ -30,9 +30,6 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
-            this.label15 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.btnApprove = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -46,7 +43,6 @@
             this.dgvMS = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.btnReject = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.btnWithdraw = new System.Windows.Forms.Button();
@@ -67,42 +63,6 @@
             this.flowLayoutPanel1.SuspendLayout();
             this.gbExternal.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label15.Location = new System.Drawing.Point(645, 78);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(18, 27);
-            this.label15.TabIndex = 107;
-            this.label15.Text = ":";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label14.Location = new System.Drawing.Point(524, 78);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(115, 27);
-            this.label14.TabIndex = 106;
-            this.label14.Text = "Verification";
-            // 
-            // btnApprove
-            // 
-            this.btnApprove.BackColor = System.Drawing.Color.White;
-            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnApprove.Location = new System.Drawing.Point(669, 75);
-            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnApprove.Name = "btnApprove";
-            this.btnApprove.Size = new System.Drawing.Size(124, 34);
-            this.btnApprove.TabIndex = 100;
-            this.btnApprove.Text = "Approve";
-            this.btnApprove.UseVisualStyleBackColor = false;
-            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
             // 
             // label13
             // 
@@ -248,13 +208,9 @@
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.btnReject);
             this.panel4.Controls.Add(this.label17);
             this.panel4.Controls.Add(this.label16);
             this.panel4.Controls.Add(this.btnWithdraw);
-            this.panel4.Controls.Add(this.label15);
-            this.panel4.Controls.Add(this.label14);
-            this.panel4.Controls.Add(this.btnApprove);
             this.panel4.Controls.Add(this.label13);
             this.panel4.Controls.Add(this.label11);
             this.panel4.Controls.Add(this.label10);
@@ -269,22 +225,6 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1853, 140);
             this.panel4.TabIndex = 1;
-            // 
-            // btnReject
-            // 
-            this.btnReject.BackColor = System.Drawing.Color.White;
-            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnReject.Location = new System.Drawing.Point(799, 75);
-            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnReject.Name = "btnReject";
-            this.btnReject.Size = new System.Drawing.Size(124, 34);
-            this.btnReject.TabIndex = 114;
-            this.btnReject.Text = "Reject";
-            this.btnReject.UseVisualStyleBackColor = false;
-            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
             // 
             // label17
             // 
@@ -467,10 +407,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Button btnApprove;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
@@ -497,6 +433,5 @@
         private System.Windows.Forms.Label dtRequest;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button btnReject;
     }
 }

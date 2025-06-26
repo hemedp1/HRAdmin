@@ -49,11 +49,6 @@ namespace HRAdmin.UserControl
             cmb_Drink1.SelectedIndexChanged += new EventHandler(cmb_Drink_SelectedIndexChanged);
             cmb_Drink2.SelectedIndexChanged += new EventHandler(cmb_Drink_SelectedIndexChanged);
         }
-
-        private void btNext_Click(object sender, EventArgs e)
-        {
-
-        }
         private void CheckUserAccess(string username)
         {
             try
@@ -393,9 +388,6 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e) { }
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e) { }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -627,24 +619,6 @@ namespace HRAdmin.UserControl
                     }
                 }
             }
-        }
-        private void lblEvent1_Click(object sender, EventArgs e) { }
-        private void gbExternal_Enter(object sender, EventArgs e) { }
-
-        private void txt_Npax_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(txt_Npax.Text))
-            {
-                if (!int.TryParse(txt_Npax.Text, out int number) || number < 1 || number > 100)
-                {
-                    MessageBox.Show("Please enter a number between 1 and 100.");
-                    txt_Npax.Text = "";
-                }
-            }
-        }
-
-        private void cmb_HC_SelectedIndexChanged(object sender, EventArgs e)
-        {
         }
 
         private void cmb_Drink_SelectedIndexChanged(object sender, EventArgs e)

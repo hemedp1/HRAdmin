@@ -45,6 +45,7 @@ namespace HRAdmin.Forms
         public static Button sharedbtnNewVisitor;
         public static Button sharedbtnUpdate;
         public static Button sharedbtnMCReport; //miscellaneous claim report
+        public static Button sharedbtnApproval; //miscellaneous claim report
 
 
         public Form_Home(string username, string depart, string index)
@@ -74,6 +75,7 @@ namespace HRAdmin.Forms
             btnNewVisitor.Visible = false; //new visitor
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false;
+            btnApproval.Visible = false;
             //CollapseMenu();
             this.Padding = new Padding(borderSize);//Border size
             sharedPanel = panel5;  // Assign shared panel
@@ -97,6 +99,7 @@ namespace HRAdmin.Forms
             sharedbtnNewVisitor = btnNewVisitor;
             sharedbtnUpdate = btnUpdate;
             sharedbtnMCReport = btnMCReport; //miscellaneous claim report
+            sharedbtnApproval = btnApproval;
 
         }
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]
@@ -197,6 +200,8 @@ namespace HRAdmin.Forms
             btnNewVisitor.Visible = false; //new visitor
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
+            btnApproval.Visible = false;
+
             UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
@@ -674,8 +679,31 @@ namespace HRAdmin.Forms
             btnNewVisitor.Visible = false;
             btnUpdate.Visible = false;
             btnMCReport.Visible = false;
+            btnApproval.Visible = false;
 
-            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart);
+            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, DateTime.Now);
+            addControls(ug);
+        }
+
+        private void btnApproval_Click(object sender, EventArgs e)
+        {
+            label1.Text = "Account > Miscellaneous Claim > Claim Approval ";
+            btnAddpeople.Visible = false;
+            btn_New.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;
+            button3.Visible = false;
+            button4.Visible = false;
+            button5.Visible = false;
+            button6.Visible = false;
+            btnVisitor.Visible = false;
+            btnWithdrawEntry.Visible = false;
+            btnNewVisitor.Visible = false;
+            btnUpdate.Visible = false;
+            btnMCReport.Visible = false;
+            btnApproval.Visible = false;
+
+            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart);
             addControls(ug);
         }
     }

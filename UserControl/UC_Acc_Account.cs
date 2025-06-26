@@ -26,6 +26,7 @@ namespace HRAdmin.UserControl
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
             Form_Home.sharedbtnMCReport.Visible = true;
+            Form_Home.sharedbtnApproval.Visible = true;
 
             UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
             addControls(ug);
