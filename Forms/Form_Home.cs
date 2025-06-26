@@ -529,7 +529,7 @@ namespace HRAdmin.Forms
             btnNewVisitor.Visible = false; //new visitor
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 
@@ -681,7 +681,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, DateTime.Now);
+            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex, DateTime.Now);
             addControls(ug);
         }
 
@@ -703,7 +703,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart);
+            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
     }

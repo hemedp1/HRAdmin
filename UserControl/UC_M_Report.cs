@@ -24,6 +24,7 @@ namespace HRAdmin.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
+        private string loggedInIndex;
         private string expensesType;
         private DateTime RequestDate;
         private byte[] pdfBytes;
@@ -31,11 +32,12 @@ namespace HRAdmin.UserControl
         private bool isNetworkErrorShown;
         private bool isNetworkUnavailable;
 
-        public UC_M_Report(string username, string department, DateTime? RequestDate)
+        public UC_M_Report(string username, string department, string emp, DateTime? RequestDate)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
+            loggedInIndex = emp;
             this.RequestDate = RequestDate ?? DateTime.Now;
             LoadUsernames();
             LoadDepartments();
@@ -71,7 +73,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = true;
             Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 
@@ -576,10 +578,52 @@ namespace HRAdmin.UserControl
             LoadData(selectedUsername, selectedDepartment, selectedRequestDate, selectedExpensesType);
         }
 
-        private byte[] GeneratePDF(string serialNo, string selectedMeal)
+        private byte[] GeneratePDF(string serialNo)
         {
             try
             {
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                Dictionary<string, object> orderDetails = new Dictionary<string, object>();
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+        SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
+               HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate
+        FROM tbl_MasterClaimForm
+        WHERE SerialNo = @SerialNo";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                orderDetails["SerialNo"] = reader["SerialNo"].ToString();
+                                orderDetails["Requester"] = reader["Requester"].ToString();
+                                orderDetails["Department"] = reader["Department"].ToString();
+                                orderDetails["ExpensesType"] = reader["ExpensesType"].ToString();
+                                orderDetails["RequestDate"] = reader["RequestDate"];
+                                orderDetails["HODApprovalStatus"] = reader["HODApprovalStatus"] != DBNull.Value ? reader["HODApprovalStatus"].ToString() : "";
+                                orderDetails["ApprovedByHOD"] = reader["ApprovedByHOD"] != DBNull.Value ? reader["ApprovedByHOD"].ToString() : "";
+                                orderDetails["HODApprovedDate"] = reader["HODApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["HODApprovedDate"]).ToString("dd.MM.yyyy HH:mm") : "";
+                                orderDetails["HRApprovalStatus"] = reader["HRApprovalStatus"] != DBNull.Value ? reader["HRApprovalStatus"].ToString() : "";
+                                orderDetails["ApprovedByHR"] = reader["ApprovedByHR"] != DBNull.Value ? reader["ApprovedByHR"].ToString() : "";
+                                orderDetails["HRApprovedDate"] = reader["HRApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["HRApprovedDate"]).ToString("dd.MM.yyyy HH:mm") : "";
+                                orderDetails["AccountApprovalStatus"] = reader["AccountApprovalStatus"] != DBNull.Value ? reader["AccountApprovalStatus"].ToString() : "";
+                                orderDetails["ApprovedByAccount"] = reader["ApprovedByAccount"] != DBNull.Value ? reader["ApprovedByAccount"].ToString() : "";
+                                orderDetails["AccountApprovedDate"] = reader["AccountApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["AccountApprovedDate"]).ToString("dd.MM.yyyy HH:mm") : "";
+                            }
+                            else
+                            {
+                                MessageBox.Show("Order not found in the database.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return null;
+                            }
+                        }
+                    }
+                }
+
                 using (MemoryStream ms = new MemoryStream())
                 {
                     Document document = new Document(PageSize.A4, 36f, 36f, 36f, 36f);
@@ -589,12 +633,11 @@ namespace HRAdmin.UserControl
 
                     iTextSharp.text.Font titleFont = FontFactory.GetFont("Helvetica", 12f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font addressFont = FontFactory.GetFont("Helvetica", 8f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
-                    iTextSharp.text.Font titleFont1 = FontFactory.GetFont("Helvetica", 12f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font headerFont = FontFactory.GetFont("Helvetica", 12f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font bodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font italicBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
 
-                    string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hosiden.jpg");
+                    string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logo hosiden.jpg");
                     if (File.Exists(logoPath))
                     {
                         iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
@@ -615,99 +658,127 @@ namespace HRAdmin.UserControl
                     titlePara.Add(new Chunk("HOSIDEN ELECTRONICS (M) SDN BHD (198901000700)\n", titleFont));
                     titlePara.Add(new Chunk("Lot 1, Jalan P/1A, Bangi Industrial Estate, 43650 Bandar Baru Bangi, Selangor, Malaysia\n", addressFont));
                     titlePara.Add(new Chunk("\n", addressFont));
-                    titlePara.Add(new Chunk("CANTEEN MEAL REQUEST FORM", titleFont));
+                    titlePara.Add(new Chunk("MISCELLANEOUS CLAIM FORM", titleFont));
                     titlePara.Alignment = Element.ALIGN_CENTER;
                     titlePara.SpacingBefore = 0f;
                     titlePara.SpacingAfter = 5f;
                     document.Add(titlePara);
 
-                    string checkStatus = "";
-                    string approveStatus = "";
-                    string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-                    using (SqlConnection conn = new SqlConnection(connectionString))
-                    {
-                        conn.Open();
-                        string query = "SELECT CheckStatus, ApproveStatus FROM tbl_InternalFoodOrder WHERE SerialNo = @SerialNo";
-                        using (SqlCommand cmd = new SqlCommand(query, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
-                            using (SqlDataReader reader = cmd.ExecuteReader())
-                            {
-                                if (reader.Read())
-                                {
-                                    checkStatus = reader["CheckStatus"] != DBNull.Value ? reader["CheckStatus"].ToString() : "";
-                                    approveStatus = reader["ApproveStatus"] != DBNull.Value ? reader["ApproveStatus"].ToString() : "";
-                                }
-                            }
-                        }
-                    }
-
                     PdfPTable mainLayoutTable = new PdfPTable(2);
                     mainLayoutTable.WidthPercentage = 100;
                     mainLayoutTable.SetWidths(new float[] { 1.5f, 0.8f });
-                    mainLayoutTable.SpacingBefore = 5f;
+                    mainLayoutTable.SpacingBefore = 10f;
 
                     PdfPCell leftCell = new PdfPCell();
-                    leftCell.Border = iTextRectangle.NO_BORDER;
+                    leftCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     leftCell.Padding = 0f;
 
-                    PdfPTable detailsTable = new PdfPTable(4);
+                    PdfPTable detailsTable = new PdfPTable(2); // Changed to 2 columns
                     detailsTable.WidthPercentage = 100;
-                    detailsTable.SetWidths(new float[] { 0.22f, 0.5f, 0.24f, 0.7f });
-                    detailsTable.DefaultCell.Border = iTextRectangle.NO_BORDER;
+                    detailsTable.SetWidths(new float[] { 0.3f, 0.7f }); // Adjusted widths for label and value
+                    detailsTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     detailsTable.DefaultCell.Padding = 2f;
                     detailsTable.SpacingBefore = 5f;
 
-                    detailsTable.AddCell(new Phrase("SerialNo      :", bodyFont));
-                    detailsTable.AddCell(new Phrase(serialNo, bodyFont));
+                    // Add rows vertically
+                    detailsTable.AddCell(new Phrase("Serial No.:", bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["SerialNo"].ToString(), bodyFont));
+
+                    detailsTable.AddCell(new Phrase("Requester:", bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["Requester"].ToString(), bodyFont));
+
                     detailsTable.AddCell(new Phrase("Emp No.:", bodyFont));
-                    detailsTable.AddCell(new Phrase(RequestDate.ToString("dd.MM.yyyy"), bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["EmpNo"].ToString(), bodyFont));
 
-                    detailsTable.AddCell(new Phrase("Requester  :", bodyFont));
-                    detailsTable.AddCell(new Phrase(loggedInUser, bodyFont));
                     detailsTable.AddCell(new Phrase("Department:", bodyFont));
-                    detailsTable.AddCell(new Phrase(loggedInDepart, bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["Department"].ToString(), bodyFont));
 
-                    detailsTable.AddCell(new Phrase("Bank Name:", bodyFont));
-                    detailsTable.AddCell(new Phrase(loggedInDepart, bodyFont));
-                    detailsTable.AddCell(new Phrase("Account No.:", bodyFont));
-                    detailsTable.AddCell(new Phrase(loggedInDepart, bodyFont));
+                    detailsTable.AddCell(new Phrase("Bank name:", bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["Department"].ToString(), bodyFont));
+
+                    detailsTable.AddCell(new Phrase("Account no:", bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["SerialNo"].ToString(), bodyFont));
 
                     detailsTable.AddCell(new Phrase("Request date:", bodyFont));
-                    detailsTable.AddCell(new Phrase(RequestDate.ToString("dd.MM.yyyy"), bodyFont));
+                    detailsTable.AddCell(new Phrase(Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont));
 
                     leftCell.AddElement(detailsTable);
 
                     PdfPCell rightCell = new PdfPCell();
-                    rightCell.Border = iTextRectangle.NO_BORDER;
+                    rightCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     rightCell.Padding = 0f;
 
-                    Paragraph checkedPara = new Paragraph();
-                    checkedPara.Add(new Chunk($"Checked by : {checkStatus}", bodyFont));
-                    checkedPara.SpacingBefore = 0f;
-                    rightCell.AddElement(checkedPara);
+                    Paragraph HODApprovalPara = new Paragraph();
+                    string ApprovedByHOD = orderDetails["ApprovedByHOD"].ToString();
+                    string HODApprovedDate = orderDetails["HODApprovedDate"].ToString();
+                    if (string.IsNullOrEmpty(ApprovedByHOD))
+                    {
+                        HODApprovalPara.Add(new Chunk("HOD approval status : Pending", bodyFont));
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(HODApprovedDate))
+                        {
+                            HODApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                        }
+                        HODApprovalPara.Add(new Chunk($"Approved by HOD : {ApprovedByHOD}   {HODApprovedDate}", bodyFont));
+                    }
+                    HODApprovalPara.SpacingBefore = 0f;
+                    rightCell.AddElement(HODApprovalPara);
 
-                    Paragraph checkedAdminPara = new Paragraph();
-                    checkedAdminPara.Add(new Chunk($"", bodyFont));
-                    checkedAdminPara.SpacingBefore = 0f;
-                    checkedAdminPara.SpacingAfter = 0f;
-                    rightCell.AddElement(checkedAdminPara);
+                    Paragraph approvedHODPara = new Paragraph();
+                    approvedHODPara.Add(new Chunk("", bodyFont));
+                    approvedHODPara.SpacingBefore = 0f;
+                    approvedHODPara.SpacingAfter = 0f;
+                    rightCell.AddElement(approvedHODPara);
 
-                    Paragraph approvedPara = new Paragraph();
-                    approvedPara.Add(new Chunk($"Approved by: {approveStatus}", bodyFont));
-                    approvedPara.SpacingBefore = 0f;
-                    rightCell.AddElement(approvedPara);
+                    Paragraph HRApprovalPara = new Paragraph();
+                    string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
+                    string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
+                    if (string.IsNullOrEmpty(ApprovedByHR))
+                    {
+                        HRApprovalPara.Add(new Chunk("HR approval status : Pending", bodyFont));
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(HRApprovedDate))
+                        {
+                            HRApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                        }
+                        HRApprovalPara.Add(new Chunk($"Approved by HR : {ApprovedByHR}   {HRApprovedDate}", bodyFont));
+                    }
+                    HRApprovalPara.SpacingBefore = 0f;
+                    rightCell.AddElement(HRApprovalPara);
 
-                    Paragraph approvedHrPara = new Paragraph();
-                    approvedHrPara.Add(new Chunk($"", bodyFont));
-                    approvedHrPara.SpacingBefore = 0f;
-                    approvedHrPara.SpacingAfter = 0f;
-                    rightCell.AddElement(approvedHrPara);
+                    Paragraph approvedHRPara = new Paragraph();
+                    approvedHRPara.Add(new Chunk("", bodyFont));
+                    approvedHRPara.SpacingBefore = 0f;
+                    approvedHRPara.SpacingAfter = 0f;
+                    rightCell.AddElement(approvedHRPara);
 
-                    Paragraph issuedPara = new Paragraph();
-                    issuedPara.Add(new Chunk($"Received by: Canteen", bodyFont));
-                    issuedPara.SpacingBefore = 0f;
-                    rightCell.AddElement(issuedPara);
+                    Paragraph AccountApprovalPara = new Paragraph();
+                    string ApprovedByAccount = orderDetails["ApprovedByAccount"].ToString();
+                    string AccountApprovedDate = orderDetails["AccountApprovedDate"].ToString();
+                    if (string.IsNullOrEmpty(ApprovedByAccount))
+                    {
+                        AccountApprovalPara.Add(new Chunk("Account approval status : Pending", bodyFont));
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(AccountApprovedDate))
+                        {
+                            AccountApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                        }
+                        AccountApprovalPara.Add(new Chunk($"Approved by Account : {ApprovedByAccount}   {AccountApprovedDate}", bodyFont));
+                    }
+                    AccountApprovalPara.SpacingBefore = 0f;
+                    rightCell.AddElement(AccountApprovalPara);
+
+                    Paragraph approvedAccountPara = new Paragraph();
+                    approvedAccountPara.Add(new Chunk("", bodyFont));
+                    approvedAccountPara.SpacingBefore = 0f;
+                    approvedAccountPara.SpacingAfter = 0f;
+                    rightCell.AddElement(approvedAccountPara);
 
                     mainLayoutTable.AddCell(leftCell);
                     mainLayoutTable.AddCell(rightCell);
@@ -720,7 +791,9 @@ namespace HRAdmin.UserControl
 
                     PdfPTable detailsTable2 = new PdfPTable(2);
                     detailsTable2.WidthPercentage = 100;
-                    detailsTable2.SetWidths(new float[] { 0.5f, 3f });
+                    detailsTable2.SetWidths(new float[] { 1f, 3f });
+
+                    AddStyledTableRow(detailsTable2, "Expenses Type:", orderDetails["ExpensesType"].ToString(), bodyFont, italicBodyFont, 0);
 
                     document.Add(detailsTable2);
 
@@ -731,8 +804,7 @@ namespace HRAdmin.UserControl
                     document.Add(footer);
 
                     document.Close();
-                    pdfBytes = ms.ToArray();
-                    return pdfBytes;
+                    return ms.ToArray();
                 }
             }
             catch (Exception ex)
@@ -741,49 +813,6 @@ namespace HRAdmin.UserControl
                 return null;
             }
         }
-
-        private void StorePdfInDatabase(string SerialNo, byte[] pdfBytes)
-        {
-            try
-            {
-                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    string query = "INSERT INTO tbl_MCPdfStorage (SerialNo, PdfData, CreatedDate) VALUES (@SerialNo, @PdfData, @CreatedDate)";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@SerialNo", SerialNo);
-                        cmd.Parameters.AddWithValue("@PdfData", pdfBytes);
-                        cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error storing PDF in database: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnViewPDF_Click(object sender, EventArgs e)
-        {
-            if (pdfBytes != null)
-            {
-                string tempFile = Path.GetTempFileName() + ".pdf";
-                File.WriteAllBytes(tempFile, pdfBytes);
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = tempFile,
-                    UseShellExecute = true
-                });
-            }
-            else
-            {
-                MessageBox.Show("No PDF data available to view.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
         private void AddStyledTableRow(PdfPTable table, string label, string value, iTextSharp.text.Font labelFont, iTextSharp.text.Font valueFont, int rowIndex, bool multiLine = false)
         {
             PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
@@ -809,6 +838,42 @@ namespace HRAdmin.UserControl
 
             table.AddCell(labelCell);
             table.AddCell(valueCell);
+        }
+        private void btnViewPDF_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine($"SelectedRows.Count: {dgvVR.SelectedRows.Count}");
+            Debug.WriteLine($"CurrentRow.Index: {dgvVR.CurrentRow?.Index}");
+            DataGridViewRow selectedRow = dgvVR.SelectedRows.Count > 0 ? dgvVR.SelectedRows[0] : dgvVR.CurrentRow;
+            if (selectedRow != null)
+            {
+                string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+                Debug.WriteLine($"Selected SerialNo: {serialNo}");
+                if (string.IsNullOrEmpty(serialNo))
+                {
+                    MessageBox.Show("Invalid row selection: SerialNo is missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
+                pdfBytes = GeneratePDF(serialNo);
+                if (pdfBytes != null)
+                {
+                    string tempFile = Path.GetTempFileName() + ".pdf";
+                    File.WriteAllBytes(tempFile, pdfBytes);
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = tempFile,
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    MessageBox.Show("No PDF data available to view.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a row to view the PDF.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         public class PdfPageEventHelper : iTextSharp.text.pdf.PdfPageEventHelper

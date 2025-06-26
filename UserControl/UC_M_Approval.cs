@@ -20,16 +20,18 @@ namespace HRAdmin.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
+        private string loggedInIndex;
         private DataTable cachedData; // For caching data
         private DataTable serialNoData; // To store all SerialNos for ComboBox
         private bool isNetworkErrorShown;
         private bool isNetworkUnavailable;
 
-        public UC_M_Approval(string username, string department)
+        public UC_M_Approval(string username, string department, string emp)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
+            loggedInIndex = emp;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
             serialNoData = new DataTable(); // Initialize SerialNo data
             serialNoData.Columns.Add("SerialNo", typeof(string));
@@ -60,7 +62,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = true;
             Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 

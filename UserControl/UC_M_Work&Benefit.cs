@@ -18,14 +18,19 @@ namespace HRAdmin.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
+        private string loggedInIndex;
         private string expensesType; // To store the selected ExpensesType
 
-        public UC_M_Work(string username, string department, string selectedType)
+        public UC_M_Work(string username, string department, string selectedType, string emp)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
+            loggedInIndex = emp;
             expensesType = selectedType; // Set ExpensesType based on navigation
+            MessageBox.Show($"loggedInUser: {loggedInUser}");
+            MessageBox.Show($"loggedInDepart: {loggedInDepart}");
+            MessageBox.Show($"loggedInIndex: {loggedInIndex}");
             InitializeDataTable();
             ConfigureDataGridView();
             StyleDataGridView(dgvW); // Apply styling to the DataGridView
@@ -40,7 +45,10 @@ namespace HRAdmin.UserControl
             dt.Columns["ID"].AutoIncrementStep = 1; // Increment by 1
             dt.Columns.Add("SerialNo", typeof(string));
             dt.Columns.Add("Requester", typeof(string));
+            dt.Columns.Add("EmpNo", typeof(string));
             dt.Columns.Add("Department", typeof(string));
+            dt.Columns.Add("BankName", typeof(string));
+            dt.Columns.Add("AccountNo", typeof(string));
             dt.Columns.Add("ExpensesType", typeof(string));
             dt.Columns.Add("RequestDate", typeof(DateTime));
             dt.Columns.Add("HODApprovalStatus", typeof(string));
@@ -65,7 +73,10 @@ namespace HRAdmin.UserControl
             // Hide columns that should not be edited by the user
             dgvW.Columns["SerialNo"].Visible = false;
             dgvW.Columns["Requester"].Visible = false;
+            dgvW.Columns["EmpNo"].Visible = false;
             dgvW.Columns["Department"].Visible = false;
+            dgvW.Columns["BankName"].Visible = false;
+            dgvW.Columns["AccountNo"].Visible = false;
             dgvW.Columns["ExpensesType"].Visible = false;
             dgvW.Columns["RequestDate"].Visible = false;
             dgvW.Columns["HODApprovalStatus"].Visible = false;
@@ -134,12 +145,13 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = true;
             Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
+            
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -174,9 +186,9 @@ namespace HRAdmin.UserControl
                                         VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo)";
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
-                                        (SerialNo, Requester, Department, ExpensesType, RequestDate, 
+                                        (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
                                          HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
-                                        VALUES (@SerialNo, @Requester, @Department, @ExpensesType, @RequestDate, 
+                                        VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
                                                 @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
 
                     DataTable dt = (DataTable)dgvW.DataSource;
@@ -196,6 +208,8 @@ namespace HRAdmin.UserControl
                             // Set default values for null or empty fields
                             row["Requester"] = row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"]?.ToString())
                                 ? loggedInUser : row["Requester"];
+                            row["EmpNo"] = row["EmpNo"] == DBNull.Value || string.IsNullOrEmpty(row["EmpNo"]?.ToString())
+                                ? loggedInIndex : row["EmpNo"];
                             row["Department"] = row["Department"] == DBNull.Value || string.IsNullOrEmpty(row["Department"]?.ToString())
                                 ? loggedInDepart : row["Department"];
                             row["RequestDate"] = row["RequestDate"] == DBNull.Value ? DateTime.Now : row["RequestDate"];
@@ -227,7 +241,10 @@ namespace HRAdmin.UserControl
                                 cmdMaster.Parameters.Clear();
                                 cmdMaster.Parameters.AddWithValue("@SerialNo", serialNo);
                                 cmdMaster.Parameters.AddWithValue("@Requester", row["Requester"]);
+                                cmdMaster.Parameters.AddWithValue("@EmpNo", row["EmpNo"]);
                                 cmdMaster.Parameters.AddWithValue("@Department", row["Department"]);
+                                cmdMaster.Parameters.AddWithValue("@BankName", row["BankName"] ?? (object)DBNull.Value);
+                                cmdMaster.Parameters.AddWithValue("@AccountNo", row["AccountNo"] ?? (object)DBNull.Value);
                                 cmdMaster.Parameters.AddWithValue("@ExpensesType", row["ExpensesType"]);
                                 cmdMaster.Parameters.AddWithValue("@RequestDate", row["RequestDate"]);
                                 cmdMaster.Parameters.AddWithValue("@HODApprovalStatus", row["HODApprovalStatus"]);
@@ -243,7 +260,7 @@ namespace HRAdmin.UserControl
 
                         // Update UI after successful insertion
                         Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
-                        UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, expensesType);
+                        UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, expensesType, loggedInIndex);
                         addControls(ug);
                     }
                 }

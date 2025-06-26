@@ -20,15 +20,17 @@ namespace HRAdmin.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
+        private string loggedInIndex;
         private DataTable cachedData; // Declare cachedData
         private bool isNetworkErrorShown; // Declare isNetworkErrorShown
         private bool isNetworkUnavailable; // Declare isNetworkUnavailable
 
-        public UC_M_MiscellaneousClaim(string username, string department)
+        public UC_M_MiscellaneousClaim(string username, string department, string emp)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
+            loggedInIndex = emp;
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
             LoadUsernames();
             LoadDepartments();
@@ -62,7 +64,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedLabel.Text = "Account";
             Form_Home.sharedbtnMCReport.Visible = false;
 
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 
@@ -82,7 +84,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, selectedType);
+                UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
             else if (selectedType == "Benefit")
@@ -91,7 +93,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, selectedType);
+                UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
         }
