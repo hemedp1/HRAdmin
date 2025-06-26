@@ -121,7 +121,7 @@
   <data name="btnAccount.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
-        EAAACxABrSO9dQAAAdtJREFUSEu91cvLTlEUx/HXTAbM3r/FXyFGBnrFxOUll+SWASVyS0K55ZakTJiI
+        DwAACw8BkvkDpQAAAdtJREFUSEu91cvLTlEUx/HXTAbM3r/FXyFGBnrFxOUll+SWASVyS0K55ZakTJiI
         lFtCbgNRymWgKCLkVgZ8tLRO9nM6j/ec541frZ6z17P3/u619jrrDA39D2ESXhtMPzFa37NHGM7JJ7G6
         gy3DV2yv79mjAhALXuEOLuMFruEWnuAKbuNtzt+EN10Bm7EFszATa7EGO7EO+3BuPICrOJUbHsNBHMF+
         7MEOPBsUsKEhz3+z6fjYBTCoWgMOF6eLaEKjOV6B87iZqQzfQnzpAoiFlarn6vcltuE47qdvPQ5hpL5n
@@ -346,6 +346,21 @@
         x1XVmQBa4HkC20rSqAlAljNKL5qXcPPRdj6auZf5Jzs42s4b4CEp0XTuS3+rD3Tjj+DCDwDcPCUt6pbv
         aXOjpWWYsh7SIhXpHRzSJdqT49JfW+PmKef9tPsBSLXUkfdpXvi9P4IL/w7gDtSSaquekR95Ae/zYxHk
         dFHXtP9mkfOjj8UBpkvUAS9JM3O/VrP2vdOdP4Kv4g17i/sKpSgs5AAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="btnApproval.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        wgAADsIBFShKgAAAAgtJREFUSEullTFrVUEQhcMjWIpYBBELEYtgIRapxUIsLMIrLEUsLCUE8Q+IPyBY
+        ipWEYOlvEAkiEkQkWIpIsBCRIBJS5HxyXnaum8leb148MNxhd/bMnN3ZuzMzA5B0C1iXdBc4Icl2p4yN
+        c/xUAOYlbUvCkPRF0ufi27Ydk9f1AhgBY+AesAxsFqJI0PId41iv8dpR5u0g6WoQHBeSrmXeDpLuR2WN
+        So/qL2XeDsDTelFj8aAPPMu8Jj4raVXSXgT/h5ljFTgX5PPAz0g/JR4DL/NggTvskhOcd9YYdRX52+O/
+        AHxuh7a2+Oa84EkHbTSk9hqwJel02YFZSW9zjDnNPYGklSLgqFiM8yt34BAkPYmAOUk/qon4+rCWgNuS
+        dqs5H2Cc30Xgd6WsVmnOM07g7snyHLBSVTl2EklbQGzNSNKrvC7ZmgPfRfUJ74OsEC5KulkltbohbMQd
+        2IyRWirgwzsVpAFvjaRfdWzD/2TuqMbn8L0h0fYGOBnkkrw1rxtxtZlrrquo9PK3UNHAeiSR9CBPNmCu
+        jn/Sy8COZ2qp8S3+B+BR3VGNmPjuSJo9kKA8Jlnqce2rX76/Eval+ym8Xi7dRM2UcBt77Q0/rQfIM4Dn
+        rsSIqoZ8X8DM0wtJCw3Z/zRgIfP0onTVsqSHfgKBy8DHbjP2/SueK13l/1GmmQ5uU2CtWHcvhvAHWAt+
+        6jC888IAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="btnMCReport.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

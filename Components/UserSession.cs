@@ -26,5 +26,6 @@ namespace HRAdmin.Components
         public static string toDate { get; set; }
         public static DateTime? StartDate { get; set; }
         public static DateTime? EndDate { get; set; }
+
     }
 }

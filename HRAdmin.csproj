@@ -192,11 +192,11 @@
     <Compile Include="UserControl\UC_Meal_ViewReport.Designer.cs">
       <DependentUpon>UC_Meal_ViewReport.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControl\UC_M_Benefit.cs">
+    <Compile Include="UserControl\UC_M_Approval.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControl\UC_M_Benefit.Designer.cs">
-      <DependentUpon>UC_M_Benefit.cs</DependentUpon>
+    <Compile Include="UserControl\UC_M_Approval.Designer.cs">
+      <DependentUpon>UC_M_Approval.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControl\UC_M_MiscellaneousClaim.cs">
       <SubType>UserControl</SubType>
@@ -210,11 +210,11 @@
     <Compile Include="UserControl\UC_M_Report.Designer.cs">
       <DependentUpon>UC_M_Report.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControl\UC_M_Work.cs">
+    <Compile Include="UserControl\UC_M_Work&amp;Benefit.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControl\UC_M_Work.Designer.cs">
-      <DependentUpon>UC_M_Work.cs</DependentUpon>
+    <Compile Include="UserControl\UC_M_Work&amp;Benefit.Designer.cs">
+      <DependentUpon>UC_M_Work&amp;Benefit.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControl\UC_R_DetailsRoom.cs">
       <SubType>UserControl</SubType>
@@ -356,8 +356,8 @@
     <EmbeddedResource Include="UserControl\UC_Meal_ViewReport.resx">
       <DependentUpon>UC_Meal_ViewReport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControl\UC_M_Benefit.resx">
-      <DependentUpon>UC_M_Benefit.cs</DependentUpon>
+    <EmbeddedResource Include="UserControl\UC_M_Approval.resx">
+      <DependentUpon>UC_M_Approval.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_MiscellaneousClaim.resx">
       <DependentUpon>UC_M_MiscellaneousClaim.cs</DependentUpon>
@@ -365,8 +365,8 @@
     <EmbeddedResource Include="UserControl\UC_M_Report.resx">
       <DependentUpon>UC_M_Report.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControl\UC_M_Work.resx">
-      <DependentUpon>UC_M_Work.cs</DependentUpon>
+    <EmbeddedResource Include="UserControl\UC_M_Work&amp;Benefit.resx">
+      <DependentUpon>UC_M_Work&amp;Benefit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_R_DetailsRoom.resx">
       <DependentUpon>UC_R_DetailsRoom.cs</DependentUpon>

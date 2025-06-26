@@ -41,6 +41,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Menu = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnMCReport = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.btnWithdrawEntry = new System.Windows.Forms.Button();
             this.btnVisitor = new System.Windows.Forms.Button();
@@ -61,7 +62,7 @@
             this.btnBookCar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.btnMCReport = new System.Windows.Forms.Button();
+            this.btnApproval = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -230,6 +231,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.MidnightBlue;
+            this.panel4.Controls.Add(this.btnApproval);
             this.panel4.Controls.Add(this.btnMCReport);
             this.panel4.Controls.Add(this.btnUpdate);
             this.panel4.Controls.Add(this.btnWithdrawEntry);
@@ -257,6 +259,27 @@
             this.panel4.Size = new System.Drawing.Size(4608, 58);
             this.panel4.TabIndex = 2;
             this.panel4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel4_MouseDown);
+            // 
+            // btnMCReport
+            // 
+            this.btnMCReport.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnMCReport.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
+            this.btnMCReport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnMCReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMCReport.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.btnMCReport.ForeColor = System.Drawing.Color.White;
+            this.btnMCReport.Image = ((System.Drawing.Image)(resources.GetObject("btnMCReport.Image")));
+            this.btnMCReport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnMCReport.Location = new System.Drawing.Point(253, 0);
+            this.btnMCReport.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnMCReport.Name = "btnMCReport";
+            this.btnMCReport.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnMCReport.Size = new System.Drawing.Size(230, 58);
+            this.btnMCReport.TabIndex = 26;
+            this.btnMCReport.Tag = "";
+            this.btnMCReport.Text = "Report PDF";
+            this.btnMCReport.UseVisualStyleBackColor = true;
+            this.btnMCReport.Click += new System.EventHandler(this.btnMCReport_Click);
             // 
             // btnUpdate
             // 
@@ -657,26 +680,26 @@
             this.panel5.TabIndex = 3;
             this.panel5.Paint += new System.Windows.Forms.PaintEventHandler(this.panel5_Paint);
             // 
-            // btnMCReport
+            // btnApproval
             // 
-            this.btnMCReport.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnMCReport.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
-            this.btnMCReport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnMCReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMCReport.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.btnMCReport.ForeColor = System.Drawing.Color.White;
-            this.btnMCReport.Image = ((System.Drawing.Image)(resources.GetObject("btnMCReport.Image")));
-            this.btnMCReport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMCReport.Location = new System.Drawing.Point(253, 0);
-            this.btnMCReport.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnMCReport.Name = "btnMCReport";
-            this.btnMCReport.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnMCReport.Size = new System.Drawing.Size(230, 58);
-            this.btnMCReport.TabIndex = 26;
-            this.btnMCReport.Tag = "";
-            this.btnMCReport.Text = "Report PDF";
-            this.btnMCReport.UseVisualStyleBackColor = true;
-            this.btnMCReport.Click += new System.EventHandler(this.btnMCReport_Click);
+            this.btnApproval.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnApproval.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
+            this.btnApproval.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnApproval.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnApproval.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.btnApproval.ForeColor = System.Drawing.Color.White;
+            this.btnApproval.Image = ((System.Drawing.Image)(resources.GetObject("btnApproval.Image")));
+            this.btnApproval.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnApproval.Location = new System.Drawing.Point(23, 0);
+            this.btnApproval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApproval.Name = "btnApproval";
+            this.btnApproval.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnApproval.Size = new System.Drawing.Size(230, 58);
+            this.btnApproval.TabIndex = 28;
+            this.btnApproval.Tag = "";
+            this.btnApproval.Text = "Claim Approval";
+            this.btnApproval.UseVisualStyleBackColor = true;
+            this.btnApproval.Click += new System.EventHandler(this.btnApproval_Click);
             // 
             // Form_Home
             // 
@@ -745,5 +768,6 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button btnMCReport;
+        private System.Windows.Forms.Button btnApproval;
     }
 }

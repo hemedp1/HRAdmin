@@ -56,7 +56,7 @@
             this.gbExternal.Size = new System.Drawing.Size(1479, 550);
             this.gbExternal.TabIndex = 140;
             this.gbExternal.TabStop = false;
-            this.gbExternal.Text = "Miscellaneous Claim Form for Work";
+            this.gbExternal.Text = "Miscellaneous Claim Form for Work or Benefit";
             // 
             // btnSubmit
             // 
