@@ -28,9 +28,6 @@ namespace HRAdmin.UserControl
             loggedInDepart = department;
             loggedInIndex = emp;
             expensesType = selectedType; // Set ExpensesType based on navigation
-            MessageBox.Show($"loggedInUser: {loggedInUser}");
-            MessageBox.Show($"loggedInDepart: {loggedInDepart}");
-            MessageBox.Show($"loggedInIndex: {loggedInIndex}");
             InitializeDataTable();
             ConfigureDataGridView();
             StyleDataGridView(dgvW); // Apply styling to the DataGridView
