@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
@@ -31,16 +32,21 @@ namespace HRAdmin.UserControl
             loggedInUser = username;
             loggedInIndex = Index;
             loggedInDepart = Depart;
+
             groupBox2.Visible = false;
             Grp6 = groupBox6;
-            AutoScroll = true; 
+            AutoScroll = true;
+
+            LoadDepartments();
             dTDay.ValueChanged += dTDay_ValueChanged;
            // cmnRepID.SelectedIndexChanged += cmnRepID_SelectedIndexChanged;
             CheckUserAccess1(loggedInUser);
             loadCars();
+            
         }
         private void UC_C_Accident_Load(object sender, EventArgs e)
         {
+            loadListNotApp();
             dTDay.ValueChanged += dTDay_ValueChanged;
         }
         private void rB_Rej_CheckedChanged(object sender, EventArgs e)
@@ -114,6 +120,8 @@ namespace HRAdmin.UserControl
                                     MakeUserSectionReadOnly(groupBox4);
                                     MakeUserSectionReadOnly(groupBox5);
                                     
+
+
                                 }
                                 else if (AC == "11")
                                 {
@@ -226,7 +234,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
-
         private void CheckUserAccess(string username)     //USE AT BACK BUTTON
         {
             try
@@ -368,7 +375,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"Error on Room Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void DateReportAcc()
         {
             try
@@ -403,7 +409,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"Error on Report ID Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         ///MessageBox.Show($"DDSDSDDWDWWD: {time1}"); 
         private void submit_Click(object sender, EventArgs e)
         {
@@ -765,7 +770,6 @@ namespace HRAdmin.UserControl
             }
 
         }
-
         private Image ByteArrayToImage(byte[] byteArray)
         {
             using (MemoryStream ms = new MemoryStream(byteArray))
@@ -981,12 +985,10 @@ namespace HRAdmin.UserControl
             }
             
         }
-
         private void subadmin_Click(object sender, EventArgs e)
         {
 
         }
-
         private void btnAttachemnt_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -999,7 +1001,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btnChecked_Click(object sender, EventArgs e)
         {
             string selectedDate = dTDay.Value.Date.ToString("yyyy-MM-dd");
@@ -1038,7 +1039,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btnApp_Admin_Click(object sender, EventArgs e)
         {
             string selectedDate = dTDay.Value.Date.ToString("yyyy-MM-dd");
@@ -1108,10 +1108,184 @@ namespace HRAdmin.UserControl
             }
 
         }
-
         private void panel6_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+        private void LoadDepartments()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                string query = "SELECT DISTINCT Dept FROM tbl_AccidentCar";
+                SqlDataAdapter da = new SqlDataAdapter(query, con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                cmbdep.DataSource = dt;
+                cmbdep.DisplayMember = "Dept";
+                cmbdep.ValueMember = "Dept";
+                cmbdep.SelectedIndex = -1;
+            }
+        }
+        private void cmbdep_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            loadListNotApp();
+            if (cmbdep.SelectedIndex >= 0)
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    string query = "SELECT DISTINCT DriverInternal FROM tbl_AccidentCar WHERE Dept = @Dept";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@Dept", cmbdep.SelectedValue.ToString());
+
+                        SqlDataAdapter da = new SqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+
+                        cmbdriver.DataSource = dt;
+                        cmbdriver.DisplayMember = "DriverInternal";
+                        cmbdriver.ValueMember = "DriverInternal";
+                        cmbdriver.SelectedIndex = -1;
+                    }
+                }
+            }
+        }
+        private void loadListNotApp()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+
+                    string query = @"
+                SELECT 
+                    DateReport,
+                    DriverInternal,
+                    IndexNo,
+                    Dept,
+                    Car,
+                    CheckStatus,
+                    ISNULL(CheckedBy, 'Pending') AS CheckedBy,
+                    ISNULL(CONVERT(varchar, DateCheck, 23), 'Pending') AS DateCheck,
+                    ApproveStatus,
+                    ISNULL(ApproveBy, 'Pending') AS ApproveBy,
+                    ISNULL(CONVERT(varchar, DateApprove, 23), 'Pending') AS DateApprove
+                FROM tbl_AccidentCar 
+                WHERE ApproveStatus = 'Pending'";
+
+                    List<SqlParameter> parameters = new List<SqlParameter>();
+
+                    if (cmbdep.SelectedValue != null)
+                    {
+                        query += " AND Dept = @Dept";
+                        parameters.Add(new SqlParameter("@Dept", cmbdep.SelectedValue.ToString()));
+                    }
+
+                    if (cmbdriver.SelectedValue != null)
+                    {
+                        query += " AND DriverInternal = @DriverInternal";
+                        parameters.Add(new SqlParameter("@DriverInternal", cmbdriver.SelectedValue.ToString()));
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        foreach (var param in parameters)
+                        {
+                            cmd.Parameters.Add(param);
+                        }
+
+                        DataTable dt = new DataTable();
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+
+                        dataGridView1.Columns.Clear();
+                        dataGridView1.AutoGenerateColumns = false;
+                        dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+                        dataGridView1.ScrollBars = ScrollBars.Both;
+
+                        dataGridView1.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+                        {
+                            Font = new Font("Arial", 11, FontStyle.Bold),
+                        };
+
+                        string[] columnNames = { "DateReport", "DriverInternal", "IndexNo", "Dept", "Car", "CheckStatus", "CheckedBy", "DateCheck", "ApproveStatus", "ApproveBy", "DateApprove" };
+
+                        foreach (var col in columnNames)
+                        {
+                            string headerText;
+                            switch (col)
+                            {
+                                case "DateReport":
+                                    headerText = "Date Report";
+                                    break;
+                                case "DriverInternal":
+                                    headerText = "Driver";
+                                    break;
+                                case "IndexNo":
+                                    headerText = "Index No";
+                                    break;
+                                case "Dept":
+                                    headerText = "Department";
+                                    break;
+                                case "Car":
+                                    headerText = "Car";
+                                    break;
+                                case "CheckStatus":
+                                    headerText = "Admin Status Check";
+                                    break;
+                                case "CheckedBy":
+                                    headerText = "Checked By";
+                                    break;
+                                case "DateCheck":
+                                    headerText = "Checked Date";
+                                    break;
+                                case "ApproveStatus":
+                                    headerText = "Admin HOD Status Check";
+                                    break;
+                                case "ApproveBy":
+                                    headerText = "Approve By";
+                                    break;
+                                case "DateApprove":
+                                    headerText = "Approve Date";
+                                    break;
+                                default:
+                                    headerText = col.Replace("_", " ");
+                                    break;
+                            }
+
+                            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                            {
+                                HeaderText = headerText,
+                                DataPropertyName = col,
+                                Width = 170,
+                                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                                SortMode = DataGridViewColumnSortMode.Automatic,
+                                DefaultCellStyle = new DataGridViewCellStyle
+                                {
+                                    ForeColor = Color.MidnightBlue,
+                                    Font = new Font("Arial", 11)
+                                }
+                            });
+                        }
+                        dataGridView1.DataSource = dt;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading accident reports: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+   
+
+        private void cmbdriver_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            loadListNotApp(); // Refresh when driver changes
         }
     }
 }

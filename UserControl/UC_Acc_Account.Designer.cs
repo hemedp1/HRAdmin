@@ -44,10 +44,11 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox1.Size = new System.Drawing.Size(1795, 941);
+            this.groupBox1.Size = new System.Drawing.Size(2019, 1176);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Account";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // btnMClaim
             // 
@@ -58,25 +59,26 @@
             this.btnMClaim.ForeColor = System.Drawing.Color.Black;
             this.btnMClaim.Image = ((System.Drawing.Image)(resources.GetObject("btnMClaim.Image")));
             this.btnMClaim.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMClaim.Location = new System.Drawing.Point(5, 33);
+            this.btnMClaim.Location = new System.Drawing.Point(6, 41);
             this.btnMClaim.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnMClaim.Name = "btnMClaim";
             this.btnMClaim.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnMClaim.Size = new System.Drawing.Size(230, 58);
+            this.btnMClaim.Size = new System.Drawing.Size(259, 72);
             this.btnMClaim.TabIndex = 10;
             this.btnMClaim.Tag = "Miscellaneous Claim";
             this.btnMClaim.Text = "            Miscellaneous Claim";
             this.btnMClaim.UseVisualStyleBackColor = true;
             this.btnMClaim.Click += new System.EventHandler(this.btnMClaim_Click);
             // 
-            // UC_A_Account
+            // UC_Acc_Account
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.groupBox1);
-            this.Name = "UC_A_Account";
-            this.Size = new System.Drawing.Size(1795, 941);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.Name = "UC_Acc_Account";
+            this.Size = new System.Drawing.Size(2019, 1176);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
