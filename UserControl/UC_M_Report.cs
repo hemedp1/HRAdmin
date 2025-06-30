@@ -183,7 +183,7 @@ namespace HRAdmin.UserControl
             }
 
             string query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
+                SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
                        HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
                 FROM tbl_MasterClaimForm
                 WHERE (@Requester IS NULL OR Requester = @Requester)
@@ -360,7 +360,7 @@ namespace HRAdmin.UserControl
             }
 
             string query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
+                SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
                        HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
                 FROM tbl_MasterClaimForm
                 WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
@@ -584,15 +584,16 @@ namespace HRAdmin.UserControl
             {
                 string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
                 Dictionary<string, object> orderDetails = new Dictionary<string, object>();
+                List<Dictionary<string, object>> claimItems = new List<Dictionary<string, object>>();
 
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
                     string query = @"
-        SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-               HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate
-        FROM tbl_MasterClaimForm
-        WHERE SerialNo = @SerialNo";
+SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
+       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate
+FROM tbl_MasterClaimForm
+WHERE SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -602,7 +603,10 @@ namespace HRAdmin.UserControl
                             {
                                 orderDetails["SerialNo"] = reader["SerialNo"].ToString();
                                 orderDetails["Requester"] = reader["Requester"].ToString();
+                                orderDetails["EmpNo"] = reader["EmpNo"].ToString();
                                 orderDetails["Department"] = reader["Department"].ToString();
+                                orderDetails["BankName"] = reader["BankName"].ToString();
+                                orderDetails["AccountNo"] = reader["AccountNo"].ToString();
                                 orderDetails["ExpensesType"] = reader["ExpensesType"].ToString();
                                 orderDetails["RequestDate"] = reader["RequestDate"];
                                 orderDetails["HODApprovalStatus"] = reader["HODApprovalStatus"] != DBNull.Value ? reader["HODApprovalStatus"].ToString() : "";
@@ -622,6 +626,30 @@ namespace HRAdmin.UserControl
                             }
                         }
                     }
+
+                    // Fetch claim items based on the reference image
+                    string itemsQuery = @"
+               SELECT SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice
+               FROM tbl_DetailClaimForm
+               WHERE SerialNo = @SerialNo";
+                    using (SqlCommand cmd = new SqlCommand(itemsQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var item = new Dictionary<string, object>();
+                                item["ExpensesType"] = reader["ExpensesType"].ToString();
+                                item["Vendor"] = reader["Vendor"].ToString();
+                                item["Item"] = reader["Item"].ToString();
+                                item["InvoiceAmount"] = reader["InvoiceAmount"] != DBNull.Value ? reader["InvoiceAmount"].ToString() : "0.00";
+                                item["InvoiceNo"] = reader["InvoiceNo"].ToString();
+                                item["Invoice"] = reader["Invoice"].ToString();
+                                claimItems.Add(item);
+                            }
+                        }
+                    }
                 }
 
                 using (MemoryStream ms = new MemoryStream())
@@ -636,6 +664,7 @@ namespace HRAdmin.UserControl
                     iTextSharp.text.Font headerFont = FontFactory.GetFont("Helvetica", 12f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font bodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font italicBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
+                    iTextSharp.text.Font boldBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
 
                     string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logo hosiden.jpg");
                     if (File.Exists(logoPath))
@@ -673,31 +702,27 @@ namespace HRAdmin.UserControl
                     leftCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     leftCell.Padding = 0f;
 
-                    PdfPTable detailsTable = new PdfPTable(2); // Changed to 2 columns
+                    PdfPTable detailsTable = new PdfPTable(2);
                     detailsTable.WidthPercentage = 100;
-                    detailsTable.SetWidths(new float[] { 0.3f, 0.7f }); // Adjusted widths for label and value
+                    detailsTable.SetWidths(new float[] { 0.2f, 0.8f });
                     detailsTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     detailsTable.DefaultCell.Padding = 2f;
                     detailsTable.SpacingBefore = 5f;
 
-                    // Add rows vertically
-                    detailsTable.AddCell(new Phrase("Serial No.:", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["SerialNo"].ToString(), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Requester:", bodyFont));
+                    detailsTable.AddCell(new Phrase("Requester     :", bodyFont));
                     detailsTable.AddCell(new Phrase(orderDetails["Requester"].ToString(), bodyFont));
 
-                    detailsTable.AddCell(new Phrase("Emp No.:", bodyFont));
+                    detailsTable.AddCell(new Phrase("Emp No.       :", bodyFont));
                     detailsTable.AddCell(new Phrase(orderDetails["EmpNo"].ToString(), bodyFont));
 
-                    detailsTable.AddCell(new Phrase("Department:", bodyFont));
+                    detailsTable.AddCell(new Phrase("Department  :", bodyFont));
                     detailsTable.AddCell(new Phrase(orderDetails["Department"].ToString(), bodyFont));
 
-                    detailsTable.AddCell(new Phrase("Bank name:", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["Department"].ToString(), bodyFont));
+                    detailsTable.AddCell(new Phrase("Bank name   :", bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["BankName"].ToString(), bodyFont));
 
-                    detailsTable.AddCell(new Phrase("Account no:", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["SerialNo"].ToString(), bodyFont));
+                    detailsTable.AddCell(new Phrase("Account No.  :", bodyFont));
+                    detailsTable.AddCell(new Phrase(orderDetails["AccountNo"].ToString(), bodyFont));
 
                     detailsTable.AddCell(new Phrase("Request date:", bodyFont));
                     detailsTable.AddCell(new Phrase(Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont));
@@ -708,12 +733,14 @@ namespace HRAdmin.UserControl
                     rightCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     rightCell.Padding = 0f;
 
+                    // Adjust alignment and add left indentation
                     Paragraph HODApprovalPara = new Paragraph();
                     string ApprovedByHOD = orderDetails["ApprovedByHOD"].ToString();
                     string HODApprovedDate = orderDetails["HODApprovedDate"].ToString();
+                    HODApprovalPara.IndentationLeft = -50f; // Adjust this value to move left (e.g., 10f moves it 10 points left)
                     if (string.IsNullOrEmpty(ApprovedByHOD))
                     {
-                        HODApprovalPara.Add(new Chunk("HOD approval status : Pending", bodyFont));
+                        HODApprovalPara.Add(new Chunk("HOD Approval      : Pending", bodyFont));
                     }
                     else
                     {
@@ -721,7 +748,7 @@ namespace HRAdmin.UserControl
                         {
                             HODApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
                         }
-                        HODApprovalPara.Add(new Chunk($"Approved by HOD : {ApprovedByHOD}   {HODApprovedDate}", bodyFont));
+                        HODApprovalPara.Add(new Chunk($"Approved by HOD      : {ApprovedByHOD}   {HODApprovedDate}", bodyFont));
                     }
                     HODApprovalPara.SpacingBefore = 0f;
                     rightCell.AddElement(HODApprovalPara);
@@ -735,9 +762,10 @@ namespace HRAdmin.UserControl
                     Paragraph HRApprovalPara = new Paragraph();
                     string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
                     string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
+                    HRApprovalPara.IndentationLeft = -50f; // Adjust this value to move left
                     if (string.IsNullOrEmpty(ApprovedByHR))
                     {
-                        HRApprovalPara.Add(new Chunk("HR approval status : Pending", bodyFont));
+                        HRApprovalPara.Add(new Chunk("HR Approval         : Pending", bodyFont));
                     }
                     else
                     {
@@ -745,7 +773,7 @@ namespace HRAdmin.UserControl
                         {
                             HRApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
                         }
-                        HRApprovalPara.Add(new Chunk($"Approved by HR : {ApprovedByHR}   {HRApprovedDate}", bodyFont));
+                        HRApprovalPara.Add(new Chunk($"Approved by HR         : {ApprovedByHR}   {HRApprovedDate}", bodyFont));
                     }
                     HRApprovalPara.SpacingBefore = 0f;
                     rightCell.AddElement(HRApprovalPara);
@@ -759,9 +787,10 @@ namespace HRAdmin.UserControl
                     Paragraph AccountApprovalPara = new Paragraph();
                     string ApprovedByAccount = orderDetails["ApprovedByAccount"].ToString();
                     string AccountApprovedDate = orderDetails["AccountApprovedDate"].ToString();
+                    AccountApprovalPara.IndentationLeft = -50f; // Adjust this value to move left
                     if (string.IsNullOrEmpty(ApprovedByAccount))
                     {
-                        AccountApprovalPara.Add(new Chunk("Account approval status : Pending", bodyFont));
+                        AccountApprovalPara.Add(new Chunk("Account Approval : Pending", bodyFont));
                     }
                     else
                     {
@@ -789,15 +818,74 @@ namespace HRAdmin.UserControl
                     detailsHeading.SpacingAfter = 5f;
                     document.Add(detailsHeading);
 
-                    PdfPTable detailsTable2 = new PdfPTable(2);
+                    PdfPTable detailsTable2 = new PdfPTable(7);
                     detailsTable2.WidthPercentage = 100;
-                    detailsTable2.SetWidths(new float[] { 1f, 3f });
+                    detailsTable2.SetWidths(new float[] { 0.5f, 1.5f, 2f, 1f, 1.5f, 1.5f, 1f });
+                    detailsTable2.DefaultCell.Padding = 5f;
+                    detailsTable2.DefaultCell.Border = iTextSharp.text.Rectangle.BOX;
 
-                    AddStyledTableRow(detailsTable2, "Expenses Type:", orderDetails["ExpensesType"].ToString(), bodyFont, italicBodyFont, 0);
+                    // Add header row
+                    detailsTable2.AddCell(new Phrase("No", bodyFont));
+                    detailsTable2.AddCell(new Phrase("Expenses Type", bodyFont));
+                    detailsTable2.AddCell(new Phrase("Vendor", bodyFont));
+                    detailsTable2.AddCell(new Phrase("Item ", bodyFont));
+                    detailsTable2.AddCell(new Phrase("Invoice Amount", bodyFont));
+                    detailsTable2.AddCell(new Phrase("Invoice No", bodyFont));
+                    detailsTable2.AddCell(new Phrase("Invoice", bodyFont));
+
+                    // Add data rows
+                    decimal totalAmount = 0;
+                    int itemNo = 1;
+                    foreach (var item in claimItems)
+                    {
+                        detailsTable2.AddCell(new Phrase(itemNo++.ToString(), bodyFont));
+                        detailsTable2.AddCell(new Phrase(item["ExpensesType"].ToString(), bodyFont));
+                        detailsTable2.AddCell(new Phrase(item["Vendor"].ToString(), bodyFont));
+                        detailsTable2.AddCell(new Phrase(item["Item"].ToString(), bodyFont));
+                        string invoiceAmount = item["InvoiceAmount"].ToString();
+                        detailsTable2.AddCell(new Phrase("RM " + invoiceAmount, bodyFont)); // Added RM prefix
+                        detailsTable2.AddCell(new Phrase(item["InvoiceNo"].ToString(), bodyFont));
+                        detailsTable2.AddCell(new Phrase(item["Invoice"].ToString(), bodyFont));
+                        totalAmount += decimal.TryParse(invoiceAmount, out decimal amount) ? amount : 0;
+                    }
+
+                    // Add total row
+                    if (claimItems.Count > 0)
+                    {
+                        detailsTable2.AddCell(new Phrase("", bodyFont));
+                        detailsTable2.AddCell(new Phrase("", bodyFont));
+                        detailsTable2.AddCell(new Phrase("", bodyFont));
+                        detailsTable2.AddCell(new Phrase("Total Amount", bodyFont));
+                        detailsTable2.AddCell(new Phrase("RM " + totalAmount.ToString("F2"), bodyFont)); // Added RM prefix
+                        detailsTable2.AddCell(new Phrase("", bodyFont));
+                        detailsTable2.AddCell(new Phrase("", bodyFont));
+                    }
 
                     document.Add(detailsTable2);
 
-                    Paragraph footer = new Paragraph("This is a computer generated document, no signature is required | Generated on: " + DateTime.Now.ToString("dd.MM.yyyy HH:mm"), bodyFont);
+                    // Add the note paragraph
+                    Paragraph notePara = new Paragraph("", bodyFont);
+                    notePara.Add(new Chunk("Note:\n", boldBodyFont));
+                    notePara.Add(new Chunk("1. Claim of 'Miscellaneous Item' refers to claim for:\n", bodyFont));
+                    notePara.Add(new Chunk("                     i. Expenses related to own department work\n", bodyFont));
+                    notePara.Add(new Chunk("                     Ex: Purchase of work-related supplies/tools, that are not available in General Affairs stock\n", bodyFont));
+                    notePara.Add(new Chunk("                     ii. Expenses related to employee benefits/company event, medical expenses, auditor's meal, etc.\n", bodyFont));
+                    notePara.Add(new Chunk("                     Ex: Expenses incurred during business trip/external training, medical expenses, auditor's meal, etc.\n", bodyFont));
+                    notePara.Add(new Chunk("2. Every claim must be attached with official invoice.\n", bodyFont));
+                    notePara.Add(new Chunk("3. ", boldBodyFont));
+                    notePara.Add(new Chunk("Every claim must be approved by respective department head\n", boldBodyFont));
+                    notePara.Add(new Chunk("   ", boldBodyFont));
+                    notePara.Add(new Chunk("                  For expenses related to employee benefits/company event, approval from HR & Administration ", boldBodyFont));
+                    notePara.Add(new Chunk("                           must be obtained.\n", boldBodyFont));
+                    notePara.Add(new Chunk("4. Payment will be made by Account section on 15th and 30th of the month.\n", bodyFont));
+                    notePara.Add(new Chunk("5. Procedure :-\n", bodyFont));
+                    notePara.Add(new Chunk("                     Requisitor > Department Head > HR & Administration > Accounts > Requisitor\n", bodyFont));
+                    notePara.Add(new Chunk("                     (employee benefits/company event)\n", bodyFont));
+                    notePara.SpacingBefore = 10f;
+                    notePara.SpacingAfter = 10f;
+                    document.Add(notePara);
+
+                    Paragraph footer = new Paragraph("This is a computer generated document, no signature is required | Generated on: " + DateTime.Now.ToString("dd.MM.yyyy HH:mm") + " \nClaim No. : " + orderDetails["SerialNo"].ToString(), bodyFont);
                     footer.Alignment = Element.ALIGN_LEFT;
                     footer.SpacingBefore = 20f;
                     footer.Font.Color = new BaseColor(100, 100, 100);

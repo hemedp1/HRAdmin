@@ -529,6 +529,7 @@ namespace HRAdmin.Forms
             btnNewVisitor.Visible = false; //new visitor
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
+            btnApproval.Visible = false;
             UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }

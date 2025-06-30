@@ -63,6 +63,7 @@ namespace HRAdmin.UserControl
         {
             Form_Home.sharedLabel.Text = "Account";
             Form_Home.sharedbtnMCReport.Visible = false;
+            Form_Home.sharedbtnApproval.Visible = false;
 
             UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
