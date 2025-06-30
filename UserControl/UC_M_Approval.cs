@@ -98,6 +98,7 @@ namespace HRAdmin.UserControl
             d.InvoiceAmount, 
             d.InvoiceNo, 
             d.Invoice, 
+            m.RequestDate,
             m.HODApprovalStatus, 
             m.ApprovedByHOD, 
             m.HODApprovedDate, 
@@ -252,6 +253,19 @@ namespace HRAdmin.UserControl
                 Name = "ExpensesType",
                 HeaderText = "Expenses Type",
                 DataPropertyName = "ExpensesType",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvA.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "RequestDate",
+                HeaderText = "Request date",
+                DataPropertyName = "RequestDate",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {

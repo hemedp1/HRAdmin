@@ -31,6 +31,16 @@ namespace HRAdmin.UserControl
             InitializeDataTable();
             ConfigureDataGridView();
             StyleDataGridView(dgvW); // Apply styling to the DataGridView
+            dgvW.CellContentClick += new DataGridViewCellEventHandler(dgvW_CellContentClick);
+            dgvW.DataError += new DataGridViewDataErrorEventHandler(dgvW_DataError);
+        }
+        private void dgvW_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception is FormatException)
+            {
+                MessageBox.Show("Invalid data format. Please upload a file for the Invoice column.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.Cancel = true; // Prevent the error from propagating
+            }
         }
 
         private void InitializeDataTable()
@@ -61,7 +71,8 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("Item", typeof(string));
             dt.Columns.Add("InvoiceAmount", typeof(decimal));
             dt.Columns.Add("InvoiceNo", typeof(string));
-            //dt.Columns.Add("Invoice", typeof(byte[])); // Changed from typeof(byte) to typeof(byte[])
+            dt.Columns.Add("Invoice", typeof(byte[]));
+
             dgvW.DataSource = dt;
         }
 
@@ -85,8 +96,55 @@ namespace HRAdmin.UserControl
             dgvW.Columns["AccountApprovalStatus"].Visible = false;
             dgvW.Columns["ApprovedByAccount"].Visible = false;
             dgvW.Columns["AccountApprovedDate"].Visible = false;
-        }
 
+            // Customize Invoice column
+            if (dgvW.Columns.Contains("Invoice"))
+            {
+                dgvW.Columns["Invoice"].ReadOnly = true;
+                dgvW.Columns["Invoice"].DefaultCellStyle.NullValue = null; // Allow null as default
+                                                                           // Prevent the column from being part of new row editing
+                dgvW.Columns["Invoice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.NotSet;
+            }
+
+            // Add Upload Invoice button column
+            if (!dgvW.Columns.Contains("btnUpload"))
+            {
+                DataGridViewButtonColumn btnColumn = new DataGridViewButtonColumn
+                {
+                    HeaderText = "Upload Invoice",
+                    Text = "Upload",
+                    Name = "btnUpload",
+                    UseColumnTextForButtonValue = true
+                };
+                dgvW.Columns.Add(btnColumn);
+            }
+        }
+        private void dgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == dgvW.Columns["btnUpload"].Index && e.RowIndex >= 0)
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Filter = "PDF files (*.pdf)|*.pdf|Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png|All files (*.*)|*.*",
+                    Title = "Select Invoice File"
+                };
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        byte[] fileData = File.ReadAllBytes(openFileDialog.FileName);
+                        dgvW.Rows[e.RowIndex].Cells["Invoice"].Value = fileData;
+                        dgvW.Rows[e.RowIndex].Cells["Invoice"].ToolTipText = openFileDialog.SafeFileName; // Show file name as tooltip
+                        MessageBox.Show("Invoice uploaded successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error uploading file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
         private void StyleDataGridView(DataGridView dgv)
         {
             dgv.ColumnHeadersVisible = true;
@@ -160,8 +218,8 @@ namespace HRAdmin.UserControl
 
                     // Query to get the highest submission number for the current day across all departments
                     string checkSerialNoQuery = @"SELECT MAX(CAST(RIGHT(SerialNo, CHARINDEX('_', REVERSE(SerialNo)) - 1) AS INT)) 
-                                                FROM tbl_DetailClaimForm 
-                                                WHERE SerialNo LIKE @DatePattern";
+                                                  FROM tbl_DetailClaimForm 
+                                                  WHERE SerialNo LIKE @DatePattern";
                     string datePattern = $"_%{DateTime.Now:ddMMyyyy}_%"; // Match any SerialNo with the current date
                     int nextNumber = 1;
 
@@ -179,13 +237,13 @@ namespace HRAdmin.UserControl
                     string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
-                                        (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo) 
-                                        VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo)";
+                                        (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice) 
+                                        VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @Invoice)";
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
                                         (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
                                          HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
-                                        VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
+                                         VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
                                                 @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
 
                     DataTable dt = (DataTable)dgvW.DataSource;
@@ -202,6 +260,13 @@ namespace HRAdmin.UserControl
                     {
                         foreach (DataRow row in newRows.Rows)
                         {
+                            // Validate Invoice column
+                            if (row["Invoice"] != DBNull.Value && !(row["Invoice"] is byte[]))
+                            {
+                                MessageBox.Show("Invalid invoice data. Please upload a valid file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
                             // Set default values for null or empty fields
                             row["Requester"] = row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"]?.ToString())
                                 ? loggedInUser : row["Requester"];
@@ -230,6 +295,7 @@ namespace HRAdmin.UserControl
                             cmdDetail.Parameters.AddWithValue("@Item", row["Item"] ?? (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@InvoiceAmount", row["InvoiceAmount"] != DBNull.Value ? row["InvoiceAmount"] : (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@InvoiceNo", row["InvoiceNo"] ?? (object)DBNull.Value);
+                            cmdDetail.Parameters.AddWithValue("@Invoice", row["Invoice"] != DBNull.Value ? (byte[])row["Invoice"] : (object)DBNull.Value);
                             cmdDetail.ExecuteNonQuery();
 
                             // Insert into tbl_MasterClaimForm (only once for the first row to avoid duplicates)

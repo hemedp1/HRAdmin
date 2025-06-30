@@ -459,7 +459,7 @@ namespace HRAdmin.UserControl
                 Font = new System.Drawing.Font("Arial", 11, FontStyle.Bold),
             };
 
-            int fixedColumnWidth = 200;
+            int fixedColumnWidth = 150;
 
             dgvVR.Columns.Add(new DataGridViewTextBoxColumn()
             {
@@ -746,7 +746,7 @@ WHERE SerialNo = @SerialNo";
                     {
                         if (string.IsNullOrEmpty(HODApprovedDate))
                         {
-                            HODApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                            HODApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
                         }
                         HODApprovalPara.Add(new Chunk($"Approved by HOD      : {ApprovedByHOD}   {HODApprovedDate}", bodyFont));
                     }
@@ -771,7 +771,7 @@ WHERE SerialNo = @SerialNo";
                     {
                         if (string.IsNullOrEmpty(HRApprovedDate))
                         {
-                            HRApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                            HRApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
                         }
                         HRApprovalPara.Add(new Chunk($"Approved by HR         : {ApprovedByHR}   {HRApprovedDate}", bodyFont));
                     }
@@ -796,7 +796,7 @@ WHERE SerialNo = @SerialNo";
                     {
                         if (string.IsNullOrEmpty(AccountApprovedDate))
                         {
-                            AccountApprovedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                            AccountApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
                         }
                         AccountApprovalPara.Add(new Chunk($"Approved by Account : {ApprovedByAccount}   {AccountApprovedDate}", bodyFont));
                     }
@@ -820,7 +820,7 @@ WHERE SerialNo = @SerialNo";
 
                     PdfPTable detailsTable2 = new PdfPTable(7);
                     detailsTable2.WidthPercentage = 100;
-                    detailsTable2.SetWidths(new float[] { 0.5f, 1.5f, 2f, 1f, 1.5f, 1.5f, 1f });
+                    detailsTable2.SetWidths(new float[] { 0.5f, 1.5f, 1.5f, 2f, 1.5f, 1.5f, 1f });
                     detailsTable2.DefaultCell.Padding = 5f;
                     detailsTable2.DefaultCell.Border = iTextSharp.text.Rectangle.BOX;
 
@@ -900,32 +900,6 @@ WHERE SerialNo = @SerialNo";
                 MessageBox.Show($"Error generating PDF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-        }
-        private void AddStyledTableRow(PdfPTable table, string label, string value, iTextSharp.text.Font labelFont, iTextSharp.text.Font valueFont, int rowIndex, bool multiLine = false)
-        {
-            PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
-            PdfPCell valueCell = new PdfPCell(new Phrase(value, valueFont)) { MinimumHeight = 20f };
-
-            labelCell.BackgroundColor = new BaseColor(255, 255, 255);
-            valueCell.BackgroundColor = new BaseColor(255, 255, 255);
-
-            labelCell.Phrase = new Phrase(label, new iTextSharp.text.Font(labelFont.BaseFont, labelFont.Size, labelFont.Style, BaseColor.BLACK));
-            valueCell.Phrase = new Phrase(value, new iTextSharp.text.Font(valueFont.BaseFont, valueFont.Size, valueFont.Style, BaseColor.BLACK));
-
-            labelCell.Padding = 8f;
-            valueCell.Padding = 8f;
-            labelCell.BorderColor = new BaseColor(150, 150, 150);
-            valueCell.BorderColor = new BaseColor(150, 150, 150);
-            labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
-            valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
-
-            if (multiLine)
-            {
-                valueCell.NoWrap = false;
-            }
-
-            table.AddCell(labelCell);
-            table.AddCell(valueCell);
         }
         private void btnViewPDF_Click(object sender, EventArgs e)
         {
