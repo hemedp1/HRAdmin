@@ -1,4 +1,6 @@
-﻿namespace HRAdmin.UserControl
+﻿using System.Windows.Forms;
+
+namespace HRAdmin.UserControl
 {
     partial class UC_C_Accident
     {
@@ -28,6 +30,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_Accident));
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -116,33 +119,40 @@
             this.label14 = new System.Windows.Forms.Label();
             this.txtNoKeretaInvolve = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.cmbdep = new System.Windows.Forms.ComboBox();
+            this.cmbdriver = new System.Windows.Forms.ComboBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.txtDes = new System.Windows.Forms.TextBox();
             this.label49 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.label47 = new System.Windows.Forms.Label();
+            this.cmbCar = new System.Windows.Forms.ComboBox();
             this.label24 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.cmnRepID = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
+            this.dTDay = new System.Windows.Forms.DateTimePicker();
             this.label21 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.txtDepart = new System.Windows.Forms.TextBox();
+            this.rB_App = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
+            this.rB_Rej = new System.Windows.Forms.RadioButton();
             this.label8 = new System.Windows.Forms.Label();
+            this.txtCarr = new System.Windows.Forms.TextBox();
             this.txtIndex = new System.Windows.Forms.TextBox();
+            this.txtHEMdriver = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtHEMdriver = new System.Windows.Forms.TextBox();
-            this.txtCarr = new System.Windows.Forms.TextBox();
-            this.rB_Rej = new System.Windows.Forms.RadioButton();
-            this.rB_App = new System.Windows.Forms.RadioButton();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtDes = new System.Windows.Forms.TextBox();
-            this.dTDay = new System.Windows.Forms.DateTimePicker();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cmbCar = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
@@ -155,6 +165,14 @@
             this.panel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.panel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.panel4.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -172,7 +190,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(2058, 2077);
+            this.panel1.Size = new System.Drawing.Size(1948, 2291);
             this.panel1.TabIndex = 0;
             // 
             // groupBox6
@@ -186,9 +204,9 @@
             this.groupBox6.Controls.Add(this.txtRemarksAdmin);
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox6.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox6.Location = new System.Drawing.Point(0, 1718);
+            this.groupBox6.Location = new System.Drawing.Point(0, 2096);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(2058, 291);
+            this.groupBox6.Size = new System.Drawing.Size(1922, 291);
             this.groupBox6.TabIndex = 65;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "GA";
@@ -275,9 +293,9 @@
             this.groupBox5.Controls.Add(this.label60);
             this.groupBox5.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox5.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox5.Location = new System.Drawing.Point(0, 1485);
+            this.groupBox5.Location = new System.Drawing.Point(0, 1863);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(2058, 233);
+            this.groupBox5.Size = new System.Drawing.Size(1922, 233);
             this.groupBox5.TabIndex = 64;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Police Report";
@@ -362,9 +380,9 @@
             this.groupBox4.Controls.Add(this.txtPM);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox4.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox4.Location = new System.Drawing.Point(0, 1241);
+            this.groupBox4.Location = new System.Drawing.Point(0, 1619);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(2058, 244);
+            this.groupBox4.Size = new System.Drawing.Size(1922, 244);
             this.groupBox4.TabIndex = 62;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Your Preventive Measure";
@@ -417,9 +435,9 @@
             this.groupBox3.Controls.Add(this.panel2);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox3.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox3.Location = new System.Drawing.Point(0, 762);
+            this.groupBox3.Location = new System.Drawing.Point(0, 1140);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(2058, 479);
+            this.groupBox3.Size = new System.Drawing.Size(1922, 479);
             this.groupBox3.TabIndex = 60;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Accident Report";
@@ -430,7 +448,7 @@
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(1046, 38);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(883, 438);
+            this.pictureBox1.Size = new System.Drawing.Size(747, 438);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 69;
             this.pictureBox1.TabStop = false;
@@ -720,7 +738,7 @@
             // 
             this.panel2.Controls.Add(this.label63);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(1929, 38);
+            this.panel2.Location = new System.Drawing.Point(1793, 38);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(126, 438);
             this.panel2.TabIndex = 68;
@@ -778,9 +796,9 @@
             this.groupBox2.Controls.Add(this.txtNoKeretaInvolve);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox2.Location = new System.Drawing.Point(0, 321);
+            this.groupBox2.Location = new System.Drawing.Point(0, 698);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(2058, 441);
+            this.groupBox2.Size = new System.Drawing.Size(1922, 442);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Vehicle Involved";
@@ -1146,287 +1164,205 @@
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
-            this.groupBox1.Controls.Add(this.label49);
-            this.groupBox1.Controls.Add(this.label48);
-            this.groupBox1.Controls.Add(this.label47);
-            this.groupBox1.Controls.Add(this.label24);
-            this.groupBox1.Controls.Add(this.cmnRepID);
-            this.groupBox1.Controls.Add(this.label23);
-            this.groupBox1.Controls.Add(this.label21);
-            this.groupBox1.Controls.Add(this.label22);
-            this.groupBox1.Controls.Add(this.txtDepart);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.txtIndex);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.txtHEMdriver);
-            this.groupBox1.Controls.Add(this.txtCarr);
-            this.groupBox1.Controls.Add(this.rB_Rej);
-            this.groupBox1.Controls.Add(this.rB_App);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.txtDes);
-            this.groupBox1.Controls.Add(this.dTDay);
-            this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.cmbCar);
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.splitContainer1);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 57);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(2058, 264);
+            this.groupBox1.Size = new System.Drawing.Size(1922, 641);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Driver\'s Details (HEM)";
+            this.groupBox1.Text = "Accident Record";
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 38);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.panel5);
+            this.splitContainer1.Panel1.Controls.Add(this.panel4);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.groupBox7);
+            this.splitContainer1.Size = new System.Drawing.Size(1916, 600);
+            this.splitContainer1.SplitterDistance = 192;
+            this.splitContainer1.TabIndex = 53;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.dataGridView1);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel5.Location = new System.Drawing.Point(0, 65);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(1916, 127);
+            this.panel5.TabIndex = 58;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView1.GridColor = System.Drawing.Color.White;
+            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowHeadersWidth = 62;
+            this.dataGridView1.RowTemplate.Height = 28;
+            this.dataGridView1.Size = new System.Drawing.Size(1916, 127);
+            this.dataGridView1.TabIndex = 0;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.cmbdep);
+            this.panel4.Controls.Add(this.cmbdriver);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1916, 65);
+            this.panel4.TabIndex = 57;
+            // 
+            // cmbdep
+            // 
+            this.cmbdep.DropDownHeight = 158;
+            this.cmbdep.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbdep.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbdep.FormattingEnabled = true;
+            this.cmbdep.IntegralHeight = false;
+            this.cmbdep.ItemHeight = 29;
+            this.cmbdep.Location = new System.Drawing.Point(40, 12);
+            this.cmbdep.MaxLength = 8;
+            this.cmbdep.Name = "cmbdep";
+            this.cmbdep.Size = new System.Drawing.Size(260, 37);
+            this.cmbdep.TabIndex = 54;
+            this.cmbdep.SelectedIndexChanged += new System.EventHandler(this.cmbdep_SelectedIndexChanged);
+            // 
+            // cmbdriver
+            // 
+            this.cmbdriver.DropDownHeight = 158;
+            this.cmbdriver.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbdriver.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbdriver.FormattingEnabled = true;
+            this.cmbdriver.IntegralHeight = false;
+            this.cmbdriver.ItemHeight = 29;
+            this.cmbdriver.Location = new System.Drawing.Point(320, 12);
+            this.cmbdriver.MaxLength = 8;
+            this.cmbdriver.Name = "cmbdriver";
+            this.cmbdriver.Size = new System.Drawing.Size(260, 37);
+            this.cmbdriver.TabIndex = 55;
+            this.cmbdriver.SelectedIndexChanged += new System.EventHandler(this.cmbdriver_SelectedIndexChanged);
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.BackColor = System.Drawing.Color.White;
+            this.groupBox7.Controls.Add(this.txtDes);
+            this.groupBox7.Controls.Add(this.label49);
+            this.groupBox7.Controls.Add(this.label4);
+            this.groupBox7.Controls.Add(this.label48);
+            this.groupBox7.Controls.Add(this.label9);
+            this.groupBox7.Controls.Add(this.label47);
+            this.groupBox7.Controls.Add(this.cmbCar);
+            this.groupBox7.Controls.Add(this.label24);
+            this.groupBox7.Controls.Add(this.label7);
+            this.groupBox7.Controls.Add(this.cmnRepID);
+            this.groupBox7.Controls.Add(this.label10);
+            this.groupBox7.Controls.Add(this.label23);
+            this.groupBox7.Controls.Add(this.dTDay);
+            this.groupBox7.Controls.Add(this.label21);
+            this.groupBox7.Controls.Add(this.label6);
+            this.groupBox7.Controls.Add(this.label22);
+            this.groupBox7.Controls.Add(this.label3);
+            this.groupBox7.Controls.Add(this.txtDepart);
+            this.groupBox7.Controls.Add(this.rB_App);
+            this.groupBox7.Controls.Add(this.label5);
+            this.groupBox7.Controls.Add(this.rB_Rej);
+            this.groupBox7.Controls.Add(this.label8);
+            this.groupBox7.Controls.Add(this.txtCarr);
+            this.groupBox7.Controls.Add(this.txtIndex);
+            this.groupBox7.Controls.Add(this.txtHEMdriver);
+            this.groupBox7.Controls.Add(this.label1);
+            this.groupBox7.Controls.Add(this.label2);
+            this.groupBox7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox7.Font = new System.Drawing.Font("Calibri", 14F);
+            this.groupBox7.Location = new System.Drawing.Point(0, 0);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(1916, 404);
+            this.groupBox7.TabIndex = 66;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Driver\'s Details (HEM)";
+            // 
+            // txtDes
+            // 
+            this.txtDes.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txtDes.Location = new System.Drawing.Point(809, 128);
+            this.txtDes.Name = "txtDes";
+            this.txtDes.Size = new System.Drawing.Size(260, 37);
+            this.txtDes.TabIndex = 28;
             // 
             // label49
             // 
             this.label49.AutoSize = true;
             this.label49.Font = new System.Drawing.Font("Calibri", 13F);
             this.label49.ForeColor = System.Drawing.Color.Red;
-            this.label49.Location = new System.Drawing.Point(715, 113);
+            this.label49.Location = new System.Drawing.Point(713, 127);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(27, 32);
             this.label49.TabIndex = 52;
             this.label49.Text = "*";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label4.Location = new System.Drawing.Point(782, 66);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(21, 32);
+            this.label4.TabIndex = 10;
+            this.label4.Text = ":";
             // 
             // label48
             // 
             this.label48.AutoSize = true;
             this.label48.Font = new System.Drawing.Font("Calibri", 13F);
             this.label48.ForeColor = System.Drawing.Color.Red;
-            this.label48.Location = new System.Drawing.Point(624, 52);
+            this.label48.Location = new System.Drawing.Point(622, 66);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(27, 32);
             this.label48.TabIndex = 51;
             this.label48.Text = "*";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label9.Location = new System.Drawing.Point(239, 69);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(21, 32);
+            this.label9.TabIndex = 15;
+            this.label9.Text = ":";
             // 
             // label47
             // 
             this.label47.AutoSize = true;
             this.label47.Font = new System.Drawing.Font("Calibri", 13F);
             this.label47.ForeColor = System.Drawing.Color.Red;
-            this.label47.Location = new System.Drawing.Point(180, 53);
+            this.label47.Location = new System.Drawing.Point(178, 67);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(27, 32);
             this.label47.TabIndex = 50;
             this.label47.Text = "*";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label24.Location = new System.Drawing.Point(241, 114);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(21, 32);
-            this.label24.TabIndex = 49;
-            this.label24.Text = ":";
-            // 
-            // cmnRepID
-            // 
-            this.cmnRepID.DropDownHeight = 158;
-            this.cmnRepID.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmnRepID.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmnRepID.FormattingEnabled = true;
-            this.cmnRepID.IntegralHeight = false;
-            this.cmnRepID.ItemHeight = 29;
-            this.cmnRepID.Location = new System.Drawing.Point(268, 115);
-            this.cmnRepID.MaxLength = 8;
-            this.cmnRepID.Name = "cmnRepID";
-            this.cmnRepID.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.cmnRepID.Size = new System.Drawing.Size(288, 37);
-            this.cmnRepID.TabIndex = 48;
-            this.cmnRepID.SelectedIndexChanged += new System.EventHandler(this.cmnRepID_SelectedIndexChanged);
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label23.Location = new System.Drawing.Point(38, 114);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(116, 32);
-            this.label23.TabIndex = 47;
-            this.label23.Text = "Report ID";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label21.Location = new System.Drawing.Point(1124, 178);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(144, 32);
-            this.label21.TabIndex = 44;
-            this.label21.Text = "Department";
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label22.Location = new System.Drawing.Point(1320, 178);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(21, 32);
-            this.label22.TabIndex = 45;
-            this.label22.Text = ":";
-            // 
-            // txtDepart
-            // 
-            this.txtDepart.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtDepart.Location = new System.Drawing.Point(1347, 178);
-            this.txtDepart.Name = "txtDepart";
-            this.txtDepart.Size = new System.Drawing.Size(260, 37);
-            this.txtDepart.TabIndex = 46;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label5.Location = new System.Drawing.Point(1124, 53);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(110, 32);
-            this.label5.TabIndex = 41;
-            this.label5.Text = "Index No";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label8.Location = new System.Drawing.Point(1320, 53);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(21, 32);
-            this.label8.TabIndex = 42;
-            this.label8.Text = ":";
-            // 
-            // txtIndex
-            // 
-            this.txtIndex.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtIndex.Location = new System.Drawing.Point(1347, 53);
-            this.txtIndex.Name = "txtIndex";
-            this.txtIndex.Size = new System.Drawing.Size(260, 37);
-            this.txtIndex.TabIndex = 43;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label1.Location = new System.Drawing.Point(1124, 115);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 32);
-            this.label1.TabIndex = 38;
-            this.label1.Text = "Driver";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label2.Location = new System.Drawing.Point(1320, 115);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(21, 32);
-            this.label2.TabIndex = 39;
-            this.label2.Text = ":";
-            // 
-            // txtHEMdriver
-            // 
-            this.txtHEMdriver.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtHEMdriver.Location = new System.Drawing.Point(1347, 115);
-            this.txtHEMdriver.Name = "txtHEMdriver";
-            this.txtHEMdriver.Size = new System.Drawing.Size(260, 37);
-            this.txtHEMdriver.TabIndex = 40;
-            // 
-            // txtCarr
-            // 
-            this.txtCarr.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtCarr.Location = new System.Drawing.Point(811, 55);
-            this.txtCarr.Name = "txtCarr";
-            this.txtCarr.Size = new System.Drawing.Size(260, 37);
-            this.txtCarr.TabIndex = 37;
-            // 
-            // rB_Rej
-            // 
-            this.rB_Rej.AutoSize = true;
-            this.rB_Rej.Font = new System.Drawing.Font("Calibri", 13F);
-            this.rB_Rej.Location = new System.Drawing.Point(268, 210);
-            this.rB_Rej.Name = "rB_Rej";
-            this.rB_Rej.Size = new System.Drawing.Size(237, 36);
-            this.rB_Rej.TabIndex = 36;
-            this.rB_Rej.TabStop = true;
-            this.rB_Rej.Text = "Not involve others";
-            this.rB_Rej.UseVisualStyleBackColor = true;
-            this.rB_Rej.CheckedChanged += new System.EventHandler(this.rB_Rej_CheckedChanged);
-            // 
-            // rB_App
-            // 
-            this.rB_App.AutoSize = true;
-            this.rB_App.Font = new System.Drawing.Font("Calibri", 13F);
-            this.rB_App.Location = new System.Drawing.Point(268, 168);
-            this.rB_App.Name = "rB_App";
-            this.rB_App.Size = new System.Drawing.Size(192, 36);
-            this.rB_App.TabIndex = 35;
-            this.rB_App.TabStop = true;
-            this.rB_App.Text = "Involve others";
-            this.rB_App.UseVisualStyleBackColor = true;
-            this.rB_App.CheckedChanged += new System.EventHandler(this.rB_App_CheckedChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label3.Location = new System.Drawing.Point(580, 115);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(135, 32);
-            this.label3.TabIndex = 26;
-            this.label3.Text = "Destination";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label6.Location = new System.Drawing.Point(784, 114);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(21, 32);
-            this.label6.TabIndex = 27;
-            this.label6.Text = ":";
-            // 
-            // txtDes
-            // 
-            this.txtDes.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtDes.Location = new System.Drawing.Point(811, 114);
-            this.txtDes.Name = "txtDes";
-            this.txtDes.Size = new System.Drawing.Size(260, 37);
-            this.txtDes.TabIndex = 28;
-            // 
-            // dTDay
-            // 
-            this.dTDay.CalendarFont = new System.Drawing.Font("Calibri", 12F);
-            this.dTDay.Font = new System.Drawing.Font("Calibri", 12F);
-            this.dTDay.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dTDay.Location = new System.Drawing.Point(268, 55);
-            this.dTDay.Name = "dTDay";
-            this.dTDay.Size = new System.Drawing.Size(288, 37);
-            this.dTDay.TabIndex = 22;
-            this.dTDay.ValueChanged += new System.EventHandler(this.dTDay_ValueChanged);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label10.Location = new System.Drawing.Point(37, 55);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(143, 32);
-            this.label10.TabIndex = 16;
-            this.label10.Text = "Date Report";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label7.Location = new System.Drawing.Point(581, 53);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(49, 32);
-            this.label7.TabIndex = 12;
-            this.label7.Text = "Car";
             // 
             // cmbCar
             // 
@@ -1436,31 +1372,216 @@
             this.cmbCar.FormattingEnabled = true;
             this.cmbCar.IntegralHeight = false;
             this.cmbCar.ItemHeight = 29;
-            this.cmbCar.Location = new System.Drawing.Point(811, 54);
+            this.cmbCar.Location = new System.Drawing.Point(809, 68);
             this.cmbCar.MaxLength = 8;
             this.cmbCar.Name = "cmbCar";
             this.cmbCar.Size = new System.Drawing.Size(260, 37);
             this.cmbCar.TabIndex = 20;
             // 
-            // label9
+            // label24
             // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label9.Location = new System.Drawing.Point(241, 55);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(21, 32);
-            this.label9.TabIndex = 15;
-            this.label9.Text = ":";
+            this.label24.AutoSize = true;
+            this.label24.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label24.Location = new System.Drawing.Point(239, 128);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(21, 32);
+            this.label24.TabIndex = 49;
+            this.label24.Text = ":";
             // 
-            // label4
+            // label7
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label4.Location = new System.Drawing.Point(784, 52);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(21, 32);
-            this.label4.TabIndex = 10;
-            this.label4.Text = ":";
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label7.Location = new System.Drawing.Point(579, 67);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(49, 32);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Car";
+            // 
+            // cmnRepID
+            // 
+            this.cmnRepID.DropDownHeight = 158;
+            this.cmnRepID.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmnRepID.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmnRepID.FormattingEnabled = true;
+            this.cmnRepID.IntegralHeight = false;
+            this.cmnRepID.ItemHeight = 29;
+            this.cmnRepID.Location = new System.Drawing.Point(266, 129);
+            this.cmnRepID.MaxLength = 8;
+            this.cmnRepID.Name = "cmnRepID";
+            this.cmnRepID.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.cmnRepID.Size = new System.Drawing.Size(288, 37);
+            this.cmnRepID.TabIndex = 48;
+            this.cmnRepID.SelectedIndexChanged += new System.EventHandler(this.cmnRepID_SelectedIndexChanged);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label10.Location = new System.Drawing.Point(35, 69);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(143, 32);
+            this.label10.TabIndex = 16;
+            this.label10.Text = "Date Report";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label23.Location = new System.Drawing.Point(36, 128);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(116, 32);
+            this.label23.TabIndex = 47;
+            this.label23.Text = "Report ID";
+            // 
+            // dTDay
+            // 
+            this.dTDay.CalendarFont = new System.Drawing.Font("Calibri", 12F);
+            this.dTDay.Font = new System.Drawing.Font("Calibri", 12F);
+            this.dTDay.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dTDay.Location = new System.Drawing.Point(266, 69);
+            this.dTDay.Name = "dTDay";
+            this.dTDay.Size = new System.Drawing.Size(288, 37);
+            this.dTDay.TabIndex = 22;
+            this.dTDay.ValueChanged += new System.EventHandler(this.dTDay_ValueChanged);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label21.Location = new System.Drawing.Point(1122, 192);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(144, 32);
+            this.label21.TabIndex = 44;
+            this.label21.Text = "Department";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label6.Location = new System.Drawing.Point(782, 128);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(21, 32);
+            this.label6.TabIndex = 27;
+            this.label6.Text = ":";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label22.Location = new System.Drawing.Point(1318, 192);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(21, 32);
+            this.label22.TabIndex = 45;
+            this.label22.Text = ":";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label3.Location = new System.Drawing.Point(578, 129);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(135, 32);
+            this.label3.TabIndex = 26;
+            this.label3.Text = "Destination";
+            // 
+            // txtDepart
+            // 
+            this.txtDepart.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txtDepart.Location = new System.Drawing.Point(1345, 192);
+            this.txtDepart.Name = "txtDepart";
+            this.txtDepart.Size = new System.Drawing.Size(260, 37);
+            this.txtDepart.TabIndex = 46;
+            // 
+            // rB_App
+            // 
+            this.rB_App.AutoSize = true;
+            this.rB_App.Font = new System.Drawing.Font("Calibri", 13F);
+            this.rB_App.Location = new System.Drawing.Point(266, 182);
+            this.rB_App.Name = "rB_App";
+            this.rB_App.Size = new System.Drawing.Size(192, 36);
+            this.rB_App.TabIndex = 35;
+            this.rB_App.TabStop = true;
+            this.rB_App.Text = "Involve others";
+            this.rB_App.UseVisualStyleBackColor = true;
+            this.rB_App.CheckedChanged += new System.EventHandler(this.rB_App_CheckedChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label5.Location = new System.Drawing.Point(1122, 67);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(110, 32);
+            this.label5.TabIndex = 41;
+            this.label5.Text = "Index No";
+            // 
+            // rB_Rej
+            // 
+            this.rB_Rej.AutoSize = true;
+            this.rB_Rej.Font = new System.Drawing.Font("Calibri", 13F);
+            this.rB_Rej.Location = new System.Drawing.Point(266, 224);
+            this.rB_Rej.Name = "rB_Rej";
+            this.rB_Rej.Size = new System.Drawing.Size(237, 36);
+            this.rB_Rej.TabIndex = 36;
+            this.rB_Rej.TabStop = true;
+            this.rB_Rej.Text = "Not involve others";
+            this.rB_Rej.UseVisualStyleBackColor = true;
+            this.rB_Rej.CheckedChanged += new System.EventHandler(this.rB_Rej_CheckedChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label8.Location = new System.Drawing.Point(1318, 67);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(21, 32);
+            this.label8.TabIndex = 42;
+            this.label8.Text = ":";
+            // 
+            // txtCarr
+            // 
+            this.txtCarr.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txtCarr.Location = new System.Drawing.Point(809, 69);
+            this.txtCarr.Name = "txtCarr";
+            this.txtCarr.Size = new System.Drawing.Size(260, 37);
+            this.txtCarr.TabIndex = 37;
+            // 
+            // txtIndex
+            // 
+            this.txtIndex.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txtIndex.Location = new System.Drawing.Point(1345, 67);
+            this.txtIndex.Name = "txtIndex";
+            this.txtIndex.Size = new System.Drawing.Size(260, 37);
+            this.txtIndex.TabIndex = 43;
+            // 
+            // txtHEMdriver
+            // 
+            this.txtHEMdriver.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txtHEMdriver.Location = new System.Drawing.Point(1345, 129);
+            this.txtHEMdriver.Name = "txtHEMdriver";
+            this.txtHEMdriver.Size = new System.Drawing.Size(260, 37);
+            this.txtHEMdriver.TabIndex = 40;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label1.Location = new System.Drawing.Point(1122, 129);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(79, 32);
+            this.label1.TabIndex = 38;
+            this.label1.Text = "Driver";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label2.Location = new System.Drawing.Point(1318, 129);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(21, 32);
+            this.label2.TabIndex = 39;
+            this.label2.Text = ":";
             // 
             // panel6
             // 
@@ -1469,7 +1590,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(2058, 57);
+            this.panel6.Size = new System.Drawing.Size(1922, 57);
             this.panel6.TabIndex = 49;
             this.panel6.Paint += new System.Windows.Forms.PaintEventHandler(this.panel6_Paint);
             // 
@@ -1493,7 +1614,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panel1);
             this.Name = "UC_C_Accident";
-            this.Size = new System.Drawing.Size(2058, 2077);
+            this.Size = new System.Drawing.Size(1948, 2291);
             this.panel1.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
@@ -1510,7 +1631,15 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.panel4.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -1634,5 +1763,12 @@
         private System.Windows.Forms.Label label71;
         private System.Windows.Forms.Button btnChecked;
         private System.Windows.Forms.Button btnApp_Admin;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.ComboBox cmbdriver;
+        private System.Windows.Forms.ComboBox cmbdep;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Panel panel4;
     }
 }
