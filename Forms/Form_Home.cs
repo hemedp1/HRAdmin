@@ -23,6 +23,8 @@ namespace HRAdmin.Forms
         private string loggedInIndex;
         private string loggedInUser;
         private string loggedInDepart;
+        private string LoggedInBank;
+        private string LoggedInAccNo;
         private int borderSize = 2;
         public static Panel sharedPanel;
         public static Label sharedLabel;
@@ -54,6 +56,8 @@ namespace HRAdmin.Forms
             loggedInUser = username;
             loggedInDepart = depart;
             loggedInIndex = index;
+            //LoggedInBank = bank;
+            //LoggedInAccNo = accountNo;
             lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
             Menu.Dock = DockStyle.Right;
             btnAddpeople.Visible = false;
@@ -682,7 +686,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex, DateTime.Now);
+            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 

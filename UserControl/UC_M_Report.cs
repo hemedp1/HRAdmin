@@ -26,30 +26,31 @@ namespace HRAdmin.UserControl
         private string loggedInDepart;
         private string loggedInIndex;
         private string expensesType;
-        private DateTime RequestDate;
         private byte[] pdfBytes;
         private DataTable cachedData;
         private bool isNetworkErrorShown;
         private bool isNetworkUnavailable;
 
-        public UC_M_Report(string username, string department, string emp, DateTime? RequestDate)
+        public UC_M_Report(string username, string department, string emp)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
-            this.RequestDate = RequestDate ?? DateTime.Now;
             LoadUsernames();
             LoadDepartments();
-            LoadData();
             cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
             cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
+            dtpStart.ValueChanged += dtpStart_ValueChanged;
+            dtpEnd.ValueChanged += dtpEnd_ValueChanged;
+            cmbType.SelectedIndexChanged += cmbType_SelectedIndexChanged;
             cachedData = new DataTable();
             isNetworkErrorShown = false;
             isNetworkUnavailable = false;
             cmbType.SelectedIndex = -1;
             cmbRequester.SelectedIndex = -1;
             cmbDepart.SelectedIndex = -1;
+            dgvVR.DataSource = null; // Ensure DataGridView starts empty
         }
 
         private void addControls(System.Windows.Forms.UserControl userControl)
@@ -174,7 +175,7 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void LoadData(string requester = null, string department = null, DateTime? requestDate = null, string expensesType = null)
+        private void LoadData(string requester = null, string department = null, string expensesType = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             if (dgvVR == null)
             {
@@ -183,20 +184,27 @@ namespace HRAdmin.UserControl
             }
 
             string query = @"
-                SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
-                FROM tbl_MasterClaimForm
-                WHERE (@Requester IS NULL OR Requester = @Requester)
-                      AND (@Department IS NULL OR Department = @Department)
-                      AND (@ExpensesType IS NULL OR ExpensesType = @ExpensesType)";
+        SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
+               HODApprovalStatus, ApprovedByHOD, HODApprovedDate, HRApprovalStatus, ApprovedByHR, 
+               HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
+        FROM tbl_MasterClaimForm
+        WHERE 1=1";
 
-            if (requestDate.HasValue)
+            // Restrict regular requesters to their own orders
+            if (loggedInDepart != "HR & ADMIN" && loggedInDepart != "ACCOUNT")
             {
-                query += " AND CAST(RequestDate AS DATE) = @RequestDate";
+                query += " AND Requester = @LoggedInUser";
             }
-            else
+
+            // Apply additional filters if provided
+            query += @"
+        AND (@Requester IS NULL OR Requester = @Requester)
+        AND (@Department IS NULL OR Department = @Department)
+        AND (@ExpensesType IS NULL OR ExpensesType = @ExpensesType)";
+
+            if (startDate.HasValue && endDate.HasValue)
             {
-                query += " AND RequestDate >= @WeekStart AND RequestDate < @WeekEnd";
+                query += " AND RequestDate >= @StartDate AND RequestDate <= @EndDate";
             }
 
             query += " ORDER BY RequestDate ASC";
@@ -208,24 +216,23 @@ namespace HRAdmin.UserControl
                     con.Open();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
+                        // Always add the logged-in user parameter for regular requesters
+                        if (loggedInDepart != "HR & ADMIN" && loggedInDepart != "ACCOUNT")
+                        {
+                            cmd.Parameters.AddWithValue("@LoggedInUser", loggedInUser);
+                        }
+
                         cmd.Parameters.Add("@Requester", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(requester) ? (object)DBNull.Value : requester;
                         cmd.Parameters.Add("@Department", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(department) ? (object)DBNull.Value : department;
                         cmd.Parameters.Add("@ExpensesType", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(expensesType) ? (object)DBNull.Value : expensesType;
 
-                        if (requestDate.HasValue)
+                        if (startDate.HasValue && endDate.HasValue)
                         {
-                            cmd.Parameters.AddWithValue("@RequestDate", requestDate.Value.Date);
-                        }
-                        else
-                        {
-                            DateTime today = DateTime.Today;
-                            DateTime weekStart = today.AddDays(-(int)today.DayOfWeek);
-                            DateTime weekEnd = weekStart.AddDays(7);
-                            cmd.Parameters.AddWithValue("@WeekStart", weekStart);
-                            cmd.Parameters.AddWithValue("@WeekEnd", weekEnd);
+                            cmd.Parameters.AddWithValue("@StartDate", startDate.Value.Date);
+                            cmd.Parameters.AddWithValue("@EndDate", endDate.Value.Date.AddDays(1).AddTicks(-1)); // Include entire end date
                         }
 
-                        Debug.WriteLine($"Executing LoadData with Requester: {(string.IsNullOrEmpty(requester) ? "NULL" : requester)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, RequestDate: {(requestDate.HasValue ? requestDate.Value.ToString("yyyy-MM-dd") : "Weekly")}, ExpensesType: {(string.IsNullOrEmpty(expensesType) ? "NULL" : expensesType)}");
+                        Debug.WriteLine($"Executing LoadData with LoggedInUser: {loggedInUser}, Requester: {(string.IsNullOrEmpty(requester) ? "NULL" : requester)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, ExpensesType: {(string.IsNullOrEmpty(expensesType) ? "NULL" : expensesType)}, StartDate: {(startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "NULL")}, EndDate: {(endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "NULL")}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -238,7 +245,7 @@ namespace HRAdmin.UserControl
                         Debug.WriteLine($"Rows retrieved: {dt.Rows.Count}");
                         foreach (DataRow row in dt.Rows)
                         {
-                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, Requester={row["Requester"]}, Department={row["Department"]}, ExpensesType={row["ExpensesType"]}");
+                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, Requester={row["Requester"]}, Department={row["Department"]}, ExpensesType={row["ExpensesType"]}, RequestDate={row["RequestDate"]}");
                         }
 
                         BindDataGridView(dt);
@@ -257,7 +264,8 @@ namespace HRAdmin.UserControl
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
             string selectedExpensesType = cmbType.SelectedItem?.ToString();
-            DateTime? selectedRequestDate = dtpRequestDate.Checked ? dtpRequestDate.Value.Date : (DateTime?)null;
+            DateTime? startDate = dtpStart.Checked ? dtpStart.Value.Date : (DateTime?)null;
+            DateTime? endDate = dtpEnd.Checked ? dtpEnd.Value.Date : (DateTime?)null;
 
             Debug.WriteLine($"cmbRequester selected: {selectedUsername}");
             if (string.IsNullOrEmpty(selectedUsername))
@@ -273,7 +281,7 @@ namespace HRAdmin.UserControl
             {
                 selectedExpensesType = null;
             }
-            LoadData(selectedUsername, selectedDepartment, selectedRequestDate, selectedExpensesType);
+            LoadData(selectedUsername, selectedDepartment, selectedExpensesType, startDate, endDate);
         }
 
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
@@ -281,7 +289,8 @@ namespace HRAdmin.UserControl
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
             string selectedExpensesType = cmbType.SelectedItem?.ToString();
-            DateTime? selectedRequestDate = dtpRequestDate.Checked ? dtpRequestDate.Value.Date : (DateTime?)null;
+            DateTime? startDate = dtpStart.Checked ? dtpStart.Value.Date : (DateTime?)null;
+            DateTime? endDate = dtpEnd.Checked ? dtpEnd.Value.Date : (DateTime?)null;
 
             Debug.WriteLine($"cmbDepart selected: {selectedDepartment}");
 
@@ -307,12 +316,61 @@ namespace HRAdmin.UserControl
             {
                 selectedExpensesType = null;
             }
-            LoadData(selectedUsername, selectedDepartment, selectedRequestDate, selectedExpensesType);
+            LoadData(selectedUsername, selectedDepartment, selectedExpensesType, startDate, endDate);
+        }
+
+        private void dtpStart_ValueChanged(object sender, EventArgs e)
+        {
+            string selectedUsername = cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString();
+            string selectedExpensesType = cmbType.SelectedItem?.ToString();
+            DateTime? startDate = dtpStart.Checked ? dtpStart.Value.Date : (DateTime?)null;
+            DateTime? endDate = dtpEnd.Checked ? dtpEnd.Value.Date : (DateTime?)null;
+
+            if (string.IsNullOrEmpty(selectedUsername))
+            {
+                selectedUsername = null;
+            }
+            if (string.IsNullOrEmpty(selectedDepartment))
+            {
+                selectedDepartment = null;
+            }
+            if (string.IsNullOrEmpty(selectedExpensesType))
+            {
+                selectedExpensesType = null;
+            }
+
+            LoadData(selectedUsername, selectedDepartment, selectedExpensesType, startDate, endDate);
+        }
+
+        private void dtpEnd_ValueChanged(object sender, EventArgs e)
+        {
+            string selectedUsername = cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString();
+            string selectedExpensesType = cmbType.SelectedItem?.ToString();
+            DateTime? startDate = dtpStart.Checked ? dtpStart.Value.Date : (DateTime?)null;
+            DateTime? endDate = dtpEnd.Checked ? dtpEnd.Value.Date : (DateTime?)null;
+
+            if (string.IsNullOrEmpty(selectedUsername))
+            {
+                selectedUsername = null;
+            }
+            if (string.IsNullOrEmpty(selectedDepartment))
+            {
+                selectedDepartment = null;
+            }
+            if (string.IsNullOrEmpty(selectedExpensesType))
+            {
+                selectedExpensesType = null;
+            }
+
+            LoadData(selectedUsername, selectedDepartment, selectedExpensesType, startDate, endDate);
         }
 
         private void UC_MCReport_Load(object sender, EventArgs e)
         {
-            ApplyFilter();
+            // Removed ApplyFilter() to prevent initial data load
+            dgvVR.DataSource = null; // Ensure DataGridView remains empty on load
         }
 
         private bool IsNetworkAvailable()
@@ -395,6 +453,12 @@ namespace HRAdmin.UserControl
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
+                        DateTime today = DateTime.Today;
+                        DateTime weekStart = today.AddDays(-(int)today.DayOfWeek);
+                        DateTime weekEnd = weekStart.AddDays(7);
+                        cmd.Parameters.AddWithValue("@WeekStart", weekStart);
+                        cmd.Parameters.AddWithValue("@WeekEnd", weekEnd);
+
                         SqlDataAdapter da = new SqlDataAdapter(cmd);
                         DataTable dt = new DataTable();
                         da.Fill(dt);
@@ -522,7 +586,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new System.Drawing.Font("Arial", 11)
+                    Font = new System.Drawing.Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
@@ -531,34 +596,13 @@ namespace HRAdmin.UserControl
             Debug.WriteLine("DataGridView updated successfully.");
         }
 
-        private void dtpRequestDate_ValueChanged(object sender, EventArgs e)
-        {
-            string selectedUsername = cmbRequester.SelectedItem?.ToString();
-            string selectedDepartment = cmbDepart.SelectedItem?.ToString();
-            string selectedExpensesType = cmbType.SelectedItem?.ToString();
-
-            if (string.IsNullOrEmpty(selectedUsername))
-            {
-                selectedUsername = null;
-            }
-            if (string.IsNullOrEmpty(selectedDepartment))
-            {
-                selectedDepartment = null;
-            }
-            if (string.IsNullOrEmpty(selectedExpensesType))
-            {
-                selectedExpensesType = null;
-            }
-
-            LoadData(selectedUsername, selectedDepartment, dtpRequestDate.Value.Date, selectedExpensesType);
-        }
-
         private void cmbType_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedExpensesType = cmbType.SelectedItem?.ToString();
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
-            DateTime? selectedRequestDate = dtpRequestDate.Checked ? (DateTime?)dtpRequestDate.Value.Date : null;
+            DateTime? startDate = dtpStart.Checked ? dtpStart.Value.Date : (DateTime?)null;
+            DateTime? endDate = dtpEnd.Checked ? dtpEnd.Value.Date : (DateTime?)null;
 
             Debug.WriteLine($"cmbType selected: {selectedExpensesType}");
 
@@ -575,7 +619,7 @@ namespace HRAdmin.UserControl
                 selectedExpensesType = null;
             }
 
-            LoadData(selectedUsername, selectedDepartment, selectedRequestDate, selectedExpensesType);
+            LoadData(selectedUsername, selectedDepartment, selectedExpensesType, startDate, endDate);
         }
 
         private byte[] GeneratePDF(string serialNo)
@@ -590,10 +634,10 @@ namespace HRAdmin.UserControl
                 {
                     conn.Open();
                     string query = @"
-SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate
-FROM tbl_MasterClaimForm
-WHERE SerialNo = @SerialNo";
+                    SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
+                           HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate
+                    FROM tbl_MasterClaimForm
+                    WHERE SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -611,13 +655,13 @@ WHERE SerialNo = @SerialNo";
                                 orderDetails["RequestDate"] = reader["RequestDate"];
                                 orderDetails["HODApprovalStatus"] = reader["HODApprovalStatus"] != DBNull.Value ? reader["HODApprovalStatus"].ToString() : "";
                                 orderDetails["ApprovedByHOD"] = reader["ApprovedByHOD"] != DBNull.Value ? reader["ApprovedByHOD"].ToString() : "";
-                                orderDetails["HODApprovedDate"] = reader["HODApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["HODApprovedDate"]).ToString("dd.MM.yyyy HH:mm") : "";
+                                orderDetails["HODApprovedDate"] = reader["HODApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["HODApprovedDate"]).ToString("dd.MM.yyyy") : "";
                                 orderDetails["HRApprovalStatus"] = reader["HRApprovalStatus"] != DBNull.Value ? reader["HRApprovalStatus"].ToString() : "";
                                 orderDetails["ApprovedByHR"] = reader["ApprovedByHR"] != DBNull.Value ? reader["ApprovedByHR"].ToString() : "";
-                                orderDetails["HRApprovedDate"] = reader["HRApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["HRApprovedDate"]).ToString("dd.MM.yyyy HH:mm") : "";
+                                orderDetails["HRApprovedDate"] = reader["HRApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["HRApprovedDate"]).ToString("dd.MM.yyyy") : "";
                                 orderDetails["AccountApprovalStatus"] = reader["AccountApprovalStatus"] != DBNull.Value ? reader["AccountApprovalStatus"].ToString() : "";
                                 orderDetails["ApprovedByAccount"] = reader["ApprovedByAccount"] != DBNull.Value ? reader["ApprovedByAccount"].ToString() : "";
-                                orderDetails["AccountApprovedDate"] = reader["AccountApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["AccountApprovedDate"]).ToString("dd.MM.yyyy HH:mm") : "";
+                                orderDetails["AccountApprovedDate"] = reader["AccountApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["AccountApprovedDate"]).ToString("dd.MM.yyyy") : "";
                             }
                             else
                             {
@@ -627,11 +671,10 @@ WHERE SerialNo = @SerialNo";
                         }
                     }
 
-                    // Fetch claim items based on the reference image
                     string itemsQuery = @"
-               SELECT SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice
-               FROM tbl_DetailClaimForm
-               WHERE SerialNo = @SerialNo";
+                    SELECT SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice
+                    FROM tbl_DetailClaimForm
+                    WHERE SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(itemsQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -733,11 +776,10 @@ WHERE SerialNo = @SerialNo";
                     rightCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     rightCell.Padding = 0f;
 
-                    // Adjust alignment and add left indentation
                     Paragraph HODApprovalPara = new Paragraph();
                     string ApprovedByHOD = orderDetails["ApprovedByHOD"].ToString();
                     string HODApprovedDate = orderDetails["HODApprovedDate"].ToString();
-                    HODApprovalPara.IndentationLeft = -50f; // Adjust this value to move left (e.g., 10f moves it 10 points left)
+                    HODApprovalPara.IndentationLeft = -50f;
                     if (string.IsNullOrEmpty(ApprovedByHOD))
                     {
                         HODApprovalPara.Add(new Chunk("HOD Approval      : Pending", bodyFont));
@@ -762,7 +804,7 @@ WHERE SerialNo = @SerialNo";
                     Paragraph HRApprovalPara = new Paragraph();
                     string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
                     string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
-                    HRApprovalPara.IndentationLeft = -50f; // Adjust this value to move left
+                    HRApprovalPara.IndentationLeft = -50f;
                     if (string.IsNullOrEmpty(ApprovedByHR))
                     {
                         HRApprovalPara.Add(new Chunk("HR Approval         : Pending", bodyFont));
@@ -787,7 +829,7 @@ WHERE SerialNo = @SerialNo";
                     Paragraph AccountApprovalPara = new Paragraph();
                     string ApprovedByAccount = orderDetails["ApprovedByAccount"].ToString();
                     string AccountApprovedDate = orderDetails["AccountApprovedDate"].ToString();
-                    AccountApprovalPara.IndentationLeft = -50f; // Adjust this value to move left
+                    AccountApprovalPara.IndentationLeft = -50f;
                     if (string.IsNullOrEmpty(ApprovedByAccount))
                     {
                         AccountApprovalPara.Add(new Chunk("Account Approval : Pending", bodyFont));
@@ -824,7 +866,6 @@ WHERE SerialNo = @SerialNo";
                     detailsTable2.DefaultCell.Padding = 5f;
                     detailsTable2.DefaultCell.Border = iTextSharp.text.Rectangle.BOX;
 
-                    // Add header row
                     detailsTable2.AddCell(new Phrase("No", bodyFont));
                     detailsTable2.AddCell(new Phrase("Expenses Type", bodyFont));
                     detailsTable2.AddCell(new Phrase("Vendor", bodyFont));
@@ -833,7 +874,6 @@ WHERE SerialNo = @SerialNo";
                     detailsTable2.AddCell(new Phrase("Invoice No", bodyFont));
                     detailsTable2.AddCell(new Phrase("Invoice", bodyFont));
 
-                    // Add data rows
                     decimal totalAmount = 0;
                     int itemNo = 1;
                     foreach (var item in claimItems)
@@ -843,27 +883,25 @@ WHERE SerialNo = @SerialNo";
                         detailsTable2.AddCell(new Phrase(item["Vendor"].ToString(), bodyFont));
                         detailsTable2.AddCell(new Phrase(item["Item"].ToString(), bodyFont));
                         string invoiceAmount = item["InvoiceAmount"].ToString();
-                        detailsTable2.AddCell(new Phrase("RM " + invoiceAmount, bodyFont)); // Added RM prefix
+                        detailsTable2.AddCell(new Phrase("RM " + invoiceAmount, bodyFont));
                         detailsTable2.AddCell(new Phrase(item["InvoiceNo"].ToString(), bodyFont));
                         detailsTable2.AddCell(new Phrase(item["Invoice"].ToString(), bodyFont));
                         totalAmount += decimal.TryParse(invoiceAmount, out decimal amount) ? amount : 0;
                     }
 
-                    // Add total row
                     if (claimItems.Count > 0)
                     {
                         detailsTable2.AddCell(new Phrase("", bodyFont));
                         detailsTable2.AddCell(new Phrase("", bodyFont));
                         detailsTable2.AddCell(new Phrase("", bodyFont));
                         detailsTable2.AddCell(new Phrase("Total Amount", bodyFont));
-                        detailsTable2.AddCell(new Phrase("RM " + totalAmount.ToString("F2"), bodyFont)); // Added RM prefix
+                        detailsTable2.AddCell(new Phrase("RM " + totalAmount.ToString("F2"), bodyFont));
                         detailsTable2.AddCell(new Phrase("", bodyFont));
                         detailsTable2.AddCell(new Phrase("", bodyFont));
                     }
 
                     document.Add(detailsTable2);
 
-                    // Add the note paragraph
                     Paragraph notePara = new Paragraph("", bodyFont);
                     notePara.Add(new Chunk("Note:\n", boldBodyFont));
                     notePara.Add(new Chunk("1. Claim of 'Miscellaneous Item' refers to claim for:\n", bodyFont));
@@ -885,7 +923,7 @@ WHERE SerialNo = @SerialNo";
                     notePara.SpacingAfter = 10f;
                     document.Add(notePara);
 
-                    Paragraph footer = new Paragraph("This is a computer generated document, no signature is required | Generated on: " + DateTime.Now.ToString("dd.MM.yyyy HH:mm") + " \nClaim No. : " + orderDetails["SerialNo"].ToString(), bodyFont);
+                    Paragraph footer = new Paragraph("This is a computer generated document, no signature is required | Generated on: " + DateTime.Now.ToString("dd.MM.yyyy") + " \nClaim No. : " + orderDetails["SerialNo"].ToString(), bodyFont);
                     footer.Alignment = Element.ALIGN_LEFT;
                     footer.SpacingBefore = 20f;
                     footer.Font.Color = new BaseColor(100, 100, 100);
@@ -901,6 +939,7 @@ WHERE SerialNo = @SerialNo";
                 return null;
             }
         }
+
         private void btnViewPDF_Click(object sender, EventArgs e)
         {
             Debug.WriteLine($"SelectedRows.Count: {dgvVR.SelectedRows.Count}");
