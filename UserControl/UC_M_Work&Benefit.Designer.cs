@@ -137,7 +137,7 @@
             // 
             this.EventOccasion.AutoSize = true;
             this.EventOccasion.Font = new System.Drawing.Font("Calibri", 13F);
-            this.EventOccasion.Location = new System.Drawing.Point(52, 54);
+            this.EventOccasion.Location = new System.Drawing.Point(6, 32);
             this.EventOccasion.Name = "EventOccasion";
             this.EventOccasion.Size = new System.Drawing.Size(1144, 324);
             this.EventOccasion.TabIndex = 23;

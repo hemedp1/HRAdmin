@@ -801,30 +801,34 @@ namespace HRAdmin.UserControl
                     approvedHODPara.SpacingAfter = 0f;
                     rightCell.AddElement(approvedHODPara);
 
-                    Paragraph HRApprovalPara = new Paragraph();
-                    string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
-                    string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
-                    HRApprovalPara.IndentationLeft = -50f;
-                    if (string.IsNullOrEmpty(ApprovedByHR))
+                    // Remove HR Approval section if ExpensesType is "work"
+                    if (orderDetails["ExpensesType"].ToString().ToLower() != "work")
                     {
-                        HRApprovalPara.Add(new Chunk("HR Approval         : Pending", bodyFont));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(HRApprovedDate))
+                        Paragraph HRApprovalPara = new Paragraph();
+                        string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
+                        string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
+                        HRApprovalPara.IndentationLeft = -50f;
+                        if (string.IsNullOrEmpty(ApprovedByHR))
                         {
-                            HRApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
+                            HRApprovalPara.Add(new Chunk("HR Approval         : Pending", bodyFont));
                         }
-                        HRApprovalPara.Add(new Chunk($"Approved by HR         : {ApprovedByHR}   {HRApprovedDate}", bodyFont));
-                    }
-                    HRApprovalPara.SpacingBefore = 0f;
-                    rightCell.AddElement(HRApprovalPara);
+                        else
+                        {
+                            if (string.IsNullOrEmpty(HRApprovedDate))
+                            {
+                                HRApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
+                            }
+                            HRApprovalPara.Add(new Chunk($"Approved by HR         : {ApprovedByHR}   {HRApprovedDate}", bodyFont));
+                        }
+                        HRApprovalPara.SpacingBefore = 0f;
+                        rightCell.AddElement(HRApprovalPara);
 
-                    Paragraph approvedHRPara = new Paragraph();
-                    approvedHRPara.Add(new Chunk("", bodyFont));
-                    approvedHRPara.SpacingBefore = 0f;
-                    approvedHRPara.SpacingAfter = 0f;
-                    rightCell.AddElement(approvedHRPara);
+                        Paragraph approvedHRPara = new Paragraph();
+                        approvedHRPara.Add(new Chunk("", bodyFont));
+                        approvedHRPara.SpacingBefore = 0f;
+                        approvedHRPara.SpacingAfter = 0f;
+                        rightCell.AddElement(approvedHRPara);
+                    }
 
                     Paragraph AccountApprovalPara = new Paragraph();
                     string ApprovedByAccount = orderDetails["ApprovedByAccount"].ToString();

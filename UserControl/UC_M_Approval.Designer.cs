@@ -29,16 +29,14 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_Approval));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnBack = new System.Windows.Forms.Button();
             this.gbExternal = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dgvA = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.btnView = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.dtpEnd = new System.Windows.Forms.DateTimePicker();
             this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.label9 = new System.Windows.Forms.Label();
@@ -50,8 +48,6 @@
             this.cmbDepartment = new System.Windows.Forms.ComboBox();
             this.cmbRequester = new System.Windows.Forms.ComboBox();
             this.btnReject = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.btnApprove = new System.Windows.Forms.Button();
@@ -113,14 +109,14 @@
             // 
             this.dgvA.BackgroundColor = System.Drawing.Color.White;
             this.dgvA.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvA.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvA.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvA.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvA.Location = new System.Drawing.Point(0, 0);
             this.dgvA.Name = "dgvA";
@@ -132,9 +128,7 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label11);
-            this.panel1.Controls.Add(this.label12);
-            this.panel1.Controls.Add(this.btnView);
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.dtpEnd);
             this.panel1.Controls.Add(this.dtpStart);
             this.panel1.Controls.Add(this.label9);
@@ -146,8 +140,6 @@
             this.panel1.Controls.Add(this.cmbDepartment);
             this.panel1.Controls.Add(this.cmbRequester);
             this.panel1.Controls.Add(this.btnReject);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.btnApprove);
@@ -157,56 +149,40 @@
             this.panel1.Size = new System.Drawing.Size(1851, 280);
             this.panel1.TabIndex = 0;
             // 
-            // label11
+            // button1
             // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label11.Location = new System.Drawing.Point(713, 149);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(18, 27);
-            this.label11.TabIndex = 182;
-            this.label11.Text = ":";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label12.Location = new System.Drawing.Point(582, 149);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(125, 27);
-            this.label12.TabIndex = 181;
-            this.label12.Text = "View invoice";
-            // 
-            // btnView
-            // 
-            this.btnView.BackColor = System.Drawing.Color.White;
-            this.btnView.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnView.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnView.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnView.Location = new System.Drawing.Point(737, 146);
-            this.btnView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnView.Name = "btnView";
-            this.btnView.Size = new System.Drawing.Size(124, 34);
-            this.btnView.TabIndex = 180;
-            this.btnView.Text = "View";
-            this.btnView.UseVisualStyleBackColor = false;
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Calibri", 12F);
+            this.button1.Location = new System.Drawing.Point(607, 197);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(124, 34);
+            this.button1.TabIndex = 181;
+            this.button1.Text = "View";
+            this.button1.UseVisualStyleBackColor = false;
             // 
             // dtpEnd
             // 
             this.dtpEnd.CalendarFont = new System.Drawing.Font("Calibri", 13F);
+            this.dtpEnd.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpEnd.Location = new System.Drawing.Point(220, 94);
             this.dtpEnd.Name = "dtpEnd";
-            this.dtpEnd.Size = new System.Drawing.Size(250, 36);
+            this.dtpEnd.Size = new System.Drawing.Size(250, 34);
             this.dtpEnd.TabIndex = 179;
             this.dtpEnd.ValueChanged += new System.EventHandler(this.dtpEnd_ValueChanged);
             // 
             // dtpStart
             // 
             this.dtpStart.CalendarFont = new System.Drawing.Font("Calibri", 13F);
+            this.dtpStart.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpStart.Location = new System.Drawing.Point(220, 44);
             this.dtpStart.Name = "dtpStart";
-            this.dtpStart.Size = new System.Drawing.Size(250, 36);
+            this.dtpStart.Size = new System.Drawing.Size(250, 34);
             this.dtpStart.TabIndex = 177;
             this.dtpStart.ValueChanged += new System.EventHandler(this.dtpStart_ValueChanged);
             // 
@@ -308,26 +284,6 @@
             this.btnReject.UseVisualStyleBackColor = false;
             this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label1.Location = new System.Drawing.Point(713, 200);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(18, 27);
-            this.label1.TabIndex = 167;
-            this.label1.Text = ":";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label2.Location = new System.Drawing.Point(582, 200);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(115, 27);
-            this.label2.TabIndex = 166;
-            this.label2.Text = "Verification";
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -393,8 +349,6 @@
         private System.Windows.Forms.Button btnApprove;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnReject;
         private System.Windows.Forms.ComboBox cmbRequester;
         private System.Windows.Forms.ComboBox cmbDepartment;
@@ -407,8 +361,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker dtpStart;
         private System.Windows.Forms.DateTimePicker dtpEnd;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Button btnView;
+        private System.Windows.Forms.Button button1;
     }
 }

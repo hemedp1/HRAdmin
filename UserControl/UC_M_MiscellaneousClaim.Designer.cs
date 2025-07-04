@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -46,8 +46,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.dtpStart = new System.Windows.Forms.DateTimePicker();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
             this.btnWithdraw = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -89,6 +87,7 @@
             // 
             // cmbDepart
             // 
+            this.cmbDepart.DropDownWidth = 200;
             this.cmbDepart.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbDepart.FormattingEnabled = true;
             this.cmbDepart.ItemHeight = 27;
@@ -143,14 +142,14 @@
             // 
             this.dgvMS.BackgroundColor = System.Drawing.Color.White;
             this.dgvMS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
@@ -182,8 +181,6 @@
             this.panel4.Controls.Add(this.label5);
             this.panel4.Controls.Add(this.label7);
             this.panel4.Controls.Add(this.dtpStart);
-            this.panel4.Controls.Add(this.label17);
-            this.panel4.Controls.Add(this.label16);
             this.panel4.Controls.Add(this.label11);
             this.panel4.Controls.Add(this.label10);
             this.panel4.Controls.Add(this.btnWithdraw);
@@ -199,9 +196,11 @@
             // 
             // dtpEnd
             // 
+            this.dtpEnd.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpEnd.Location = new System.Drawing.Point(659, 20);
             this.dtpEnd.Name = "dtpEnd";
-            this.dtpEnd.Size = new System.Drawing.Size(250, 36);
+            this.dtpEnd.Size = new System.Drawing.Size(250, 34);
             this.dtpEnd.TabIndex = 133;
             this.dtpEnd.ValueChanged += new System.EventHandler(this.dtpEnd_ValueChanged);
             // 
@@ -248,31 +247,13 @@
             // dtpStart
             // 
             this.dtpStart.Checked = false;
+            this.dtpStart.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpStart.Location = new System.Drawing.Point(212, 20);
             this.dtpStart.Name = "dtpStart";
-            this.dtpStart.Size = new System.Drawing.Size(250, 36);
+            this.dtpStart.Size = new System.Drawing.Size(250, 34);
             this.dtpStart.TabIndex = 128;
             this.dtpStart.ValueChanged += new System.EventHandler(this.dtpStart_ValueChanged);
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label17.Location = new System.Drawing.Point(1133, 78);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(18, 27);
-            this.label17.TabIndex = 113;
-            this.label17.Text = ":";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label16.Location = new System.Drawing.Point(971, 78);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(156, 27);
-            this.label16.TabIndex = 112;
-            this.label16.Text = "Withdraw claim";
             // 
             // btnWithdraw
             // 
@@ -281,7 +262,7 @@
             this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(1157, 75);
+            this.btnWithdraw.Location = new System.Drawing.Point(1001, 75);
             this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdraw.Name = "btnWithdraw";
             this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
@@ -321,7 +302,7 @@
             this.btnNext.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNext.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnNext.Location = new System.Drawing.Point(1004, 47);
+            this.btnNext.Location = new System.Drawing.Point(1004, 51);
             this.btnNext.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(124, 34);
@@ -452,8 +433,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox cmbType;
         private System.Windows.Forms.GroupBox gbExternal;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button btnWithdraw;
         private System.Windows.Forms.Label dtRequest;
         private System.Windows.Forms.Label label2;

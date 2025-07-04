@@ -40,6 +40,8 @@ namespace HRAdmin.UserControl
             dtpEnd.ValueChanged += dtpEnd_ValueChanged;
             cmbDepartment.SelectedIndexChanged += cmbDepartment_SelectedIndexChanged;
             cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
+            // Add CellFormatting event handler for DataGridView
+            dgvA.CellFormatting += dgvA_CellFormatting;
             LoadDepartments(); // Populate departments
             LoadUsernames(); // Populate requesters
             LoadData(); // Load data on initialization
@@ -275,7 +277,8 @@ namespace HRAdmin.UserControl
             m.AccountApprovalStatus, 
             m.ApprovedByAccount, 
             m.AccountApprovedDate,
-            m.Requester
+            m.Requester,
+            m.Department
         FROM tbl_DetailClaimForm d
         INNER JOIN tbl_MasterClaimForm m
         ON d.SerialNo = m.SerialNo";
@@ -301,6 +304,12 @@ namespace HRAdmin.UserControl
             {
                 conditions.Add("m.Requester = @Requester");
                 parameters.Add(new SqlParameter("@Requester", cmbRequester.SelectedItem.ToString()));
+            }
+
+            // If logged-in department is HR & ADMIN, only show Benefit expenses
+            if (loggedInDepart == "HR & ADMIN")
+            {
+                conditions.Add("d.ExpensesType = 'Benefit'");
             }
 
             if (conditions.Count > 0)
@@ -333,7 +342,18 @@ namespace HRAdmin.UserControl
                         Debug.WriteLine($"Rows retrieved: {dt.Rows.Count}");
                         foreach (DataRow row in dt.Rows)
                         {
-                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, RequestDate={row["RequestDate"]}");
+                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, RequestDate={row["RequestDate"]}, ExpensesType={row["ExpensesType"]}");
+                        }
+
+                        // Modify HR columns for Work expenses
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            if (row["ExpensesType"].ToString() == "Work")
+                            {
+                                row["HRApprovalStatus"] = "-";
+                                row["ApprovedByHR"] = "-";
+                                row["HRApprovedDate"] = DBNull.Value; // Keep as DBNull for DateTime column
+                            }
                         }
 
                         // Bind to DataGridView
@@ -360,8 +380,25 @@ namespace HRAdmin.UserControl
                         filterConditions.Add($"Requester = '{SqlServerEscape(cmbRequester.SelectedItem.ToString())}'");
                     }
 
+                    // Apply ExpensesType filter for HR & ADMIN in cached data
+                    if (loggedInDepart == "HR & ADMIN")
+                    {
+                        filterConditions.Add("ExpensesType = 'Benefit'");
+                    }
+
                     filteredData.DefaultView.RowFilter = string.Join(" AND ", filterConditions);
                     filteredData = filteredData.DefaultView.ToTable();
+
+                    // Modify HR columns for Work expenses in cached data
+                    foreach (DataRow row in filteredData.Rows)
+                    {
+                        if (row["ExpensesType"].ToString() == "Work")
+                        {
+                            row["HRApprovalStatus"] = "-";
+                            row["ApprovedByHR"] = "-";
+                            row["HRApprovedDate"] = DBNull.Value; // Keep as DBNull for DateTime column
+                        }
+                    }
 
                     BindDataGridView(filteredData);
                     if (!isNetworkErrorShown)
@@ -399,7 +436,7 @@ namespace HRAdmin.UserControl
                 Font = new Font("Arial", 11, FontStyle.Bold),
             };
 
-            int fixedColumnWidth = 150;
+            int fixedColumnWidth = 200;
 
             // Add columns
             dgvA.Columns.Add(new DataGridViewTextBoxColumn()
@@ -420,6 +457,19 @@ namespace HRAdmin.UserControl
                 Name = "Requester",
                 HeaderText = "Requester",
                 DataPropertyName = "Requester",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvA.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Department",
+                HeaderText = "Section",
+                DataPropertyName = "Department",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -632,6 +682,22 @@ namespace HRAdmin.UserControl
             Debug.WriteLine("DataGridView updated successfully.");
         }
 
+        private void dgvA_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Check if the column is HRApprovedDate
+            if (dgvA.Columns[e.ColumnIndex].Name == "HRApprovedDate")
+            {
+                // Get the ExpensesType value for the current row
+                string expensesType = dgvA.Rows[e.RowIndex].Cells["ExpensesType"].Value?.ToString();
+                // If ExpensesType is "Work" and the value is DBNull, display "-"
+                if (expensesType == "Work" && (e.Value == DBNull.Value || e.Value == null))
+                {
+                    e.Value = "-";
+                    e.FormattingApplied = true; // Indicate that formatting has been applied
+                }
+            }
+        }
+
         private void btnApprove_Click(object sender, EventArgs e)
         {
             // Check if a cell is selected in the DataGridView
@@ -648,6 +714,7 @@ namespace HRAdmin.UserControl
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+            string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
 
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo))
@@ -673,8 +740,8 @@ namespace HRAdmin.UserControl
                     return;
                 }
 
-                // Check if HRApprovalStatus is Pending
-                if (hrApprovalStatus == "Pending")
+                // Check if HRApprovalStatus is Pending and ExpensesType is not Work
+                if (hrApprovalStatus == "Pending" && expensesType != "Work")
                 {
                     MessageBox.Show("This order cannot be approved by Account because HR approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -736,6 +803,13 @@ namespace HRAdmin.UserControl
             // Handle HR & ADMIN department approval
             else if (loggedInDepart == "HR & ADMIN")
             {
+                // Check if the ExpensesType is Work
+                if (expensesType == "Work")
+                {
+                    MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Check if HODApprovalStatus is Pending
                 if (hodApprovalStatus == "Pending")
                 {
@@ -877,6 +951,7 @@ namespace HRAdmin.UserControl
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+            string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
 
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo))
@@ -895,8 +970,8 @@ namespace HRAdmin.UserControl
                     return;
                 }
 
-                // Check if HRApprovalStatus is Rejected or Pending
-                if (hrApprovalStatus == "Rejected" || hrApprovalStatus == "Pending")
+                // Check if HRApprovalStatus is Rejected or Pending and ExpensesType is not Work
+                if ((hrApprovalStatus == "Rejected" || hrApprovalStatus == "Pending") && expensesType != "Work")
                 {
                     MessageBox.Show($"This order cannot be rejected by Account because HR approval is {hrApprovalStatus}.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -964,6 +1039,13 @@ namespace HRAdmin.UserControl
             }
             else if (loggedInDepart == "HR & ADMIN")
             {
+                // Check if the ExpensesType is Work
+                if (expensesType == "Work")
+                {
+                    MessageBox.Show("HR & ADMIN cannot reject Work-related expenses.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Check if HODApprovalStatus is Rejected or Pending
                 if (hodApprovalStatus == "Rejected" || hodApprovalStatus == "Pending")
                 {

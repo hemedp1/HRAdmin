@@ -602,9 +602,40 @@ namespace HRAdmin.UserControl
                 },
             });
 
-            dgvMS.DataSource = dt;
-            dgvMS.CellBorderStyle = DataGridViewCellBorderStyle.None; // Add this line to remove cell borders
+            // Create a new DataTable to modify HR-related columns (except HRApprovedDate)
+            DataTable modifiedDt = dt.Copy();
+            foreach (DataRow row in modifiedDt.Rows)
+            {
+                if (row["ExpensesType"]?.ToString() == "Work")
+                {
+                    row["HRApprovalStatus"] = "-";
+                    row["ApprovedByHR"] = "-";
+                    // Do not modify HRApprovedDate in the DataTable to avoid type mismatch
+                }
+            }
+
+            // Set the DataSource
+            dgvMS.DataSource = modifiedDt;
+            dgvMS.CellBorderStyle = DataGridViewCellBorderStyle.None;
+
+            // Attach CellFormatting event handler to handle HRApprovedDate display
+            dgvMS.CellFormatting += dgvMS_CellFormatting;
+
             Debug.WriteLine("DataGridView updated successfully.");
+        }
+
+        // CellFormatting event handler to display "-" for HRApprovedDate when ExpensesType is "Work"
+        private void dgvMS_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dgvMS.Columns[e.ColumnIndex].Name == "HRApprovedDate" && e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvMS.Rows[e.RowIndex];
+                if (row.Cells["ExpensesType"].Value?.ToString() == "Work")
+                {
+                    e.Value = "-";
+                    e.FormattingApplied = true;
+                }
+            }
         }
 
         private void btnWithdraw_Click(object sender, EventArgs e)
