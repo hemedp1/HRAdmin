@@ -670,37 +670,8 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            // Check if the user has HR & Admin access (AA = 1) to delete any order
-            bool isHRAdmin = false;
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-                {
-                    con.Open();
-                    string query = "SELECT AA FROM tbl_Users WHERE Username = @Username";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                string AA = reader["AA"].ToString();
-                                isHRAdmin = (AA == "1");
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.WriteLine($"Error checking user access: {ex.Message}");
-                return;
-            }
-
-            // Restrict withdrawal to only the user's own orders (except for HR & Admin)
-            if (!isHRAdmin && requester != loggedInUser)
+            // Restrict withdrawal to only the user's own orders
+            if (requester != loggedInUser)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;

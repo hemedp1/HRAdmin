@@ -61,7 +61,6 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("Item", typeof(string));
             dt.Columns.Add("InvoiceAmount", typeof(decimal));
             dt.Columns.Add("InvoiceNo", typeof(string));
-            //dt.Columns.Add("Invoice", typeof(byte[])); // Changed from typeof(byte) to typeof(byte[])
             dgvW.DataSource = dt;
         }
 
@@ -104,10 +103,14 @@ namespace HRAdmin.UserControl
             dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing; // Allow resizing of header height
             dgv.ColumnHeadersHeight = 30; // Increase header height for better visibility
 
-            // Set a smaller width for the ID column (e.g., 50 pixels)
             if (dgvW.Columns.Contains("ID"))
             {
-                dgvW.Columns["ID"].Width = 50;
+                dgvW.Columns["ID"].Width = 30;
+            }
+
+            if (dgvW.Columns.Contains("InvoiceAmount"))
+            {
+                dgvW.Columns["InvoiceAmount"].Width = 150;
             }
 
             foreach (DataGridViewColumn column in dgv.Columns)
@@ -148,7 +151,6 @@ namespace HRAdmin.UserControl
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
-
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -175,7 +177,7 @@ namespace HRAdmin.UserControl
                         }
                     }
 
-                    // Generate SerialNo with format Department_ddMMyyyy_N (using loggedInDepart for consistency)
+                    // Generate SerialNo with format Department_ddMMyyyy_N
                     string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
@@ -188,6 +190,10 @@ namespace HRAdmin.UserControl
                                         VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
                                                 @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
 
+                    string checkDuplicateQuery = @"SELECT COUNT(*) 
+                                                 FROM tbl_DetailClaimForm 
+                                                 WHERE InvoiceNo = @InvoiceNo AND InvoiceAmount = @InvoiceAmount";
+
                     DataTable dt = (DataTable)dgvW.DataSource;
                     DataTable newRows = dt?.GetChanges(DataRowState.Added);
 
@@ -195,6 +201,27 @@ namespace HRAdmin.UserControl
                     {
                         MessageBox.Show("No data to submit the claim.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
+                    }
+
+                    // Check for duplicate InvoiceNo and InvoiceAmount
+                    using (SqlCommand cmdCheckDuplicate = new SqlCommand(checkDuplicateQuery, con, transaction))
+                    {
+                        foreach (DataRow row in newRows.Rows)
+                        {
+                            if (row["InvoiceNo"] != DBNull.Value && row["InvoiceAmount"] != DBNull.Value)
+                            {
+                                cmdCheckDuplicate.Parameters.Clear();
+                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["InvoiceNo"]);
+                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["InvoiceAmount"]);
+                                int duplicateCount = (int)cmdCheckDuplicate.ExecuteScalar();
+                                if (duplicateCount > 0)
+                                {
+                                    transaction?.Rollback();
+                                    MessageBox.Show($"Reduntant claim request.","Duplicate Request", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
+                                }
+                            }
+                        }
                     }
 
                     using (SqlCommand cmdDetail = new SqlCommand(insertDetailQuery, con, transaction))
