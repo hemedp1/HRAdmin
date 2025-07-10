@@ -266,6 +266,7 @@ namespace HRAdmin.UserControl
             d.Item, 
             d.InvoiceAmount, 
             d.InvoiceNo, 
+            d.InvoiceDate,
             d.Invoice, 
             m.RequestDate,
             m.HODApprovalStatus, 
@@ -533,6 +534,19 @@ namespace HRAdmin.UserControl
 
             dgvA.Columns.Add(new DataGridViewTextBoxColumn()
             {
+                Name = "InvoiceAmount",
+                HeaderText = "Invoice Amount (RM)",
+                DataPropertyName = "InvoiceAmount",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvA.Columns.Add(new DataGridViewTextBoxColumn()
+            {
                 Name = "InvoiceNo",
                 HeaderText = "Invoice No",
                 DataPropertyName = "InvoiceNo",
@@ -546,14 +560,15 @@ namespace HRAdmin.UserControl
 
             dgvA.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "InvoiceAmount",
-                HeaderText = "Invoice Amount",
-                DataPropertyName = "InvoiceAmount",
+                Name = "InvoiceDate",
+                HeaderText = "Invoice Date",
+                DataPropertyName = "InvoiceDate",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
