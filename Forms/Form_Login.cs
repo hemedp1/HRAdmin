@@ -57,6 +57,8 @@ namespace HRAdmin
                                 UserSession.LoggedInUser = username;
                                 UserSession.loggedInDepart = depart;
                                 UserSession.loggedInIndex = Index;
+                                //UserSession.LoggedInBank = bank;
+                                //UserSession.LoggedInAccNo = accountNo;
                                 //MessageBox.Show($"DDSDSDDWDWWD: {Index}");
                                 this.Hide();
                                 Form_Home mainForm = new Form_Home(username, depart, Index);

@@ -22,7 +22,6 @@ namespace HRAdmin.UserControl
         private string loggedInDepart;
         private string loggedInIndex;
         private DataTable cachedData; // For caching data
-        private DataTable serialNoData; // To store all SerialNos for ComboBox
         private bool isNetworkErrorShown;
         private bool isNetworkUnavailable;
 
@@ -33,11 +32,18 @@ namespace HRAdmin.UserControl
             loggedInDepart = department;
             loggedInIndex = emp;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
-            serialNoData = new DataTable(); // Initialize SerialNo data
-            serialNoData.Columns.Add("SerialNo", typeof(string));
             isNetworkErrorShown = false;
             isNetworkUnavailable = false;
             this.Load += UC_Approval_Load;
+            // Add event handlers for DateTimePickers and ComboBoxes
+            dtpStart.ValueChanged += dtpStart_ValueChanged;
+            dtpEnd.ValueChanged += dtpEnd_ValueChanged;
+            cmbDepartment.SelectedIndexChanged += cmbDepartment_SelectedIndexChanged;
+            cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
+            // Add CellFormatting event handler for DataGridView
+            dgvA.CellFormatting += dgvA_CellFormatting;
+            LoadDepartments(); // Populate departments
+            LoadUsernames(); // Populate requesters
             LoadData(); // Load data on initialization
         }
 
@@ -71,6 +77,165 @@ namespace HRAdmin.UserControl
             LoadData(); // Load data on form load
         }
 
+        private void dtpStart_ValueChanged(object sender, EventArgs e)
+        {
+            if (dtpEnd.Value < dtpStart.Value)
+            {
+                MessageBox.Show("End date cannot be earlier than start date.", "Invalid Date Range", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtpStart.Value = dtpEnd.Value; // Reset start date to match end date
+                return;
+            }
+            LoadData(); // Reload data when start date changes
+        }
+
+        private void dtpEnd_ValueChanged(object sender, EventArgs e)
+        {
+            if (dtpEnd.Value < dtpStart.Value)
+            {
+                MessageBox.Show("End date cannot be earlier than start date.", "Invalid Date Range", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtpEnd.Value = dtpStart.Value; // Reset end date to match start date
+                return;
+            }
+            LoadData(); // Reload data when end date changes
+        }
+
+        private void cmbDepartment_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbDepartment.SelectedIndex != -1)
+            {
+                string selectedDepartment = cmbDepartment.SelectedItem.ToString();
+                LoadUsernamesByDepartment(selectedDepartment); // Load usernames for selected department
+            }
+            else
+            {
+                LoadUsernames(); // Load all usernames if no department selected
+            }
+            LoadData(); // Reload data with current filters
+        }
+
+        private void cmbRequester_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadData(); // Reload data when requester changes
+        }
+
+        private void LoadDepartments()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    string query = "SELECT DISTINCT Department FROM tbl_Users WHERE Department IS NOT NULL";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            cmbDepartment.Items.Clear();
+                            while (reader.Read())
+                            {
+                                string department = reader["Department"].ToString();
+                                cmbDepartment.Items.Add(department);
+                                Debug.WriteLine($"Loaded department: {department}");
+                            }
+                        }
+                    }
+                    cmbDepartment.SelectedIndex = -1; // No department selected initially
+                    if (cmbDepartment.Items.Count > 0)
+                    {
+                        Debug.WriteLine("Departments loaded successfully.");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("No departments found.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading departments: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error loading departments: {ex.Message}");
+                }
+            }
+        }
+
+        private void LoadUsernames()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    string query = "SELECT Username FROM tbl_Users";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            cmbRequester.Items.Clear();
+                            while (reader.Read())
+                            {
+                                string username = reader["Username"].ToString();
+                                cmbRequester.Items.Add(username);
+                                Debug.WriteLine($"Loaded username: {username}");
+                            }
+                        }
+                    }
+                    cmbRequester.SelectedIndex = -1; // No requester selected initially
+                    if (cmbRequester.Items.Count > 0)
+                    {
+                        Debug.WriteLine("Usernames loaded successfully.");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("No usernames found.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading usernames: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error loading usernames: {ex.Message}");
+                }
+            }
+        }
+
+        private void LoadUsernamesByDepartment(string department)
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    string query = "SELECT Username FROM tbl_Users WHERE Department = @Department";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@Department", department);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            cmbRequester.Items.Clear();
+                            while (reader.Read())
+                            {
+                                string username = reader["Username"].ToString();
+                                cmbRequester.Items.Add(username);
+                                Debug.WriteLine($"Loaded username: {username} for department: {department}");
+                            }
+                        }
+                    }
+                    cmbRequester.SelectedIndex = -1; // No requester selected initially
+                    if (cmbRequester.Items.Count > 0)
+                    {
+                        Debug.WriteLine($"Usernames loaded successfully for department: {department}");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"No usernames found for department: {department}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading usernames: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error loading usernames for department {department}: {ex.Message}");
+                }
+            }
+        }
+
         private bool IsNetworkAvailable()
         {
             return NetworkInterface.GetIsNetworkAvailable();
@@ -78,14 +243,18 @@ namespace HRAdmin.UserControl
 
         private void LoadData()
         {
-            LoadData(null); // Call the overload with no filter
-        }
-
-        private void LoadData(string serialNo)
-        {
             if (dgvA == null)
             {
                 MessageBox.Show("DataGridView is not initialized!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Require a valid date range to display any data
+            bool applyDateFilter = dtpStart.Value != null && dtpEnd.Value != null && dtpEnd.Value >= dtpStart.Value;
+            if (!applyDateFilter)
+            {
+                dgvA.DataSource = null;
+                Debug.WriteLine("No data loaded due to invalid or missing date range.");
                 return;
             }
 
@@ -97,6 +266,7 @@ namespace HRAdmin.UserControl
             d.Item, 
             d.InvoiceAmount, 
             d.InvoiceNo, 
+            d.InvoiceDate,
             d.Invoice, 
             m.RequestDate,
             m.HODApprovalStatus, 
@@ -107,14 +277,45 @@ namespace HRAdmin.UserControl
             m.HRApprovedDate, 
             m.AccountApprovalStatus, 
             m.ApprovedByAccount, 
-            m.AccountApprovedDate
+            m.AccountApprovedDate,
+            m.Requester,
+            m.Department
         FROM tbl_DetailClaimForm d
         INNER JOIN tbl_MasterClaimForm m
         ON d.SerialNo = m.SerialNo";
 
-            if (!string.IsNullOrEmpty(serialNo))
+            // Build WHERE clause for filters
+            bool applyDepartmentFilter = cmbDepartment.SelectedIndex != -1;
+            bool applyRequesterFilter = cmbRequester.SelectedIndex != -1;
+            List<string> conditions = new List<string>();
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
+            // Apply date filter with explicit end time
+            conditions.Add("m.RequestDate >= @StartDate AND m.RequestDate < @EndDate");
+            parameters.Add(new SqlParameter("@StartDate", dtpStart.Value.Date));
+            parameters.Add(new SqlParameter("@EndDate", dtpEnd.Value.Date.AddDays(1))); // Exclusive end date
+
+            if (applyDepartmentFilter)
             {
-                query += " WHERE d.SerialNo = @SerialNo";
+                conditions.Add("d.SerialNo LIKE @Department + '_%'");
+                parameters.Add(new SqlParameter("@Department", cmbDepartment.SelectedItem.ToString()));
+            }
+
+            if (applyRequesterFilter)
+            {
+                conditions.Add("m.Requester = @Requester");
+                parameters.Add(new SqlParameter("@Requester", cmbRequester.SelectedItem.ToString()));
+            }
+
+            // If logged-in department is HR & ADMIN, only show Benefit expenses
+            if (loggedInDepart == "HR & ADMIN")
+            {
+                conditions.Add("d.ExpensesType = 'Benefit'");
+            }
+
+            if (conditions.Count > 0)
+            {
+                query += " WHERE " + string.Join(" AND ", conditions);
             }
 
             query += " ORDER BY d.SerialNo ASC";
@@ -126,12 +327,9 @@ namespace HRAdmin.UserControl
                     con.Open();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        if (!string.IsNullOrEmpty(serialNo))
-                        {
-                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
-                        }
-
-                        Debug.WriteLine("Executing LoadData with joined tables.");
+                        cmd.Parameters.AddRange(parameters.ToArray());
+                        Debug.WriteLine($"Executing LoadData with query: {query}");
+                        Debug.WriteLine($"Parameters: StartDate={dtpStart.Value}, EndDate={dtpEnd.Value.AddDays(1)}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -139,22 +337,25 @@ namespace HRAdmin.UserControl
                             da.Fill(dt);
                         }
 
-                        // Update cache only if no filter (initial load or full refresh)
-                        if (string.IsNullOrEmpty(serialNo))
-                        {
-                            cachedData = dt.Copy();
-                            // Update serialNoData for ComboBox
-                            UpdateSerialNoData(dt);
-                        }
+                        // Update cache
+                        cachedData = dt.Copy();
 
                         Debug.WriteLine($"Rows retrieved: {dt.Rows.Count}");
                         foreach (DataRow row in dt.Rows)
                         {
-                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, Vendor={row["Vendor"]}, ExpensesType={row["ExpensesType"]}, HODApprovalStatus={row["HODApprovalStatus"]}");
+                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, RequestDate={row["RequestDate"]}, ExpensesType={row["ExpensesType"]}");
                         }
 
-                        // Populate ComboBox with all SerialNos
-                        PopulateComboBox();
+                        // Modify HR columns for Work expenses
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            if (row["ExpensesType"].ToString() == "Work")
+                            {
+                                row["HRApprovalStatus"] = "-";
+                                row["ApprovedByHR"] = "-";
+                                row["HRApprovedDate"] = DBNull.Value; // Keep as DBNull for DateTime column
+                            }
+                        }
 
                         // Bind to DataGridView
                         BindDataGridView(dt);
@@ -165,14 +366,41 @@ namespace HRAdmin.UserControl
             {
                 if (!IsNetworkAvailable() && cachedData != null && cachedData.Rows.Count > 0)
                 {
-                    // Populate ComboBox with cached SerialNos
-                    PopulateComboBox();
                     DataTable filteredData = cachedData.Copy();
-                    if (!string.IsNullOrEmpty(serialNo))
+                    List<string> filterConditions = new List<string>();
+
+                    filterConditions.Add($"RequestDate >= #{dtpStart.Value.Date:MM/dd/yyyy}# AND RequestDate < #{dtpEnd.Value.Date.AddDays(1):MM/dd/yyyy}#");
+
+                    if (applyDepartmentFilter)
                     {
-                        filteredData.DefaultView.RowFilter = $"SerialNo = '{serialNo}'";
-                        filteredData = filteredData.DefaultView.ToTable();
+                        filterConditions.Add($"SerialNo LIKE '{SqlServerEscape(cmbDepartment.SelectedItem.ToString())}%'");
                     }
+
+                    if (applyRequesterFilter)
+                    {
+                        filterConditions.Add($"Requester = '{SqlServerEscape(cmbRequester.SelectedItem.ToString())}'");
+                    }
+
+                    // Apply ExpensesType filter for HR & ADMIN in cached data
+                    if (loggedInDepart == "HR & ADMIN")
+                    {
+                        filterConditions.Add("ExpensesType = 'Benefit'");
+                    }
+
+                    filteredData.DefaultView.RowFilter = string.Join(" AND ", filterConditions);
+                    filteredData = filteredData.DefaultView.ToTable();
+
+                    // Modify HR columns for Work expenses in cached data
+                    foreach (DataRow row in filteredData.Rows)
+                    {
+                        if (row["ExpensesType"].ToString() == "Work")
+                        {
+                            row["HRApprovalStatus"] = "-";
+                            row["ApprovedByHR"] = "-";
+                            row["HRApprovedDate"] = DBNull.Value; // Keep as DBNull for DateTime column
+                        }
+                    }
+
                     BindDataGridView(filteredData);
                     if (!isNetworkErrorShown)
                     {
@@ -193,33 +421,10 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void UpdateSerialNoData(DataTable dt)
+        private string SqlServerEscape(string input)
         {
-            // Clear existing SerialNos
-            serialNoData.Clear();
-            // Add unique SerialNos from the DataTable
-            foreach (DataRow row in dt.Rows)
-            {
-                string serial = row["SerialNo"].ToString();
-                if (!serialNoData.AsEnumerable().Any(r => r.Field<string>("SerialNo") == serial))
-                {
-                    serialNoData.Rows.Add(serial);
-                }
-            }
-        }
-
-        private void PopulateComboBox()
-        {
-            cmbSerialNo.Items.Clear();
-            foreach (DataRow row in serialNoData.Rows)
-            {
-                string serial = row["SerialNo"].ToString();
-                if (!cmbSerialNo.Items.Contains(serial))
-                {
-                    cmbSerialNo.Items.Add(serial);
-                }
-            }
-            cmbSerialNo.SelectedIndex = -1; // No item selected by default
+            if (string.IsNullOrEmpty(input)) return input;
+            return input.Replace("'", "''");
         }
 
         private void BindDataGridView(DataTable dt)
@@ -232,14 +437,40 @@ namespace HRAdmin.UserControl
                 Font = new Font("Arial", 11, FontStyle.Bold),
             };
 
-            int fixedColumnWidth = 150;
+            int fixedColumnWidth = 200;
 
-            // Add columns as in the original code
+            // Add columns
             dgvA.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "SerialNo",
                 HeaderText = "Serial No",
                 DataPropertyName = "SerialNo",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvA.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Requester",
+                HeaderText = "Requester",
+                DataPropertyName = "Requester",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvA.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Department",
+                HeaderText = "Section",
+                DataPropertyName = "Department",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -270,7 +501,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
@@ -302,6 +534,19 @@ namespace HRAdmin.UserControl
 
             dgvA.Columns.Add(new DataGridViewTextBoxColumn()
             {
+                Name = "InvoiceAmount",
+                HeaderText = "Invoice Amount (RM)",
+                DataPropertyName = "InvoiceAmount",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new Font("Arial", 11)
+                },
+            });
+
+            dgvA.Columns.Add(new DataGridViewTextBoxColumn()
+            {
                 Name = "InvoiceNo",
                 HeaderText = "Invoice No",
                 DataPropertyName = "InvoiceNo",
@@ -315,27 +560,15 @@ namespace HRAdmin.UserControl
 
             dgvA.Columns.Add(new DataGridViewTextBoxColumn()
             {
-                Name = "InvoiceAmount",
-                HeaderText = "Invoice Amount",
-                DataPropertyName = "InvoiceAmount",
+                Name = "InvoiceDate",
+                HeaderText = "Invoice Date",
+                DataPropertyName = "InvoiceDate",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
-                },
-            });
-
-            dgvA.Columns.Add(new DataGridViewTextBoxColumn()
-            {
-                Name = "Invoice",
-                HeaderText = "Invoice",
-                DataPropertyName = "Invoice",
-                Width = fixedColumnWidth,
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
@@ -374,7 +607,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy   HH:mm"
                 },
             });
 
@@ -413,7 +647,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy   HH:mm"
                 },
             });
 
@@ -452,7 +687,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy   HH:mm"
                 },
             });
 
@@ -461,15 +697,20 @@ namespace HRAdmin.UserControl
             Debug.WriteLine("DataGridView updated successfully.");
         }
 
-        private void cmbSerialNo_SelectedIndexChanged(object sender, EventArgs e)
+        private void dgvA_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (cachedData == null || cachedData.Rows.Count == 0)
+            // Check if the column is HRApprovedDate
+            if (dgvA.Columns[e.ColumnIndex].Name == "HRApprovedDate")
             {
-                return;
+                // Get the ExpensesType value for the current row
+                string expensesType = dgvA.Rows[e.RowIndex].Cells["ExpensesType"].Value?.ToString();
+                // If ExpensesType is "Work" and the value is DBNull, display "-"
+                if (expensesType == "Work" && (e.Value == DBNull.Value || e.Value == null))
+                {
+                    e.Value = "-";
+                    e.FormattingApplied = true; // Indicate that formatting has been applied
+                }
             }
-
-            string selectedSerialNo = cmbSerialNo.SelectedItem?.ToString();
-            LoadData(selectedSerialNo);
         }
 
         private void btnApprove_Click(object sender, EventArgs e)
@@ -488,6 +729,7 @@ namespace HRAdmin.UserControl
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+            string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
 
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo))
@@ -513,8 +755,8 @@ namespace HRAdmin.UserControl
                     return;
                 }
 
-                // Check if HRApprovalStatus is Pending
-                if (hrApprovalStatus == "Pending")
+                // Check if HRApprovalStatus is Pending and ExpensesType is not Work
+                if (hrApprovalStatus == "Pending" && expensesType != "Work")
                 {
                     MessageBox.Show("This order cannot be approved by Account because HR approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -558,7 +800,7 @@ namespace HRAdmin.UserControl
                             {
                                 MessageBox.Show("Order approved successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 // Refresh the DataGridView
-                                LoadData(cmbSerialNo.SelectedItem?.ToString());
+                                LoadData();
                             }
                             else
                             {
@@ -576,6 +818,13 @@ namespace HRAdmin.UserControl
             // Handle HR & ADMIN department approval
             else if (loggedInDepart == "HR & ADMIN")
             {
+                // Check if the ExpensesType is Work
+                if (expensesType == "Work")
+                {
+                    MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Check if HODApprovalStatus is Pending
                 if (hodApprovalStatus == "Pending")
                 {
@@ -621,7 +870,7 @@ namespace HRAdmin.UserControl
                             {
                                 MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 // Refresh the DataGridView
-                                LoadData(cmbSerialNo.SelectedItem?.ToString());
+                                LoadData();
                             }
                             else
                             {
@@ -636,9 +885,16 @@ namespace HRAdmin.UserControl
                     Debug.WriteLine($"Error approving order: {ex.Message}");
                 }
             }
-            // Handle HOD approval for non-HR & ADMIN, non-ACCOUNT departments
             else
             {
+                // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
+                string requesterDepartment = serialNo.Split('_')[0].Trim();
+                if (loggedInDepart != requesterDepartment)
+                {
+                    MessageBox.Show($"You are not authorized to approve this order. Only HOD from {requesterDepartment} department can approve.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Check if the order is already approved by HOD
                 if (hodApprovalStatus == "Approved")
                 {
@@ -677,7 +933,7 @@ namespace HRAdmin.UserControl
                             {
                                 MessageBox.Show("Order approved successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 // Refresh the DataGridView
-                                LoadData(cmbSerialNo.SelectedItem?.ToString());
+                                LoadData();
                             }
                             else
                             {
@@ -710,6 +966,7 @@ namespace HRAdmin.UserControl
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+            string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
 
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo))
@@ -728,8 +985,8 @@ namespace HRAdmin.UserControl
                     return;
                 }
 
-                // Check if HRApprovalStatus is Rejected or Pending
-                if (hrApprovalStatus == "Rejected" || hrApprovalStatus == "Pending")
+                // Check if HRApprovalStatus is Rejected or Pending and ExpensesType is not Work
+                if ((hrApprovalStatus == "Rejected" || hrApprovalStatus == "Pending") && expensesType != "Work")
                 {
                     MessageBox.Show($"This order cannot be rejected by Account because HR approval is {hrApprovalStatus}.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -780,7 +1037,7 @@ namespace HRAdmin.UserControl
                             {
                                 MessageBox.Show("Order rejected successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 // Refresh the DataGridView
-                                LoadData(cmbSerialNo.SelectedItem?.ToString());
+                                LoadData();
                             }
                             else
                             {
@@ -797,6 +1054,13 @@ namespace HRAdmin.UserControl
             }
             else if (loggedInDepart == "HR & ADMIN")
             {
+                // Check if the ExpensesType is Work
+                if (expensesType == "Work")
+                {
+                    MessageBox.Show("HR & ADMIN cannot reject Work-related expenses.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Check if HODApprovalStatus is Rejected or Pending
                 if (hodApprovalStatus == "Rejected" || hodApprovalStatus == "Pending")
                 {
@@ -849,7 +1113,7 @@ namespace HRAdmin.UserControl
                             {
                                 MessageBox.Show("Order rejected successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 // Refresh the DataGridView
-                                LoadData(cmbSerialNo.SelectedItem?.ToString());
+                                LoadData();
                             }
                             else
                             {
@@ -866,6 +1130,14 @@ namespace HRAdmin.UserControl
             }
             else
             {
+                // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
+                string requesterDepartment = serialNo.Split('_')[0].Trim();
+                if (loggedInDepart != requesterDepartment)
+                {
+                    MessageBox.Show($"You are not authorized to reject this order. Only HOD from {requesterDepartment} department can reject.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Check if the order is already rejected or approved by HOD
                 if (hodApprovalStatus == "Rejected")
                 {
@@ -909,7 +1181,7 @@ namespace HRAdmin.UserControl
                             {
                                 MessageBox.Show("Order rejected successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 // Refresh the DataGridView
-                                LoadData(cmbSerialNo.SelectedItem?.ToString());
+                                LoadData();
                             }
                             else
                             {

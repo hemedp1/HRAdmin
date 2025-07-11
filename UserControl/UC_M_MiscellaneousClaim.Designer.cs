@@ -28,14 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
-            this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.cmbPeriod = new System.Windows.Forms.ComboBox();
             this.cmbDepart = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.cmbRequester = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -43,8 +40,12 @@
             this.dgvMS = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
+            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.btnWithdraw = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -64,21 +65,11 @@
             this.gbExternal.SuspendLayout();
             this.SuspendLayout();
             // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label13.Location = new System.Drawing.Point(1187, 22);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(18, 27);
-            this.label13.TabIndex = 105;
-            this.label13.Text = ":";
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label11.Location = new System.Drawing.Point(635, 23);
+            this.label11.Location = new System.Drawing.Point(635, 22);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(18, 27);
             this.label11.TabIndex = 104;
@@ -94,41 +85,17 @@
             this.label10.TabIndex = 103;
             this.label10.Text = ":";
             // 
-            // cmbPeriod
-            // 
-            this.cmbPeriod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPeriod.Font = new System.Drawing.Font("Calibri", 13F);
-            this.cmbPeriod.FormattingEnabled = true;
-            this.cmbPeriod.Items.AddRange(new object[] {
-            "Daily",
-            "Weekly",
-            "Monthly"});
-            this.cmbPeriod.Location = new System.Drawing.Point(1211, 19);
-            this.cmbPeriod.Name = "cmbPeriod";
-            this.cmbPeriod.Size = new System.Drawing.Size(250, 35);
-            this.cmbPeriod.TabIndex = 25;
-            this.cmbPeriod.SelectedIndexChanged += new System.EventHandler(this.cmbPeriod_SelectedIndexChanged);
-            // 
             // cmbDepart
             // 
+            this.cmbDepart.DropDownWidth = 200;
             this.cmbDepart.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbDepart.FormattingEnabled = true;
             this.cmbDepart.ItemHeight = 27;
-            this.cmbDepart.Location = new System.Drawing.Point(212, 19);
+            this.cmbDepart.Location = new System.Drawing.Point(212, 75);
             this.cmbDepart.Name = "cmbDepart";
             this.cmbDepart.Size = new System.Drawing.Size(250, 35);
             this.cmbDepart.TabIndex = 24;
             this.cmbDepart.SelectedIndexChanged += new System.EventHandler(this.cmbDepart_SelectedIndexChanged);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label9.Location = new System.Drawing.Point(971, 22);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(210, 27);
-            this.label9.TabIndex = 23;
-            this.label9.Text = "Period (Request date)";
             // 
             // label8
             // 
@@ -136,9 +103,9 @@
             this.label8.Font = new System.Drawing.Font("Calibri", 13F);
             this.label8.Location = new System.Drawing.Point(59, 22);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(123, 27);
+            this.label8.Size = new System.Drawing.Size(101, 27);
             this.label8.TabIndex = 22;
-            this.label8.Text = "Department";
+            this.label8.Text = "Start date";
             // 
             // cmbRequester
             // 
@@ -146,7 +113,7 @@
             this.cmbRequester.FormattingEnabled = true;
             this.cmbRequester.IntegralHeight = false;
             this.cmbRequester.ItemHeight = 27;
-            this.cmbRequester.Location = new System.Drawing.Point(659, 19);
+            this.cmbRequester.Location = new System.Drawing.Point(659, 75);
             this.cmbRequester.Name = "cmbRequester";
             this.cmbRequester.Size = new System.Drawing.Size(250, 35);
             this.cmbRequester.TabIndex = 24;
@@ -158,9 +125,9 @@
             this.label1.Font = new System.Drawing.Font("Calibri", 13F);
             this.label1.Location = new System.Drawing.Point(524, 22);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(105, 27);
+            this.label1.Size = new System.Drawing.Size(93, 27);
             this.label1.TabIndex = 21;
-            this.label1.Text = "Requester";
+            this.label1.Text = "End date";
             // 
             // panel1
             // 
@@ -175,14 +142,14 @@
             // 
             this.dgvMS.BackgroundColor = System.Drawing.Color.White;
             this.dgvMS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
@@ -208,15 +175,16 @@
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.label17);
-            this.panel4.Controls.Add(this.label16);
-            this.panel4.Controls.Add(this.btnWithdraw);
-            this.panel4.Controls.Add(this.label13);
+            this.panel4.Controls.Add(this.dtpEnd);
+            this.panel4.Controls.Add(this.label9);
+            this.panel4.Controls.Add(this.label12);
+            this.panel4.Controls.Add(this.label5);
+            this.panel4.Controls.Add(this.label7);
+            this.panel4.Controls.Add(this.dtpStart);
             this.panel4.Controls.Add(this.label11);
             this.panel4.Controls.Add(this.label10);
-            this.panel4.Controls.Add(this.cmbPeriod);
+            this.panel4.Controls.Add(this.btnWithdraw);
             this.panel4.Controls.Add(this.cmbDepart);
-            this.panel4.Controls.Add(this.label9);
             this.panel4.Controls.Add(this.label8);
             this.panel4.Controls.Add(this.cmbRequester);
             this.panel4.Controls.Add(this.label1);
@@ -226,25 +194,66 @@
             this.panel4.Size = new System.Drawing.Size(1853, 140);
             this.panel4.TabIndex = 1;
             // 
-            // label17
+            // dtpEnd
             // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label17.Location = new System.Drawing.Point(221, 78);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(18, 27);
-            this.label17.TabIndex = 113;
-            this.label17.Text = ":";
+            this.dtpEnd.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpEnd.Location = new System.Drawing.Point(659, 20);
+            this.dtpEnd.Name = "dtpEnd";
+            this.dtpEnd.Size = new System.Drawing.Size(250, 34);
+            this.dtpEnd.TabIndex = 133;
+            this.dtpEnd.ValueChanged += new System.EventHandler(this.dtpEnd_ValueChanged);
             // 
-            // label16
+            // label9
             // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label16.Location = new System.Drawing.Point(59, 78);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(156, 27);
-            this.label16.TabIndex = 112;
-            this.label16.Text = "Withdraw claim";
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label9.Location = new System.Drawing.Point(635, 78);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(18, 27);
+            this.label9.TabIndex = 132;
+            this.label9.Text = ":";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label12.Location = new System.Drawing.Point(524, 78);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(105, 27);
+            this.label12.TabIndex = 131;
+            this.label12.Text = "Requester";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label5.Location = new System.Drawing.Point(188, 78);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(18, 27);
+            this.label5.TabIndex = 130;
+            this.label5.Text = ":";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label7.Location = new System.Drawing.Point(59, 78);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(123, 27);
+            this.label7.TabIndex = 129;
+            this.label7.Text = "Department";
+            // 
+            // dtpStart
+            // 
+            this.dtpStart.Checked = false;
+            this.dtpStart.Font = new System.Drawing.Font("Calibri", 13F);
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpStart.Location = new System.Drawing.Point(212, 20);
+            this.dtpStart.Name = "dtpStart";
+            this.dtpStart.Size = new System.Drawing.Size(250, 34);
+            this.dtpStart.TabIndex = 128;
+            this.dtpStart.ValueChanged += new System.EventHandler(this.dtpStart_ValueChanged);
             // 
             // btnWithdraw
             // 
@@ -253,7 +262,7 @@
             this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(245, 75);
+            this.btnWithdraw.Location = new System.Drawing.Point(1001, 75);
             this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdraw.Name = "btnWithdraw";
             this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
@@ -293,7 +302,7 @@
             this.btnNext.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNext.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnNext.Location = new System.Drawing.Point(1004, 47);
+            this.btnNext.Location = new System.Drawing.Point(1004, 51);
             this.btnNext.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(124, 34);
@@ -407,12 +416,9 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox cmbPeriod;
         private System.Windows.Forms.ComboBox cmbDepart;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox cmbRequester;
         private System.Windows.Forms.Label label1;
@@ -427,11 +433,15 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox cmbType;
         private System.Windows.Forms.GroupBox gbExternal;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button btnWithdraw;
         private System.Windows.Forms.Label dtRequest;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DateTimePicker dtpStart;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DateTimePicker dtpEnd;
     }
 }

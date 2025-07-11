@@ -34,7 +34,7 @@ namespace HRAdmin.UserControl
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
             LoadUsernames();
             LoadDepartments();
-            LoadData();
+            LoadData(); // Initial load with default weekly filter
             cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
             cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
@@ -121,7 +121,7 @@ namespace HRAdmin.UserControl
                                 // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
                                 if (AA == "1")
                                 {
-                                    
+
                                 }
                                 else if (MA == "2")
                                 {
@@ -257,7 +257,7 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void LoadData(string requester = null, string department = null)
+        private void LoadData(string requester = null, string department = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             if (dgvMS == null)
             {
@@ -265,50 +265,15 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            string filterType = cmbPeriod.SelectedItem?.ToString() ?? "Weekly"; // Default to Weekly if null
-            string query = "";
-            DateTime today = DateTime.Today;
-
-            switch (filterType)
-            {
-                case "Daily":
-                    query = @"
+            string query = @"
                 SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
                        HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
                 FROM tbl_MasterClaimForm
-                WHERE CAST(RequestDate AS DATE) = @Today
+                WHERE (@StartDate IS NULL OR CAST(RequestDate AS DATE) >= @StartDate)
+                      AND (@EndDate IS NULL OR CAST(RequestDate AS DATE) <= @EndDate)
                       AND (@Requester IS NULL OR Requester = @Requester)
                       AND (@Department IS NULL OR Department = @Department)
                 ORDER BY RequestDate ASC";
-                    break;
-
-                case "Weekly":
-                    query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
-                FROM tbl_MasterClaimForm
-                WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
-                      AND (@Requester IS NULL OR Requester = @Requester)
-                      AND (@Department IS NULL OR Department = @Department)
-                ORDER BY RequestDate ASC";
-
-                    break;
-
-                case "Monthly":
-                    query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
-                FROM tbl_MasterClaimForm
-                WHERE YEAR(RequestDate) = @Year AND MONTH(RequestDate) = @Month
-                      AND (@Requester IS NULL OR Requester = @Requester)
-                      AND (@Department IS NULL OR Department = @Department)
-                ORDER BY RequestDate ASC";
-
-                    break;
-
-                default:
-                    return; // Exit if filter type is invalid
-            }
 
             try
             {
@@ -322,24 +287,22 @@ namespace HRAdmin.UserControl
                         cmd.Parameters.Add("@Department", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(department) ? (object)DBNull.Value : department;
 
                         // Add date filter parameters
-                        if (filterType == "Daily")
+                        if (startDate.HasValue && endDate.HasValue)
                         {
-                            cmd.Parameters.AddWithValue("@Today", today);
+                            cmd.Parameters.AddWithValue("@StartDate", startDate.Value.Date);
+                            cmd.Parameters.AddWithValue("@EndDate", endDate.Value.Date); // Use the end date as is, no extension
                         }
-                        else if (filterType == "Weekly")
+                        else
                         {
+                            // Default to weekly filter if no dates are provided
+                            DateTime today = DateTime.Today;
                             DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Start of the week (Sunday)
-                            DateTime weekEnd = weekStart.AddDays(7); // End of the week
-                            cmd.Parameters.AddWithValue("@WeekStart", weekStart);
-                            cmd.Parameters.AddWithValue("@WeekEnd", weekEnd);
-                        }
-                        else if (filterType == "Monthly")
-                        {
-                            cmd.Parameters.AddWithValue("@Year", today.Year);
-                            cmd.Parameters.AddWithValue("@Month", today.Month);
+                            DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1); // End of the week
+                            cmd.Parameters.AddWithValue("@StartDate", weekStart);
+                            cmd.Parameters.AddWithValue("@EndDate", weekEnd);
                         }
 
-                        Debug.WriteLine($"Executing LoadData with Requester: {(string.IsNullOrEmpty(requester) ? "NULL" : requester)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, Filter: {filterType}");
+                        Debug.WriteLine($"Executing LoadData with Requester: {(string.IsNullOrEmpty(requester) ? "NULL" : requester)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, StartDate: {(startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "NULL")}, EndDate: {(endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "NULL")}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -363,26 +326,39 @@ namespace HRAdmin.UserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error loading data: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.WriteLine($"Error loading data: {ex.Message}");
+                if (!isNetworkErrorShown)
+                {
+                    isNetworkErrorShown = true;
+                    MessageBox.Show("Error loading data: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error loading data: {ex.Message}");
+                }
+                if (cachedData != null)
+                {
+                    BindDataGridView(cachedData);
+                    if (!isNetworkErrorShown)
+                    {
+                        isNetworkErrorShown = true;
+                        MessageBox.Show("Network unavailable. Displaying cached data.",
+                                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    if (!isNetworkErrorShown)
+                    {
+                        isNetworkErrorShown = true;
+                        MessageBox.Show("Network unavailable and no cached data available.",
+                                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
             }
         }
 
         private void cmbRequester_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectedUsername = cmbRequester.SelectedItem?.ToString();
-            string selectedDepartment = cmbDepart.SelectedItem?.ToString();
-            Debug.WriteLine($"cmbRequester selected: {selectedUsername}");
-            if (selectedUsername == "All Users" || string.IsNullOrEmpty(selectedUsername))
-            {
-                selectedUsername = null;
-                Debug.WriteLine("Loading data with no Requester filter.");
-            }
-            if (selectedDepartment == "All Departments" || string.IsNullOrEmpty(selectedDepartment))
-            {
-                selectedDepartment = null;
-            }
-            LoadData(selectedUsername, selectedDepartment);
+            string selectedUsername = cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString();
+            LoadData(selectedUsername, selectedDepartment, dtpStart.Value, dtpEnd.Value);
         }
 
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
@@ -413,217 +389,18 @@ namespace HRAdmin.UserControl
             {
                 selectedUsername = null;
             }
-            LoadData(selectedUsername, selectedDepartment);
-        }
-
-        private void cmbPeriod_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmbPeriod.SelectedItem != null)
-            {
-                ApplyFilter(cmbPeriod.SelectedItem.ToString());
-            }
+            LoadData(selectedUsername, selectedDepartment, dtpStart.Value, dtpEnd.Value);
         }
 
         private void UC_Miscellaneous_Load(object sender, EventArgs e)
         {
-            cmbPeriod.SelectedItem = "Weekly"; // Set default filter to Weekly
-            ApplyFilter("Weekly"); // Load data for Weekly filter
-            cmbPeriod.SelectedIndexChanged += cmbPeriod_SelectedIndexChanged;
+            LoadData(); // Load data with default weekly filter
             CheckUserAccess(); // Check user access to set button visibility
         }
 
         private bool IsNetworkAvailable()
         {
             return NetworkInterface.GetIsNetworkAvailable();
-        }
-
-        private void ApplyFilter(string filterType)
-        {
-            if (string.IsNullOrEmpty(filterType)) return;
-
-            string query = "";
-            DateTime today = DateTime.Today;
-
-            switch (filterType)
-            {
-                case "Daily":
-                    query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
-                FROM tbl_MasterClaimForm
-                WHERE CAST(RequestDate AS DATE) = @Today
-                ORDER BY RequestDate ASC";
-
-                    break;
-
-                case "Weekly":
-                    query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
-                FROM tbl_MasterClaimForm
-                WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
-                ORDER BY RequestDate ASC";
-
-                    break;
-
-                case "Monthly":
-                    query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
-                FROM tbl_MasterClaimForm
-                WHERE YEAR(RequestDate) = @Year AND MONTH(RequestDate) = @Month
-                ORDER BY RequestDate ASC";
-
-                    break;
-
-                default:
-                    return; // Exit if filter type is invalid
-            }
-
-            LoadFilteredData(query, today);
-        }
-
-        private void LoadFilteredData(string query, DateTime today)
-        {
-            if (dgvMS == null)
-            {
-                MessageBox.Show("DataGridView is not initialized!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!IsNetworkAvailable())
-            {
-                if (!isNetworkUnavailable) // Only show the message once
-                {
-                    isNetworkUnavailable = true;
-                    MessageBox.Show("Network disconnected.",
-                                    "Network Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                if (cachedData != null)
-                {
-                    BindDataGridView(cachedData);
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Network unavailable. Displaying cached data.",
-                                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                }
-                else
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Network unavailable and no cached data available.",
-                                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-                return;
-            }
-
-            try
-            {
-                var connString = ConfigurationManager.ConnectionStrings["ConnString"];
-                if (connString == null)
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Connection string 'ConnString' not found in configuration!",
-                                        "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    return;
-                }
-
-                using (SqlConnection con = new SqlConnection(connString.ConnectionString))
-                {
-                    if (con == null)
-                    {
-                        if (!isNetworkErrorShown)
-                        {
-                            isNetworkErrorShown = true;
-                            MessageBox.Show("Failed to create SqlConnection object!",
-                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        return;
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        // Add parameters based on filter type
-                        if (query.Contains("@Today"))
-                        {
-                            cmd.Parameters.AddWithValue("@Today", today);
-                        }
-                        else if (query.Contains("@WeekStart"))
-                        {
-                            DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Start of the week (Sunday)
-                            DateTime weekEnd = weekStart.AddDays(7); // End of the week
-                            cmd.Parameters.AddWithValue("@WeekStart", weekStart);
-                            cmd.Parameters.AddWithValue("@WeekEnd", weekEnd);
-                        }
-                        else if (query.Contains("@Year"))
-                        {
-                            cmd.Parameters.AddWithValue("@Year", today.Year);
-                            cmd.Parameters.AddWithValue("@Month", today.Month);
-                        }
-
-                        SqlDataAdapter da = new SqlDataAdapter(cmd);
-                        DataTable dt = new DataTable();
-                        da.Fill(dt);
-
-                        // Update cache
-                        cachedData = dt.Copy();
-
-                        // Bind to DataGridView
-                        BindDataGridView(dt);
-
-                        // Reset error flags since we successfully connected
-                        isNetworkErrorShown = false;
-                        isNetworkUnavailable = false;
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                if (ex.Number == -1 || ex.Number == 26) // Network-related SQL errors
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Unable to connect to the database. Please check your network connection.",
-                                        "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-                else
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Database error: " + ex.Message,
-                                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (NullReferenceException ex)
-            {
-                if (!isNetworkErrorShown)
-                {
-                    isNetworkErrorShown = true;
-                    MessageBox.Show("Null reference error: " + ex.Message + "\nStack Trace: " + ex.StackTrace,
-                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!isNetworkErrorShown)
-                {
-                    isNetworkErrorShown = true;
-                    MessageBox.Show("Error loading data: " + ex.Message,
-                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
         }
 
         private void BindDataGridView(DataTable dt)
@@ -700,7 +477,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
@@ -739,7 +517,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
@@ -778,7 +557,8 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
@@ -817,14 +597,47 @@ namespace HRAdmin.UserControl
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new Font("Arial", 11)
+                    Font = new Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
                 },
             });
 
-            dgvMS.DataSource = dt;
-            dgvMS.CellBorderStyle = DataGridViewCellBorderStyle.None; // Add this line to remove cell borders
+            // Create a new DataTable to modify HR-related columns (except HRApprovedDate)
+            DataTable modifiedDt = dt.Copy();
+            foreach (DataRow row in modifiedDt.Rows)
+            {
+                if (row["ExpensesType"]?.ToString() == "Work")
+                {
+                    row["HRApprovalStatus"] = "-";
+                    row["ApprovedByHR"] = "-";
+                    // Do not modify HRApprovedDate in the DataTable to avoid type mismatch
+                }
+            }
+
+            // Set the DataSource
+            dgvMS.DataSource = modifiedDt;
+            dgvMS.CellBorderStyle = DataGridViewCellBorderStyle.None;
+
+            // Attach CellFormatting event handler to handle HRApprovedDate display
+            dgvMS.CellFormatting += dgvMS_CellFormatting;
+
             Debug.WriteLine("DataGridView updated successfully.");
         }
+
+        // CellFormatting event handler to display "-" for HRApprovedDate when ExpensesType is "Work"
+        private void dgvMS_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dgvMS.Columns[e.ColumnIndex].Name == "HRApprovedDate" && e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvMS.Rows[e.RowIndex];
+                if (row.Cells["ExpensesType"].Value?.ToString() == "Work")
+                {
+                    e.Value = "-";
+                    e.FormattingApplied = true;
+                }
+            }
+        }
+
         private void btnWithdraw_Click(object sender, EventArgs e)
         {
             // Check if a cell is selected in the DataGridView
@@ -857,37 +670,8 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            // Check if the user has HR & Admin access (AA = 1) to delete any order
-            bool isHRAdmin = false;
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-                {
-                    con.Open();
-                    string query = "SELECT AA FROM tbl_Users WHERE Username = @Username";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                string AA = reader["AA"].ToString();
-                                isHRAdmin = (AA == "1");
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.WriteLine($"Error checking user access: {ex.Message}");
-                return;
-            }
-
-            // Restrict non-HR & Admin users to only deleting their own orders
-            if (!isHRAdmin && requester != loggedInUser)
+            // Restrict withdrawal to only the user's own orders
+            if (requester != loggedInUser)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -906,7 +690,7 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = $"DELETE FROM tbl_MiscellaneousClaim WHERE SerialNo = @SerialNo";
+                    string query = "DELETE FROM tbl_MasterClaimForm WHERE SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -916,7 +700,8 @@ namespace HRAdmin.UserControl
                             MessageBox.Show("Successfully withdrawn.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             // Refresh the DataGridView
                             LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
-                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
+                                     dtpStart.Value, dtpEnd.Value);
                         }
                         else
                         {
@@ -930,6 +715,20 @@ namespace HRAdmin.UserControl
                     Debug.WriteLine($"Error withdrawing order: {ex.Message}");
                 }
             }
+        }
+
+        private void dtpStart_ValueChanged(object sender, EventArgs e)
+        {
+            string selectedUsername = cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString();
+            LoadData(selectedUsername, selectedDepartment, dtpStart.Value, dtpEnd.Value);
+        }
+
+        private void dtpEnd_ValueChanged(object sender, EventArgs e)
+        {
+            string selectedUsername = cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString();
+            LoadData(selectedUsername, selectedDepartment, dtpStart.Value, dtpEnd.Value);
         }
     }
 }

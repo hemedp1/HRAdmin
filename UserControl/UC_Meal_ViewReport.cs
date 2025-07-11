@@ -1081,11 +1081,6 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void gbExternal_Enter(object sender, EventArgs e)
-        {
-
-        }
-
         private void cmbOrderIds_SelectedIndexChanged(object sender, EventArgs e)
         {
 

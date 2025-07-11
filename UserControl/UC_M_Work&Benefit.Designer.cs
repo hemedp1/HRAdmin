@@ -53,7 +53,7 @@
             this.gbExternal.Font = new System.Drawing.Font("Calibri", 14F);
             this.gbExternal.Location = new System.Drawing.Point(0, 46);
             this.gbExternal.Name = "gbExternal";
-            this.gbExternal.Size = new System.Drawing.Size(1479, 550);
+            this.gbExternal.Size = new System.Drawing.Size(1479, 430);
             this.gbExternal.TabIndex = 140;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Miscellaneous Claim Form for Work or Benefit";
@@ -65,7 +65,7 @@
             this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSubmit.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnSubmit.Location = new System.Drawing.Point(71, 468);
+            this.btnSubmit.Location = new System.Drawing.Point(11, 387);
             this.btnSubmit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(124, 34);
@@ -80,7 +80,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(3, 32);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1473, 400);
+            this.panel1.Size = new System.Drawing.Size(1473, 350);
             this.panel1.TabIndex = 0;
             // 
             // dgvW
@@ -93,7 +93,7 @@
             this.dgvW.RowHeadersVisible = false;
             this.dgvW.RowHeadersWidth = 51;
             this.dgvW.RowTemplate.Height = 24;
-            this.dgvW.Size = new System.Drawing.Size(1473, 400);
+            this.dgvW.Size = new System.Drawing.Size(1473, 350);
             this.dgvW.TabIndex = 0;
             // 
             // btnBack
@@ -126,9 +126,9 @@
             this.groupBox1.Controls.Add(this.EventOccasion);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox1.Location = new System.Drawing.Point(0, 596);
+            this.groupBox1.Location = new System.Drawing.Point(0, 476);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1479, 458);
+            this.groupBox1.Size = new System.Drawing.Size(1479, 397);
             this.groupBox1.TabIndex = 141;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Note";
@@ -137,7 +137,7 @@
             // 
             this.EventOccasion.AutoSize = true;
             this.EventOccasion.Font = new System.Drawing.Font("Calibri", 13F);
-            this.EventOccasion.Location = new System.Drawing.Point(52, 54);
+            this.EventOccasion.Location = new System.Drawing.Point(6, 32);
             this.EventOccasion.Name = "EventOccasion";
             this.EventOccasion.Size = new System.Drawing.Size(1144, 324);
             this.EventOccasion.TabIndex = 23;

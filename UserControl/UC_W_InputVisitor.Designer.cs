@@ -158,6 +158,7 @@
             // 
             // cmbVisitor10
             // 
+            this.cmbVisitor10.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor10.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor10.FormattingEnabled = true;
             this.cmbVisitor10.Location = new System.Drawing.Point(1252, 263);
@@ -167,6 +168,7 @@
             // 
             // cmbVisitor5
             // 
+            this.cmbVisitor5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor5.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor5.FormattingEnabled = true;
             this.cmbVisitor5.Location = new System.Drawing.Point(1252, 222);
@@ -176,6 +178,7 @@
             // 
             // cmbVisitor9
             // 
+            this.cmbVisitor9.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor9.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor9.FormattingEnabled = true;
             this.cmbVisitor9.Location = new System.Drawing.Point(996, 263);
@@ -185,6 +188,7 @@
             // 
             // cmbVisitor8
             // 
+            this.cmbVisitor8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor8.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor8.FormattingEnabled = true;
             this.cmbVisitor8.Location = new System.Drawing.Point(740, 263);
@@ -194,6 +198,7 @@
             // 
             // cmbVisitor7
             // 
+            this.cmbVisitor7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor7.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor7.FormattingEnabled = true;
             this.cmbVisitor7.Location = new System.Drawing.Point(484, 263);
@@ -203,6 +208,7 @@
             // 
             // cmbVisitor6
             // 
+            this.cmbVisitor6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor6.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor6.FormattingEnabled = true;
             this.cmbVisitor6.Location = new System.Drawing.Point(228, 263);
@@ -212,6 +218,7 @@
             // 
             // cmbVisitor4
             // 
+            this.cmbVisitor4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor4.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor4.FormattingEnabled = true;
             this.cmbVisitor4.Location = new System.Drawing.Point(996, 222);
@@ -221,6 +228,7 @@
             // 
             // cmbVisitor3
             // 
+            this.cmbVisitor3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor3.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor3.FormattingEnabled = true;
             this.cmbVisitor3.Location = new System.Drawing.Point(740, 222);
@@ -230,6 +238,7 @@
             // 
             // cmbVisitor2
             // 
+            this.cmbVisitor2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor2.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor2.FormattingEnabled = true;
             this.cmbVisitor2.Location = new System.Drawing.Point(484, 222);
@@ -239,6 +248,7 @@
             // 
             // cmbVisitor1
             // 
+            this.cmbVisitor1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbVisitor1.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbVisitor1.FormattingEnabled = true;
             this.cmbVisitor1.Location = new System.Drawing.Point(228, 222);
