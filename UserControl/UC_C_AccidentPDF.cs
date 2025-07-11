@@ -22,6 +22,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using Font = iTextSharp.text.Font;
 using Rectangle = iTextSharp.text.Rectangle;
+using WinFormsApp = System.Windows.Forms.Application;
+
 
 namespace HRAdmin.UserControl
 {
@@ -458,21 +460,22 @@ namespace HRAdmin.UserControl
 
 
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++     Logo
-                    string imagePath = @"C:\Users\016-064-050\Desktop\VS Program HR Admin\Img\Img\C.jpg";
+                    string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "hosiden.jpg");
+
                     if (File.Exists(imagePath))
                     {
                         iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(imagePath);
                         logo.ScaleToFit(100f, 100f);
                         logo.Alignment = Element.ALIGN_CENTER;
 
-                        // Create a paragraph to hold the image
                         Paragraph p = new Paragraph();
-                        p.SpacingBefore = 0f;  // Space before the paragraph
+                        p.SpacingBefore = 0f;
                         p.Alignment = Element.ALIGN_CENTER;
-                        p.Add(logo);  // Add the image to the paragraph
+                        p.Add(logo);
 
-                        pdfDoc.Add(p);  // Add the paragraph to the document
+                        pdfDoc.Add(p);
                     }
+
 
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++     Title
                     var titleFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.NORMAL);
