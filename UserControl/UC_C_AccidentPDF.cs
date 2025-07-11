@@ -28,6 +28,7 @@ namespace HRAdmin.UserControl
 
     public partial class UC_C_AccidentPDF : System.Windows.Forms.UserControl
     {
+        private bool isFirstLoad = true;
         private string loggedInUser;
         private string loggedInIndex;
         private string loggedInDepart;
@@ -37,14 +38,18 @@ namespace HRAdmin.UserControl
             loggedInIndex = Index;
             loggedInDepart = Depart;
             InitializeComponent();
-            //loadDriver();
+            loadfilter();
+            dTDayPDF.ValueChanged += dTDayPDF_ValueChanged;
         }
-       
+        private void UC_C_AccidentPDF_Load(object sender, EventArgs e)
+        {
+            loadfilter();
+            isFirstLoad = false;
+            dTDayPDF.ValueChanged += dTDayPDF_ValueChanged;
+        }
         private void cmbDriverNamePDF_SelectedIndexChanged(object sender, EventArgs e)
         {
-           
             loadfilter();
-            //loadDriver();
         }
         private void cmbDepartPDF_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -56,7 +61,6 @@ namespace HRAdmin.UserControl
         }
         private void loadDepart()
         {
-
             string reportDate = dTDayPDF.Value.ToString("yyyy/MM/dd");
             try
             {
@@ -88,7 +92,6 @@ namespace HRAdmin.UserControl
         }
         private void  loadDriver()
         {
-
             string reportDate = dTDayPDF.Value.ToString("yyyy/MM/dd");
             try
             {
@@ -121,86 +124,153 @@ namespace HRAdmin.UserControl
         }
         private void loadfilter()
         {
-            // 1. Get filter values
-            string reportDate = dTDayPDF.Value.ToString("yyyy/MM/dd");
-            string department = cmbDepartPDF.Text;
-            string driveName = cmbDriverNamePDF.Text;
-
-            var columnConfigurations = new Dictionary<string, (string HeaderText, int Width)>
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
             {
-                {"ID", ("ID", 40)},
-                {"DateReport", ("Report Date", 120)},
-                {"DriverInternal", ("Internal Driver", 130)},
-                {"IndexNo", ("Index No", 100)},
-                {"Dept", ("Department", 120)},
-                {"Car", ("Car", 100)},
-                {"Destination", ("Destination", 150)},
-                {"DriverExternal", ("External Driver", 130)},
-                {"NoofVehicle", ("No. of Vehicles", 110)},
-                {"PlatNo", ("Plate No", 100)},
-                {"VehicleType", ("Vehicle Type", 120)},
-                {"Tel", ("Telephone", 110)},
-                {"IC", ("IC Number", 120)},
-                {"InsuranceClass", ("Insurance Class", 130)},
-                {"InsuranceComp", ("Insurance Company", 150)},
-                {"PolicyNo", ("Policy No", 120)},
-                {"Address", ("Address", 200)},
-                {"DateofAccident", ("Accident Date", 120)},
-                {"Place", ("Place", 150)},
-                {"Time", ("Time", 100)},
-                {"PM", ("PM", 80)},
-                {"PoliceStation", ("Police Station", 150)},
-                {"ReportNo", ("Report No", 120)},
-                {"Explanation", ("Explanation", 200)},
-                {"CheckStatus", ("Check Status", 120)},
-                {"CheckedBy", ("Checked By", 130)},
-                {"DateCheck", ("Check Date", 120)},
-                {"CheckedByDepartment", ("Checker Department", 160)},
-                {"ApproveStatus", ("Approval Status", 130)},
-                {"ApproveBy", ("Approved By", 130)},
-                {"DateApprove", ("Approval Date", 120)},
-                {"ApproveByDepartment", ("Approver Department", 160)}
-            };
-
-            // 3. Database operation
-            string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-            DataTable dt = new DataTable();
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                try
                 {
-                    string query = @"SELECT * FROM tbl_AccidentCar 
-                           WHERE DateReport = @DateReport 
-                           AND DriverInternal = @DriverInternal 
-                           AND Dept = @Dept";
+                    con.Open();
+
+                    string query = @"
+            SELECT 
+                DateReport,
+                DriverInternal,
+                IndexNo,
+                Dept,
+                Car,
+                CheckStatus,
+                ISNULL(CheckedBy, 'Pending') AS CheckedBy,
+                ISNULL(CONVERT(varchar, DateCheck, 23), 'Pending') AS DateCheck,
+                ApproveStatus,
+                ISNULL(ApproveBy, 'Pending') AS ApproveBy,
+                ISNULL(CONVERT(varchar, DateApprove, 23), 'Pending') AS DateApprove
+            FROM tbl_AccidentCar";
+
+                    // Filtering logic
+                    List<string> filters = new List<string>();
+                    List<SqlParameter> parameters = new List<SqlParameter>();
+
+                    if (!isFirstLoad && dTDayPDF != null)
+                    {
+                        filters.Add("DateReport = @DateReport");
+                        parameters.Add(new SqlParameter("@DateReport", dTDayPDF.Value.ToString("yyyy/MM/dd")));
+                    }
+
+
+                    if (cmbDepartPDF.SelectedValue != null)
+                    {
+                        filters.Add("Dept = @Dept");
+                        parameters.Add(new SqlParameter("@Dept", cmbDepartPDF.SelectedValue.ToString()));
+                    }
+
+                    if (cmbDriverNamePDF.SelectedValue != null)
+                    {
+                        filters.Add("DriverInternal = @DriverInternal");
+                        parameters.Add(new SqlParameter("@DriverInternal", cmbDriverNamePDF.SelectedValue.ToString()));
+                    }
+
+                    if (filters.Count > 0)
+                    {
+                        query += " WHERE " + string.Join(" AND ", filters);
+                    }
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.Add("@DateReport", SqlDbType.NVarChar).Value = reportDate;
-                        cmd.Parameters.Add("@DriverInternal", SqlDbType.NVarChar).Value = driveName;
-                        cmd.Parameters.Add("@Dept", SqlDbType.NVarChar).Value = department;
-
-                        con.Open();
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        foreach (var param in parameters)
                         {
-                            dt.Load(reader);
+                            cmd.Parameters.Add(param);
                         }
+
+                        DataTable dt = new DataTable();
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
+
+                        dataGridView1.Columns.Clear();
+                        dataGridView1.AutoGenerateColumns = false;
+                        dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+                        dataGridView1.ScrollBars = ScrollBars.Both;
+
+                        dataGridView1.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+                        {
+                            Font = new System.Drawing.Font("Arial", 11, FontStyle.Bold),
+                        };
+
+                        string[] columnNames = {
+                    "DateReport", "DriverInternal", "IndexNo", "Dept", "Car",
+                    "CheckStatus", "CheckedBy", "DateCheck", "ApproveStatus",
+                    "ApproveBy", "DateApprove"
+                };
+
+                        foreach (var col in columnNames)
+                        {
+                            string headerText;
+                            switch (col)
+                            {
+                                case "DateReport":
+                                    headerText = "Date Report";
+                                    break;
+                                case "DriverInternal":
+                                    headerText = "Driver";
+                                    break;
+                                case "IndexNo":
+                                    headerText = "Index No";
+                                    break;
+                                case "Dept":
+                                    headerText = "Department";
+                                    break;
+                                case "Car":
+                                    headerText = "Car";
+                                    break;
+                                case "CheckStatus":
+                                    headerText = "Admin Status Check";
+                                    break;
+                                case "CheckedBy":
+                                    headerText = "Checked By";
+                                    break;
+                                case "DateCheck":
+                                    headerText = "Checked Date";
+                                    break;
+                                case "ApproveStatus":
+                                    headerText = "Admin HOD Status Check";
+                                    break;
+                                case "ApproveBy":
+                                    headerText = "Approve By";
+                                    break;
+                                case "DateApprove":
+                                    headerText = "Approve Date";
+                                    break;
+                                default:
+                                    headerText = col.Replace("_", " ");
+                                    break;
+                            }
+
+                            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                            {
+                                HeaderText = headerText,
+                                DataPropertyName = col,
+                                Width = 170,
+                                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                                SortMode = DataGridViewColumnSortMode.Automatic,
+                                DefaultCellStyle = new DataGridViewCellStyle
+                                {
+                                    ForeColor = Color.MidnightBlue,
+                                    Font = new System.Drawing.Font("Arial", 11),
+                                }
+                            });
+                        }
+
+                        dataGridView1.DataSource = dt;
                     }
                 }
-
-                // 4. Configure DataGridView
-                ConfigureDataGridView(dataGridView1, dt, columnConfigurations);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading data: {ex.Message}", "Error",
-                               MessageBoxButtons.OK, MessageBoxIcon.Error);
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading accident reports: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
-        private void ConfigureDataGridView(DataGridView dataGridView1, DataTable data,
-            Dictionary<string, (string HeaderText, int Width)> columnConfig)
+        private void ConfigureDataGridView(DataGridView dataGridView1, DataTable data, Dictionary<string, (string HeaderText, int Width)> columnConfig)
         {
             dataGridView1.Invoke((MethodInvoker)delegate
             {
@@ -702,7 +772,6 @@ namespace HRAdmin.UserControl
             AddLabelValuePair1(table, label1, value1, font);
             AddLabelValuePair1(table, label2, value2, font);
         }
-
         void AddLabelValuePair1(PdfPTable table, string label, string value, Font font)
         {
             if (!string.IsNullOrEmpty(label))
@@ -757,12 +826,14 @@ namespace HRAdmin.UserControl
             UC_C_Accident ug = new UC_C_Accident(loggedInUser, loggedInIndex, loggedInDepart);
             addControls(ug);
         }
-
         private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
 
-      
+        private void button1_Click(object sender, EventArgs e)
+        {
+            loadfilter();
+        }
     }
 }

@@ -1280,9 +1280,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
-   
-
         private void cmbdriver_SelectedIndexChanged(object sender, EventArgs e)
         {
             loadListNotApp(); // Refresh when driver changes

@@ -30,13 +30,14 @@ namespace HRAdmin.UserControl
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_AccidentPDF));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_AccidentPDF));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.dTDayPDF = new System.Windows.Forms.DateTimePicker();
             this.btnExportPDF = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
@@ -84,6 +85,7 @@ namespace HRAdmin.UserControl
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.dTDayPDF);
             this.groupBox1.Controls.Add(this.btnExportPDF);
             this.groupBox1.Controls.Add(this.label24);
@@ -102,6 +104,21 @@ namespace HRAdmin.UserControl
             this.groupBox1.TabIndex = 75;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Accident Report PDF";
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Calibri", 12F);
+            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
+            this.button1.Location = new System.Drawing.Point(532, 61);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(53, 43);
+            this.button1.TabIndex = 89;
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // dTDayPDF
             // 
@@ -294,6 +311,7 @@ namespace HRAdmin.UserControl
             // 
             // UC_C_AccidentPDF
             // 
+            Load += UC_C_AccidentPDF_Load;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panel1);
@@ -313,6 +331,12 @@ namespace HRAdmin.UserControl
 
         }
 
+    
+
+
+
+
+
         #endregion
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView dataGridView1;
@@ -330,5 +354,6 @@ namespace HRAdmin.UserControl
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Button btnBack;
         private System.Windows.Forms.Panel panel1;
+        private Button button1;
     }
 }
