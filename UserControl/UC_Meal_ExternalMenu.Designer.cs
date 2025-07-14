@@ -284,6 +284,7 @@
             // 
             // UC_Meal_ExternalMenu
             // 
+            //Load += UC_Meal_ExternalMenu_Load;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panel1);
@@ -302,6 +303,7 @@
             this.ResumeLayout(false);
 
         }
+
 
         #endregion
 

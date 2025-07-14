@@ -11,6 +11,7 @@ using HRAdmin.Forms;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
+using System.Diagnostics;
 
 namespace HRAdmin.UserControl
 {
@@ -20,7 +21,6 @@ namespace HRAdmin.UserControl
         private string loggedInDepart;
         private string loggedInIndex;
         private string expensesType; // To store the selected ExpensesType
-
         public UC_M_Work(string username, string department, string selectedType, string emp)
         {
             InitializeComponent();
@@ -32,8 +32,18 @@ namespace HRAdmin.UserControl
             ConfigureDataGridView();
             StyleDataGridView(dgvW); // Apply styling to the DataGridView
             dgvW.DataError += DgvW_DataError; // Attach the DataError event handler
-        }
 
+        }
+        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+        private void UC_UC_M_Work_Load(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dgvW.Rows)
+            {
+                bool attached = row.Cells["Invoice"].Value is byte[];
+                row.Cells["InvoiceAttached"].Value = attached ? "✅" : "❌";
+                row.Cells["btnInvoice"].Value = attached ? "View / Reattach" : "Attach";
+            }
+        }
         private void DgvW_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             // Check if the error is related to the Invoice Date column
@@ -45,7 +55,6 @@ namespace HRAdmin.UserControl
                 dgvW.Rows[e.RowIndex].Cells["Invoice Date"].Value = DBNull.Value; // Clear invalid input
             }
         }
-
         private void InitializeDataTable()
         {
             // Initialize an empty DataTable with all columns
@@ -75,7 +84,63 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("Invoice Amount", typeof(decimal));
             dt.Columns.Add("Invoice No", typeof(string));
             dt.Columns.Add("Invoice Date", typeof(DateTime));
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+            dt.Columns.Add("Invoice", typeof(byte[]));         // PDF content
+            dt.Columns.Add("InvoiceAttached", typeof(string)); // internal name
+
+
+
             dgvW.DataSource = dt;
+
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+            DataGridViewButtonColumn btnCol = new DataGridViewButtonColumn
+            {
+                HeaderText = "Invoice",
+                Text = "Attach/View",
+                UseColumnTextForButtonValue = true,
+                Name = "btnInvoice"
+            };
+
+            dgvW.Columns.Add(btnCol);
+
+        }
+        private void dgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dgvW.Columns[e.ColumnIndex].Name == "btnInvoice" && e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvW.Rows[e.RowIndex];
+                byte[] currentPdf = row.Cells["Invoice"].Value as byte[];
+
+                string message = currentPdf == null ?
+                    "Attach a PDF for this row?" :
+                    "A PDF is already attached. Do you want to reattach it?";
+
+                DialogResult result = MessageBox.Show(message, "PDF Attachment", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    using (OpenFileDialog ofd = new OpenFileDialog())
+                    {
+                        ofd.Filter = "PDF files (*.pdf)|*.pdf";
+                        if (ofd.ShowDialog() == DialogResult.OK)
+                        {
+                            byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
+                            row.Cells["Invoice"].Value = fileBytes;
+
+                            // ✅ Set visual status
+                            row.Cells["InvoiceAttached"].Value = "✅";
+                            ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = "View / Reattach";
+                        }
+                    }
+                }
+                else if (currentPdf != null)
+                {
+                    // View existing PDF
+                    string tempPath = Path.Combine(Path.GetTempPath(), $"invoice_{Guid.NewGuid()}.pdf");
+                    File.WriteAllBytes(tempPath, currentPdf);
+                    Process.Start(tempPath);
+                }
+            }
         }
 
         private void ConfigureDataGridView()
@@ -98,8 +163,9 @@ namespace HRAdmin.UserControl
             dgvW.Columns["AccountApprovalStatus"].Visible = false;
             dgvW.Columns["ApprovedByAccount"].Visible = false;
             dgvW.Columns["AccountApprovedDate"].Visible = false;
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+            dgvW.Columns["Invoice"].Visible = false;
         }
-
         private void StyleDataGridView(DataGridView dgv)
         {
             dgv.ColumnHeadersVisible = true;
@@ -136,6 +202,10 @@ namespace HRAdmin.UserControl
             {
                 dgvW.Columns["Invoice Date"].Width = 150;
             }
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+            dgvW.Columns["InvoiceAttached"].HeaderText = "Invoice Attached";
+
+
 
             foreach (DataGridViewColumn column in dgv.Columns)
             {
@@ -146,33 +216,8 @@ namespace HRAdmin.UserControl
                     BackColor = Color.WhiteSmoke
                 };
             }
+
         }
-
-        private void addControls(System.Windows.Forms.UserControl userControl)
-        {
-            if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
-            {
-                Form_Home.sharedPanel.Controls.Clear();
-                userControl.Dock = DockStyle.Fill;
-                Form_Home.sharedPanel.Controls.Add(userControl);
-                userControl.BringToFront();
-            }
-            else
-            {
-                MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnBack_Click(object sender, EventArgs e)
-        {
-            Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            Form_Home.sharedbtnMCReport.Visible = true;
-            Form_Home.sharedbtnApproval.Visible = true;
-
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
-            addControls(ug);
-        }
-
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -205,8 +250,9 @@ namespace HRAdmin.UserControl
                     string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
-                                        (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate) 
-                                        VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate)";
+    (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
+    VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";//+++++++++++++++++++ Add Invoice+++++++++++++++++++++++++++ Add by wan on 14/7
+
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
                                         (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
@@ -283,6 +329,10 @@ namespace HRAdmin.UserControl
                             cmdDetail.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"] != DBNull.Value ? row["Invoice Amount"] : (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"] ?? (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"] ?? (object)DBNull.Value);
+
+                            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+                            cmdDetail.Parameters.Add("@Invoice", SqlDbType.VarBinary).Value = row["Invoice"] ?? (object)DBNull.Value;
+
                             cmdDetail.ExecuteNonQuery();
 
                             // Insert into tbl_MasterClaimForm (only once for the first row to avoid duplicates)
@@ -331,5 +381,30 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+        private void addControls(System.Windows.Forms.UserControl userControl)
+        {
+            if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
+            {
+                Form_Home.sharedPanel.Controls.Clear();
+                userControl.Dock = DockStyle.Fill;
+                Form_Home.sharedPanel.Controls.Add(userControl);
+                userControl.BringToFront();
+            }
+            else
+            {
+                MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
+            Form_Home.sharedbtnMCReport.Visible = true;
+            Form_Home.sharedbtnApproval.Visible = true;
+
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
+            addControls(ug);
+        }
+
+
     }
 }
