@@ -630,6 +630,7 @@ namespace HRAdmin.UserControl
                 string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
                 Dictionary<string, object> orderDetails = new Dictionary<string, object>();
                 List<Dictionary<string, object>> claimItems = new List<Dictionary<string, object>>();
+                Dictionary<string, string> tempFiles = new Dictionary<string, string>(); // To store temporary file paths
 
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
@@ -689,7 +690,20 @@ namespace HRAdmin.UserControl
                                 item["Item"] = reader["Item"].ToString();
                                 item["InvoiceAmount"] = reader["InvoiceAmount"] != DBNull.Value ? reader["InvoiceAmount"].ToString() : "0.00";
                                 item["InvoiceNo"] = reader["InvoiceNo"].ToString();
-                                item["Invoice"] = reader["Invoice"].ToString();
+
+                                // Handle binary data
+                                if (reader["Invoice"] != DBNull.Value)
+                                {
+                                    byte[] invoiceBinary = (byte[])reader["Invoice"];
+                                    string tempFile = Path.GetTempFileName() + ".pdf";
+                                    File.WriteAllBytes(tempFile, invoiceBinary);
+                                    item["Invoice"] = tempFile;
+                                    tempFiles[Path.GetFileName(tempFile)] = tempFile; // Store for potential cleanup
+                                }
+                                else
+                                {
+                                    item["Invoice"] = null;
+                                }
                                 claimItems.Add(item);
                             }
                         }
@@ -709,6 +723,7 @@ namespace HRAdmin.UserControl
                     iTextSharp.text.Font bodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font italicBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
                     iTextSharp.text.Font boldBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                    iTextSharp.text.Font linkFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.UNDERLINE, BaseColor.BLUE);
 
                     string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "hosiden.jpg");
                     if (File.Exists(imagePath))
@@ -890,7 +905,28 @@ namespace HRAdmin.UserControl
                         string invoiceAmount = item["InvoiceAmount"].ToString();
                         detailsTable2.AddCell(new Phrase("RM " + invoiceAmount, bodyFont));
                         detailsTable2.AddCell(new Phrase(item["InvoiceNo"].ToString(), bodyFont));
-                        detailsTable2.AddCell(new Phrase(item["Invoice"].ToString(), bodyFont));
+
+                        // Add hyperlink to the Invoice column using temporary file
+                        PdfPCell invoiceCell = new PdfPCell();
+                        invoiceCell.Border = iTextSharp.text.Rectangle.BOX;
+                        //invoiceCell.Padding = 10f;
+                        string invoicePath = item["Invoice"] as string;
+                        if (!string.IsNullOrEmpty(invoicePath) && File.Exists(invoicePath))
+                        {
+                            Phrase linkPhrase = new Phrase();
+                            Anchor invoiceLink = new Anchor("View", linkFont);
+                            invoiceLink.Reference = $"file:///{invoicePath.Replace("\\", "/")}";
+                            linkPhrase.Add(invoiceLink);
+                            invoiceCell.AddElement(linkPhrase);
+                        }
+                        else
+                        {
+                            invoiceCell.AddElement(new Phrase("No Invoice", bodyFont));
+                        }
+                        invoiceCell.HorizontalAlignment = Element.ALIGN_LEFT; // Align text to the left
+                        invoiceCell.VerticalAlignment = Element.ALIGN_TOP;   // Align text to the top
+                        detailsTable2.AddCell(invoiceCell);
+
                         totalAmount += decimal.TryParse(invoiceAmount, out decimal amount) ? amount : 0;
                     }
 

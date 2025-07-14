@@ -100,6 +100,7 @@ namespace HRAdmin.UserControl
             LoadData(); // Reload data when end date changes
         }
 
+
         private void cmbDepartment_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbDepartment.SelectedIndex != -1)
@@ -126,7 +127,7 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = "SELECT DISTINCT Department FROM tbl_Users WHERE Department IS NOT NULL";
+                    string query = "SELECT DISTINCT Department FROM tbl_MasterClaimForm WHERE Department IS NOT NULL";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())

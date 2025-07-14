@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -57,6 +57,9 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.btnApprove = new System.Windows.Forms.Button();
+            this.btnReject = new System.Windows.Forms.Button();
+            this.btnViewInvoice = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -142,14 +145,14 @@
             // 
             this.dgvMS.BackgroundColor = System.Drawing.Color.White;
             this.dgvMS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle3;
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
@@ -175,6 +178,9 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.btnViewInvoice);
+            this.panel4.Controls.Add(this.btnReject);
+            this.panel4.Controls.Add(this.btnApprove);
             this.panel4.Controls.Add(this.dtpEnd);
             this.panel4.Controls.Add(this.label9);
             this.panel4.Controls.Add(this.label12);
@@ -262,7 +268,7 @@
             this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(1001, 75);
+            this.btnWithdraw.Location = new System.Drawing.Point(1131, 19);
             this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdraw.Name = "btnWithdraw";
             this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
@@ -393,6 +399,54 @@
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
             // 
+            // btnApprove
+            // 
+            this.btnApprove.BackColor = System.Drawing.Color.White;
+            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnApprove.Location = new System.Drawing.Point(1001, 75);
+            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApprove.Name = "btnApprove";
+            this.btnApprove.Size = new System.Drawing.Size(124, 34);
+            this.btnApprove.TabIndex = 134;
+            this.btnApprove.Text = "Approve";
+            this.btnApprove.UseVisualStyleBackColor = false;
+            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
+            // 
+            // btnReject
+            // 
+            this.btnReject.BackColor = System.Drawing.Color.White;
+            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnReject.Location = new System.Drawing.Point(1131, 75);
+            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnReject.Name = "btnReject";
+            this.btnReject.Size = new System.Drawing.Size(124, 34);
+            this.btnReject.TabIndex = 135;
+            this.btnReject.Text = "Reject";
+            this.btnReject.UseVisualStyleBackColor = false;
+            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
+            // 
+            // btnViewInvoice
+            // 
+            this.btnViewInvoice.BackColor = System.Drawing.Color.White;
+            this.btnViewInvoice.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnViewInvoice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnViewInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnViewInvoice.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnViewInvoice.Location = new System.Drawing.Point(1001, 19);
+            this.btnViewInvoice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnViewInvoice.Name = "btnViewInvoice";
+            this.btnViewInvoice.Size = new System.Drawing.Size(124, 34);
+            this.btnViewInvoice.TabIndex = 136;
+            this.btnViewInvoice.Text = "View";
+            this.btnViewInvoice.UseVisualStyleBackColor = false;
+            this.btnViewInvoice.Click += new System.EventHandler(this.btnViewInvoice_Click);
+            // 
             // UC_M_MiscellaneousClaim
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -443,5 +497,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.DateTimePicker dtpEnd;
+        private System.Windows.Forms.Button btnApprove;
+        private System.Windows.Forms.Button btnReject;
+        private System.Windows.Forms.Button btnViewInvoice;
     }
 }
