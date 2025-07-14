@@ -316,11 +316,11 @@ namespace HRAdmin.UserControl
                             else if (col == "EndDate")
                                 headerText = "End Time";
                             else if (col == "Status")
-                                headerText = "Approved Status";
+                                headerText = "Admin Status Approval";
                             else if (col == "Purpose")
                                 headerText = "Purpose";
                             else if (col == "StatusCheck")
-                                headerText = "Check Status";
+                                headerText = "HOD Status Check";
                             else if (col == "CheckBy")
                                 headerText = "Check By";
                             else if (col == "DateChecked")
@@ -358,7 +358,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-     
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -379,7 +378,6 @@ namespace HRAdmin.UserControl
         {
 
         }
-
         private void PopulateTimeComboBoxes()
         {
             for (int hour = 8; hour < 24; hour++)

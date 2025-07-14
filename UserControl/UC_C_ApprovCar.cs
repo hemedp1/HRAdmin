@@ -340,7 +340,7 @@ namespace HRAdmin.UserControl
                             else if (col == "EndDate")
                                 headerText = "End Time";
                             else if (col == "Status")
-                                headerText = "Status";
+                                headerText = "Admin Status Approval";
                             else if (col == "Purpose")
                                 headerText = "Purpose";
                             else if (col == "AssignedCar")
@@ -350,7 +350,7 @@ namespace HRAdmin.UserControl
                             else if (col == "DateApprove")
                                 headerText = "Approved Date";
                             else if (col == "StatusCheck")
-                                headerText = "Check Status";
+                                headerText = "HOD Status Check";
                             else if (col == "CheckBy")
                                 headerText = "Check By";
                             else if (col == "DateChecked")

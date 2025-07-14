@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Meal_ExternalMenu));
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnSubmit = new System.Windows.Forms.Button();
@@ -61,10 +61,10 @@
             this.panel2.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panel2.Controls.Add(this.btnSubmit);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 623);
+            this.panel2.Location = new System.Drawing.Point(0, 667);
             this.panel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(616, 62);
+            this.panel2.Size = new System.Drawing.Size(631, 71);
             this.panel2.TabIndex = 0;
             // 
             // btnSubmit
@@ -74,7 +74,7 @@
             this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSubmit.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnSubmit.Location = new System.Drawing.Point(474, 18);
+            this.btnSubmit.Location = new System.Drawing.Point(478, 15);
             this.btnSubmit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(140, 42);
@@ -159,14 +159,14 @@
             this.dgv_EM.BackgroundColor = System.Drawing.Color.WhiteSmoke;
             this.dgv_EM.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_EM.ColumnHeadersVisible = false;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_EM.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_EM.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgv_EM.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EM.GridColor = System.Drawing.Color.Black;
             this.dgv_EM.Location = new System.Drawing.Point(0, 62);
@@ -175,7 +175,7 @@
             this.dgv_EM.RowHeadersVisible = false;
             this.dgv_EM.RowHeadersWidth = 51;
             this.dgv_EM.RowTemplate.Height = 24;
-            this.dgv_EM.Size = new System.Drawing.Size(616, 561);
+            this.dgv_EM.Size = new System.Drawing.Size(631, 605);
             this.dgv_EM.TabIndex = 2;
             // 
             // panel3
@@ -186,7 +186,7 @@
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(616, 62);
+            this.panel3.Size = new System.Drawing.Size(631, 62);
             this.panel3.TabIndex = 1;
             // 
             // label6
@@ -206,10 +206,10 @@
             this.panel1.Controls.Add(this.dgv_EM);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Controls.Add(this.panel2);
-            this.panel1.Location = new System.Drawing.Point(75, 286);
+            this.panel1.Location = new System.Drawing.Point(76, 242);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(618, 687);
+            this.panel1.Size = new System.Drawing.Size(633, 740);
             this.panel1.TabIndex = 129;
             // 
             // button2
@@ -284,9 +284,9 @@
             // 
             // UC_Meal_ExternalMenu
             // 
-            //Load += UC_Meal_ExternalMenu_Load;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.gbExternal);
             this.Controls.Add(this.flowLayoutPanel1);

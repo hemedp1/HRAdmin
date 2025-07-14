@@ -112,8 +112,8 @@ namespace HRAdmin.UserControl
                 byte[] currentPdf = row.Cells["Invoice"].Value as byte[];
 
                 string message = currentPdf == null ?
-                    "Attach a PDF for this row?" :
-                    "A PDF is already attached. Do you want to reattach it?";
+                    "Attach Invoice?" :
+                    "A Invoice is already attached. Do you want to reattach it?";
 
                 DialogResult result = MessageBox.Show(message, "PDF Attachment", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 

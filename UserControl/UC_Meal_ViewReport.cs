@@ -582,10 +582,10 @@ namespace HRAdmin.UserControl
                     BaseColor lightGray = new BaseColor(240, 240, 240);
                     BaseColor darkGray = new BaseColor(150, 150, 150);
 
-                    string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logo hosiden.jpg");
-                    if (File.Exists(logoPath))
+                    string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "hosiden.jpg");
+                    if (File.Exists(imagePath))
                     {
-                        iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
+                        iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(imagePath);
                         logo.ScaleToFit(100f, 100f);
                         logo.Alignment = Element.ALIGN_CENTER;
                         document.Add(logo);

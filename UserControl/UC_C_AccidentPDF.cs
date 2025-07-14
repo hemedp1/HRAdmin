@@ -234,7 +234,7 @@ namespace HRAdmin.UserControl
                                     headerText = "Checked Date";
                                     break;
                                 case "ApproveStatus":
-                                    headerText = "Admin HOD Status Check";
+                                    headerText = "Admin HOD Status Approval";
                                     break;
                                 case "ApproveBy":
                                     headerText = "Approve By";
@@ -271,7 +271,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void ConfigureDataGridView(DataGridView dataGridView1, DataTable data, Dictionary<string, (string HeaderText, int Width)> columnConfig)
         {
             dataGridView1.Invoke((MethodInvoker)delegate
