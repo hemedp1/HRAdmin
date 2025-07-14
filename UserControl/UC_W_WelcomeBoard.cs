@@ -35,7 +35,6 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
             companySwapTimer.Interval = 5000;
             companySwapTimer.Tick += CompanySwapTimer_Tick;
         }
-
         private void CompanySwapTimer_Tick(object sender, EventArgs e)
         {
             if (companyInfo.Count > 0)
@@ -44,8 +43,12 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
                 var currentCompanyInfo = companyInfo[currentCompanyIndex];
                 lblCompany.Text = currentCompanyInfo.Company;
                 lblPurpose.Text = currentCompanyInfo.Purpose;
-                lblStartDate.Text = currentCompanyInfo.StartDate?.ToString("dd.MM.yyyy") ?? "";
-                lblEndDate.Text = currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "";
+                lblStartDate.Text =
+                (currentCompanyInfo.StartDate?.ToString("dd.MM.yyyy") ?? "") +
+                (currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "");
+
+                //lblStartDate.Text = currentCompanyInfo.StartDate?.ToString("dd.MM.yyyy") ?? "";
+                //lblEndDate.Text = currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "";
                 LoadVisitorsForCompany(currentCompanyInfo.Company, currentCompanyInfo.Purpose); // Update DataGridView with visitors for the current company and purpose
             }
             else
@@ -53,11 +56,10 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
                 lblCompany.Text = "No Visitors Today";
                 lblPurpose.Text = "";
                 lblStartDate.Text = "";
-                lblEndDate.Text = "";
+                //lblEndDate.Text = "";
                 dgv_Visitor.DataSource = null; // Clear DataGridView if no companies
             }
         }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -72,7 +74,6 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "HR && Admin";
@@ -86,7 +87,6 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
             UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         public void LoadVisitorNamesToDataGridView()
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -128,8 +128,9 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
                         var currentCompanyInfo = companyInfo[currentCompanyIndex];
                         lblCompany.Text = currentCompanyInfo.Company;
                         lblPurpose.Text = currentCompanyInfo.Purpose;
-                        lblStartDate.Text = "From   " + currentCompanyInfo.StartDate?.ToString("dd.MM.yyyy") ?? "" ;
-                        lblEndDate.Text = "  To   " + currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "";
+                        lblStartDate.Text = "From   " + (currentCompanyInfo.StartDate?.ToString("dd.MM.yyyy") ?? "") +
+                    "  To   " + (currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "");
+                        //lblEndDate.Text = "  To   " + currentCompanyInfo.EndDate?.ToString("dd.MM.yyyy") ?? "";
                         LoadVisitorsForCompany(currentCompanyInfo.Company, currentCompanyInfo.Purpose); // Load visitors for the first company and purpose
                         if (companyInfo.Count > 1)
                         {
@@ -145,7 +146,7 @@ namespace HRAdmin.UserControl  //UC_W_WelcomeBoard
                         lblCompany.Text = "No Visitors Today";
                         lblPurpose.Text = "";
                         lblStartDate.Text = "";
-                        lblEndDate.Text = "";
+                        //lblEndDate.Text = "";
                         dgv_Visitor.DataSource = null; // Clear DataGridView
                         companySwapTimer.Stop();
                     }
