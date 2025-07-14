@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.IO;
 
 namespace HRAdmin.UserControl
 {
@@ -1195,6 +1196,83 @@ namespace HRAdmin.UserControl
                     MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Debug.WriteLine($"Error rejecting order: {ex.Message}");
                 }
+            }
+        }
+
+        private void btnViewInvoice_Click(object sender, EventArgs e)
+        {
+            // Check if a cell is selected in the DataGridView
+            if (dgvA.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Please select a cell in the order row to view the invoice.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Get the selected row
+            DataGridViewCell selectedCell = dgvA.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+
+            // Validate the selection
+            if (string.IsNullOrEmpty(serialNo))
+            {
+                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+                    string query = "SELECT Invoice FROM tbl_DetailClaimForm WHERE SerialNo = @SerialNo";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+                        object result = cmd.ExecuteScalar();
+
+                        if (result == null || result == DBNull.Value)
+                        {
+                            MessageBox.Show("No invoice found for this order.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        byte[] pdfBytes = (byte[])result;
+
+                        // Create a temporary file to store the PDF
+                        string tempPath = Path.Combine(Path.GetTempPath(), $"Invoice_{serialNo}_{DateTime.Now.Ticks}.pdf");
+                        File.WriteAllBytes(tempPath, pdfBytes);
+
+                        // Open the PDF file with the default PDF viewer
+                        ProcessStartInfo psi = new ProcessStartInfo
+                        {
+                            FileName = tempPath,
+                            UseShellExecute = true // Use the default application associated with .pdf files
+                        };
+                        Process.Start(psi);
+
+                        // Optional: Clean up the temporary file after a delay to ensure it can be opened
+                        Task.Delay(5000).ContinueWith(t =>
+                        {
+                            try
+                            {
+                                if (File.Exists(tempPath))
+                                {
+                                    File.Delete(tempPath);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"Error deleting temporary PDF file: {ex.Message}");
+                            }
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error viewing invoice: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Debug.WriteLine($"Error viewing invoice: {ex.Message}");
             }
         }
     }
