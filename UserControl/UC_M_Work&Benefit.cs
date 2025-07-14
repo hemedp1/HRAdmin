@@ -36,13 +36,13 @@ namespace HRAdmin.UserControl
 
         private void DgvW_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            // Check if the error is related to the InvoiceDate column
-            if (e.ColumnIndex == dgvW.Columns["InvoiceDate"].Index && e.Exception is FormatException)
+            // Check if the error is related to the Invoice Date column
+            if (e.ColumnIndex == dgvW.Columns["Invoice Date"].Index && e.Exception is FormatException)
             {
                 e.Cancel = true; // Prevent the default error dialog
-                MessageBox.Show("Only can enter in date format in column InvoiceDate", "Invalid Date Format",
+                MessageBox.Show("Only can enter in date format in column Invoice Date", "Invalid Date Format",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-                dgvW.Rows[e.RowIndex].Cells["InvoiceDate"].Value = DBNull.Value; // Clear invalid input
+                dgvW.Rows[e.RowIndex].Cells["Invoice Date"].Value = DBNull.Value; // Clear invalid input
             }
         }
 
@@ -72,9 +72,9 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("AccountApprovedDate", typeof(DateTime));
             dt.Columns.Add("Vendor", typeof(string));
             dt.Columns.Add("Item", typeof(string));
-            dt.Columns.Add("InvoiceAmount", typeof(decimal));
-            dt.Columns.Add("InvoiceNo", typeof(string));
-            dt.Columns.Add("InvoiceDate", typeof(DateTime));
+            dt.Columns.Add("Invoice Amount", typeof(decimal));
+            dt.Columns.Add("Invoice No", typeof(string));
+            dt.Columns.Add("Invoice Date", typeof(DateTime));
             dgvW.DataSource = dt;
         }
 
@@ -122,19 +122,19 @@ namespace HRAdmin.UserControl
                 dgvW.Columns["ID"].Width = 30;
             }
 
-            if (dgvW.Columns.Contains("InvoiceAmount"))
+            if (dgvW.Columns.Contains("Invoice Amount"))
             {
-                dgvW.Columns["InvoiceAmount"].Width = 150;
+                dgvW.Columns["Invoice Amount"].Width = 150;
             }
 
-            if (dgvW.Columns.Contains("InvoiceNo"))
+            if (dgvW.Columns.Contains("Invoice No"))
             {
-                dgvW.Columns["InvoiceNo"].Width = 200;
+                dgvW.Columns["Invoice No"].Width = 200;
             }
 
-            if (dgvW.Columns.Contains("InvoiceDate"))
+            if (dgvW.Columns.Contains("Invoice Date"))
             {
-                dgvW.Columns["InvoiceDate"].Width = 150;
+                dgvW.Columns["Invoice Date"].Width = 150;
             }
 
             foreach (DataGridViewColumn column in dgv.Columns)
@@ -232,12 +232,12 @@ namespace HRAdmin.UserControl
                     {
                         foreach (DataRow row in newRows.Rows)
                         {
-                            if (row["InvoiceNo"] != DBNull.Value && row["InvoiceAmount"] != DBNull.Value && row["InvoiceDate"] != DBNull.Value)
+                            if (row["Invoice No"] != DBNull.Value && row["Invoice Amount"] != DBNull.Value && row["Invoice Date"] != DBNull.Value)
                             {
                                 cmdCheckDuplicate.Parameters.Clear();
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["InvoiceNo"]);
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["InvoiceAmount"]);
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["InvoiceDate"] ?? (object)DBNull.Value);
+                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"]);
+                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"]);
+                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"] ?? (object)DBNull.Value);
                                 int duplicateCount = (int)cmdCheckDuplicate.ExecuteScalar();
                                 if (duplicateCount > 0)
                                 {
@@ -280,9 +280,9 @@ namespace HRAdmin.UserControl
                             cmdDetail.Parameters.AddWithValue("@ExpensesType", row["ExpensesType"]);
                             cmdDetail.Parameters.AddWithValue("@Vendor", row["Vendor"] ?? (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@Item", row["Item"] ?? (object)DBNull.Value);
-                            cmdDetail.Parameters.AddWithValue("@InvoiceAmount", row["InvoiceAmount"] != DBNull.Value ? row["InvoiceAmount"] : (object)DBNull.Value);
-                            cmdDetail.Parameters.AddWithValue("@InvoiceNo", row["InvoiceNo"] ?? (object)DBNull.Value);
-                            cmdDetail.Parameters.AddWithValue("@InvoiceDate", row["InvoiceDate"] ?? (object)DBNull.Value);
+                            cmdDetail.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"] != DBNull.Value ? row["Invoice Amount"] : (object)DBNull.Value);
+                            cmdDetail.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"] ?? (object)DBNull.Value);
+                            cmdDetail.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"] ?? (object)DBNull.Value);
                             cmdDetail.ExecuteNonQuery();
 
                             // Insert into tbl_MasterClaimForm (only once for the first row to avoid duplicates)
