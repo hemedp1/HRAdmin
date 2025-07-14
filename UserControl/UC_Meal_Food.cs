@@ -879,7 +879,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void BindDataGridView(DataTable dt)
         {
             dgv_OS.AutoGenerateColumns = false;
@@ -1000,7 +999,7 @@ namespace HRAdmin.UserControl
             dgv_OS.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "CheckStatus",
-                HeaderText = "Check Status",
+                HeaderText = "Admin Status Check",
                 DataPropertyName = "CheckStatus",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
@@ -1039,7 +1038,7 @@ namespace HRAdmin.UserControl
             dgv_OS.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "ApproveStatus",
-                HeaderText = "Approval Status",
+                HeaderText = "Admin HOD Status Check",
                 DataPropertyName = "ApproveStatus",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
@@ -1193,7 +1192,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btNext_Click(object sender, EventArgs e)
         {
             string selectedOccasion = cmbOccasion.SelectedItem?.ToString();
@@ -1243,7 +1241,6 @@ namespace HRAdmin.UserControl
                 addControls(ug);
             }
         }
-
         private void btnCheck_Click(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
