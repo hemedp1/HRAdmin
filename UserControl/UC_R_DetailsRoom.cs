@@ -512,16 +512,18 @@ namespace HRAdmin.UserControl
                     RowTemplate = { Height = 26 }
                 };
 
+                string iconPath = Path.Combine(Application.StartupPath, "Img", "hidden.png");
+
                 var btnRemove = new Button
                 {
-                    //Text = "Hide",
                     Size = new Size(30, 30),
                     Location = new Point(Panel.Width - 35, 3),
-                    Image = Image.FromFile("C:\\Users\\016-064-050\\Downloads\\hidden.png"),
+                    Image = Image.FromFile(iconPath),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent
                 };
                 btnRemove.FlatAppearance.BorderSize = 0;
+
 
                 // Event handlers for hover effect
                 btnRemove.MouseEnter += (s, e) =>

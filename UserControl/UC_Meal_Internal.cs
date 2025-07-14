@@ -15,6 +15,7 @@ using iTextSharp.text.pdf;
 using System.IO;
 using System.Diagnostics;
 using iTextRectangle = iTextSharp.text.Rectangle;
+using WinFormsApp = System.Windows.Forms.Application;
 
 namespace HRAdmin.UserControl
 {
@@ -119,10 +120,10 @@ namespace HRAdmin.UserControl
                     iTextSharp.text.Font italicBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
 
                     // Add company logo or name
-                    string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "hosiden.jpg");
-                    if (File.Exists(logoPath))
+                    string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "hosiden.jpg");
+                    if (File.Exists(imagePath))
                     {
-                        iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
+                        iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(imagePath);
                         logo.ScaleToFit(100f, 100f);
                         logo.Alignment = Element.ALIGN_CENTER;
                         logo.SpacingAfter = 0f;
@@ -726,14 +727,12 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Delivery Place required.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             // Validate remark
             if (string.IsNullOrWhiteSpace(txt_Remark.Text))
             {
                 MessageBox.Show("Remark required", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             // Validate that at least one of cmb_Menu or cmb_Drink1 is selected when txt_Npax and cmb_DeliveryT are selected
             if (!string.IsNullOrWhiteSpace(txt_Npax.Text) && cmb_DeliveryT.SelectedItem != null)
             {
@@ -743,7 +742,6 @@ namespace HRAdmin.UserControl
                     return;
                 }
             }
-
             // Validate Drink1 hot/cold selection only if cmb_HC1 is enabled
             if (cmb_Drink1.SelectedItem != null && cmb_HC1.Enabled)
             {
@@ -754,7 +752,6 @@ namespace HRAdmin.UserControl
                     return;
                 }
             }
-
             // Validate Drink2 hot/cold selection only if cmb_HC2 is enabled
             if (cmb_Drink2.SelectedItem != null && cmb_HC2.Enabled)
             {
@@ -765,7 +762,6 @@ namespace HRAdmin.UserControl
                     return;
                 }
             }
-
             // Add the new validation here
             if ((cmb_Menu.SelectedItem?.ToString() == "-" || cmb_Menu.SelectedItem == null) &&
                 (cmb_Drink1.SelectedItem?.ToString() == "-" || cmb_Drink1.SelectedItem == null) &&
@@ -864,32 +860,26 @@ namespace HRAdmin.UserControl
                 addControls(ug);
             }
         }
-
         private void cmb_Menu_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
-
         private void gbExternal_Enter_1(object sender, EventArgs e)
         {
 
         }
-
         private void label47_Click(object sender, EventArgs e)
         {
 
         }
-
         private void label5_Click(object sender, EventArgs e)
         {
 
         }
-
         private void groupBox3_Enter(object sender, EventArgs e)
         {
 
         }
-
         private void cmb_DeliveryP_SelectedIndexChanged(object sender, EventArgs e)
         {
 

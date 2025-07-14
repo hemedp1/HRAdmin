@@ -15,6 +15,7 @@ using iTextSharp.text.pdf;
 using System.IO;
 using System.Diagnostics;
 using iTextRectangle = iTextSharp.text.Rectangle;
+using WinFormsApp = System.Windows.Forms.Application;
 
 namespace HRAdmin.UserControl
 {
@@ -262,10 +263,11 @@ namespace HRAdmin.UserControl
                     iTextSharp.text.Font bodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
                     iTextSharp.text.Font italicBodyFont = FontFactory.GetFont("Helvetica", 10f, iTextSharp.text.Font.ITALIC, BaseColor.BLACK);
 
-                    string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logo hosiden.jpg");
-                    if (File.Exists(logoPath))
+                    string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "hosiden.jpg");
+                    //string logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logo hosiden.jpg");
+                    if (File.Exists(imagePath))
                     {
-                        iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(logoPath);
+                        iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(imagePath);
                         logo.ScaleToFit(100f, 100f);
                         logo.Alignment = Element.ALIGN_CENTER;
                         logo.SpacingAfter = 0f;
