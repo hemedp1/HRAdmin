@@ -263,8 +263,8 @@ namespace HRAdmin.UserControl
                     transaction = con.BeginTransaction();
 
                     string checkSerialNoQuery = @"SELECT MAX(CAST(RIGHT(SerialNo, CHARINDEX('_', REVERSE(SerialNo)) - 1) AS INT)) 
-                                                FROM tbl_DetailClaimForm 
-                                                WHERE SerialNo LIKE @DatePattern";
+                                        FROM tbl_DetailClaimForm 
+                                        WHERE SerialNo LIKE @DatePattern";
                     string datePattern = $"_%{DateTime.Now:ddMMyyyy}_%";
                     int nextNumber = 1;
 
@@ -291,8 +291,8 @@ namespace HRAdmin.UserControl
                                                 @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
 
                     string checkDuplicateQuery = @"SELECT COUNT(*) 
-                                                 FROM tbl_DetailClaimForm 
-                                                 WHERE InvoiceNo = @InvoiceNo AND InvoiceAmount = @InvoiceAmount AND InvoiceDate = @InvoiceDate";
+                                         FROM tbl_DetailClaimForm 
+                                         WHERE InvoiceNo = @InvoiceNo AND InvoiceAmount = @InvoiceAmount AND InvoiceDate = @InvoiceDate";
 
                     DataTable dt = (DataTable)dgvW.DataSource;
                     DataTable newRows = dt?.GetChanges(DataRowState.Added);
@@ -303,31 +303,80 @@ namespace HRAdmin.UserControl
                         return;
                     }
 
+                    // Validate that each row is either fully completed or fully empty
+                    foreach (DataRow row in newRows.Rows)
+                    {
+                        bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
+                                          row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
+                                          row["Invoice Amount"] == DBNull.Value &&
+                                          row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
+                                          row["Invoice Date"] == DBNull.Value &&
+                                          row["Invoice"] == DBNull.Value;
+
+                        bool isRowFullyFilled = row["Vendor"] != DBNull.Value && !string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
+                                               row["Item"] != DBNull.Value && !string.IsNullOrEmpty(row["Item"]?.ToString()) &&
+                                               row["Invoice Amount"] != DBNull.Value &&
+                                               row["Invoice No"] != DBNull.Value && !string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
+                                               row["Invoice Date"] != DBNull.Value &&
+                                               row["Invoice"] != DBNull.Value;
+
+                        if (!isRowEmpty && !isRowFullyFilled)
+                        {
+                            transaction?.Rollback();
+                            MessageBox.Show("Each row must be fully completed (Vendor, Item, Invoice Amount, Invoice No, Invoice Date, and Invoice) or completely empty before submission.",
+                                "Incomplete Row", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+
+                    // Filter out completely empty rows and check if there are any valid rows to submit
+                    DataTable validRows = newRows.Clone();
+                    foreach (DataRow row in newRows.Rows)
+                    {
+                        bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
+                                          row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
+                                          row["Invoice Amount"] == DBNull.Value &&
+                                          row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
+                                          row["Invoice Date"] == DBNull.Value &&
+                                          row["Invoice"] == DBNull.Value;
+
+                        if (!isRowEmpty)
+                        {
+                            validRows.ImportRow(row);
+                        }
+                    }
+
+                    if (validRows.Rows.Count == 0)
+                    {
+                        transaction?.Rollback();
+                        MessageBox.Show("No valid data to submit the claim. All rows are empty.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    // Check for duplicate claims
                     using (SqlCommand cmdCheckDuplicate = new SqlCommand(checkDuplicateQuery, con, transaction))
                     {
-                        foreach (DataRow row in newRows.Rows)
+                        foreach (DataRow row in validRows.Rows)
                         {
-                            if (row["Invoice No"] != DBNull.Value && row["Invoice Amount"] != DBNull.Value && row["Invoice Date"] != DBNull.Value)
+                            cmdCheckDuplicate.Parameters.Clear();
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"]);
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"]);
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"]);
+                            int duplicateCount = (int)cmdCheckDuplicate.ExecuteScalar();
+                            if (duplicateCount > 0)
                             {
-                                cmdCheckDuplicate.Parameters.Clear();
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"]);
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"]);
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"] ?? (object)DBNull.Value);
-                                int duplicateCount = (int)cmdCheckDuplicate.ExecuteScalar();
-                                if (duplicateCount > 0)
-                                {
-                                    transaction?.Rollback();
-                                    MessageBox.Show($"Redundant claim request.", "Duplicate Request", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    return;
-                                }
+                                transaction?.Rollback();
+                                MessageBox.Show($"Redundant claim request.", "Duplicate Request", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
                             }
                         }
                     }
 
+                    // Insert data into database
                     using (SqlCommand cmdDetail = new SqlCommand(insertDetailQuery, con, transaction))
                     using (SqlCommand cmdMaster = new SqlCommand(insertMasterQuery, con, transaction))
                     {
-                        foreach (DataRow row in newRows.Rows)
+                        foreach (DataRow row in validRows.Rows)
                         {
                             row["Requester"] = row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"]?.ToString())
                                 ? loggedInUser : row["Requester"];
@@ -359,7 +408,7 @@ namespace HRAdmin.UserControl
 
                             cmdDetail.ExecuteNonQuery();
 
-                            if (row == newRows.Rows[0])
+                            if (row == validRows.Rows[0])
                             {
                                 cmdMaster.Parameters.Clear();
                                 cmdMaster.Parameters.AddWithValue("@SerialNo", serialNo);

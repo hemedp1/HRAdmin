@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -60,12 +60,23 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.panel4.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.gbExternal.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // label11
@@ -136,36 +147,37 @@
             // 
             this.panel1.Controls.Add(this.dgvMS);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 172);
+            this.panel1.Location = new System.Drawing.Point(3, 292);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1853, 743);
+            this.panel1.Size = new System.Drawing.Size(1853, 623);
             this.panel1.TabIndex = 2;
             // 
             // dgvMS
             // 
             this.dgvMS.BackgroundColor = System.Drawing.Color.White;
             this.dgvMS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle4;
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
             this.dgvMS.RowHeadersVisible = false;
             this.dgvMS.RowHeadersWidth = 51;
             this.dgvMS.RowTemplate.Height = 24;
-            this.dgvMS.Size = new System.Drawing.Size(1853, 743);
+            this.dgvMS.Size = new System.Drawing.Size(1853, 623);
             this.dgvMS.TabIndex = 133;
             // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
             this.groupBox1.Controls.Add(this.panel1);
+            this.groupBox1.Controls.Add(this.panel2);
             this.groupBox1.Controls.Add(this.panel4);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
@@ -178,9 +190,6 @@
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.btnViewInvoice);
-            this.panel4.Controls.Add(this.btnReject);
-            this.panel4.Controls.Add(this.btnApprove);
             this.panel4.Controls.Add(this.dtpEnd);
             this.panel4.Controls.Add(this.label9);
             this.panel4.Controls.Add(this.label12);
@@ -189,7 +198,6 @@
             this.panel4.Controls.Add(this.dtpStart);
             this.panel4.Controls.Add(this.label11);
             this.panel4.Controls.Add(this.label10);
-            this.panel4.Controls.Add(this.btnWithdraw);
             this.panel4.Controls.Add(this.cmbDepart);
             this.panel4.Controls.Add(this.label8);
             this.panel4.Controls.Add(this.cmbRequester);
@@ -207,7 +215,7 @@
             this.btnViewInvoice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnViewInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnViewInvoice.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnViewInvoice.Location = new System.Drawing.Point(1001, 20);
+            this.btnViewInvoice.Location = new System.Drawing.Point(64, 45);
             this.btnViewInvoice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnViewInvoice.Name = "btnViewInvoice";
             this.btnViewInvoice.Size = new System.Drawing.Size(124, 34);
@@ -223,7 +231,7 @@
             this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnReject.Location = new System.Drawing.Point(1149, 76);
+            this.btnReject.Location = new System.Drawing.Point(218, 45);
             this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnReject.Name = "btnReject";
             this.btnReject.Size = new System.Drawing.Size(124, 34);
@@ -239,7 +247,7 @@
             this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnApprove.Location = new System.Drawing.Point(1001, 76);
+            this.btnApprove.Location = new System.Drawing.Point(45, 45);
             this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnApprove.Name = "btnApprove";
             this.btnApprove.Size = new System.Drawing.Size(124, 34);
@@ -316,7 +324,7 @@
             this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(1149, 20);
+            this.btnWithdraw.Location = new System.Drawing.Point(235, 45);
             this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdraw.Name = "btnWithdraw";
             this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
@@ -447,6 +455,67 @@
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.panel6);
+            this.panel2.Controls.Add(this.panel5);
+            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(3, 172);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1853, 120);
+            this.panel2.TabIndex = 3;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btnViewInvoice);
+            this.groupBox2.Controls.Add(this.btnWithdraw);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(0, 0);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(400, 120);
+            this.groupBox2.TabIndex = 0;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Claim";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.btnReject);
+            this.groupBox3.Controls.Add(this.btnApprove);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(0, 0);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(400, 120);
+            this.groupBox3.TabIndex = 0;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Authorization";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.groupBox2);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(400, 120);
+            this.panel3.TabIndex = 0;
+            // 
+            // panel5
+            // 
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(400, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(10, 120);
+            this.panel5.TabIndex = 1;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.groupBox3);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel6.Location = new System.Drawing.Point(410, 0);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(400, 120);
+            this.panel6.TabIndex = 2;
+            // 
             // UC_M_MiscellaneousClaim
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -465,6 +534,11 @@
             this.flowLayoutPanel1.ResumeLayout(false);
             this.gbExternal.ResumeLayout(false);
             this.gbExternal.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel6.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -500,5 +574,11 @@
         private System.Windows.Forms.Button btnApprove;
         private System.Windows.Forms.Button btnReject;
         private System.Windows.Forms.Button btnViewInvoice;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel6;
     }
 }
