@@ -40,6 +40,7 @@ namespace HRAdmin.UserControl
             loggedInIndex = Index;
             loggedInDepart = Depart;
             InitializeComponent();
+            Load += UC_C_AccidentPDF_Load;
             loadfilter();
             dTDayPDF.ValueChanged += dTDayPDF_ValueChanged;
         }
@@ -47,7 +48,7 @@ namespace HRAdmin.UserControl
         {
             loadfilter();
             isFirstLoad = false;
-            dTDayPDF.ValueChanged += dTDayPDF_ValueChanged;
+            //dTDayPDF.ValueChanged += dTDayPDF_ValueChanged;
         }
         private void cmbDriverNamePDF_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -832,10 +833,12 @@ namespace HRAdmin.UserControl
         {
 
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             loadfilter();
+            cmbDepartPDF.SelectedIndex = -1;
+            cmbDriverNamePDF.DataSource = null;
+            
         }
     }
 }

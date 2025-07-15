@@ -35,7 +35,7 @@ namespace HRAdmin.UserControl
 
         }
         //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
-        private void UC_UC_M_Work_Load(object sender, EventArgs e)
+        private void UC_M_Work_Load(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in dgvW.Rows)
             {

@@ -29,6 +29,7 @@ namespace HRAdmin.UserControl
         public UC_C_Accident(string username, string Index, string Depart)
         {
             InitializeComponent();
+            this.Load += UC_C_Accident_Load;
             loggedInUser = username;
             loggedInIndex = Index;
             loggedInDepart = Depart;
@@ -46,12 +47,13 @@ namespace HRAdmin.UserControl
         }
         private void UC_C_Accident_Load(object sender, EventArgs e)
         {
+            dtp_filter.ShowCheckBox = true;
+            dtp_filter.Checked = false;
             loadListNotApp();
             dTDay.ValueChanged += dTDay_ValueChanged;
         }
         private void rB_Rej_CheckedChanged(object sender, EventArgs e)
         {
-            
             groupBox2.Visible = false;
         }
         private void rB_App_CheckedChanged(object sender, EventArgs e)
@@ -119,7 +121,14 @@ namespace HRAdmin.UserControl
                                     MakeUserSectionReadOnly(groupBox3);
                                     MakeUserSectionReadOnly(groupBox4);
                                     MakeUserSectionReadOnly(groupBox5);
-                                    
+                                    rB_App.Enabled = false;
+                                    rB_Rej.Enabled = false;
+                                    cmbCar.Enabled = false;
+                                    txtCarr.ReadOnly = true;
+                                    txtDes.ReadOnly = true; 
+                                    txtIndex.ReadOnly = true;
+                                    txtHEMdriver.ReadOnly = true;
+                                    txtDepart.ReadOnly = true;
 
 
                                 }
@@ -885,6 +894,7 @@ namespace HRAdmin.UserControl
                 }
                 else if (ctrl is TextBox tb)
                 {
+               
                     tb.ReadOnly = true;
                 }
                 else if (ctrl is RadioButton rb)
@@ -1121,16 +1131,23 @@ namespace HRAdmin.UserControl
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
-                cmbdep.DataSource = dt;
+
+                // Insert placeholder row at the top
+                DataRow newRow = dt.NewRow();
+                newRow["Dept"] = "-- Select Department --";
+                dt.Rows.InsertAt(newRow, 0);
+
+                
                 cmbdep.DisplayMember = "Dept";
                 cmbdep.ValueMember = "Dept";
-                cmbdep.SelectedIndex = -1;
+                cmbdep.DataSource = dt;
+                cmbdep.SelectedIndex = 0;
             }
         }
         private void cmbdep_SelectedIndexChanged(object sender, EventArgs e)
         {
             loadListNotApp();
-            if (cmbdep.SelectedIndex >= 0)
+            if (cmbdep.SelectedIndex >= 1)
             {
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
@@ -1143,10 +1160,15 @@ namespace HRAdmin.UserControl
                         DataTable dt = new DataTable();
                         da.Fill(dt);
 
+                        // Insert placeholder row at the top
+                        DataRow newRow = dt.NewRow();
+                        newRow["DriverInternal"] = "    -- Select Driver --";
+                        dt.Rows.InsertAt(newRow, 0);
+
                         cmbdriver.DataSource = dt;
                         cmbdriver.DisplayMember = "DriverInternal";
                         cmbdriver.ValueMember = "DriverInternal";
-                        cmbdriver.SelectedIndex = -1;
+                        cmbdriver.SelectedIndex = 0;
                     }
                 }
             }
@@ -1177,17 +1199,25 @@ namespace HRAdmin.UserControl
 
                     List<SqlParameter> parameters = new List<SqlParameter>();
 
-                    if (cmbdep.SelectedValue != null)
+                    if (dtp_filter.Checked)
+                    {
+                        query += " AND DateReport = @DateReport";
+                        parameters.Add(new SqlParameter("@DateReport", dtp_filter.Value.ToString("yyyy/MM/dd")));
+                    }
+
+                    if (cmbdep.SelectedValue != null && cmbdep.SelectedValue.ToString().Trim() != "-- Select Department --")
                     {
                         query += " AND Dept = @Dept";
                         parameters.Add(new SqlParameter("@Dept", cmbdep.SelectedValue.ToString()));
                     }
 
-                    if (cmbdriver.SelectedValue != null)
+                    if (cmbdriver.SelectedValue != null && cmbdriver.SelectedValue.ToString().Trim() != "-- Select Driver --")
                     {
                         query += " AND DriverInternal = @DriverInternal";
                         parameters.Add(new SqlParameter("@DriverInternal", cmbdriver.SelectedValue.ToString()));
                     }
+            
+
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -1283,6 +1313,20 @@ namespace HRAdmin.UserControl
         private void cmbdriver_SelectedIndexChanged(object sender, EventArgs e)
         {
             loadListNotApp(); // Refresh when driver changes
+        }
+
+        private void dtp_filter_ValueChanged(object sender, EventArgs e)
+        {
+            loadListNotApp();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            loadListNotApp();
+            cmbdep.SelectedIndex = 0;
+            cmbdriver.DataSource = null;
+            dtp_filter.Checked = false;
         }
     }
 }

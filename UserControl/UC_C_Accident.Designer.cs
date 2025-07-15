@@ -123,6 +123,8 @@ namespace HRAdmin.UserControl
             this.panel5 = new System.Windows.Forms.Panel();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.dtp_filter = new System.Windows.Forms.DateTimePicker();
             this.cmbdep = new System.Windows.Forms.ComboBox();
             this.cmbdriver = new System.Windows.Forms.ComboBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
@@ -1226,6 +1228,8 @@ namespace HRAdmin.UserControl
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.button1);
+            this.panel4.Controls.Add(this.dtp_filter);
             this.panel4.Controls.Add(this.cmbdep);
             this.panel4.Controls.Add(this.cmbdriver);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
@@ -1233,6 +1237,32 @@ namespace HRAdmin.UserControl
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1916, 65);
             this.panel4.TabIndex = 57;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Calibri", 12F);
+            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
+            this.button1.Location = new System.Drawing.Point(910, 9);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(53, 43);
+            this.button1.TabIndex = 90;
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // dtp_filter
+            // 
+            this.dtp_filter.CalendarFont = new System.Drawing.Font("Calibri", 12F);
+            this.dtp_filter.Font = new System.Drawing.Font("Calibri", 12F);
+            this.dtp_filter.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtp_filter.Location = new System.Drawing.Point(32, 13);
+            this.dtp_filter.Name = "dtp_filter";
+            this.dtp_filter.Size = new System.Drawing.Size(288, 37);
+            this.dtp_filter.TabIndex = 56;
+            this.dtp_filter.ValueChanged += new System.EventHandler(this.dtp_filter_ValueChanged);
             // 
             // cmbdep
             // 
@@ -1242,7 +1272,7 @@ namespace HRAdmin.UserControl
             this.cmbdep.FormattingEnabled = true;
             this.cmbdep.IntegralHeight = false;
             this.cmbdep.ItemHeight = 29;
-            this.cmbdep.Location = new System.Drawing.Point(40, 12);
+            this.cmbdep.Location = new System.Drawing.Point(344, 13);
             this.cmbdep.MaxLength = 8;
             this.cmbdep.Name = "cmbdep";
             this.cmbdep.Size = new System.Drawing.Size(260, 37);
@@ -1251,13 +1281,14 @@ namespace HRAdmin.UserControl
             // 
             // cmbdriver
             // 
+            this.cmbdriver.DisplayMember = "(none)";
             this.cmbdriver.DropDownHeight = 158;
             this.cmbdriver.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbdriver.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbdriver.FormattingEnabled = true;
             this.cmbdriver.IntegralHeight = false;
             this.cmbdriver.ItemHeight = 29;
-            this.cmbdriver.Location = new System.Drawing.Point(320, 12);
+            this.cmbdriver.Location = new System.Drawing.Point(624, 13);
             this.cmbdriver.MaxLength = 8;
             this.cmbdriver.Name = "cmbdriver";
             this.cmbdriver.Size = new System.Drawing.Size(260, 37);
@@ -1645,6 +1676,9 @@ namespace HRAdmin.UserControl
 
         }
 
+      
+
+
         #endregion
 
         private System.Windows.Forms.Panel panel1;
@@ -1770,5 +1804,7 @@ namespace HRAdmin.UserControl
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Panel panel4;
+        private DateTimePicker dtp_filter;
+        private Button button1;
     }
 }

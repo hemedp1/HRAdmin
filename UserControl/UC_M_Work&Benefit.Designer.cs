@@ -153,7 +153,7 @@
             // 
             // UC_M_Work
             // 
-            Load += UC_UC_M_Work_Load;
+            Load += UC_M_Work_Load;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
