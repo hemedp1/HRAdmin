@@ -311,7 +311,7 @@ namespace HRAdmin.UserControl
             // 
             // UC_C_AccidentPDF
             // 
-            
+           
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panel1);

@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 
@@ -23,6 +24,15 @@ namespace HRAdmin.UserControl
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "HRAdmin\\meeting_spaces.config");
         private readonly Timer _refreshTimer;
+        private bool _networkAvailable = true;
+        private DateTime _lastNetworkCheck = DateTime.MinValue;
+        private const int NetworkCheckInterval = 5000; // 5 seconds
+
+        // Network status UI elements
+        private Panel networkStatusPanel;
+        private Label networkStatusLabel;
+        private Timer networkStatusTimer;
+        private bool lastNetworkStatus = true;
 
         public UC_R_DetailsRoom(string username)
         {
@@ -32,6 +42,8 @@ namespace HRAdmin.UserControl
             this.UpdateStyles();
             loggedInUser = username;
 
+            InitializeNetworkStatusUI();
+
             _refreshTimer = new Timer
             {
                 Interval = 3000
@@ -39,6 +51,81 @@ namespace HRAdmin.UserControl
             _refreshTimer.Tick += RefreshTimer_Tick;
 
             SetupControl();
+        }
+
+        private void InitializeNetworkStatusUI()
+        {
+            // Create status panel
+            networkStatusPanel = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 30,
+                BackColor = Color.Transparent,
+                Visible = false
+            };
+
+            // Create status label
+            networkStatusLabel = new Label
+            {
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("Arial", 10, FontStyle.Bold),
+                ForeColor = Color.White
+            };
+
+            // Add label to panel
+            networkStatusPanel.Controls.Add(networkStatusLabel);
+
+            // Add panel to the main control
+            this.Controls.Add(networkStatusPanel);
+            this.Controls.SetChildIndex(networkStatusPanel, 0);
+
+            // Setup timer to auto-hide notifications
+            networkStatusTimer = new Timer { Interval = 5000 };
+            networkStatusTimer.Tick += (s, e) =>
+            {
+                networkStatusPanel.Visible = false;
+                networkStatusTimer.Stop();
+            };
+        }
+
+        private void ShowNetworkNotification(string message, bool isError)
+        {
+            if (networkStatusPanel.InvokeRequired)
+            {
+                networkStatusPanel.Invoke(new Action(() => ShowNetworkNotification(message, isError)));
+                return;
+            }
+
+            networkStatusPanel.BackColor = isError ? Color.FromArgb(220, 50, 50) : Color.FromArgb(50, 150, 50);
+            networkStatusLabel.Text = message;
+            networkStatusPanel.Visible = true;
+
+            // Bring to front and start auto-hide timer
+            networkStatusPanel.BringToFront();
+            networkStatusTimer.Stop();
+            networkStatusTimer.Start();
+        }
+
+        private bool CheckNetworkAvailable()
+        {
+            // Only check network every NetworkCheckInterval milliseconds
+            if ((DateTime.Now - _lastNetworkCheck).TotalMilliseconds < NetworkCheckInterval)
+            {
+                return _networkAvailable;
+            }
+
+            _lastNetworkCheck = DateTime.Now;
+            try
+            {
+                _networkAvailable = NetworkInterface.GetIsNetworkAvailable();
+                return _networkAvailable;
+            }
+            catch
+            {
+                _networkAvailable = false;
+                return false;
+            }
         }
 
         private void SetupControl()
@@ -88,7 +175,7 @@ namespace HRAdmin.UserControl
                 var btnHide = space.Panel.Controls.OfType<Button>().FirstOrDefault();
                 if (btnHide != null)
                 {
-                    btnHide.Text = config.IsHidden ? "Show" : "";
+                    btnHide.Text = config.IsHidden ? " " : "";
                 }
             }
         }
@@ -144,7 +231,29 @@ namespace HRAdmin.UserControl
 
         private void RefreshTimer_Tick(object sender, EventArgs e)
         {
-            if (this.Visible && cmbDWM.SelectedItem != null)
+            if (!this.Visible || cmbDWM.SelectedItem == null)
+                return;
+
+            bool currentNetworkStatus = CheckNetworkAvailable();
+
+            // Only show notification if network status changed
+            if (currentNetworkStatus != lastNetworkStatus)
+            {
+                lastNetworkStatus = currentNetworkStatus;
+
+                if (!currentNetworkStatus)
+                {
+                    ShowNetworkNotification("Network connection lost. Using cached data.", true);
+                }
+                else
+                {
+                    ShowNetworkNotification("Network connection restored.", false);
+                    // Force refresh when network comes back
+                    RefreshData();
+                }
+            }
+
+            if (currentNetworkStatus)
             {
                 RefreshData();
             }
@@ -152,10 +261,8 @@ namespace HRAdmin.UserControl
 
         private void RefreshData()
         {
-            if (!IsNetworkAvailable())
+            if (!CheckNetworkAvailable())
             {
-                MessageBox.Show("Network connection is unavailable. Please check your connection and try again.",
-                    "Network Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -166,19 +273,11 @@ namespace HRAdmin.UserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during auto-refresh: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private bool IsNetworkAvailable()
-        {
-            try
-            {
-                return NetworkInterface.GetIsNetworkAvailable();
-            }
-            catch
-            {
-                return false;
+                if (CheckNetworkAvailable())
+                {
+                    ShowNetworkNotification($"Refresh error: {ex.Message}", true);
+                }
+                _networkAvailable = false;
             }
         }
 
@@ -192,18 +291,16 @@ namespace HRAdmin.UserControl
 
         private void ApplyFilter(string filterType)
         {
-            if (!IsNetworkAvailable())
-            {
-                MessageBox.Show("No network connection. Displaying last known data.",
-                    "Network Unavailable", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
 
             try
             {
+                if (!CheckNetworkAvailable())
+                {
+                    return;
+                }
+
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
@@ -253,7 +350,7 @@ namespace HRAdmin.UserControl
                             var btnHide = space.Panel.Controls.OfType<Button>().FirstOrDefault();
                             if (btnHide != null)
                             {
-                                btnHide.Text = config.IsHidden ? "Show" : "";
+                                btnHide.Text = config.IsHidden ? "" : "";
                             }
                         }
                         var spaceToUpdate = _meetingSpaces.First(s => s.Label.Text == roomName);
@@ -269,13 +366,19 @@ namespace HRAdmin.UserControl
             }
             catch (SqlException ex)
             {
-                MessageBox.Show($"Database connection error: {ex.Message}. Please check your network or database server.",
-                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (CheckNetworkAvailable())
+                {
+                    ShowNetworkNotification($"Database error: {ex.Message}", true);
+                }
+                _networkAvailable = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading meeting rooms: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (CheckNetworkAvailable())
+                {
+                    ShowNetworkNotification($"Error: {ex.Message}", true);
+                }
+                _networkAvailable = false;
             }
             finally
             {
@@ -286,7 +389,7 @@ namespace HRAdmin.UserControl
 
         private void LoadMeetingData(DataGridView grid, string roomName, string filterType)
         {
-            if (!IsNetworkAvailable())
+            if (!CheckNetworkAvailable())
             {
                 return;
             }
@@ -320,13 +423,19 @@ namespace HRAdmin.UserControl
             }
             catch (SqlException ex)
             {
-                MessageBox.Show($"Database error for {roomName}: {ex.Message}",
-                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (CheckNetworkAvailable())
+                {
+                    ShowNetworkNotification($"Data load error: {ex.Message}", true);
+                }
+                _networkAvailable = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading data for {roomName}: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (CheckNetworkAvailable())
+                {
+                    ShowNetworkNotification($"Error: {ex.Message}", true);
+                }
+                _networkAvailable = false;
             }
             finally
             {
@@ -443,7 +552,7 @@ namespace HRAdmin.UserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading configurations: {ex.Message}");
+                ShowNetworkNotification($"Config error: {ex.Message}", true);
                 _spaceConfigs = new List<MeetingSpaceConfig>();
             }
         }
@@ -461,7 +570,8 @@ namespace HRAdmin.UserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving configurations: {ex.Message}");
+                // Can't show notification here as it's static
+                // Error will be caught when trying to load next time
             }
         }
 
@@ -477,11 +587,11 @@ namespace HRAdmin.UserControl
             public Panel Panel { get; }
             public DataGridView Grid { get; }
             public Label Label { get; }
-            private bool _isHidden; // Track visibility state
+            private bool _isHidden;
 
             public MeetingSpace(string name, FlowLayoutPanel container)
             {
-                _isHidden = false; // Initialize to false
+                _isHidden = false;
                 Panel = new Panel
                 {
                     BorderStyle = BorderStyle.None,
@@ -512,6 +622,7 @@ namespace HRAdmin.UserControl
                     RowTemplate = { Height = 26 }
                 };
 
+
                 string iconPath = Path.Combine(Application.StartupPath, "Img", "hidden.png");
 
                 var btnRemove = new Button
@@ -523,7 +634,6 @@ namespace HRAdmin.UserControl
                     BackColor = Color.Transparent
                 };
                 btnRemove.FlatAppearance.BorderSize = 0;
-
 
                 // Event handlers for hover effect
                 btnRemove.MouseEnter += (s, e) =>
@@ -554,7 +664,7 @@ namespace HRAdmin.UserControl
 
             public void SetVisibility(bool isVisible)
             {
-                _isHidden = !isVisible; // Sync _isHidden with the desired visibility
+                _isHidden = !isVisible;
                 Panel.Visible = isVisible;
 
                 var config = _spaceConfigs.FirstOrDefault(c => c.Name == Label.Text);
@@ -573,7 +683,7 @@ namespace HRAdmin.UserControl
                 var btnHide = Panel.Controls.OfType<Button>().FirstOrDefault();
                 if (btnHide != null)
                 {
-                    // No text update as per your request
+                    btnHide.Text = _isHidden ? "" : "";
                 }
 
                 var config = _spaceConfigs.FirstOrDefault(c => c.Name == Label.Text);
@@ -605,7 +715,7 @@ namespace HRAdmin.UserControl
             }
             else
             {
-                MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowNetworkNotification("Panel not found!", true);
             }
         }
 
@@ -629,7 +739,7 @@ namespace HRAdmin.UserControl
         {
             foreach (var space in _meetingSpaces)
             {
-                space.SetVisibility(true); // Sync state with visibility
+                space.SetVisibility(true);
             }
 
             SaveSpaceConfigs();

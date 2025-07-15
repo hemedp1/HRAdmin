@@ -835,10 +835,20 @@ namespace HRAdmin.UserControl
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            // Reset department and driver filters
+            cmbDepartPDF.SelectedIndex = -1; // Clear department selection
+            cmbDriverNamePDF.DataSource = null; // Clear driver selection
+            cmbDriverNamePDF.SelectedIndex = -1; // Ensure no driver is selected
+
+            // Temporarily set isFirstLoad to true to bypass date filter in loadfilter
+            bool originalIsFirstLoad = isFirstLoad;
+            isFirstLoad = true;
+
+            // Reload all data without filters
             loadfilter();
-            cmbDepartPDF.SelectedIndex = -1;
-            cmbDriverNamePDF.DataSource = null;
-            
+
+            // Restore original isFirstLoad value
+            isFirstLoad = originalIsFirstLoad;
         }
     }
 }
