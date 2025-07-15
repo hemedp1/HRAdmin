@@ -141,11 +141,40 @@ namespace HRAdmin.UserControl
                 DataGridViewRow row = dgvW.Rows[e.RowIndex];
                 byte[] currentPdf = row.Cells["Invoice"].Value as byte[];
 
-                string message = currentPdf == null ?
-                    "Attach Invoice?" :
-                    "A Invoice is already attached. Do you want to reattach it?";
+                // Fresh attachment (no existing PDF) - skip confirmation
+                if (currentPdf == null)
+                {
+                    using (OpenFileDialog ofd = new OpenFileDialog())
+                    {
+                        ofd.Filter = "PDF files (*.pdf)|*.pdf";
+                        ofd.Title = "Select Invoice PDF";
 
-                DialogResult result = MessageBox.Show(message, "PDF Attachment", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (ofd.ShowDialog() == DialogResult.OK)
+                        {
+                            try
+                            {
+                                byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
+                                row.Cells["Invoice"].Value = fileBytes;
+                                row.Cells["InvoiceAttached"].Value = "✅";
+                                ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = "View / Reattach";
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Error loading file: {ex.Message}", "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                    return; // Exit after handling fresh attachment
+                }
+
+                // Existing PDF - show reattach/view options
+                string message = "An invoice is already attached. Do you want to reattach it?\n\n" +
+                                 "Yes: Reattach\n" +
+                                 "No: View";
+
+                DialogResult result = MessageBox.Show(message, "PDF Attachment",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
                 {
@@ -156,16 +185,22 @@ namespace HRAdmin.UserControl
                         {
                             byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
                             row.Cells["Invoice"].Value = fileBytes;
-                            row.Cells["InvoiceAttached"].Value = "✅";
-                            ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = "View / Reattach";
                         }
                     }
                 }
-                else if (currentPdf != null)
+                else if (result == DialogResult.No)
                 {
-                    string tempPath = Path.Combine(Path.GetTempPath(), $"invoice_{Guid.NewGuid()}.pdf");
-                    File.WriteAllBytes(tempPath, currentPdf);
-                    Process.Start(tempPath);
+                    try
+                    {
+                        string tempPath = Path.Combine(Path.GetTempPath(), $"invoice_{Guid.NewGuid()}.pdf");
+                        File.WriteAllBytes(tempPath, currentPdf);
+                        Process.Start(new ProcessStartInfo(tempPath) { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error opening PDF: {ex.Message}", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
