@@ -21,20 +21,21 @@ namespace HRAdmin.UserControl
         private string loggedInDepart;
         private string loggedInIndex;
         private string expensesType; // To store the selected ExpensesType
+
         public UC_M_Work(string username, string department, string selectedType, string emp)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
-            expensesType = selectedType; // Set ExpensesType based on navigation
+            expensesType = selectedType;
             InitializeDataTable();
             ConfigureDataGridView();
-            StyleDataGridView(dgvW); // Apply styling to the DataGridView
-            dgvW.DataError += DgvW_DataError; // Attach the DataError event handler
-
+            StyleDataGridView(dgvW);
+            dgvW.DataError += DgvW_DataError;
+            dgvW.CellValueChanged += dgvW_CellValueChanged;
         }
-        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+
         private void UC_M_Work_Load(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in dgvW.Rows)
@@ -44,24 +45,22 @@ namespace HRAdmin.UserControl
                 row.Cells["btnInvoice"].Value = attached ? "View / Reattach" : "Attach";
             }
         }
+
         private void DgvW_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            // Check if the error is related to the Invoice Date column
             if (e.ColumnIndex == dgvW.Columns["Invoice Date"].Index && e.Exception is FormatException)
             {
-                e.Cancel = true; // Prevent the default error dialog
+                e.Cancel = true;
                 MessageBox.Show("Only can enter in date format in column Invoice Date", "Invalid Date Format",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-                dgvW.Rows[e.RowIndex].Cells["Invoice Date"].Value = DBNull.Value; // Clear invalid input
+                dgvW.Rows[e.RowIndex].Cells["Invoice Date"].Value = DBNull.Value;
             }
         }
+
         private void InitializeDataTable()
         {
-            // Initialize an empty DataTable with all columns
             DataTable dt = new DataTable();
-            dt.Columns.Add("ID", typeof(int)).AutoIncrement = true; // Auto-increment for ID
-            dt.Columns["ID"].AutoIncrementSeed = 1; // Start ID from 1
-            dt.Columns["ID"].AutoIncrementStep = 1; // Increment by 1
+            dt.Columns.Add("ID", typeof(int));
             dt.Columns.Add("SerialNo", typeof(string));
             dt.Columns.Add("Requester", typeof(string));
             dt.Columns.Add("EmpNo", typeof(string));
@@ -84,15 +83,11 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("Invoice Amount", typeof(decimal));
             dt.Columns.Add("Invoice No", typeof(string));
             dt.Columns.Add("Invoice Date", typeof(DateTime));
-            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
-            dt.Columns.Add("Invoice", typeof(byte[]));         // PDF content
-            dt.Columns.Add("InvoiceAttached", typeof(string)); // internal name
-
-
+            dt.Columns.Add("Invoice", typeof(byte[]));
+            dt.Columns.Add("InvoiceAttached", typeof(string));
 
             dgvW.DataSource = dt;
 
-            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
             DataGridViewButtonColumn btnCol = new DataGridViewButtonColumn
             {
                 HeaderText = "Invoice",
@@ -100,10 +95,45 @@ namespace HRAdmin.UserControl
                 UseColumnTextForButtonValue = true,
                 Name = "btnInvoice"
             };
-
             dgvW.Columns.Add(btnCol);
 
+            // Allow adding new rows by default
+            dgvW.AllowUserToAddRows = true;
         }
+
+        private void AssignNextId(DataGridViewRow row)
+        {
+            int maxId = 0;
+            foreach (DataGridViewRow existingRow in dgvW.Rows)
+            {
+                if (existingRow.Cells["ID"].Value != null && existingRow.Cells["ID"].Value != DBNull.Value)
+                {
+                    int currentId = Convert.ToInt32(existingRow.Cells["ID"].Value);
+                    if (currentId > maxId) maxId = currentId;
+                }
+            }
+            row.Cells["ID"].Value = maxId + 1;
+        }
+
+        private void dgvW_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                DataGridViewRow row = dgvW.Rows[e.RowIndex];
+                // Assign ID when a new row is created or edited
+                if (row.Cells["ID"].Value == null || Convert.IsDBNull(row.Cells["ID"].Value))
+                {
+                    AssignNextId(row);
+                }
+                // Automatically add a new row when the user starts entering data
+                if (!dgvW.Rows.Cast<DataGridViewRow>().Any(r => r.IsNewRow && r.Index == dgvW.Rows.Count - 1))
+                {
+                    int newRowIndex = dgvW.Rows.Add();
+                    AssignNextId(dgvW.Rows[newRowIndex]);
+                }
+            }
+        }
+
         private void dgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (dgvW.Columns[e.ColumnIndex].Name == "btnInvoice" && e.RowIndex >= 0)
@@ -126,8 +156,6 @@ namespace HRAdmin.UserControl
                         {
                             byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
                             row.Cells["Invoice"].Value = fileBytes;
-
-                            // ✅ Set visual status
                             row.Cells["InvoiceAttached"].Value = "✅";
                             ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = "View / Reattach";
                         }
@@ -135,7 +163,6 @@ namespace HRAdmin.UserControl
                 }
                 else if (currentPdf != null)
                 {
-                    // View existing PDF
                     string tempPath = Path.Combine(Path.GetTempPath(), $"invoice_{Guid.NewGuid()}.pdf");
                     File.WriteAllBytes(tempPath, currentPdf);
                     Process.Start(tempPath);
@@ -145,7 +172,6 @@ namespace HRAdmin.UserControl
 
         private void ConfigureDataGridView()
         {
-            // Hide columns that should not be edited by the user
             dgvW.Columns["SerialNo"].Visible = false;
             dgvW.Columns["Requester"].Visible = false;
             dgvW.Columns["EmpNo"].Visible = false;
@@ -163,25 +189,24 @@ namespace HRAdmin.UserControl
             dgvW.Columns["AccountApprovalStatus"].Visible = false;
             dgvW.Columns["ApprovedByAccount"].Visible = false;
             dgvW.Columns["AccountApprovedDate"].Visible = false;
-            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
             dgvW.Columns["Invoice"].Visible = false;
         }
+
         private void StyleDataGridView(DataGridView dgv)
         {
             dgv.ColumnHeadersVisible = true;
             dgv.Dock = DockStyle.Fill;
             dgv.AllowUserToResizeRows = false;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgv.AllowUserToAddRows = true; // Override to false as per method, but set to true in constructor
-            dgv.ReadOnly = false; // Allow editing
+            dgv.AllowUserToAddRows = true;
+            dgv.ReadOnly = false;
 
-            // Increase header font size and height
-            dgv.EnableHeadersVisualStyles = false; // Allow custom styling
-            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Helvetica", 13, FontStyle.Bold); // Larger font for headers
-            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray; // Optional: Add a background color for headers
-            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black; // Text color for headers
-            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing; // Allow resizing of header height
-            dgv.ColumnHeadersHeight = 30; // Increase header height for better visibility
+            dgv.EnableHeadersVisualStyles = false;
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Helvetica", 13, FontStyle.Bold);
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+            dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            dgv.ColumnHeadersHeight = 30;
 
             if (dgvW.Columns.Contains("ID"))
             {
@@ -190,22 +215,30 @@ namespace HRAdmin.UserControl
 
             if (dgvW.Columns.Contains("Invoice Amount"))
             {
-                dgvW.Columns["Invoice Amount"].Width = 150;
+                dgvW.Columns["Invoice Amount"].Width = 120;
             }
 
             if (dgvW.Columns.Contains("Invoice No"))
             {
-                dgvW.Columns["Invoice No"].Width = 200;
+                dgvW.Columns["Invoice No"].Width = 150;
             }
 
             if (dgvW.Columns.Contains("Invoice Date"))
             {
-                dgvW.Columns["Invoice Date"].Width = 150;
+                dgvW.Columns["Invoice Date"].Width = 100;
             }
-            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
+
+            if (dgvW.Columns.Contains("InvoiceAttached"))
+            {
+                dgvW.Columns["InvoiceAttached"].Width = 120;
+            }
+
+            if (dgvW.Columns.Contains("btnInvoice"))
+            {
+                dgvW.Columns["btnInvoice"].Width = 120;
+            }
+
             dgvW.Columns["InvoiceAttached"].HeaderText = "Invoice Attached";
-
-
 
             foreach (DataGridViewColumn column in dgv.Columns)
             {
@@ -216,8 +249,8 @@ namespace HRAdmin.UserControl
                     BackColor = Color.WhiteSmoke
                 };
             }
-
         }
+
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -229,11 +262,10 @@ namespace HRAdmin.UserControl
                     con.Open();
                     transaction = con.BeginTransaction();
 
-                    // Query to get the highest submission number for the current day across all departments
                     string checkSerialNoQuery = @"SELECT MAX(CAST(RIGHT(SerialNo, CHARINDEX('_', REVERSE(SerialNo)) - 1) AS INT)) 
-                                                FROM tbl_DetailClaimForm 
-                                                WHERE SerialNo LIKE @DatePattern";
-                    string datePattern = $"_%{DateTime.Now:ddMMyyyy}_%"; // Match any SerialNo with the current date
+                                        FROM tbl_DetailClaimForm 
+                                        WHERE SerialNo LIKE @DatePattern";
+                    string datePattern = $"_%{DateTime.Now:ddMMyyyy}_%";
                     int nextNumber = 1;
 
                     using (SqlCommand cmdCheck = new SqlCommand(checkSerialNoQuery, con, transaction))
@@ -246,13 +278,11 @@ namespace HRAdmin.UserControl
                         }
                     }
 
-                    // Generate SerialNo with format Department_ddMMyyyy_N
                     string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
     (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
-    VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";//+++++++++++++++++++ Add Invoice+++++++++++++++++++++++++++ Add by wan on 14/7
-
+    VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
                                         (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
@@ -261,8 +291,8 @@ namespace HRAdmin.UserControl
                                                 @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
 
                     string checkDuplicateQuery = @"SELECT COUNT(*) 
-                                                 FROM tbl_DetailClaimForm 
-                                                 WHERE InvoiceNo = @InvoiceNo AND InvoiceAmount = @InvoiceAmount AND InvoiceDate = @InvoiceDate";
+                                         FROM tbl_DetailClaimForm 
+                                         WHERE InvoiceNo = @InvoiceNo AND InvoiceAmount = @InvoiceAmount AND InvoiceDate = @InvoiceDate";
 
                     DataTable dt = (DataTable)dgvW.DataSource;
                     DataTable newRows = dt?.GetChanges(DataRowState.Added);
@@ -273,34 +303,81 @@ namespace HRAdmin.UserControl
                         return;
                     }
 
-                    // Check for duplicate InvoiceNo and InvoiceAmount
+                    // Validate that each row is either fully completed or fully empty
+                    foreach (DataRow row in newRows.Rows)
+                    {
+                        bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
+                                          row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
+                                          row["Invoice Amount"] == DBNull.Value &&
+                                          row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
+                                          row["Invoice Date"] == DBNull.Value &&
+                                          row["Invoice"] == DBNull.Value;
+
+                        bool isRowFullyFilled = row["Vendor"] != DBNull.Value && !string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
+                                               row["Item"] != DBNull.Value && !string.IsNullOrEmpty(row["Item"]?.ToString()) &&
+                                               row["Invoice Amount"] != DBNull.Value &&
+                                               row["Invoice No"] != DBNull.Value && !string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
+                                               row["Invoice Date"] != DBNull.Value &&
+                                               row["Invoice"] != DBNull.Value;
+
+                        if (!isRowEmpty && !isRowFullyFilled)
+                        {
+                            transaction?.Rollback();
+                            MessageBox.Show("Each row must be fully completed (Vendor, Item, Invoice Amount, Invoice No, Invoice Date, and Invoice) or completely empty before submission.",
+                                "Incomplete Row", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+
+                    // Filter out completely empty rows and check if there are any valid rows to submit
+                    DataTable validRows = newRows.Clone();
+                    foreach (DataRow row in newRows.Rows)
+                    {
+                        bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
+                                          row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
+                                          row["Invoice Amount"] == DBNull.Value &&
+                                          row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
+                                          row["Invoice Date"] == DBNull.Value &&
+                                          row["Invoice"] == DBNull.Value;
+
+                        if (!isRowEmpty)
+                        {
+                            validRows.ImportRow(row);
+                        }
+                    }
+
+                    if (validRows.Rows.Count == 0)
+                    {
+                        transaction?.Rollback();
+                        MessageBox.Show("No valid data to submit the claim. All rows are empty.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+                    // Check for duplicate claims
                     using (SqlCommand cmdCheckDuplicate = new SqlCommand(checkDuplicateQuery, con, transaction))
                     {
-                        foreach (DataRow row in newRows.Rows)
+                        foreach (DataRow row in validRows.Rows)
                         {
-                            if (row["Invoice No"] != DBNull.Value && row["Invoice Amount"] != DBNull.Value && row["Invoice Date"] != DBNull.Value)
+                            cmdCheckDuplicate.Parameters.Clear();
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"]);
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"]);
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"]);
+                            int duplicateCount = (int)cmdCheckDuplicate.ExecuteScalar();
+                            if (duplicateCount > 0)
                             {
-                                cmdCheckDuplicate.Parameters.Clear();
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"]);
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"]);
-                                cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"] ?? (object)DBNull.Value);
-                                int duplicateCount = (int)cmdCheckDuplicate.ExecuteScalar();
-                                if (duplicateCount > 0)
-                                {
-                                    transaction?.Rollback();
-                                    MessageBox.Show($"Reduntant claim request.", "Duplicate Request", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    return;
-                                }
+                                transaction?.Rollback();
+                                MessageBox.Show($"Redundant claim request.", "Duplicate Request", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
                             }
                         }
                     }
 
+                    // Insert data into database
                     using (SqlCommand cmdDetail = new SqlCommand(insertDetailQuery, con, transaction))
                     using (SqlCommand cmdMaster = new SqlCommand(insertMasterQuery, con, transaction))
                     {
-                        foreach (DataRow row in newRows.Rows)
+                        foreach (DataRow row in validRows.Rows)
                         {
-                            // Set default values for null or empty fields
                             row["Requester"] = row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"]?.ToString())
                                 ? loggedInUser : row["Requester"];
                             row["EmpNo"] = row["EmpNo"] == DBNull.Value || string.IsNullOrEmpty(row["EmpNo"]?.ToString())
@@ -317,10 +394,8 @@ namespace HRAdmin.UserControl
                             row["AccountApprovalStatus"] = row["AccountApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["AccountApprovalStatus"]?.ToString())
                                 ? "Pending" : row["AccountApprovalStatus"];
 
-                            // Assign the same SerialNo to all rows in this submission
                             row["SerialNo"] = serialNo;
 
-                            // Insert into tbl_DetailClaimForm
                             cmdDetail.Parameters.Clear();
                             cmdDetail.Parameters.AddWithValue("@SerialNo", serialNo);
                             cmdDetail.Parameters.AddWithValue("@ExpensesType", row["ExpensesType"]);
@@ -329,14 +404,11 @@ namespace HRAdmin.UserControl
                             cmdDetail.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"] != DBNull.Value ? row["Invoice Amount"] : (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"] ?? (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"] ?? (object)DBNull.Value);
-
-                            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Add by wan on 14/7
                             cmdDetail.Parameters.Add("@Invoice", SqlDbType.VarBinary).Value = row["Invoice"] ?? (object)DBNull.Value;
 
                             cmdDetail.ExecuteNonQuery();
 
-                            // Insert into tbl_MasterClaimForm (only once for the first row to avoid duplicates)
-                            if (row == newRows.Rows[0])
+                            if (row == validRows.Rows[0])
                             {
                                 cmdMaster.Parameters.Clear();
                                 cmdMaster.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -358,7 +430,6 @@ namespace HRAdmin.UserControl
                         dt.AcceptChanges();
                         MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        // Update UI after successful insertion
                         Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
                         UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, expensesType, loggedInIndex);
                         addControls(ug);
@@ -381,6 +452,7 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -395,16 +467,15 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            Form_Home.sharedbtnMCReport.Visible = true;
-            Form_Home.sharedbtnApproval.Visible = true;
+            //Form_Home.sharedbtnMCReport.Visible = true;
+            //Form_Home.sharedbtnApproval.Visible = true;
 
             UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
-
-
     }
 }

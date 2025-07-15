@@ -416,7 +416,7 @@ namespace HRAdmin.UserControl
 
             dgvMS.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
-                Font = new System.Drawing.Font("Arial", 11),
+                Font = new System.Drawing.Font("Arial", 11, FontStyle.Bold),
             };
 
             int fixedColumnWidth = 150;
