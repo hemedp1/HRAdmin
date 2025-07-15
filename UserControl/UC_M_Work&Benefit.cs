@@ -42,7 +42,7 @@ namespace HRAdmin.UserControl
             {
                 bool attached = row.Cells["Invoice"].Value is byte[];
                 row.Cells["InvoiceAttached"].Value = attached ? "✅" : "❌";
-                row.Cells["btnInvoice"].Value = attached ? "View / Reattach" : "Attach";
+                row.Cells["btnInvoice"].Value = attached ? "View / Reupload" : "Upload";
             }
         }
 
@@ -91,7 +91,7 @@ namespace HRAdmin.UserControl
             DataGridViewButtonColumn btnCol = new DataGridViewButtonColumn
             {
                 HeaderText = "Invoice",
-                Text = "Attach/View",
+                Text = "Reupload/View",
                 UseColumnTextForButtonValue = true,
                 Name = "btnInvoice"
             };
@@ -156,7 +156,7 @@ namespace HRAdmin.UserControl
                                 byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
                                 row.Cells["Invoice"].Value = fileBytes;
                                 row.Cells["InvoiceAttached"].Value = "✅";
-                                ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = "View / Reattach";
+                                ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = "View / Reupload";
                             }
                             catch (Exception ex)
                             {
@@ -169,8 +169,8 @@ namespace HRAdmin.UserControl
                 }
 
                 // Existing PDF - show reattach/view options
-                string message = "An invoice is already attached. Do you want to reattach it?\n\n" +
-                                 "Yes: Reattach\n" +
+                string message = "An invoice is already uploaded. Do you want to reupload it?\n\n" +
+                                 "Yes: Reupload\n" +
                                  "No: View";
 
                 DialogResult result = MessageBox.Show(message, "PDF Attachment",
