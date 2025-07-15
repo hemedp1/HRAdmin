@@ -132,16 +132,12 @@ namespace HRAdmin.UserControl
                                 {
                                     btnCheck.Visible = false; // Default to hidden if neither condition is met
                                     btnApprove.Visible = false; // Default to hidden if neither condition is met
-                                    label14.Visible = false; // Hide "Verification" label
-                                    label15.Visible = false; // Hide ":" symbol
                                 }
                             }
                             else
                             {
                                 btnCheck.Visible = false; // Hide if user not found
                                 btnApprove.Visible = false; // Hide if user not found
-                                label14.Visible = false; // Hide if user not found
-                                label15.Visible = false; // Hide if user not found
                             }
                         }
                     }
@@ -152,8 +148,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 btnCheck.Visible = false; // Hide on error to be safe
                 btnApprove.Visible = false; // Hide on error to be safe
-                label14.Visible = false; // Hide on error to be safe
-                label15.Visible = false; // Hide on error to be safe
             }
         }
 
