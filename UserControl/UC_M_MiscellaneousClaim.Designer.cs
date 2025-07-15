@@ -40,6 +40,9 @@
             this.dgvMS = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnViewInvoice = new System.Windows.Forms.Button();
+            this.btnReject = new System.Windows.Forms.Button();
+            this.btnApprove = new System.Windows.Forms.Button();
             this.dtpEnd = new System.Windows.Forms.DateTimePicker();
             this.label9 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -57,9 +60,6 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnApprove = new System.Windows.Forms.Button();
-            this.btnReject = new System.Windows.Forms.Button();
-            this.btnViewInvoice = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -200,6 +200,54 @@
             this.panel4.Size = new System.Drawing.Size(1853, 140);
             this.panel4.TabIndex = 1;
             // 
+            // btnViewInvoice
+            // 
+            this.btnViewInvoice.BackColor = System.Drawing.Color.White;
+            this.btnViewInvoice.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnViewInvoice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnViewInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnViewInvoice.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnViewInvoice.Location = new System.Drawing.Point(1001, 20);
+            this.btnViewInvoice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnViewInvoice.Name = "btnViewInvoice";
+            this.btnViewInvoice.Size = new System.Drawing.Size(124, 34);
+            this.btnViewInvoice.TabIndex = 136;
+            this.btnViewInvoice.Text = "View";
+            this.btnViewInvoice.UseVisualStyleBackColor = false;
+            this.btnViewInvoice.Click += new System.EventHandler(this.btnViewInvoice_Click);
+            // 
+            // btnReject
+            // 
+            this.btnReject.BackColor = System.Drawing.Color.White;
+            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnReject.Location = new System.Drawing.Point(1149, 76);
+            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnReject.Name = "btnReject";
+            this.btnReject.Size = new System.Drawing.Size(124, 34);
+            this.btnReject.TabIndex = 135;
+            this.btnReject.Text = "Reject";
+            this.btnReject.UseVisualStyleBackColor = false;
+            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
+            // 
+            // btnApprove
+            // 
+            this.btnApprove.BackColor = System.Drawing.Color.White;
+            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnApprove.Location = new System.Drawing.Point(1001, 76);
+            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApprove.Name = "btnApprove";
+            this.btnApprove.Size = new System.Drawing.Size(124, 34);
+            this.btnApprove.TabIndex = 134;
+            this.btnApprove.Text = "Approve";
+            this.btnApprove.UseVisualStyleBackColor = false;
+            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
+            // 
             // dtpEnd
             // 
             this.dtpEnd.Font = new System.Drawing.Font("Calibri", 13F);
@@ -268,7 +316,7 @@
             this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(1131, 19);
+            this.btnWithdraw.Location = new System.Drawing.Point(1149, 20);
             this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdraw.Name = "btnWithdraw";
             this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
@@ -398,54 +446,6 @@
             this.label4.Size = new System.Drawing.Size(18, 27);
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
-            // 
-            // btnApprove
-            // 
-            this.btnApprove.BackColor = System.Drawing.Color.White;
-            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnApprove.Location = new System.Drawing.Point(1001, 75);
-            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnApprove.Name = "btnApprove";
-            this.btnApprove.Size = new System.Drawing.Size(124, 34);
-            this.btnApprove.TabIndex = 134;
-            this.btnApprove.Text = "Approve";
-            this.btnApprove.UseVisualStyleBackColor = false;
-            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
-            // 
-            // btnReject
-            // 
-            this.btnReject.BackColor = System.Drawing.Color.White;
-            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnReject.Location = new System.Drawing.Point(1131, 75);
-            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnReject.Name = "btnReject";
-            this.btnReject.Size = new System.Drawing.Size(124, 34);
-            this.btnReject.TabIndex = 135;
-            this.btnReject.Text = "Reject";
-            this.btnReject.UseVisualStyleBackColor = false;
-            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
-            // 
-            // btnViewInvoice
-            // 
-            this.btnViewInvoice.BackColor = System.Drawing.Color.White;
-            this.btnViewInvoice.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnViewInvoice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnViewInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnViewInvoice.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnViewInvoice.Location = new System.Drawing.Point(1001, 19);
-            this.btnViewInvoice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnViewInvoice.Name = "btnViewInvoice";
-            this.btnViewInvoice.Size = new System.Drawing.Size(124, 34);
-            this.btnViewInvoice.TabIndex = 136;
-            this.btnViewInvoice.Text = "View";
-            this.btnViewInvoice.UseVisualStyleBackColor = false;
-            this.btnViewInvoice.Click += new System.EventHandler(this.btnViewInvoice_Click);
             // 
             // UC_M_MiscellaneousClaim
             // 

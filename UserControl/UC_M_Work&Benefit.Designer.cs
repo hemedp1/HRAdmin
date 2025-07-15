@@ -51,11 +51,9 @@
             this.gbExternal.Controls.Add(this.panel1);
             this.gbExternal.Dock = System.Windows.Forms.DockStyle.Top;
             this.gbExternal.Font = new System.Drawing.Font("Calibri", 14F);
-            this.gbExternal.Location = new System.Drawing.Point(0, 58);
-            this.gbExternal.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.gbExternal.Location = new System.Drawing.Point(0, 46);
             this.gbExternal.Name = "gbExternal";
-            this.gbExternal.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.gbExternal.Size = new System.Drawing.Size(1664, 538);
+            this.gbExternal.Size = new System.Drawing.Size(1479, 430);
             this.gbExternal.TabIndex = 140;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Miscellaneous Claim Form for Work or Benefit";
@@ -67,10 +65,10 @@
             this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSubmit.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnSubmit.Location = new System.Drawing.Point(12, 484);
+            this.btnSubmit.Location = new System.Drawing.Point(11, 387);
             this.btnSubmit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(140, 42);
+            this.btnSubmit.Size = new System.Drawing.Size(124, 34);
             this.btnSubmit.TabIndex = 102;
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = false;
@@ -80,10 +78,9 @@
             // 
             this.panel1.Controls.Add(this.dgvW);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(3, 39);
-            this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.panel1.Location = new System.Drawing.Point(3, 32);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1658, 438);
+            this.panel1.Size = new System.Drawing.Size(1473, 350);
             this.panel1.TabIndex = 0;
             // 
             // dgvW
@@ -92,12 +89,11 @@
             this.dgvW.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvW.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvW.Location = new System.Drawing.Point(0, 0);
-            this.dgvW.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.dgvW.Name = "dgvW";
             this.dgvW.RowHeadersVisible = false;
             this.dgvW.RowHeadersWidth = 51;
             this.dgvW.RowTemplate.Height = 24;
-            this.dgvW.Size = new System.Drawing.Size(1658, 438);
+            this.dgvW.Size = new System.Drawing.Size(1473, 350);
             this.dgvW.TabIndex = 0;
             this.dgvW.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvW_CellContentClick);
             // 
@@ -111,7 +107,7 @@
             this.btnBack.Location = new System.Drawing.Point(3, 2);
             this.btnBack.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(54, 46);
+            this.btnBack.Size = new System.Drawing.Size(48, 37);
             this.btnBack.TabIndex = 103;
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
@@ -121,9 +117,8 @@
             this.flowLayoutPanel1.Controls.Add(this.btnBack);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1664, 58);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1479, 46);
             this.flowLayoutPanel1.TabIndex = 139;
             // 
             // groupBox1
@@ -132,11 +127,9 @@
             this.groupBox1.Controls.Add(this.EventOccasion);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox1.Location = new System.Drawing.Point(0, 596);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBox1.Location = new System.Drawing.Point(0, 476);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox1.Size = new System.Drawing.Size(1664, 496);
+            this.groupBox1.Size = new System.Drawing.Size(1479, 397);
             this.groupBox1.TabIndex = 141;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Note";
@@ -145,25 +138,24 @@
             // 
             this.EventOccasion.AutoSize = true;
             this.EventOccasion.Font = new System.Drawing.Font("Calibri", 13F);
-            this.EventOccasion.Location = new System.Drawing.Point(7, 40);
+            this.EventOccasion.Location = new System.Drawing.Point(6, 32);
             this.EventOccasion.Name = "EventOccasion";
-            this.EventOccasion.Size = new System.Drawing.Size(1340, 384);
+            this.EventOccasion.Size = new System.Drawing.Size(1144, 324);
             this.EventOccasion.TabIndex = 23;
             this.EventOccasion.Text = resources.GetString("EventOccasion.Text");
             // 
             // UC_M_Work
             // 
-            Load += UC_UC_M_Work_Load;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            Load+=this.UC_M_Work_Load;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.gbExternal);
             this.Controls.Add(this.flowLayoutPanel1);
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "UC_M_Work";
-            this.Size = new System.Drawing.Size(1664, 1511);
+            this.Size = new System.Drawing.Size(1479, 1209);
             this.gbExternal.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvW)).EndInit();

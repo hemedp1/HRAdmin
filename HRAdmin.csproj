@@ -367,6 +367,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_Work&amp;Benefit.resx">
       <DependentUpon>UC_M_Work&amp;Benefit.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_R_DetailsRoom.resx">
       <DependentUpon>UC_R_DetailsRoom.cs</DependentUpon>
