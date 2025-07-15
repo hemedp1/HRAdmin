@@ -81,7 +81,7 @@ namespace HRAdmin.UserControl
             this.Controls.SetChildIndex(networkStatusPanel, 0);
 
             // Setup timer to auto-hide notifications
-            networkStatusTimer = new Timer { Interval = 5000 };
+            networkStatusTimer = new Timer { Interval = 2000 };
             networkStatusTimer.Tick += (s, e) =>
             {
                 networkStatusPanel.Visible = false;
