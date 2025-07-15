@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Meal_Food));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -37,12 +37,9 @@
             this.btnWithdraw = new System.Windows.Forms.Button();
             this.btnApprove = new System.Windows.Forms.Button();
             this.btnCheck = new System.Windows.Forms.Button();
-            this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.cmbPeriod = new System.Windows.Forms.ComboBox();
             this.cmbDepart = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.cmbRequester = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -67,6 +64,16 @@
             this.GB_Authorization = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.btnView = new System.Windows.Forms.Button();
+            this.dtpStart = new System.Windows.Forms.DateTimePicker();
+            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.cmbOS_Occasion = new System.Windows.Forms.ComboBox();
             this.groupBox2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_OS)).BeginInit();
@@ -110,39 +117,45 @@
             // 
             this.dgv_OS.BackgroundColor = System.Drawing.Color.White;
             this.dgv_OS.ColumnHeadersHeight = 29;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle4;
             this.dgv_OS.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_OS.Location = new System.Drawing.Point(0, 175);
+            this.dgv_OS.Location = new System.Drawing.Point(0, 240);
             this.dgv_OS.Name = "dgv_OS";
             this.dgv_OS.ReadOnly = true;
             this.dgv_OS.RowHeadersVisible = false;
             this.dgv_OS.RowHeadersWidth = 51;
             this.dgv_OS.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.dgv_OS.Size = new System.Drawing.Size(1701, 277);
+            this.dgv_OS.Size = new System.Drawing.Size(1701, 212);
             this.dgv_OS.TabIndex = 0;
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.cmbOS_Occasion);
+            this.panel4.Controls.Add(this.label17);
+            this.panel4.Controls.Add(this.label16);
+            this.panel4.Controls.Add(this.label15);
+            this.panel4.Controls.Add(this.label14);
             this.panel4.Controls.Add(this.label13);
+            this.panel4.Controls.Add(this.label9);
+            this.panel4.Controls.Add(this.dtpEnd);
+            this.panel4.Controls.Add(this.dtpStart);
             this.panel4.Controls.Add(this.label11);
             this.panel4.Controls.Add(this.label10);
-            this.panel4.Controls.Add(this.cmbPeriod);
             this.panel4.Controls.Add(this.cmbDepart);
-            this.panel4.Controls.Add(this.label9);
             this.panel4.Controls.Add(this.label8);
             this.panel4.Controls.Add(this.cmbRequester);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1701, 75);
+            this.panel4.Size = new System.Drawing.Size(1701, 140);
             this.panel4.TabIndex = 0;
             // 
             // btnWithdraw
@@ -152,7 +165,7 @@
             this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(64, 41);
+            this.btnWithdraw.Location = new System.Drawing.Point(252, 41);
             this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdraw.Name = "btnWithdraw";
             this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
@@ -193,21 +206,11 @@
             this.btnCheck.UseVisualStyleBackColor = false;
             this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
             // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label13.Location = new System.Drawing.Point(1187, 22);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(18, 27);
-            this.label13.TabIndex = 105;
-            this.label13.Text = ":";
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label11.Location = new System.Drawing.Point(635, 23);
+            this.label11.Location = new System.Drawing.Point(635, 74);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(18, 27);
             this.label11.TabIndex = 104;
@@ -217,53 +220,28 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label10.Location = new System.Drawing.Point(188, 22);
+            this.label10.Location = new System.Drawing.Point(188, 74);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(18, 27);
             this.label10.TabIndex = 103;
             this.label10.Text = ":";
-            // 
-            // cmbPeriod
-            // 
-            this.cmbPeriod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPeriod.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmbPeriod.FormattingEnabled = true;
-            this.cmbPeriod.Items.AddRange(new object[] {
-            "Daily",
-            "Weekly",
-            "Monthly"});
-            this.cmbPeriod.Location = new System.Drawing.Point(1211, 19);
-            this.cmbPeriod.Name = "cmbPeriod";
-            this.cmbPeriod.Size = new System.Drawing.Size(250, 32);
-            this.cmbPeriod.TabIndex = 25;
-            this.cmbPeriod.SelectedIndexChanged += new System.EventHandler(this.cmbPeriod_SelectedIndexChanged);
             // 
             // cmbDepart
             // 
             this.cmbDepart.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbDepart.FormattingEnabled = true;
             this.cmbDepart.ItemHeight = 24;
-            this.cmbDepart.Location = new System.Drawing.Point(212, 19);
+            this.cmbDepart.Location = new System.Drawing.Point(212, 73);
             this.cmbDepart.Name = "cmbDepart";
             this.cmbDepart.Size = new System.Drawing.Size(250, 32);
             this.cmbDepart.TabIndex = 24;
             this.cmbDepart.SelectedIndexChanged += new System.EventHandler(this.cmbDepart_SelectedIndexChanged);
             // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label9.Location = new System.Drawing.Point(971, 22);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(210, 27);
-            this.label9.TabIndex = 23;
-            this.label9.Text = "Period (Request date)";
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label8.Location = new System.Drawing.Point(59, 22);
+            this.label8.Location = new System.Drawing.Point(59, 74);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(123, 27);
             this.label8.TabIndex = 22;
@@ -275,7 +253,7 @@
             this.cmbRequester.FormattingEnabled = true;
             this.cmbRequester.IntegralHeight = false;
             this.cmbRequester.ItemHeight = 24;
-            this.cmbRequester.Location = new System.Drawing.Point(659, 19);
+            this.cmbRequester.Location = new System.Drawing.Point(659, 73);
             this.cmbRequester.Name = "cmbRequester";
             this.cmbRequester.Size = new System.Drawing.Size(250, 32);
             this.cmbRequester.TabIndex = 24;
@@ -285,7 +263,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label1.Location = new System.Drawing.Point(524, 22);
+            this.label1.Location = new System.Drawing.Point(524, 74);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(105, 27);
             this.label1.TabIndex = 21;
@@ -499,7 +477,7 @@
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.groupBox3);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 75);
+            this.panel1.Location = new System.Drawing.Point(0, 140);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1701, 100);
             this.panel1.TabIndex = 1;
@@ -509,7 +487,7 @@
             this.GB_Authorization.Controls.Add(this.btnCheck);
             this.GB_Authorization.Controls.Add(this.btnApprove);
             this.GB_Authorization.Dock = System.Windows.Forms.DockStyle.Left;
-            this.GB_Authorization.Location = new System.Drawing.Point(260, 0);
+            this.GB_Authorization.Location = new System.Drawing.Point(460, 0);
             this.GB_Authorization.Name = "GB_Authorization";
             this.GB_Authorization.Size = new System.Drawing.Size(450, 100);
             this.GB_Authorization.TabIndex = 0;
@@ -518,11 +496,12 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.btnView);
             this.groupBox3.Controls.Add(this.btnWithdraw);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox3.Location = new System.Drawing.Point(0, 0);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(250, 100);
+            this.groupBox3.Size = new System.Drawing.Size(450, 100);
             this.groupBox3.TabIndex = 1;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Order";
@@ -530,10 +509,122 @@
             // panel5
             // 
             this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel5.Location = new System.Drawing.Point(250, 0);
+            this.panel5.Location = new System.Drawing.Point(450, 0);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(10, 100);
             this.panel5.TabIndex = 2;
+            // 
+            // btnView
+            // 
+            this.btnView.BackColor = System.Drawing.Color.White;
+            this.btnView.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnView.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnView.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnView.Location = new System.Drawing.Point(64, 41);
+            this.btnView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnView.Name = "btnView";
+            this.btnView.Size = new System.Drawing.Size(124, 34);
+            this.btnView.TabIndex = 109;
+            this.btnView.Text = "View";
+            this.btnView.UseVisualStyleBackColor = false;
+            // 
+            // dtpStart
+            // 
+            this.dtpStart.CalendarFont = new System.Drawing.Font("Calibri", 13F);
+            this.dtpStart.Font = new System.Drawing.Font("Calibri", 12F);
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpStart.Location = new System.Drawing.Point(212, 19);
+            this.dtpStart.Name = "dtpStart";
+            this.dtpStart.Size = new System.Drawing.Size(250, 32);
+            this.dtpStart.TabIndex = 129;
+            this.dtpStart.ValueChanged += new System.EventHandler(this.dtpStart_ValueChanged);
+            // 
+            // dtpEnd
+            // 
+            this.dtpEnd.CalendarFont = new System.Drawing.Font("Calibri", 13F);
+            this.dtpEnd.Font = new System.Drawing.Font("Calibri", 12F);
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpEnd.Location = new System.Drawing.Point(659, 19);
+            this.dtpEnd.Name = "dtpEnd";
+            this.dtpEnd.Size = new System.Drawing.Size(250, 32);
+            this.dtpEnd.TabIndex = 130;
+            this.dtpEnd.ValueChanged += new System.EventHandler(this.dtpEnd_ValueChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label9.Location = new System.Drawing.Point(59, 23);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(101, 27);
+            this.label9.TabIndex = 131;
+            this.label9.Text = "Start date";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label13.Location = new System.Drawing.Point(524, 23);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(93, 27);
+            this.label13.TabIndex = 132;
+            this.label13.Text = "End date";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label14.Location = new System.Drawing.Point(961, 23);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(94, 27);
+            this.label14.TabIndex = 133;
+            this.label14.Text = "Occasion";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label15.Location = new System.Drawing.Point(188, 23);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(18, 27);
+            this.label15.TabIndex = 134;
+            this.label15.Text = ":";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label16.Location = new System.Drawing.Point(635, 24);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(18, 27);
+            this.label16.TabIndex = 135;
+            this.label16.Text = ":";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label17.Location = new System.Drawing.Point(1061, 23);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(18, 27);
+            this.label17.TabIndex = 136;
+            this.label17.Text = ":";
+            // 
+            // cmbOS_Occasion
+            // 
+            this.cmbOS_Occasion.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbOS_Occasion.FormattingEnabled = true;
+            this.cmbOS_Occasion.IntegralHeight = false;
+            this.cmbOS_Occasion.ItemHeight = 24;
+            this.cmbOS_Occasion.Items.AddRange(new object[] {
+            "Internal",
+            "External"});
+            this.cmbOS_Occasion.Location = new System.Drawing.Point(1085, 22);
+            this.cmbOS_Occasion.Name = "cmbOS_Occasion";
+            this.cmbOS_Occasion.Size = new System.Drawing.Size(250, 32);
+            this.cmbOS_Occasion.TabIndex = 137;
+            this.cmbOS_Occasion.SelectedIndexChanged += new System.EventHandler(this.cmbOS_Occasion_SelectedIndexChanged);
             // 
             // UC_Meal_Food
             // 
@@ -569,12 +660,9 @@
         private System.Windows.Forms.Button btnWithdraw;
         private System.Windows.Forms.Button btnApprove;
         private System.Windows.Forms.Button btnCheck;
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox cmbPeriod;
         private System.Windows.Forms.ComboBox cmbDepart;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox cmbRequester;
         private System.Windows.Forms.Label label1;
@@ -599,5 +687,15 @@
         private System.Windows.Forms.GroupBox GB_Authorization;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Button btnView;
+        private System.Windows.Forms.DateTimePicker dtpStart;
+        private System.Windows.Forms.DateTimePicker dtpEnd;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox cmbOS_Occasion;
     }
 }

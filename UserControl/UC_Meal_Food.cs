@@ -53,6 +53,9 @@ namespace HRAdmin.UserControl
             LoadData();
             cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
             cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
+            cmbOS_Occasion.SelectedIndexChanged += cmbOS_Occasion_SelectedIndexChanged;
+            dtpStart.ValueChanged += dtpStart_ValueChanged;
+            dtpEnd.ValueChanged += dtpEnd_ValueChanged;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
             isNetworkErrorShown = false;
             this.Load += UC_Food_Load;
@@ -71,6 +74,9 @@ namespace HRAdmin.UserControl
             LoadData();
             cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
             cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
+            cmbOS_Occasion.SelectedIndexChanged += cmbOS_Occasion_SelectedIndexChanged;
+            dtpStart.ValueChanged += dtpStart_ValueChanged;
+            dtpEnd.ValueChanged += dtpEnd_ValueChanged;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
             isNetworkErrorShown = false;
             this.Load += UC_Food_Load;
@@ -118,26 +124,20 @@ namespace HRAdmin.UserControl
                                 // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
                                 if (AA == "1")
                                 {
-                                    btnCheck.Visible = true;
-                                    btnApprove.Visible = true;
-                                    // Labels remain visible unless neither condition is met
+                                    //GB_Authorization.Visible = false;
                                 }
                                 else if (MA == "2")
                                 {
-                                    btnCheck.Visible = true;
-                                    btnApprove.Visible = false;
-                                    // Labels remain visible as default
+                                    //GB_Authorization.Visible = true;
                                 }
                                 else
                                 {
-                                    btnCheck.Visible = false; // Default to hidden if neither condition is met
-                                    btnApprove.Visible = false; // Default to hidden if neither condition is met
+                                    //GB_Authorization.Visible = false;
                                 }
                             }
                             else
                             {
-                                btnCheck.Visible = false; // Hide if user not found
-                                btnApprove.Visible = false; // Hide if user not found
+                                //GB_Authorization.Visible = false;
                             }
                         }
                     }
@@ -146,8 +146,6 @@ namespace HRAdmin.UserControl
             catch (Exception ex)
             {
                 MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnCheck.Visible = false; // Hide on error to be safe
-                btnApprove.Visible = false; // Hide on error to be safe
             }
         }
 
@@ -250,7 +248,7 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void LoadData(string requesterID = null, string department = null)
+        private void LoadData(string requesterID = null, string department = null, string occasionType = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             if (dgv_OS == null)
             {
@@ -258,74 +256,95 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            string filterType = cmbPeriod.SelectedItem?.ToString() ?? "Weekly"; // Default to Weekly if null
-            string query = "";
-            DateTime today = DateTime.Today;
-
-            switch (filterType)
+            if (!IsNetworkAvailable())
             {
-                case "Daily":
-                    query = @"
-                SELECT 'Internal' AS OrderSource, 
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_InternalFoodOrder
-                WHERE CAST(RequestDate AS DATE) = @Today
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                      AND (@Department IS NULL OR Department = @Department)
-                UNION ALL
-                SELECT 'External' AS OrderSource,
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-                FROM tbl_ExternalFoodOrder
-                WHERE CAST(RequestDate AS DATE) = @Today
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                      AND (@Department IS NULL OR Department = @Department)
-                ORDER BY RequestDate ASC";
-                    break;
+                if (!isNetworkUnavailable)
+                {
+                    isNetworkUnavailable = true;
+                    MessageBox.Show("Network disconnected.", "Network Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
 
-                case "Weekly":
-                    query = @"
-                SELECT 'Internal' AS OrderSource, 
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_InternalFoodOrder
-                WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                      AND (@Department IS NULL OR Department = @Department)
-                UNION ALL
-                SELECT 'External' AS OrderSource,
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-                FROM tbl_ExternalFoodOrder
-                WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                      AND (@Department IS NULL OR Department = @Department)
-                ORDER BY RequestDate ASC";
-                    break;
+                if (cachedData != null && cachedData.Rows.Count > 0)
+                {
+                    BindDataGridView(cachedData);
+                    if (!isNetworkErrorShown)
+                    {
+                        isNetworkErrorShown = true;
+                        MessageBox.Show("Network unavailable. Displaying cached data.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    if (!isNetworkErrorShown)
+                    {
+                        isNetworkErrorShown = true;
+                        MessageBox.Show("Network unavailable and no cached data available.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+                return;
+            }
 
-                case "Monthly":
-                    query = @"
-                SELECT 'Internal' AS OrderSource, 
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_InternalFoodOrder
-                WHERE YEAR(RequestDate) = @Year AND MONTH(RequestDate) = @Month
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                      AND (@Department IS NULL OR Department = @Department)
-                UNION ALL
-                SELECT 'External' AS OrderSource,
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-                FROM tbl_ExternalFoodOrder
-                WHERE YEAR(RequestDate) = @Year AND MONTH(RequestDate) = @Month
-                      AND (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                      AND (@Department IS NULL OR Department = @Department)
-                ORDER BY RequestDate ASC";
-                    break;
+            // Set default weekly filter if no date range is provided
+            DateTime today = DateTime.Today;
+            DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Start of the week (Sunday)
+            DateTime weekEnd = weekStart.AddDays(7); // End of the week (Saturday)
+            if (!startDate.HasValue)
+            {
+                startDate = weekStart;
+            }
+            if (!endDate.HasValue)
+            {
+                endDate = weekEnd;
+            }
 
-                default:
-                    return; // Exit if filter type is invalid
+            string query = "";
+            if (occasionType == "Internal")
+            {
+                query = @"
+                    SELECT 'Internal' AS OrderSource, 
+                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
+                    FROM tbl_InternalFoodOrder
+                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                          AND (@Department IS NULL OR Department = @Department)
+                          AND RequestDate >= @StartDate
+                          AND RequestDate < @EndDate
+                    ORDER BY RequestDate ASC";
+            }
+            else if (occasionType == "External")
+            {
+                query = @"
+                    SELECT 'External' AS OrderSource,
+                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
+                    FROM tbl_ExternalFoodOrder
+                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                          AND (@Department IS NULL OR Department = @Department)
+                          AND RequestDate >= @StartDate
+                          AND RequestDate < @EndDate
+                    ORDER BY RequestDate ASC";
+            }
+            else
+            {
+                query = @"
+                    SELECT 'Internal' AS OrderSource, 
+                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
+                    FROM tbl_InternalFoodOrder
+                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                          AND (@Department IS NULL OR Department = @Department)
+                          AND RequestDate >= @StartDate
+                          AND RequestDate < @EndDate
+                    UNION ALL
+                    SELECT 'External' AS OrderSource,
+                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
+                    FROM tbl_ExternalFoodOrder
+                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                          AND (@Department IS NULL OR Department = @Department)
+                          AND RequestDate >= @StartDate
+                          AND RequestDate < @EndDate
+                    ORDER BY RequestDate ASC";
             }
 
             try
@@ -335,29 +354,13 @@ namespace HRAdmin.UserControl
                     con.Open();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        // Add requester and department parameters
+                        // Add parameters
                         cmd.Parameters.Add("@RequesterID", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(requesterID) ? (object)DBNull.Value : requesterID;
                         cmd.Parameters.Add("@Department", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(department) ? (object)DBNull.Value : department;
+                        cmd.Parameters.AddWithValue("@StartDate", startDate.Value);
+                        cmd.Parameters.AddWithValue("@EndDate", endDate.Value);
 
-                        // Add date filter parameters
-                        if (filterType == "Daily")
-                        {
-                            cmd.Parameters.AddWithValue("@Today", today);
-                        }
-                        else if (filterType == "Weekly")
-                        {
-                            DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Start of the week (Sunday)
-                            DateTime weekEnd = weekStart.AddDays(7); // End of the week
-                            cmd.Parameters.AddWithValue("@WeekStart", weekStart);
-                            cmd.Parameters.AddWithValue("@WeekEnd", weekEnd);
-                        }
-                        else if (filterType == "Monthly")
-                        {
-                            cmd.Parameters.AddWithValue("@Year", today.Year);
-                            cmd.Parameters.AddWithValue("@Month", today.Month);
-                        }
-
-                        Debug.WriteLine($"Executing LoadData with RequesterID: {(string.IsNullOrEmpty(requesterID) ? "NULL" : requesterID)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, Filter: {filterType}");
+                        Debug.WriteLine($"Executing LoadData with RequesterID: {(string.IsNullOrEmpty(requesterID) ? "NULL" : requesterID)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, OccasionType: {(string.IsNullOrEmpty(occasionType) ? "NULL" : occasionType)}, StartDate: {startDate.Value.ToString("yyyy-MM-dd")}, EndDate: {endDate.Value.ToString("yyyy-MM-dd")}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -371,18 +374,45 @@ namespace HRAdmin.UserControl
                         Debug.WriteLine($"Rows retrieved: {dt.Rows.Count}");
                         foreach (DataRow row in dt.Rows)
                         {
-                            Debug.WriteLine($"Row: OrderID={row["OrderID"]}, RequesterID={row["RequesterID"]}, Department={row["Department"]}, OrderSource={row["OrderSource"]}");
+                            Debug.WriteLine($"Row: OrderID={row["OrderID"]}, RequesterID={row["RequesterID"]}, Department={row["Department"]}, OrderSource={row["OrderSource"]}, RequestDate={row["RequestDate"]}");
                         }
 
                         // Bind to DataGridView
                         BindDataGridView(dt);
+
+                        // Reset network error flags
+                        isNetworkErrorShown = false;
+                        isNetworkUnavailable = false;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == -1 || ex.Number == 26) // Network-related SQL errors
+                {
+                    if (!isNetworkErrorShown)
+                    {
+                        isNetworkErrorShown = true;
+                        MessageBox.Show("Unable to connect to the database. Please check your network connection.", "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+                else
+                {
+                    if (!isNetworkErrorShown)
+                    {
+                        isNetworkErrorShown = true;
+                        MessageBox.Show("Database error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error loading data: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.WriteLine($"Error loading data: {ex.Message}");
+                if (!isNetworkErrorShown)
+                {
+                    isNetworkErrorShown = true;
+                    MessageBox.Show("Error loading data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error loading data: {ex.Message}");
+                }
             }
         }
 
@@ -390,6 +420,10 @@ namespace HRAdmin.UserControl
         {
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
+            string selectedOccasion = cmbOS_Occasion.SelectedItem?.ToString();
+            DateTime? startDate = dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value;
+            DateTime? endDate = dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value;
+
             Debug.WriteLine($"cmbRequester selected: {selectedUsername}");
             if (selectedUsername == "All Users" || string.IsNullOrEmpty(selectedUsername))
             {
@@ -400,13 +434,22 @@ namespace HRAdmin.UserControl
             {
                 selectedDepartment = null;
             }
-            LoadData(selectedUsername, selectedDepartment);
+            if (selectedOccasion == "All" || string.IsNullOrEmpty(selectedOccasion))
+            {
+                selectedOccasion = null;
+            }
+
+            LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
         }
 
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
+            string selectedOccasion = cmbOS_Occasion.SelectedItem?.ToString();
+            DateTime? startDate = dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value;
+            DateTime? endDate = dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value;
+
             Debug.WriteLine($"cmbDepart selected: {selectedDepartment}");
 
             // Update requester combo box based on selected department
@@ -431,7 +474,85 @@ namespace HRAdmin.UserControl
             {
                 selectedUsername = null;
             }
-            LoadData(selectedUsername, selectedDepartment);
+            if (selectedOccasion == "All" || string.IsNullOrEmpty(selectedOccasion))
+            {
+                selectedOccasion = null;
+            }
+
+            LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
+        }
+
+        private void cmbOS_Occasion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedUsername = cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString();
+            string selectedOccasion = cmbOS_Occasion.SelectedItem?.ToString();
+            DateTime? startDate = dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value;
+            DateTime? endDate = dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value;
+
+            Debug.WriteLine($"cmbOS_Occasion selected: {selectedOccasion}");
+            if (selectedUsername == "All Users" || string.IsNullOrEmpty(selectedUsername))
+            {
+                selectedUsername = null;
+            }
+            if (selectedDepartment == "All Departments" || string.IsNullOrEmpty(selectedDepartment))
+            {
+                selectedDepartment = null;
+            }
+            if (selectedOccasion == "All" || string.IsNullOrEmpty(selectedOccasion))
+            {
+                selectedOccasion = null;
+            }
+
+            LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
+        }
+
+        private void dtpStart_ValueChanged(object sender, EventArgs e)
+        {
+            string selectedUsername = cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString();
+            string selectedOccasion = cmbOS_Occasion.SelectedItem?.ToString();
+            DateTime? startDate = dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value;
+            DateTime? endDate = dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value;
+
+            if (selectedUsername == "All Users" || string.IsNullOrEmpty(selectedUsername))
+            {
+                selectedUsername = null;
+            }
+            if (selectedDepartment == "All Departments" || string.IsNullOrEmpty(selectedDepartment))
+            {
+                selectedDepartment = null;
+            }
+            if (selectedOccasion == "All" || string.IsNullOrEmpty(selectedOccasion))
+            {
+                selectedOccasion = null;
+            }
+
+            LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
+        }
+
+        private void dtpEnd_ValueChanged(object sender, EventArgs e)
+        {
+            string selectedUsername = cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString();
+            string selectedOccasion = cmbOS_Occasion.SelectedItem?.ToString();
+            DateTime? startDate = dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value;
+            DateTime? endDate = dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value;
+
+            if (selectedUsername == "All Users" || string.IsNullOrEmpty(selectedUsername))
+            {
+                selectedUsername = null;
+            }
+            if (selectedDepartment == "All Departments" || string.IsNullOrEmpty(selectedDepartment))
+            {
+                selectedDepartment = null;
+            }
+            if (selectedOccasion == "All" || string.IsNullOrEmpty(selectedOccasion))
+            {
+                selectedOccasion = null;
+            }
+
+            LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -554,7 +675,10 @@ namespace HRAdmin.UserControl
                         {
                             MessageBox.Show("Order status updated to Checked.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
-                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
+                                     cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
+                                     dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
+                                     dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
                         }
                         else
                         {
@@ -631,7 +755,10 @@ namespace HRAdmin.UserControl
                         {
                             MessageBox.Show("Order status updated to Approved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
-                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
+                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
+                                     cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
+                                     dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
+                                     dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
                         }
                         else
                         {
@@ -646,20 +773,245 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void UC_Food_Load(object sender, EventArgs e)
+        private void btnWithdraw_Click(object sender, EventArgs e)
         {
-            cmbPeriod.SelectedItem = "Weekly"; // Set default filter to Weekly
-            ApplyFilter("Weekly"); // Load data for Weekly filter
-            cmbPeriod.SelectedIndexChanged += cmbPeriod_SelectedIndexChanged;
-            CheckUserAccess(); // Check user access to set button visibility
+            if (dgv_OS.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Please select a cell in the order row to withdraw.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DataGridViewCell selectedCell = dgv_OS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
+            string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
+            string requesterID = selectedRow.Cells["RequesterID"].Value?.ToString();
+            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
+            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString();
+
+            if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource) || string.IsNullOrEmpty(requesterID))
+            {
+                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Checked")
+            {
+                MessageBox.Show("This order has already been checked and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
+            {
+                MessageBox.Show("This order has already been approved and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            bool isHRAdmin = false;
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+                    string query = "SELECT AA FROM tbl_Users WHERE Username = @Username";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string AA = reader["AA"].ToString();
+                                isHRAdmin = (AA == "1");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Debug.WriteLine($"Error checking user access: {ex.Message}");
+                return;
+            }
+
+            if (!isHRAdmin && requesterID != loggedInUser)
+            {
+                MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
+
+            DialogResult result = MessageBox.Show($"Are you sure you want to withdraw Order ID: {orderId}?", "Confirm Withdrawal", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    string query = $"DELETE FROM {tableName} WHERE OrderID = @OrderID";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderID", orderId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Successfully withdrawn.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
+                                     cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
+                                     dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
+                                     dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to withdraw the order. It may have already been processed or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error withdrawing order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Debug.WriteLine($"Error withdrawing order: {ex.Message}");
+                }
+            }
         }
 
-        private void cmbPeriod_SelectedIndexChanged(object sender, EventArgs e)
+        private void btNext_Click(object sender, EventArgs e)
         {
-            if (cmbPeriod.SelectedItem != null)
+            string selectedOccasion = cmbOccasion.SelectedItem?.ToString();
+            string eventText = txtEvent.Text.Trim();
+            DateTime eventDate;
+            if (!DateTime.TryParse(dtRequest.Text, out eventDate))
             {
-                ApplyFilter(cmbPeriod.SelectedItem.ToString());
+                MessageBox.Show("Invalid request date format. Please use dd.MM.yyyy.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
+            DateTime? deliveryTime = dtDelivery.Value;
+
+            if (string.IsNullOrEmpty(selectedOccasion))
+            {
+                MessageBox.Show("Please select an occasion before proceeding.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(eventText))
+            {
+                MessageBox.Show("Please enter an event before proceeding.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (eventDate.Date >= deliveryTime?.Date)
+            {
+                MessageBox.Show("Delivery date cannot be on or before the request date.", "Invalid Date Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selectedOccasion == "Internal")
+            {
+                Form_Home.sharedLabel.Text = "Admin > Meal Request > Internal";
+                Form_Home.sharedButton4.Visible = false;
+                Form_Home.sharedButton5.Visible = false;
+                Form_Home.sharedButton6.Visible = false;
+                UC_Meal_Internal ug = new UC_Meal_Internal(eventText, eventDate, deliveryTime, loggedInUser, loggedInDepart);
+                addControls(ug);
+            }
+            else if (selectedOccasion == "External")
+            {
+                Form_Home.sharedLabel.Text = "Admin > Meal Request > External";
+                Form_Home.sharedButton4.Visible = false;
+                Form_Home.sharedButton5.Visible = false;
+                Form_Home.sharedButton6.Visible = false;
+                UC_Meal_External ug = new UC_Meal_External(eventText, eventDate, deliveryTime, loggedInUser, loggedInDepart);
+                addControls(ug);
+            }
+        }
+
+        private void btnCheck_Click(object sender, EventArgs e)
+        {
+            if (dgv_OS.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Please select a cell in the order row to check.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DataGridViewCell selectedCell = dgv_OS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
+            string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
+            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
+            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString();
+
+            if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource))
+            {
+                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Checked")
+            {
+                MessageBox.Show("This order has already been checked.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
+            {
+                MessageBox.Show("This order has already been approved and cannot be checked again.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+                    string query = $@"UPDATE {tableName} 
+                             SET CheckStatus = @CheckStatus, 
+                                 CheckedBy = @CheckedBy, 
+                                 CheckedDate = @CheckedDate, 
+                                 CheckedDepartment = @CheckedDepartment
+                             WHERE OrderID = @OrderID";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@CheckStatus", "Checked");
+                        cmd.Parameters.AddWithValue("@CheckedBy", loggedInUser);
+                        cmd.Parameters.AddWithValue("@CheckedDate", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@CheckedDepartment", loggedInDepart);
+                        cmd.Parameters.AddWithValue("@OrderID", orderId);
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Order status updated to Checked.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
+                                     cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
+                                     dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
+                                     dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to update order status.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void UC_Food_Load(object sender, EventArgs e)
+        {
+            CheckUserAccess();
+            LoadData();
         }
 
         private bool IsNetworkAvailable()
@@ -667,212 +1019,6 @@ namespace HRAdmin.UserControl
             return NetworkInterface.GetIsNetworkAvailable();
         }
 
-        private void ApplyFilter(string filterType)
-        {
-            if (string.IsNullOrEmpty(filterType)) return;
-
-            string query = "";
-            DateTime today = DateTime.Today;
-
-            switch (filterType)
-            {
-                case "Daily":
-                    query = @"
-                SELECT 'Internal' AS OrderSource, 
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_InternalFoodOrder
-                WHERE CAST(RequestDate AS DATE) = @Today
-                UNION ALL
-                SELECT 'External' AS OrderSource,
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-                FROM tbl_ExternalFoodOrder
-                WHERE CAST(RequestDate AS DATE) = @Today
-                ORDER BY RequestDate ASC";
-                    break;
-
-                case "Weekly":
-                    query = @"
-                SELECT 'Internal' AS OrderSource, 
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_InternalFoodOrder
-                WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
-                UNION ALL
-                SELECT 'External' AS OrderSource,
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_ExternalFoodOrder
-                WHERE RequestDate >= @WeekStart AND RequestDate < @WeekEnd
-                ORDER BY RequestDate ASC";
-                    break;
-
-                case "Monthly":
-                    query = @"
-                SELECT 'Internal' AS OrderSource, 
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_InternalFoodOrder
-                WHERE YEAR(RequestDate) = @Year AND MONTH(RequestDate) = @Month
-                UNION ALL
-                SELECT 'External' AS OrderSource,
-                       OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                       CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                FROM tbl_ExternalFoodOrder
-                WHERE YEAR(RequestDate) = @Year AND MONTH(RequestDate) = @Month
-                ORDER BY RequestDate ASC";
-                    break;
-
-                default:
-                    return; // Exit if filter type is invalid
-            }
-
-            LoadFilteredData(query, today);
-        }
-
-        private void LoadFilteredData(string query, DateTime today)
-        {
-            if (dgv_OS == null)
-            {
-                MessageBox.Show("DataGridView is not initialized!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!IsNetworkAvailable())
-            {
-                if (!isNetworkUnavailable) // Only show the message once
-                {
-                    isNetworkUnavailable = true;
-                    MessageBox.Show("Network disconnected.",
-                                    "Network Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                if (cachedData != null)
-                {
-                    BindDataGridView(cachedData);
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Network unavailable. Displaying cached data.",
-                                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                }
-                else
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Network unavailable and no cached data available.",
-                                        "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-                return;
-            }
-
-            try
-            {
-                var connString = ConfigurationManager.ConnectionStrings["ConnString"];
-                if (connString == null)
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Connection string 'ConnString' not found in configuration!",
-                                        "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    return;
-                }
-
-                using (SqlConnection con = new SqlConnection(connString.ConnectionString))
-                {
-                    if (con == null)
-                    {
-                        if (!isNetworkErrorShown)
-                        {
-                            isNetworkErrorShown = true;
-                            MessageBox.Show("Failed to create SqlConnection object!",
-                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        return;
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        // Add parameters based on filter type
-                        if (query.Contains("@Today"))
-                        {
-                            cmd.Parameters.AddWithValue("@Today", today);
-                        }
-                        else if (query.Contains("@WeekStart"))
-                        {
-                            DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Start of the week (Sunday)
-                            DateTime weekEnd = weekStart.AddDays(7); // End of the week
-                            cmd.Parameters.AddWithValue("@WeekStart", weekStart);
-                            cmd.Parameters.AddWithValue("@WeekEnd", weekEnd);
-                        }
-                        else if (query.Contains("@Year"))
-                        {
-                            cmd.Parameters.AddWithValue("@Year", today.Year);
-                            cmd.Parameters.AddWithValue("@Month", today.Month);
-                        }
-
-                        SqlDataAdapter da = new SqlDataAdapter(cmd);
-                        DataTable dt = new DataTable();
-                        da.Fill(dt);
-
-                        // Update cache
-                        cachedData = dt.Copy();
-
-                        // Bind to DataGridView
-                        BindDataGridView(dt);
-
-                        // Reset error flags since we successfully connected
-                        isNetworkErrorShown = false;
-                        isNetworkUnavailable = false;
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                if (ex.Number == -1 || ex.Number == 26) // Network-related SQL errors
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Unable to connect to the database. Please check your network connection.",
-                                        "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-                else
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Database error: " + ex.Message,
-                                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (NullReferenceException ex)
-            {
-                if (!isNetworkErrorShown)
-                {
-                    isNetworkErrorShown = true;
-                    MessageBox.Show("Null reference error: " + ex.Message + "\nStack Trace: " + ex.StackTrace,
-                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!isNetworkErrorShown)
-                {
-                    isNetworkErrorShown = true;
-                    MessageBox.Show("Error loading data: " + ex.Message,
-                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
         private void BindDataGridView(DataTable dt)
         {
             dgv_OS.AutoGenerateColumns = false;
@@ -885,7 +1031,6 @@ namespace HRAdmin.UserControl
 
             int fixedColumnWidth = 150;
 
-            // Add columns as in the original code
             dgv_OS.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "OrderID",
@@ -1069,247 +1214,11 @@ namespace HRAdmin.UserControl
             });
 
             dgv_OS.DataSource = dt;
-            dgv_OS.CellBorderStyle = DataGridViewCellBorderStyle.None; // Add this line to remove cell borders
+            dgv_OS.CellBorderStyle = DataGridViewCellBorderStyle.None;
             Debug.WriteLine("DataGridView updated successfully.");
         }
-        private void btnWithdraw_Click(object sender, EventArgs e)
-        {
-            // Check if a cell is selected in the DataGridView
-            if (dgv_OS.SelectedCells.Count == 0)
-            {
-                MessageBox.Show("Please select a cell in the order row to withdraw.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
-            // Get the selected row
-            DataGridViewCell selectedCell = dgv_OS.SelectedCells[0];
-            DataGridViewRow selectedRow = selectedCell.OwningRow;
-            string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
-            string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
-            string requesterID = selectedRow.Cells["RequesterID"].Value?.ToString();
-            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
-            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString();
-
-            // Validate the selection
-            if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource) || string.IsNullOrEmpty(requesterID))
-            {
-                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Check if the order is checked or approved
-            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Checked")
-            {
-                MessageBox.Show("This order has already been checked and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
-            {
-                MessageBox.Show("This order has already been approved and cannot be withdrawn.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Check if the user has HR & Admin access (AA = 1) to delete any order
-            bool isHRAdmin = false;
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-                {
-                    con.Open();
-                    string query = "SELECT AA FROM tbl_Users WHERE Username = @Username";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                string AA = reader["AA"].ToString();
-                                isHRAdmin = (AA == "1");
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.WriteLine($"Error checking user access: {ex.Message}");
-                return;
-            }
-
-            // Restrict non-HR & Admin users to only deleting their own orders
-            if (!isHRAdmin && requesterID != loggedInUser)
-            {
-                MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Determine the table name based on order source
-            string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
-
-            // Confirm deletion with the user
-            DialogResult result = MessageBox.Show($"Are you sure you want to withdraw Order ID: {orderId}?", "Confirm Withdrawal", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result != DialogResult.Yes)
-            {
-                return;
-            }
-
-            // Delete the order from the database
-            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-            {
-                try
-                {
-                    con.Open();
-                    string query = $"DELETE FROM {tableName} WHERE OrderID = @OrderID";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@OrderID", orderId);
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Successfully withdrawn.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            // Refresh the DataGridView
-                            LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
-                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to withdraw the order. It may have already been processed or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error withdrawing order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error withdrawing order: {ex.Message}");
-                }
-            }
-        }
-        private void btNext_Click(object sender, EventArgs e)
-        {
-            string selectedOccasion = cmbOccasion.SelectedItem?.ToString();
-            string eventText = txtEvent.Text.Trim();
-            DateTime eventDate;
-            if (!DateTime.TryParse(dtRequest.Text, out eventDate))
-            {
-                MessageBox.Show("Invalid request date format. Please use dd.MM.yyyy.", "Invalid Date", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            DateTime? deliveryTime = dtDelivery.Value;
-
-            if (string.IsNullOrEmpty(selectedOccasion))
-            {
-                MessageBox.Show("Please select an occasion before proceeding.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(eventText))
-            {
-                MessageBox.Show("Please enter an event before proceeding.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (eventDate.Date >= deliveryTime?.Date)
-            {
-                MessageBox.Show("Delivery date cannot be on or before the request date.", "Invalid Date Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (selectedOccasion == "Internal")
-            {
-                Form_Home.sharedLabel.Text = "Admin > Meal Request > Internal";
-                Form_Home.sharedButton4.Visible = false;
-                Form_Home.sharedButton5.Visible = false;
-                Form_Home.sharedButton6.Visible = false;
-                UC_Meal_Internal ug = new UC_Meal_Internal(eventText, eventDate, deliveryTime, loggedInUser, loggedInDepart);
-                addControls(ug);
-            }
-            else if (selectedOccasion == "External")
-            {
-                Form_Home.sharedLabel.Text = "Admin > Meal Request > External";
-                Form_Home.sharedButton4.Visible = false;
-                Form_Home.sharedButton5.Visible = false;
-                Form_Home.sharedButton6.Visible = false;
-                UC_Meal_External ug = new UC_Meal_External(eventText, eventDate, deliveryTime, loggedInUser, loggedInDepart);
-                addControls(ug);
-            }
-        }
-        private void btnCheck_Click(object sender, EventArgs e)
-        {
-            if (dgv_OS.SelectedCells.Count == 0)
-            {
-                MessageBox.Show("Please select a cell in the order row to check.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            DataGridViewCell selectedCell = dgv_OS.SelectedCells[0];
-            DataGridViewRow selectedRow = selectedCell.OwningRow;
-            string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
-            string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
-            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
-            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString();
-
-            if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource))
-            {
-                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Prevent re-checking if already checked or approved
-            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Checked")
-            {
-                MessageBox.Show("This order has already been checked.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
-            {
-                MessageBox.Show("This order has already been approved and cannot be checked again.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
-
-            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-            {
-                try
-                {
-                    con.Open();
-                    string query = $@"UPDATE {tableName} 
-                             SET CheckStatus = @CheckStatus, 
-                                 CheckedBy = @CheckedBy, 
-                                 CheckedDate = @CheckedDate, 
-                                 CheckedDepartment = @CheckedDepartment
-                             WHERE OrderID = @OrderID";
-
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@CheckStatus", "Checked");
-                        cmd.Parameters.AddWithValue("@CheckedBy", loggedInUser);
-                        cmd.Parameters.AddWithValue("@CheckedDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@CheckedDepartment", loggedInDepart);
-                        cmd.Parameters.AddWithValue("@OrderID", orderId);
-
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Order status updated to Checked.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
-                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString());
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to update order status.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-        private void cmbOccasion_SelectedIndexChanged(object sender, EventArgs rilasciato) { }
+        private void cmbOccasion_SelectedIndexChanged(object sender, EventArgs e) { }
         private void txtEvent_TextChanged(object sender, EventArgs e) { }
         private void dtDelivery_ValueChanged(object sender, EventArgs e) { }
     }

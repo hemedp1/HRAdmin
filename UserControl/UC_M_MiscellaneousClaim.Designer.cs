@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -39,17 +39,23 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.dgvMS = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.btnViewInvoice = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.P_Authorization = new System.Windows.Forms.Panel();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.btnReject = new System.Windows.Forms.Button();
             this.btnApprove = new System.Windows.Forms.Button();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnViewInvoice = new System.Windows.Forms.Button();
+            this.btnWithdraw = new System.Windows.Forms.Button();
+            this.panel4 = new System.Windows.Forms.Panel();
             this.dtpEnd = new System.Windows.Forms.DateTimePicker();
             this.label9 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.dtpStart = new System.Windows.Forms.DateTimePicker();
-            this.btnWithdraw = new System.Windows.Forms.Button();
             this.btnBack = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnNext = new System.Windows.Forms.Button();
@@ -60,23 +66,17 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.P_Authorization = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.P_Authorization.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.panel4.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.gbExternal.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.P_Authorization.SuspendLayout();
             this.SuspendLayout();
             // 
             // label11
@@ -156,14 +156,14 @@
             // 
             this.dgvMS.BackgroundColor = System.Drawing.Color.White;
             this.dgvMS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
@@ -188,41 +188,38 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Claim Status";
             // 
-            // panel4
+            // panel2
             // 
-            this.panel4.Controls.Add(this.dtpEnd);
-            this.panel4.Controls.Add(this.label9);
-            this.panel4.Controls.Add(this.label12);
-            this.panel4.Controls.Add(this.label5);
-            this.panel4.Controls.Add(this.label7);
-            this.panel4.Controls.Add(this.dtpStart);
-            this.panel4.Controls.Add(this.label11);
-            this.panel4.Controls.Add(this.label10);
-            this.panel4.Controls.Add(this.cmbDepart);
-            this.panel4.Controls.Add(this.label8);
-            this.panel4.Controls.Add(this.cmbRequester);
-            this.panel4.Controls.Add(this.label1);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(3, 32);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1853, 140);
-            this.panel4.TabIndex = 1;
+            this.panel2.Controls.Add(this.P_Authorization);
+            this.panel2.Controls.Add(this.panel5);
+            this.panel2.Controls.Add(this.panel3);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(3, 172);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1853, 100);
+            this.panel2.TabIndex = 3;
             // 
-            // btnViewInvoice
+            // P_Authorization
             // 
-            this.btnViewInvoice.BackColor = System.Drawing.Color.White;
-            this.btnViewInvoice.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnViewInvoice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnViewInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnViewInvoice.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnViewInvoice.Location = new System.Drawing.Point(64, 41);
-            this.btnViewInvoice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnViewInvoice.Name = "btnViewInvoice";
-            this.btnViewInvoice.Size = new System.Drawing.Size(124, 34);
-            this.btnViewInvoice.TabIndex = 136;
-            this.btnViewInvoice.Text = "View";
-            this.btnViewInvoice.UseVisualStyleBackColor = false;
-            this.btnViewInvoice.Click += new System.EventHandler(this.btnViewInvoice_Click);
+            this.P_Authorization.Controls.Add(this.groupBox3);
+            this.P_Authorization.Dock = System.Windows.Forms.DockStyle.Left;
+            this.P_Authorization.Location = new System.Drawing.Point(460, 0);
+            this.P_Authorization.Name = "P_Authorization";
+            this.P_Authorization.Size = new System.Drawing.Size(450, 100);
+            this.P_Authorization.TabIndex = 2;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.BackColor = System.Drawing.Color.White;
+            this.groupBox3.Controls.Add(this.btnReject);
+            this.groupBox3.Controls.Add(this.btnApprove);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(0, 0);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(450, 100);
+            this.groupBox3.TabIndex = 0;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Authorization";
             // 
             // btnReject
             // 
@@ -257,6 +254,89 @@
             this.btnApprove.Text = "Approve";
             this.btnApprove.UseVisualStyleBackColor = false;
             this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
+            // 
+            // panel5
+            // 
+            this.panel5.BackColor = System.Drawing.Color.White;
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(450, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(10, 100);
+            this.panel5.TabIndex = 1;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.groupBox2);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(450, 100);
+            this.panel3.TabIndex = 0;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.Color.White;
+            this.groupBox2.Controls.Add(this.btnViewInvoice);
+            this.groupBox2.Controls.Add(this.btnWithdraw);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(0, 0);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(450, 100);
+            this.groupBox2.TabIndex = 0;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Claim";
+            // 
+            // btnViewInvoice
+            // 
+            this.btnViewInvoice.BackColor = System.Drawing.Color.White;
+            this.btnViewInvoice.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnViewInvoice.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnViewInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnViewInvoice.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnViewInvoice.Location = new System.Drawing.Point(64, 41);
+            this.btnViewInvoice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnViewInvoice.Name = "btnViewInvoice";
+            this.btnViewInvoice.Size = new System.Drawing.Size(124, 34);
+            this.btnViewInvoice.TabIndex = 136;
+            this.btnViewInvoice.Text = "View";
+            this.btnViewInvoice.UseVisualStyleBackColor = false;
+            this.btnViewInvoice.Click += new System.EventHandler(this.btnViewInvoice_Click);
+            // 
+            // btnWithdraw
+            // 
+            this.btnWithdraw.BackColor = System.Drawing.Color.White;
+            this.btnWithdraw.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnWithdraw.Location = new System.Drawing.Point(252, 41);
+            this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnWithdraw.Name = "btnWithdraw";
+            this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
+            this.btnWithdraw.TabIndex = 111;
+            this.btnWithdraw.Text = "Withdraw";
+            this.btnWithdraw.UseVisualStyleBackColor = false;
+            this.btnWithdraw.Click += new System.EventHandler(this.btnWithdraw_Click);
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.dtpEnd);
+            this.panel4.Controls.Add(this.label9);
+            this.panel4.Controls.Add(this.label12);
+            this.panel4.Controls.Add(this.label5);
+            this.panel4.Controls.Add(this.label7);
+            this.panel4.Controls.Add(this.dtpStart);
+            this.panel4.Controls.Add(this.label11);
+            this.panel4.Controls.Add(this.label10);
+            this.panel4.Controls.Add(this.cmbDepart);
+            this.panel4.Controls.Add(this.label8);
+            this.panel4.Controls.Add(this.cmbRequester);
+            this.panel4.Controls.Add(this.label1);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(3, 32);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1853, 140);
+            this.panel4.TabIndex = 1;
             // 
             // dtpEnd
             // 
@@ -318,22 +398,6 @@
             this.dtpStart.Size = new System.Drawing.Size(250, 34);
             this.dtpStart.TabIndex = 128;
             this.dtpStart.ValueChanged += new System.EventHandler(this.dtpStart_ValueChanged);
-            // 
-            // btnWithdraw
-            // 
-            this.btnWithdraw.BackColor = System.Drawing.Color.White;
-            this.btnWithdraw.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(252, 41);
-            this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnWithdraw.Name = "btnWithdraw";
-            this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
-            this.btnWithdraw.TabIndex = 111;
-            this.btnWithdraw.Text = "Withdraw";
-            this.btnWithdraw.UseVisualStyleBackColor = false;
-            this.btnWithdraw.Click += new System.EventHandler(this.btnWithdraw_Click);
             // 
             // btnBack
             // 
@@ -457,70 +521,6 @@
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
             // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.P_Authorization);
-            this.panel2.Controls.Add(this.panel5);
-            this.panel2.Controls.Add(this.panel3);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(3, 172);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1853, 100);
-            this.panel2.TabIndex = 3;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.BackColor = System.Drawing.Color.White;
-            this.groupBox2.Controls.Add(this.btnViewInvoice);
-            this.groupBox2.Controls.Add(this.btnWithdraw);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(0, 0);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(450, 100);
-            this.groupBox2.TabIndex = 0;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Claim";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.BackColor = System.Drawing.Color.White;
-            this.groupBox3.Controls.Add(this.btnReject);
-            this.groupBox3.Controls.Add(this.btnApprove);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(0, 0);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(450, 100);
-            this.groupBox3.TabIndex = 0;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Authorization";
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.groupBox2);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(0, 0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(450, 100);
-            this.panel3.TabIndex = 0;
-            // 
-            // panel5
-            // 
-            this.panel5.BackColor = System.Drawing.Color.White;
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel5.Location = new System.Drawing.Point(450, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(10, 100);
-            this.panel5.TabIndex = 1;
-            // 
-            // P_Authorization
-            // 
-            this.P_Authorization.Controls.Add(this.groupBox3);
-            this.P_Authorization.Dock = System.Windows.Forms.DockStyle.Left;
-            this.P_Authorization.Location = new System.Drawing.Point(460, 0);
-            this.P_Authorization.Name = "P_Authorization";
-            this.P_Authorization.Size = new System.Drawing.Size(450, 100);
-            this.P_Authorization.TabIndex = 2;
-            // 
             // UC_M_MiscellaneousClaim
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -534,16 +534,16 @@
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).EndInit();
             this.groupBox1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.P_Authorization.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.gbExternal.ResumeLayout(false);
             this.gbExternal.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            this.P_Authorization.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

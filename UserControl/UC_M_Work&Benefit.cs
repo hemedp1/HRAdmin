@@ -236,6 +236,9 @@ namespace HRAdmin.UserControl
             dgv.AllowUserToAddRows = true;
             dgv.ReadOnly = false;
 
+            // Set the row height for all rows
+            dgv.RowTemplate.Height = 27;
+
             dgv.EnableHeadersVisualStyles = false;
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Helvetica", 13, FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;

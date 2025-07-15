@@ -693,11 +693,6 @@ namespace HRAdmin.UserControl
             }
         }
 
-        private void lblRequestDate1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             // Validate meal selection

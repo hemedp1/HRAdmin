@@ -127,28 +127,20 @@ namespace HRAdmin.UserControl
                                 // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
                                 if (AA == "1")
                                 {
-
+                                    //P_Authorization.Visible = false;
                                 }
                                 else if (MA == "2")
                                 {
-                                    //btnReject.Visible = true;
-                                    //btnApprove.Visible = false;
-                                    // Labels remain visible as default
+                                    //P_Authorization.Visible = true; 
                                 }
                                 else
                                 {
-                                    //btnReject.Visible = false; // Default to hidden if neither condition is met
-                                    //btnApprove.Visible = false; // Default to hidden if neither condition is met
-                                    //label14.Visible = false; // Hide "Verification" label
-                                    //label15.Visible = false; // Hide ":" symbol
+                                    //P_Authorization.Visible = false;
                                 }
                             }
                             else
                             {
-                                //btnReject.Visible = false; // Hide if user not found
-                                //btnApprove.Visible = false; // Hide if user not found
-                                //label14.Visible = false; // Hide if user not found
-                                //label15.Visible = false; // Hide if user not found
+                                //P_Authorization.Visible = false;
                             }
                         }
                     }
@@ -157,10 +149,6 @@ namespace HRAdmin.UserControl
             catch (Exception ex)
             {
                 MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //btnReject.Visible = false; // Hide on error to be safe
-                //btnApprove.Visible = false; // Hide on error to be safe
-                //label14.Visible = false; // Hide on error to be safe
-                //label15.Visible = false; // Hide on error to be safe
             }
         }
 
