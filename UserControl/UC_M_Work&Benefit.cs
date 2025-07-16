@@ -34,6 +34,7 @@ namespace HRAdmin.UserControl
             StyleDataGridView(dgvW);
             dgvW.DataError += DgvW_DataError;
             dgvW.CellValueChanged += dgvW_CellValueChanged;
+            dgvW.CellFormatting += dgvW_CellFormatting; // Add CellFormatting event handler
         }
 
         private void UC_M_Work_Load(object sender, EventArgs e)
@@ -130,6 +131,25 @@ namespace HRAdmin.UserControl
                 {
                     int newRowIndex = dgvW.Rows.Add();
                     AssignNextId(dgvW.Rows[newRowIndex]);
+                }
+            }
+        }
+
+        private void dgvW_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.ColumnIndex == dgvW.Columns["Invoice Amount"].Index && e.RowIndex >= 0)
+            {
+                if (e.Value != null && e.Value != DBNull.Value)
+                {
+                    // Format the cell to display "RM" followed by the amount
+                    e.Value = $"RM {Convert.ToDecimal(e.Value):N2}";
+                    e.FormattingApplied = true;
+                }
+                else
+                {
+                    // Display only "RM" when the cell is empty
+                    e.Value = "RM";
+                    e.FormattingApplied = true;
                 }
             }
         }
@@ -235,8 +255,10 @@ namespace HRAdmin.UserControl
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgv.AllowUserToAddRows = true;
             dgv.ReadOnly = false;
+
             // Set the row height for all rows
             dgv.RowTemplate.Height = 27;
+
             dgv.EnableHeadersVisualStyles = false;
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Helvetica", 13, FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
@@ -359,8 +381,8 @@ namespace HRAdmin.UserControl
                         if (!isRowEmpty && !isRowFullyFilled)
                         {
                             transaction?.Rollback();
-                            MessageBox.Show("Each row must be fully completed (Vendor, Item, Invoice Amount, Invoice No, Invoice Date, and Invoice) or completely empty before submission.",
-                                "Incomplete Row", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("All rows must be fully filled before submitting.",
+                                "Incomplete Submission", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
                     }
@@ -507,9 +529,6 @@ namespace HRAdmin.UserControl
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            //Form_Home.sharedbtnMCReport.Visible = true;
-            //Form_Home.sharedbtnApproval.Visible = true;
-
             UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
