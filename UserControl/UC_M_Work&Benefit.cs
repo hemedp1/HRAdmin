@@ -21,6 +21,7 @@ namespace HRAdmin.UserControl
         private string loggedInDepart;
         private string loggedInIndex;
         private string expensesType; // To store the selected ExpensesType
+        private DataGridViewCellStyle defaultCellStyle; // Store default cell style for reverting
 
         public UC_M_Work(string username, string department, string selectedType, string emp)
         {
@@ -298,14 +299,17 @@ namespace HRAdmin.UserControl
 
             dgvW.Columns["InvoiceAttached"].HeaderText = "Invoice Attached";
 
+            // Define default cell style
+            defaultCellStyle = new DataGridViewCellStyle
+            {
+                ForeColor = Color.Black,
+                Font = new Font("Helvetica", 12),
+                BackColor = Color.WhiteSmoke
+            };
+
             foreach (DataGridViewColumn column in dgv.Columns)
             {
-                column.DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    ForeColor = Color.Black,
-                    Font = new Font("Helvetica", 12),
-                    BackColor = Color.WhiteSmoke
-                };
+                column.DefaultCellStyle = defaultCellStyle;
             }
         }
 
@@ -362,27 +366,55 @@ namespace HRAdmin.UserControl
                     }
 
                     // Validate that each row is either fully completed or fully empty
-                    foreach (DataRow row in newRows.Rows)
+                    foreach (DataGridViewRow row in dgvW.Rows)
                     {
-                        bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
-                                          row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
-                                          row["Invoice Amount"] == DBNull.Value &&
-                                          row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
-                                          row["Invoice Date"] == DBNull.Value &&
-                                          row["Invoice"] == DBNull.Value;
+                        if (row.IsNewRow) continue; // Skip the new row placeholder
 
-                        bool isRowFullyFilled = row["Vendor"] != DBNull.Value && !string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
-                                               row["Item"] != DBNull.Value && !string.IsNullOrEmpty(row["Item"]?.ToString()) &&
-                                               row["Invoice Amount"] != DBNull.Value &&
-                                               row["Invoice No"] != DBNull.Value && !string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
-                                               row["Invoice Date"] != DBNull.Value &&
-                                               row["Invoice"] != DBNull.Value;
+                        bool isRowEmpty = row.Cells["Vendor"].Value == null || string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
+                                          row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
+                                          row.Cells["Invoice Amount"].Value == null || row.Cells["Invoice Amount"].Value == DBNull.Value &&
+                                          row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
+                                          row.Cells["Invoice Date"].Value == null || row.Cells["Invoice Date"].Value == DBNull.Value &&
+                                          row.Cells["Invoice"].Value == null;
+
+                        bool isRowFullyFilled = row.Cells["Vendor"].Value != null && !string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
+                                               row.Cells["Item"].Value != null && !string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
+                                               row.Cells["Invoice Amount"].Value != null && row.Cells["Invoice Amount"].Value != DBNull.Value &&
+                                               row.Cells["Invoice No"].Value != null && !string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
+                                               row.Cells["Invoice Date"].Value != null && row.Cells["Invoice Date"].Value != DBNull.Value &&
+                                               row.Cells["Invoice"].Value != null;
 
                         if (!isRowEmpty && !isRowFullyFilled)
                         {
+                            List<string> emptyColumns = new List<string>();
+                            if (row.Cells["Vendor"].Value == null || string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()))
+                                emptyColumns.Add("Vendor");
+                            if (row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()))
+                                emptyColumns.Add("Item");
+                            if (row.Cells["Invoice Amount"].Value == null || row.Cells["Invoice Amount"].Value == DBNull.Value)
+                                emptyColumns.Add("Invoice Amount");
+                            if (row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()))
+                                emptyColumns.Add("Invoice No");
+                            if (row.Cells["Invoice Date"].Value == null || row.Cells["Invoice Date"].Value == DBNull.Value)
+                                emptyColumns.Add("Invoice Date");
+                            if (row.Cells["Invoice"].Value == null)
+                                emptyColumns.Add("Invoice");
+
+                            // Highlight empty cells in red
+                            foreach (string colName in emptyColumns)
+                            {
+                                row.Cells[colName].Style.BackColor = Color.Red;
+                            }
+
                             transaction?.Rollback();
-                            MessageBox.Show("All rows must be fully filled before submitting.",
-                                "Incomplete Submission", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            string errorMessage = $"Row {row.Index + 1} is incomplete. Missing values in: {string.Join(", ", emptyColumns)}.";
+                            MessageBox.Show(errorMessage, "Incomplete Submission", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            // Revert cell colors to original after OK is clicked
+                            foreach (string colName in emptyColumns)
+                            {
+                                row.Cells[colName].Style = defaultCellStyle;
+                            }
                             return;
                         }
                     }
