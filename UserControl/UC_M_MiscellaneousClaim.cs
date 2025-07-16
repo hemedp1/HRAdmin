@@ -225,7 +225,8 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = "SELECT DISTINCT Department FROM tbl_Users WHERE Department IS NOT NULL";
+                    // Modified query to select distinct departments from tbl_MasterClaimForm
+                    string query = "SELECT DISTINCT Department FROM tbl_MasterClaimForm WHERE Department IS NOT NULL";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -236,22 +237,22 @@ namespace HRAdmin.UserControl
                             {
                                 string department = reader["Department"].ToString();
                                 cmbDepart.Items.Add(department);
-                                Debug.WriteLine($"Loaded department: {department}");
+                                Debug.WriteLine($"Loaded department from tbl_MasterClaimForm: {department}");
                             }
                         }
                     }
                     cmbDepart.SelectedIndex = 0;
-                    Debug.WriteLine("Departments loaded successfully.");
+                    Debug.WriteLine("Departments loaded successfully from tbl_MasterClaimForm.");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error loading departments: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error loading departments: {ex.Message}");
+                    Debug.WriteLine($"Error loading departments from tbl_MasterClaimForm: {ex.Message}");
                 }
             }
         }
 
-        private void LoadData(string requester = null, string department = null, DateTime? startDate = null, DateTime? endDate = null)
+        private void LoadData(string requester = null, string department = null, DateTime? startDate = null, DateTime? endDate = null, string expensesType = null)
         {
             if (dgvMS == null)
             {
@@ -260,14 +261,15 @@ namespace HRAdmin.UserControl
             }
 
             string query = @"
-                SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                       HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
-                FROM tbl_MasterClaimForm
-                WHERE (@StartDate IS NULL OR CAST(RequestDate AS DATE) >= @StartDate)
-                      AND (@EndDate IS NULL OR CAST(RequestDate AS DATE) <= @EndDate)
-                      AND (@Requester IS NULL OR Requester = @Requester)
-                      AND (@Department IS NULL OR Department = @Department)
-                ORDER BY RequestDate ASC";
+        SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
+               HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
+        FROM tbl_MasterClaimForm
+        WHERE (@StartDate IS NULL OR CAST(RequestDate AS DATE) >= @StartDate)
+              AND (@EndDate IS NULL OR CAST(RequestDate AS DATE) <= @EndDate)
+              AND (@Requester IS NULL OR Requester = @Requester)
+              AND (@Department IS NULL OR Department = @Department)
+              AND (@ExpensesType IS NULL OR ExpensesType = @ExpensesType)
+        ORDER BY RequestDate ASC";
 
             try
             {
@@ -276,15 +278,16 @@ namespace HRAdmin.UserControl
                     con.Open();
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        // Add requester and department parameters
+                        // Add parameters
                         cmd.Parameters.Add("@Requester", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(requester) ? (object)DBNull.Value : requester;
                         cmd.Parameters.Add("@Department", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(department) ? (object)DBNull.Value : department;
+                        cmd.Parameters.Add("@ExpensesType", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(expensesType) ? (object)DBNull.Value : expensesType;
 
                         // Add date filter parameters
                         if (startDate.HasValue && endDate.HasValue)
                         {
                             cmd.Parameters.AddWithValue("@StartDate", startDate.Value.Date);
-                            cmd.Parameters.AddWithValue("@EndDate", endDate.Value.Date); // Use the end date as is, no extension
+                            cmd.Parameters.AddWithValue("@EndDate", endDate.Value.Date);
                         }
                         else
                         {
@@ -296,7 +299,7 @@ namespace HRAdmin.UserControl
                             cmd.Parameters.AddWithValue("@EndDate", weekEnd);
                         }
 
-                        Debug.WriteLine($"Executing LoadData with Requester: {(string.IsNullOrEmpty(requester) ? "NULL" : requester)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, StartDate: {(startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "NULL")}, EndDate: {(endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "NULL")}");
+                        Debug.WriteLine($"Executing LoadData with Requester: {(string.IsNullOrEmpty(requester) ? "NULL" : requester)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, StartDate: {(startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "NULL")}, EndDate: {(endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "NULL")}, ExpensesType: {(string.IsNullOrEmpty(expensesType) ? "NULL" : expensesType)}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -310,7 +313,7 @@ namespace HRAdmin.UserControl
                         Debug.WriteLine($"Rows retrieved: {dt.Rows.Count}");
                         foreach (DataRow row in dt.Rows)
                         {
-                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, Requester={row["Requester"]}, Department={row["Department"]}");
+                            Debug.WriteLine($"Row: SerialNo={row["SerialNo"]}, Requester={row["Requester"]}, Department={row["Department"]}, ExpensesType={row["ExpensesType"]}");
                         }
 
                         // Bind to DataGridView
@@ -346,6 +349,18 @@ namespace HRAdmin.UserControl
                     }
                 }
             }
+        }
+
+        private void cmbECtype_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedExpensesType = cmbECtype.SelectedItem?.ToString();
+            if (selectedExpensesType == "All") // Optional: Add an "All" option to show both Work and Benefit
+            {
+                selectedExpensesType = null;
+            }
+            string selectedUsername = cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString();
+            string selectedDepartment = cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString();
+            LoadData(selectedUsername, selectedDepartment, dtpStart.Value, dtpEnd.Value, selectedExpensesType);
         }
 
         private void cmbRequester_SelectedIndexChanged(object sender, EventArgs e)
@@ -1212,38 +1227,50 @@ namespace HRAdmin.UserControl
 
         private void btnViewInvoice_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine($"SelectedRows.Count: {dgvMS.SelectedRows.Count}");
-            Debug.WriteLine($"CurrentRow.Index: {dgvMS.CurrentRow?.Index}");
-            DataGridViewRow selectedRow = dgvMS.SelectedRows.Count > 0 ? dgvMS.SelectedRows[0] : dgvMS.CurrentRow;
-            if (selectedRow != null)
+            // Check if a cell is selected in the DataGridView
+            if (dgvMS.SelectedCells.Count == 0)
             {
-                string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
-                Debug.WriteLine($"Selected SerialNo: {serialNo}");
-                if (string.IsNullOrEmpty(serialNo))
+                MessageBox.Show("Please select a cell in the order row to view.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Get the selected row
+            DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+            string requester = selectedRow.Cells["Requester"].Value?.ToString();
+
+            // Validate the selection
+            if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
+            {
+                MessageBox.Show("Invalid order selection: SerialNo or Requester is missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Restrict viewing to only the user's own orders unless they are in ACCOUNT or HR & ADMIN
+            if (loggedInDepart != "ACCOUNT" && loggedInDepart != "HR & ADMIN" && requester != loggedInUser)
+            {
+                MessageBox.Show("You can only view your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Proceed with generating and viewing the PDF
+            Debug.WriteLine($"Selected SerialNo: {serialNo}");
+            string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
+            pdfBytes = GeneratePDF(serialNo);
+            if (pdfBytes != null)
+            {
+                string tempFile = Path.GetTempFileName() + ".pdf";
+                File.WriteAllBytes(tempFile, pdfBytes);
+                Process.Start(new ProcessStartInfo
                 {
-                    MessageBox.Show("Invalid row selection: SerialNo is missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
-                pdfBytes = GeneratePDF(serialNo);
-                if (pdfBytes != null)
-                {
-                    string tempFile = Path.GetTempFileName() + ".pdf";
-                    File.WriteAllBytes(tempFile, pdfBytes);
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = tempFile,
-                        UseShellExecute = true
-                    });
-                }
-                else
-                {
-                    MessageBox.Show("No PDF data available to view.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
+                    FileName = tempFile,
+                    UseShellExecute = true
+                });
             }
             else
             {
-                MessageBox.Show("Please select a row to view the PDF.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No PDF data available to view.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         private byte[] GeneratePDF(string serialNo)
