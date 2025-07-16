@@ -26,6 +26,7 @@ namespace HRAdmin.UserControl
         public UC_C_BookingCar(string username, string index, string depart)
         {
             InitializeComponent();
+            
             loggedInUser = username;
             loggedInIndex = index;
             loggedInDepart = depart;
@@ -33,6 +34,9 @@ namespace HRAdmin.UserControl
             dTDay.ValueChanged += dTDay_ValueChanged;
             PopulateTimeComboBoxes();
         }
+
+    
+
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -132,7 +136,7 @@ namespace HRAdmin.UserControl
             CheckUserAccess(loggedInUser);
         }
 
-        private void UC_BookingCar_Load(object sender, EventArgs e)
+        private void UC_C_BookingCar_Load(object sender, EventArgs e)
         {
             dTDay.ValueChanged += dTDay_ValueChanged;
             dataGridView1.CellClick += dataGridView1_CellClick;
@@ -439,12 +443,10 @@ namespace HRAdmin.UserControl
         {
             LoadData1();
         }
-
         private void cmbIn_SelectedIndexChanged(object sender, EventArgs e)  //EndDate
         {
             LoadData1();
         }
-
         private void TotalAvailablCar_Click(object sender, EventArgs e)
         {
             LoadData1();
