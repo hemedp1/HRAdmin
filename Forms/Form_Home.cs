@@ -61,8 +61,8 @@ namespace HRAdmin.Forms
             loggedInName = Name;
             //LoggedInBank = bank;
             //LoggedInAccNo = accountNo;
-            lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
-            //lblUsername.Text = $"Hi, {loggedInName}!"; // Display username
+            //lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
+            lblUsername.Text = $"Hi, {loggedInName}!"; // Display username
             Menu.Dock = DockStyle.Right;
             btnAddpeople.Visible = false;
             btn_New.Visible = false;

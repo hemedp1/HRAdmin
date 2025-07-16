@@ -98,21 +98,22 @@
             // 
             this.panel6.Controls.Add(this.lblUsername);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(5110, 0);
+            this.panel6.Location = new System.Drawing.Point(5022, 0);
             this.panel6.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(294, 51);
+            this.panel6.Size = new System.Drawing.Size(382, 51);
             this.panel6.TabIndex = 0;
             // 
             // lblUsername
             // 
-            this.lblUsername.AutoSize = true;
+            this.lblUsername.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblUsername.Font = new System.Drawing.Font("Calibri", 10F);
-            this.lblUsername.Location = new System.Drawing.Point(-5, 11);
+            this.lblUsername.Location = new System.Drawing.Point(42, 0);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(95, 24);
+            this.lblUsername.Size = new System.Drawing.Size(340, 51);
             this.lblUsername.TabIndex = 2;
             this.lblUsername.Text = "Username";
+            this.lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // panel2
             // 
@@ -722,7 +723,6 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
