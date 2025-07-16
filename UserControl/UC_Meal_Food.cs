@@ -129,20 +129,20 @@ namespace HRAdmin.UserControl
                                 // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
                                 if (AA == "1")
                                 {
-                                    //GB_Authorization.Visible = false;
+                                    GB_Authorization.Visible = false;
                                 }
                                 else if (MA == "2")
                                 {
-                                    //GB_Authorization.Visible = true;
+                                    GB_Authorization.Visible = true;
                                 }
                                 else
                                 {
-                                    //GB_Authorization.Visible = false;
+                                    GB_Authorization.Visible = false;
                                 }
                             }
                             else
                             {
-                                //GB_Authorization.Visible = false;
+                                GB_Authorization.Visible = false;
                             }
                         }
                     }
