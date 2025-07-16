@@ -827,7 +827,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             CheckUserAccess(loggedInUser);
 
             Form_Home.sharedLabel.Text = "Admin > Meal Request";
-            Form_Home.sharedButton6.Visible = true;
+            //Form_Home.sharedButton6.Visible = true;
             UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, DeliveryTime, loggedInUser, loggedInDepart);
             addControls(ug);
         }

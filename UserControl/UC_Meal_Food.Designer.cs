@@ -28,15 +28,29 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Meal_Food));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.dgv_OS = new System.Windows.Forms.DataGridView();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.btnWithdraw = new System.Windows.Forms.Button();
-            this.btnApprove = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.GB_Authorization = new System.Windows.Forms.GroupBox();
             this.btnCheck = new System.Windows.Forms.Button();
+            this.btnApprove = new System.Windows.Forms.Button();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnView = new System.Windows.Forms.Button();
+            this.btnWithdraw = new System.Windows.Forms.Button();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.cmbOS_Occasion = new System.Windows.Forms.ComboBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
+            this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.cmbDepart = new System.Windows.Forms.ComboBox();
@@ -60,30 +74,16 @@
             this.txtEvent = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.GB_Authorization = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.btnView = new System.Windows.Forms.Button();
-            this.dtpStart = new System.Windows.Forms.DateTimePicker();
-            this.dtpEnd = new System.Windows.Forms.DateTimePicker();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.cmbOS_Occasion = new System.Windows.Forms.ComboBox();
             this.groupBox2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_OS)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.GB_Authorization.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.gbFoodrequest.SuspendLayout();
             this.panel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.GB_Authorization.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox2
@@ -117,14 +117,14 @@
             // 
             this.dgv_OS.BackgroundColor = System.Drawing.Color.White;
             this.dgv_OS.ColumnHeadersHeight = 29;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgv_OS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_OS.Location = new System.Drawing.Point(0, 240);
             this.dgv_OS.Name = "dgv_OS";
@@ -134,6 +134,113 @@
             this.dgv_OS.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgv_OS.Size = new System.Drawing.Size(1701, 212);
             this.dgv_OS.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.GB_Authorization);
+            this.panel1.Controls.Add(this.panel5);
+            this.panel1.Controls.Add(this.groupBox3);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 140);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1701, 100);
+            this.panel1.TabIndex = 1;
+            // 
+            // GB_Authorization
+            // 
+            this.GB_Authorization.Controls.Add(this.btnCheck);
+            this.GB_Authorization.Controls.Add(this.btnApprove);
+            this.GB_Authorization.Dock = System.Windows.Forms.DockStyle.Left;
+            this.GB_Authorization.Location = new System.Drawing.Point(460, 0);
+            this.GB_Authorization.Name = "GB_Authorization";
+            this.GB_Authorization.Size = new System.Drawing.Size(450, 100);
+            this.GB_Authorization.TabIndex = 0;
+            this.GB_Authorization.TabStop = false;
+            this.GB_Authorization.Text = "Authorization";
+            // 
+            // btnCheck
+            // 
+            this.btnCheck.BackColor = System.Drawing.Color.PeachPuff;
+            this.btnCheck.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCheck.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnCheck.Location = new System.Drawing.Point(64, 41);
+            this.btnCheck.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnCheck.Name = "btnCheck";
+            this.btnCheck.Size = new System.Drawing.Size(124, 34);
+            this.btnCheck.TabIndex = 101;
+            this.btnCheck.Text = "Check";
+            this.btnCheck.UseVisualStyleBackColor = false;
+            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
+            // 
+            // btnApprove
+            // 
+            this.btnApprove.BackColor = System.Drawing.Color.PowderBlue;
+            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnApprove.Location = new System.Drawing.Point(252, 41);
+            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApprove.Name = "btnApprove";
+            this.btnApprove.Size = new System.Drawing.Size(124, 34);
+            this.btnApprove.TabIndex = 100;
+            this.btnApprove.Text = "Approve";
+            this.btnApprove.UseVisualStyleBackColor = false;
+            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
+            // 
+            // panel5
+            // 
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(450, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(10, 100);
+            this.panel5.TabIndex = 2;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.btnView);
+            this.groupBox3.Controls.Add(this.btnWithdraw);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.groupBox3.Location = new System.Drawing.Point(0, 0);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(450, 100);
+            this.groupBox3.TabIndex = 1;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Order";
+            // 
+            // btnView
+            // 
+            this.btnView.BackColor = System.Drawing.Color.White;
+            this.btnView.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnView.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnView.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnView.Location = new System.Drawing.Point(64, 41);
+            this.btnView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnView.Name = "btnView";
+            this.btnView.Size = new System.Drawing.Size(124, 34);
+            this.btnView.TabIndex = 109;
+            this.btnView.Text = "View";
+            this.btnView.UseVisualStyleBackColor = false;
+            this.btnView.Click += new System.EventHandler(this.btnView_Click);
+            // 
+            // btnWithdraw
+            // 
+            this.btnWithdraw.BackColor = System.Drawing.Color.White;
+            this.btnWithdraw.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnWithdraw.Location = new System.Drawing.Point(252, 41);
+            this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnWithdraw.Name = "btnWithdraw";
+            this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
+            this.btnWithdraw.TabIndex = 108;
+            this.btnWithdraw.Text = "Withdraw";
+            this.btnWithdraw.UseVisualStyleBackColor = false;
+            this.btnWithdraw.Click += new System.EventHandler(this.btnWithdraw_Click);
             // 
             // panel4
             // 
@@ -158,53 +265,102 @@
             this.panel4.Size = new System.Drawing.Size(1701, 140);
             this.panel4.TabIndex = 0;
             // 
-            // btnWithdraw
+            // cmbOS_Occasion
             // 
-            this.btnWithdraw.BackColor = System.Drawing.Color.White;
-            this.btnWithdraw.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnWithdraw.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnWithdraw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnWithdraw.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnWithdraw.Location = new System.Drawing.Point(252, 41);
-            this.btnWithdraw.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnWithdraw.Name = "btnWithdraw";
-            this.btnWithdraw.Size = new System.Drawing.Size(124, 34);
-            this.btnWithdraw.TabIndex = 108;
-            this.btnWithdraw.Text = "Withdraw";
-            this.btnWithdraw.UseVisualStyleBackColor = false;
-            this.btnWithdraw.Click += new System.EventHandler(this.btnWithdraw_Click);
+            this.cmbOS_Occasion.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbOS_Occasion.FormattingEnabled = true;
+            this.cmbOS_Occasion.IntegralHeight = false;
+            this.cmbOS_Occasion.ItemHeight = 24;
+            this.cmbOS_Occasion.Items.AddRange(new object[] {
+            "Internal",
+            "External"});
+            this.cmbOS_Occasion.Location = new System.Drawing.Point(1085, 22);
+            this.cmbOS_Occasion.Name = "cmbOS_Occasion";
+            this.cmbOS_Occasion.Size = new System.Drawing.Size(250, 32);
+            this.cmbOS_Occasion.TabIndex = 137;
+            this.cmbOS_Occasion.SelectedIndexChanged += new System.EventHandler(this.cmbOS_Occasion_SelectedIndexChanged);
             // 
-            // btnApprove
+            // label17
             // 
-            this.btnApprove.BackColor = System.Drawing.Color.PowderBlue;
-            this.btnApprove.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnApprove.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnApprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnApprove.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnApprove.Location = new System.Drawing.Point(252, 41);
-            this.btnApprove.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnApprove.Name = "btnApprove";
-            this.btnApprove.Size = new System.Drawing.Size(124, 34);
-            this.btnApprove.TabIndex = 100;
-            this.btnApprove.Text = "Approve";
-            this.btnApprove.UseVisualStyleBackColor = false;
-            this.btnApprove.Click += new System.EventHandler(this.btnApprove_Click);
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label17.Location = new System.Drawing.Point(1061, 23);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(18, 27);
+            this.label17.TabIndex = 136;
+            this.label17.Text = ":";
             // 
-            // btnCheck
+            // label16
             // 
-            this.btnCheck.BackColor = System.Drawing.Color.PeachPuff;
-            this.btnCheck.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCheck.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnCheck.Location = new System.Drawing.Point(64, 41);
-            this.btnCheck.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnCheck.Name = "btnCheck";
-            this.btnCheck.Size = new System.Drawing.Size(124, 34);
-            this.btnCheck.TabIndex = 101;
-            this.btnCheck.Text = "Check";
-            this.btnCheck.UseVisualStyleBackColor = false;
-            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label16.Location = new System.Drawing.Point(635, 24);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(18, 27);
+            this.label16.TabIndex = 135;
+            this.label16.Text = ":";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label15.Location = new System.Drawing.Point(188, 23);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(18, 27);
+            this.label15.TabIndex = 134;
+            this.label15.Text = ":";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label14.Location = new System.Drawing.Point(961, 23);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(94, 27);
+            this.label14.TabIndex = 133;
+            this.label14.Text = "Occasion";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label13.Location = new System.Drawing.Point(524, 23);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(93, 27);
+            this.label13.TabIndex = 132;
+            this.label13.Text = "End date";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label9.Location = new System.Drawing.Point(59, 23);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(101, 27);
+            this.label9.TabIndex = 131;
+            this.label9.Text = "Start date";
+            // 
+            // dtpEnd
+            // 
+            this.dtpEnd.CalendarFont = new System.Drawing.Font("Calibri", 13F);
+            this.dtpEnd.Font = new System.Drawing.Font("Calibri", 12F);
+            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpEnd.Location = new System.Drawing.Point(659, 19);
+            this.dtpEnd.Name = "dtpEnd";
+            this.dtpEnd.Size = new System.Drawing.Size(250, 32);
+            this.dtpEnd.TabIndex = 130;
+            this.dtpEnd.ValueChanged += new System.EventHandler(this.dtpEnd_ValueChanged);
+            // 
+            // dtpStart
+            // 
+            this.dtpStart.CalendarFont = new System.Drawing.Font("Calibri", 13F);
+            this.dtpStart.Font = new System.Drawing.Font("Calibri", 12F);
+            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpStart.Location = new System.Drawing.Point(212, 19);
+            this.dtpStart.Name = "dtpStart";
+            this.dtpStart.Size = new System.Drawing.Size(250, 32);
+            this.dtpStart.TabIndex = 129;
+            this.dtpStart.ValueChanged += new System.EventHandler(this.dtpStart_ValueChanged);
             // 
             // label11
             // 
@@ -471,161 +627,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(1707, 46);
             this.flowLayoutPanel1.TabIndex = 127;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.GB_Authorization);
-            this.panel1.Controls.Add(this.panel5);
-            this.panel1.Controls.Add(this.groupBox3);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 140);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1701, 100);
-            this.panel1.TabIndex = 1;
-            // 
-            // GB_Authorization
-            // 
-            this.GB_Authorization.Controls.Add(this.btnCheck);
-            this.GB_Authorization.Controls.Add(this.btnApprove);
-            this.GB_Authorization.Dock = System.Windows.Forms.DockStyle.Left;
-            this.GB_Authorization.Location = new System.Drawing.Point(460, 0);
-            this.GB_Authorization.Name = "GB_Authorization";
-            this.GB_Authorization.Size = new System.Drawing.Size(450, 100);
-            this.GB_Authorization.TabIndex = 0;
-            this.GB_Authorization.TabStop = false;
-            this.GB_Authorization.Text = "Authorization";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.btnView);
-            this.groupBox3.Controls.Add(this.btnWithdraw);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.groupBox3.Location = new System.Drawing.Point(0, 0);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(450, 100);
-            this.groupBox3.TabIndex = 1;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Order";
-            // 
-            // panel5
-            // 
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel5.Location = new System.Drawing.Point(450, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(10, 100);
-            this.panel5.TabIndex = 2;
-            // 
-            // btnView
-            // 
-            this.btnView.BackColor = System.Drawing.Color.White;
-            this.btnView.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnView.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnView.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnView.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnView.Location = new System.Drawing.Point(64, 41);
-            this.btnView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnView.Name = "btnView";
-            this.btnView.Size = new System.Drawing.Size(124, 34);
-            this.btnView.TabIndex = 109;
-            this.btnView.Text = "View";
-            this.btnView.UseVisualStyleBackColor = false;
-            // 
-            // dtpStart
-            // 
-            this.dtpStart.CalendarFont = new System.Drawing.Font("Calibri", 13F);
-            this.dtpStart.Font = new System.Drawing.Font("Calibri", 12F);
-            this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStart.Location = new System.Drawing.Point(212, 19);
-            this.dtpStart.Name = "dtpStart";
-            this.dtpStart.Size = new System.Drawing.Size(250, 32);
-            this.dtpStart.TabIndex = 129;
-            this.dtpStart.ValueChanged += new System.EventHandler(this.dtpStart_ValueChanged);
-            // 
-            // dtpEnd
-            // 
-            this.dtpEnd.CalendarFont = new System.Drawing.Font("Calibri", 13F);
-            this.dtpEnd.Font = new System.Drawing.Font("Calibri", 12F);
-            this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEnd.Location = new System.Drawing.Point(659, 19);
-            this.dtpEnd.Name = "dtpEnd";
-            this.dtpEnd.Size = new System.Drawing.Size(250, 32);
-            this.dtpEnd.TabIndex = 130;
-            this.dtpEnd.ValueChanged += new System.EventHandler(this.dtpEnd_ValueChanged);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label9.Location = new System.Drawing.Point(59, 23);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(101, 27);
-            this.label9.TabIndex = 131;
-            this.label9.Text = "Start date";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label13.Location = new System.Drawing.Point(524, 23);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(93, 27);
-            this.label13.TabIndex = 132;
-            this.label13.Text = "End date";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label14.Location = new System.Drawing.Point(961, 23);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(94, 27);
-            this.label14.TabIndex = 133;
-            this.label14.Text = "Occasion";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label15.Location = new System.Drawing.Point(188, 23);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(18, 27);
-            this.label15.TabIndex = 134;
-            this.label15.Text = ":";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label16.Location = new System.Drawing.Point(635, 24);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(18, 27);
-            this.label16.TabIndex = 135;
-            this.label16.Text = ":";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label17.Location = new System.Drawing.Point(1061, 23);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(18, 27);
-            this.label17.TabIndex = 136;
-            this.label17.Text = ":";
-            // 
-            // cmbOS_Occasion
-            // 
-            this.cmbOS_Occasion.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmbOS_Occasion.FormattingEnabled = true;
-            this.cmbOS_Occasion.IntegralHeight = false;
-            this.cmbOS_Occasion.ItemHeight = 24;
-            this.cmbOS_Occasion.Items.AddRange(new object[] {
-            "Internal",
-            "External"});
-            this.cmbOS_Occasion.Location = new System.Drawing.Point(1085, 22);
-            this.cmbOS_Occasion.Name = "cmbOS_Occasion";
-            this.cmbOS_Occasion.Size = new System.Drawing.Size(250, 32);
-            this.cmbOS_Occasion.TabIndex = 137;
-            this.cmbOS_Occasion.SelectedIndexChanged += new System.EventHandler(this.cmbOS_Occasion_SelectedIndexChanged);
-            // 
             // UC_Meal_Food
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -639,15 +640,15 @@
             this.groupBox2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_OS)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.GB_Authorization.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.gbFoodrequest.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.GB_Authorization.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -162,7 +162,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedLabel.Text = "Admin > Meal Request";
             Form_Home.sharedButton4.Visible = true;
             Form_Home.sharedButton5.Visible = true;
-            Form_Home.sharedButton6.Visible = true;
+            //Form_Home.sharedButton6.Visible = true;
             UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, DeliveryTime, loggedInUser, loggedInDepart);
             addControls(ug);
         }

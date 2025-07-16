@@ -272,7 +272,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedButtonBC.Visible = false;
             Form_Home.sharedButton2.Visible = false;
             Form_Home.sharedButton3.Visible = false;
-            Form_Home.sharedButton6.Visible = true;
+            //Form_Home.sharedButton6.Visible = true;
             Form_Home.sharedbtnVisitor.Visible = false;
             Form_Home.sharedbtnWithdrawEntry.Visible = false;
             Form_Home.sharedbtnNewVisitor.Visible = false;
