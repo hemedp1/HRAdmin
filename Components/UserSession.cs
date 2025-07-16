@@ -15,19 +15,11 @@ namespace HRAdmin.Components
         public static string LoggedInBank { get; set; }
         public static string LoggedInAccNo { get; set; }
         public static string EventDetails { get; set; }
-
-        
-
         public static DateTime? EventTime { get; set; }
-
         public static DateTime? DeliveryTime { get; set; }
-
         public static string OccasionType { get; set; }
-
         public static string pdfFilePath { get; set; }
-
         public static string fromDate { get; set; }
-
         public static string toDate { get; set; }
         public static DateTime? StartDate { get; set; }
         public static DateTime? EndDate { get; set; }
