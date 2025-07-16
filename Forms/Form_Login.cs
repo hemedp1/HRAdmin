@@ -54,15 +54,16 @@ namespace HRAdmin
                                 
                                 string depart = reader["Department"].ToString();
                                 string Index = reader["IndexNo"].ToString();
+                                string Name = reader["Name"].ToString();
                                 UserSession.LoggedInUser = username;
                                 UserSession.loggedInDepart = depart;
                                 UserSession.loggedInIndex = Index;
-                                //UserSession.loggedInName = name;
+                                UserSession.loggedInName = Name;
                                 //UserSession.LoggedInBank = bank;
                                 //UserSession.LoggedInAccNo = accountNo;
                                 //MessageBox.Show($"DDSDSDDWDWWD: {Index}");
                                 this.Hide();
-                                Form_Home mainForm = new Form_Home(username, depart, Index);
+                                Form_Home mainForm = new Form_Home(username, depart, Index, Name);
                                    
                                 mainForm.Show();
                             }

@@ -41,6 +41,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Menu = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnApproval = new System.Windows.Forms.Button();
             this.btnMCReport = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.btnWithdrawEntry = new System.Windows.Forms.Button();
@@ -62,7 +63,6 @@
             this.btnBookCar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.btnApproval = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -78,19 +78,19 @@
             this.panel1.Controls.Add(this.panel6);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.ForeColor = System.Drawing.Color.White;
-            this.panel1.Location = new System.Drawing.Point(0, 803);
+            this.panel1.Location = new System.Drawing.Point(0, 1004);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(4804, 41);
+            this.panel1.Size = new System.Drawing.Size(5404, 51);
             this.panel1.TabIndex = 0;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Italic);
-            this.label3.Location = new System.Drawing.Point(3, 9);
+            this.label3.Location = new System.Drawing.Point(3, 11);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(363, 17);
+            this.label3.Size = new System.Drawing.Size(446, 22);
             this.label3.TabIndex = 1;
             this.label3.Text = "Copyrights © 2025. All Rights Reserved by HEM EDP ";
             // 
@@ -98,18 +98,19 @@
             // 
             this.panel6.Controls.Add(this.lblUsername);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(4543, 0);
+            this.panel6.Location = new System.Drawing.Point(5110, 0);
+            this.panel6.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(261, 41);
+            this.panel6.Size = new System.Drawing.Size(294, 51);
             this.panel6.TabIndex = 0;
             // 
             // lblUsername
             // 
             this.lblUsername.AutoSize = true;
             this.lblUsername.Font = new System.Drawing.Font("Calibri", 10F);
-            this.lblUsername.Location = new System.Drawing.Point(34, 9);
+            this.lblUsername.Location = new System.Drawing.Point(-5, 11);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(81, 21);
+            this.lblUsername.Size = new System.Drawing.Size(95, 24);
             this.lblUsername.TabIndex = 2;
             this.lblUsername.Text = "Username";
             // 
@@ -124,7 +125,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(196, 803);
+            this.panel2.Size = new System.Drawing.Size(220, 1004);
             this.panel2.TabIndex = 1;
             // 
             // btnAccount
@@ -137,11 +138,11 @@
             this.btnAccount.ForeColor = System.Drawing.Color.White;
             this.btnAccount.Image = ((System.Drawing.Image)(resources.GetObject("btnAccount.Image")));
             this.btnAccount.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAccount.Location = new System.Drawing.Point(0, 107);
+            this.btnAccount.Location = new System.Drawing.Point(0, 133);
             this.btnAccount.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnAccount.Name = "btnAccount";
             this.btnAccount.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnAccount.Size = new System.Drawing.Size(196, 49);
+            this.btnAccount.Size = new System.Drawing.Size(220, 61);
             this.btnAccount.TabIndex = 6;
             this.btnAccount.Tag = "    Account";
             this.btnAccount.Text = "Account";
@@ -158,11 +159,11 @@
             this.btnAdmin.ForeColor = System.Drawing.Color.White;
             this.btnAdmin.Image = ((System.Drawing.Image)(resources.GetObject("btnAdmin.Image")));
             this.btnAdmin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAdmin.Location = new System.Drawing.Point(0, 754);
+            this.btnAdmin.Location = new System.Drawing.Point(0, 943);
             this.btnAdmin.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnAdmin.Name = "btnAdmin";
             this.btnAdmin.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnAdmin.Size = new System.Drawing.Size(196, 49);
+            this.btnAdmin.Size = new System.Drawing.Size(220, 61);
             this.btnAdmin.TabIndex = 5;
             this.btnAdmin.Tag = "    Administrator";
             this.btnAdmin.Text = "    Administrator";
@@ -179,11 +180,11 @@
             this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
             this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button1.Location = new System.Drawing.Point(0, 58);
+            this.button1.Location = new System.Drawing.Point(0, 72);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
             this.button1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.button1.Size = new System.Drawing.Size(196, 49);
+            this.button1.Size = new System.Drawing.Size(220, 61);
             this.button1.TabIndex = 3;
             this.button1.Tag = "    HR && Admin";
             this.button1.Text = "    HR && Admin";
@@ -198,17 +199,17 @@
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(196, 58);
+            this.panel3.Size = new System.Drawing.Size(220, 72);
             this.panel3.TabIndex = 2;
             // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.White;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(76, 0);
+            this.pictureBox1.Location = new System.Drawing.Point(86, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(61, 58);
+            this.pictureBox1.Size = new System.Drawing.Size(69, 72);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -220,10 +221,10 @@
             this.Menu.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Menu.ForeColor = System.Drawing.Color.MidnightBlue;
             this.Menu.Image = ((System.Drawing.Image)(resources.GetObject("Menu.Image")));
-            this.Menu.Location = new System.Drawing.Point(139, 5);
+            this.Menu.Location = new System.Drawing.Point(156, 6);
             this.Menu.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Menu.Name = "Menu";
-            this.Menu.Size = new System.Drawing.Size(59, 54);
+            this.Menu.Size = new System.Drawing.Size(66, 68);
             this.Menu.TabIndex = 0;
             this.Menu.UseVisualStyleBackColor = true;
             this.Menu.Click += new System.EventHandler(this.Menu_Click);
@@ -253,12 +254,33 @@
             this.panel4.Controls.Add(this.btnBookCar);
             this.panel4.Controls.Add(this.label1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(196, 0);
+            this.panel4.Location = new System.Drawing.Point(220, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(4608, 58);
+            this.panel4.Size = new System.Drawing.Size(5184, 72);
             this.panel4.TabIndex = 2;
             this.panel4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel4_MouseDown);
+            // 
+            // btnApproval
+            // 
+            this.btnApproval.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnApproval.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
+            this.btnApproval.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnApproval.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnApproval.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.btnApproval.ForeColor = System.Drawing.Color.White;
+            this.btnApproval.Image = ((System.Drawing.Image)(resources.GetObject("btnApproval.Image")));
+            this.btnApproval.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnApproval.Location = new System.Drawing.Point(21, 0);
+            this.btnApproval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnApproval.Name = "btnApproval";
+            this.btnApproval.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnApproval.Size = new System.Drawing.Size(259, 72);
+            this.btnApproval.TabIndex = 28;
+            this.btnApproval.Tag = "";
+            this.btnApproval.Text = "Claim Approval";
+            this.btnApproval.UseVisualStyleBackColor = true;
+            this.btnApproval.Click += new System.EventHandler(this.btnApproval_Click);
             // 
             // btnMCReport
             // 
@@ -270,11 +292,11 @@
             this.btnMCReport.ForeColor = System.Drawing.Color.White;
             this.btnMCReport.Image = ((System.Drawing.Image)(resources.GetObject("btnMCReport.Image")));
             this.btnMCReport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMCReport.Location = new System.Drawing.Point(253, 0);
+            this.btnMCReport.Location = new System.Drawing.Point(280, 0);
             this.btnMCReport.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnMCReport.Name = "btnMCReport";
             this.btnMCReport.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnMCReport.Size = new System.Drawing.Size(230, 58);
+            this.btnMCReport.Size = new System.Drawing.Size(259, 72);
             this.btnMCReport.TabIndex = 26;
             this.btnMCReport.Tag = "";
             this.btnMCReport.Text = "Report PDF";
@@ -291,11 +313,11 @@
             this.btnUpdate.ForeColor = System.Drawing.Color.White;
             this.btnUpdate.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdate.Image")));
             this.btnUpdate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnUpdate.Location = new System.Drawing.Point(483, 0);
+            this.btnUpdate.Location = new System.Drawing.Point(539, 0);
             this.btnUpdate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnUpdate.Size = new System.Drawing.Size(230, 58);
+            this.btnUpdate.Size = new System.Drawing.Size(259, 72);
             this.btnUpdate.TabIndex = 25;
             this.btnUpdate.Tag = "";
             this.btnUpdate.Text = "Update";
@@ -312,11 +334,11 @@
             this.btnWithdrawEntry.ForeColor = System.Drawing.Color.White;
             this.btnWithdrawEntry.Image = ((System.Drawing.Image)(resources.GetObject("btnWithdrawEntry.Image")));
             this.btnWithdrawEntry.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnWithdrawEntry.Location = new System.Drawing.Point(713, 0);
+            this.btnWithdrawEntry.Location = new System.Drawing.Point(798, 0);
             this.btnWithdrawEntry.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWithdrawEntry.Name = "btnWithdrawEntry";
             this.btnWithdrawEntry.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnWithdrawEntry.Size = new System.Drawing.Size(230, 58);
+            this.btnWithdrawEntry.Size = new System.Drawing.Size(259, 72);
             this.btnWithdrawEntry.TabIndex = 24;
             this.btnWithdrawEntry.Tag = "";
             this.btnWithdrawEntry.Text = "Withdraw";
@@ -333,11 +355,11 @@
             this.btnVisitor.ForeColor = System.Drawing.Color.White;
             this.btnVisitor.Image = ((System.Drawing.Image)(resources.GetObject("btnVisitor.Image")));
             this.btnVisitor.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnVisitor.Location = new System.Drawing.Point(943, 0);
+            this.btnVisitor.Location = new System.Drawing.Point(1057, 0);
             this.btnVisitor.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnVisitor.Name = "btnVisitor";
             this.btnVisitor.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnVisitor.Size = new System.Drawing.Size(230, 58);
+            this.btnVisitor.Size = new System.Drawing.Size(259, 72);
             this.btnVisitor.TabIndex = 23;
             this.btnVisitor.Tag = "";
             this.btnVisitor.Text = "Display Visitor";
@@ -354,11 +376,11 @@
             this.btnNewVisitor.ForeColor = System.Drawing.Color.White;
             this.btnNewVisitor.Image = ((System.Drawing.Image)(resources.GetObject("btnNewVisitor.Image")));
             this.btnNewVisitor.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewVisitor.Location = new System.Drawing.Point(1173, 0);
+            this.btnNewVisitor.Location = new System.Drawing.Point(1316, 0);
             this.btnNewVisitor.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnNewVisitor.Name = "btnNewVisitor";
             this.btnNewVisitor.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNewVisitor.Size = new System.Drawing.Size(230, 58);
+            this.btnNewVisitor.Size = new System.Drawing.Size(259, 72);
             this.btnNewVisitor.TabIndex = 22;
             this.btnNewVisitor.Tag = "";
             this.btnNewVisitor.Text = "New Visitor";
@@ -375,11 +397,11 @@
             this.button6.ForeColor = System.Drawing.Color.White;
             this.button6.Image = ((System.Drawing.Image)(resources.GetObject("button6.Image")));
             this.button6.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button6.Location = new System.Drawing.Point(1403, 0);
+            this.button6.Location = new System.Drawing.Point(1575, 0);
             this.button6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button6.Name = "button6";
             this.button6.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.button6.Size = new System.Drawing.Size(230, 58);
+            this.button6.Size = new System.Drawing.Size(259, 72);
             this.button6.TabIndex = 21;
             this.button6.Tag = "";
             this.button6.Text = "Report PDF";
@@ -396,11 +418,11 @@
             this.button5.ForeColor = System.Drawing.Color.White;
             this.button5.Image = ((System.Drawing.Image)(resources.GetObject("button5.Image")));
             this.button5.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button5.Location = new System.Drawing.Point(1633, 0);
+            this.button5.Location = new System.Drawing.Point(1834, 0);
             this.button5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button5.Name = "button5";
             this.button5.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.button5.Size = new System.Drawing.Size(230, 58);
+            this.button5.Size = new System.Drawing.Size(259, 72);
             this.button5.TabIndex = 19;
             this.button5.Tag = "";
             this.button5.Text = "Menu Update\r\n(External)\r\n";
@@ -417,11 +439,11 @@
             this.button4.ForeColor = System.Drawing.Color.White;
             this.button4.Image = ((System.Drawing.Image)(resources.GetObject("button4.Image")));
             this.button4.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button4.Location = new System.Drawing.Point(1863, 0);
+            this.button4.Location = new System.Drawing.Point(2093, 0);
             this.button4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button4.Name = "button4";
             this.button4.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.button4.Size = new System.Drawing.Size(230, 58);
+            this.button4.Size = new System.Drawing.Size(259, 72);
             this.button4.TabIndex = 20;
             this.button4.Tag = "";
             this.button4.Text = "Menu Update\r\n(Internal)\r\n";
@@ -438,11 +460,11 @@
             this.btnCarCondition.ForeColor = System.Drawing.Color.White;
             this.btnCarCondition.Image = ((System.Drawing.Image)(resources.GetObject("btnCarCondition.Image")));
             this.btnCarCondition.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCarCondition.Location = new System.Drawing.Point(2093, 0);
-            this.btnCarCondition.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnCarCondition.Location = new System.Drawing.Point(2352, 0);
+            this.btnCarCondition.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnCarCondition.Name = "btnCarCondition";
             this.btnCarCondition.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnCarCondition.Size = new System.Drawing.Size(230, 58);
+            this.btnCarCondition.Size = new System.Drawing.Size(259, 72);
             this.btnCarCondition.TabIndex = 15;
             this.btnCarCondition.Tag = "";
             this.btnCarCondition.Text = "  Verify";
@@ -459,11 +481,11 @@
             this.btn_AccidentPDF.ForeColor = System.Drawing.Color.White;
             this.btn_AccidentPDF.Image = ((System.Drawing.Image)(resources.GetObject("btn_AccidentPDF.Image")));
             this.btn_AccidentPDF.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_AccidentPDF.Location = new System.Drawing.Point(2323, 0);
-            this.btn_AccidentPDF.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_AccidentPDF.Location = new System.Drawing.Point(2611, 0);
+            this.btn_AccidentPDF.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btn_AccidentPDF.Name = "btn_AccidentPDF";
             this.btn_AccidentPDF.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btn_AccidentPDF.Size = new System.Drawing.Size(230, 58);
+            this.btn_AccidentPDF.Size = new System.Drawing.Size(259, 72);
             this.btn_AccidentPDF.TabIndex = 14;
             this.btn_AccidentPDF.Tag = "";
             this.btn_AccidentPDF.Text = "      Report PDF";
@@ -480,11 +502,11 @@
             this.btn_Accident.ForeColor = System.Drawing.Color.White;
             this.btn_Accident.Image = ((System.Drawing.Image)(resources.GetObject("btn_Accident.Image")));
             this.btn_Accident.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_Accident.Location = new System.Drawing.Point(2553, 0);
-            this.btn_Accident.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_Accident.Location = new System.Drawing.Point(2870, 0);
+            this.btn_Accident.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btn_Accident.Name = "btn_Accident";
             this.btn_Accident.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btn_Accident.Size = new System.Drawing.Size(230, 58);
+            this.btn_Accident.Size = new System.Drawing.Size(259, 72);
             this.btn_Accident.TabIndex = 13;
             this.btn_Accident.Tag = "";
             this.btn_Accident.Text = "      Accident";
@@ -501,11 +523,11 @@
             this.btnInspect.ForeColor = System.Drawing.Color.White;
             this.btnInspect.Image = ((System.Drawing.Image)(resources.GetObject("btnInspect.Image")));
             this.btnInspect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnInspect.Location = new System.Drawing.Point(2783, 0);
-            this.btnInspect.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnInspect.Location = new System.Drawing.Point(3129, 0);
+            this.btnInspect.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnInspect.Name = "btnInspect";
             this.btnInspect.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnInspect.Size = new System.Drawing.Size(230, 58);
+            this.btnInspect.Size = new System.Drawing.Size(259, 72);
             this.btnInspect.TabIndex = 12;
             this.btnInspect.Tag = "";
             this.btnInspect.Text = "      Car Inspection";
@@ -522,11 +544,11 @@
             this.btnWDcar.ForeColor = System.Drawing.Color.White;
             this.btnWDcar.Image = ((System.Drawing.Image)(resources.GetObject("btnWDcar.Image")));
             this.btnWDcar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnWDcar.Location = new System.Drawing.Point(3013, 0);
-            this.btnWDcar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnWDcar.Location = new System.Drawing.Point(3388, 0);
+            this.btnWDcar.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnWDcar.Name = "btnWDcar";
             this.btnWDcar.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnWDcar.Size = new System.Drawing.Size(230, 58);
+            this.btnWDcar.Size = new System.Drawing.Size(259, 72);
             this.btnWDcar.TabIndex = 11;
             this.btnWDcar.Tag = "";
             this.btnWDcar.Text = "      Withdraw";
@@ -543,11 +565,11 @@
             this.btnApp.ForeColor = System.Drawing.Color.White;
             this.btnApp.Image = ((System.Drawing.Image)(resources.GetObject("btnApp.Image")));
             this.btnApp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnApp.Location = new System.Drawing.Point(3243, 0);
-            this.btnApp.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnApp.Location = new System.Drawing.Point(3647, 0);
+            this.btnApp.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnApp.Name = "btnApp";
             this.btnApp.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnApp.Size = new System.Drawing.Size(223, 58);
+            this.btnApp.Size = new System.Drawing.Size(251, 72);
             this.btnApp.TabIndex = 10;
             this.btnApp.Tag = "";
             this.btnApp.Text = "Validate";
@@ -564,11 +586,11 @@
             this.btn_New.ForeColor = System.Drawing.Color.White;
             this.btn_New.Image = ((System.Drawing.Image)(resources.GetObject("btn_New.Image")));
             this.btn_New.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_New.Location = new System.Drawing.Point(3466, 0);
-            this.btn_New.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btn_New.Location = new System.Drawing.Point(3898, 0);
+            this.btn_New.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btn_New.Name = "btn_New";
             this.btn_New.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btn_New.Size = new System.Drawing.Size(222, 58);
+            this.btn_New.Size = new System.Drawing.Size(250, 72);
             this.btn_New.TabIndex = 5;
             this.btn_New.Tag = "";
             this.btn_New.Text = "      New Meeting";
@@ -585,11 +607,11 @@
             this.button3.ForeColor = System.Drawing.Color.White;
             this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
             this.button3.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button3.Location = new System.Drawing.Point(3688, 0);
-            this.button3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button3.Location = new System.Drawing.Point(4148, 0);
+            this.button3.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.button3.Name = "button3";
             this.button3.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.button3.Size = new System.Drawing.Size(230, 58);
+            this.button3.Size = new System.Drawing.Size(259, 72);
             this.button3.TabIndex = 9;
             this.button3.Tag = "";
             this.button3.Text = "    Replace";
@@ -606,11 +628,11 @@
             this.button2.ForeColor = System.Drawing.Color.White;
             this.button2.Image = ((System.Drawing.Image)(resources.GetObject("button2.Image")));
             this.button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button2.Location = new System.Drawing.Point(3918, 0);
-            this.button2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button2.Location = new System.Drawing.Point(4407, 0);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.button2.Name = "button2";
             this.button2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.button2.Size = new System.Drawing.Size(230, 58);
+            this.button2.Size = new System.Drawing.Size(259, 72);
             this.button2.TabIndex = 8;
             this.button2.Tag = "";
             this.button2.Text = "      Withdraw";
@@ -627,11 +649,11 @@
             this.btnAddpeople.ForeColor = System.Drawing.Color.White;
             this.btnAddpeople.Image = ((System.Drawing.Image)(resources.GetObject("btnAddpeople.Image")));
             this.btnAddpeople.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnAddpeople.Location = new System.Drawing.Point(4148, 0);
-            this.btnAddpeople.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnAddpeople.Location = new System.Drawing.Point(4666, 0);
+            this.btnAddpeople.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnAddpeople.Name = "btnAddpeople";
             this.btnAddpeople.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnAddpeople.Size = new System.Drawing.Size(230, 58);
+            this.btnAddpeople.Size = new System.Drawing.Size(259, 72);
             this.btnAddpeople.TabIndex = 7;
             this.btnAddpeople.Tag = "";
             this.btnAddpeople.Text = "Add People";
@@ -648,11 +670,11 @@
             this.btnBookCar.ForeColor = System.Drawing.Color.White;
             this.btnBookCar.Image = ((System.Drawing.Image)(resources.GetObject("btnBookCar.Image")));
             this.btnBookCar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnBookCar.Location = new System.Drawing.Point(4378, 0);
-            this.btnBookCar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnBookCar.Location = new System.Drawing.Point(4925, 0);
+            this.btnBookCar.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.btnBookCar.Name = "btnBookCar";
             this.btnBookCar.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnBookCar.Size = new System.Drawing.Size(230, 58);
+            this.btnBookCar.Size = new System.Drawing.Size(259, 72);
             this.btnBookCar.TabIndex = 6;
             this.btnBookCar.Tag = "";
             this.btnBookCar.Text = "Book Car";
@@ -664,48 +686,27 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Calibri", 16F, System.Drawing.FontStyle.Bold);
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(6, 14);
+            this.label1.Location = new System.Drawing.Point(7, 18);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(380, 33);
+            this.label1.Size = new System.Drawing.Size(450, 39);
             this.label1.TabIndex = 0;
             this.label1.Text = "Hosiden Electronic (M) Sdn. Bhd.";
             // 
             // panel5
             // 
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(196, 58);
+            this.panel5.Location = new System.Drawing.Point(220, 72);
             this.panel5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(4608, 745);
+            this.panel5.Size = new System.Drawing.Size(5184, 932);
             this.panel5.TabIndex = 3;
             this.panel5.Paint += new System.Windows.Forms.PaintEventHandler(this.panel5_Paint);
             // 
-            // btnApproval
-            // 
-            this.btnApproval.Dock = System.Windows.Forms.DockStyle.Right;
-            this.btnApproval.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
-            this.btnApproval.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnApproval.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnApproval.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.btnApproval.ForeColor = System.Drawing.Color.White;
-            this.btnApproval.Image = ((System.Drawing.Image)(resources.GetObject("btnApproval.Image")));
-            this.btnApproval.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnApproval.Location = new System.Drawing.Point(23, 0);
-            this.btnApproval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnApproval.Name = "btnApproval";
-            this.btnApproval.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnApproval.Size = new System.Drawing.Size(230, 58);
-            this.btnApproval.TabIndex = 28;
-            this.btnApproval.Tag = "";
-            this.btnApproval.Text = "Claim Approval";
-            this.btnApproval.UseVisualStyleBackColor = true;
-            this.btnApproval.Click += new System.EventHandler(this.btnApproval_Click);
-            // 
             // Form_Home
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(4804, 844);
+            this.ClientSize = new System.Drawing.Size(5404, 1055);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel2);

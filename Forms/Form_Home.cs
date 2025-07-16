@@ -23,8 +23,10 @@ namespace HRAdmin.Forms
         private string loggedInIndex;
         private string loggedInUser;
         private string loggedInDepart;
+        private string loggedInName;
         private string LoggedInBank;
         private string LoggedInAccNo;
+
         private int borderSize = 2;
         public static Panel sharedPanel;
         public static Label sharedLabel;
@@ -50,15 +52,17 @@ namespace HRAdmin.Forms
         public static Button sharedbtnApproval; //miscellaneous claim report
 
 
-        public Form_Home(string username, string depart, string index)
+        public Form_Home(string username, string depart, string index, string Name)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = depart;
             loggedInIndex = index;
+            loggedInName = Name;
             //LoggedInBank = bank;
             //LoggedInAccNo = accountNo;
             lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
+            //lblUsername.Text = $"Hi, {loggedInName}!"; // Display username
             Menu.Dock = DockStyle.Right;
             btnAddpeople.Visible = false;
             btn_New.Visible = false;
