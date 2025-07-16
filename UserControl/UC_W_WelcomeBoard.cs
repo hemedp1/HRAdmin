@@ -185,7 +185,7 @@ namespace HRAdmin.UserControl
         {
             lblCompany.Text = info.Company;
             lblPurpose.Text = info.Purpose;
-            lblStartDate.Text = $"From {info.StartDate?.ToString("dd.MM.yyyy") ?? ""}  To {info.EndDate?.ToString("dd.MM.yyyy") ?? ""}";
+            lblStartDate.Text = $"From {info.StartDate?.ToString("dd.MM.yyyy") ?? ""}  To  {info.EndDate?.ToString("dd.MM.yyyy") ?? ""}";
             LoadVisitorsForCompany(info.Company, info.Purpose);
         }
 
