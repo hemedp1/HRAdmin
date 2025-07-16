@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Meal_Food));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -117,14 +117,14 @@
             // 
             this.dgv_OS.BackgroundColor = System.Drawing.Color.White;
             this.dgv_OS.ColumnHeadersHeight = 29;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgv_OS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_OS.Location = new System.Drawing.Point(0, 240);
             this.dgv_OS.Name = "dgv_OS";
@@ -267,6 +267,7 @@
             // 
             // cmbOS_Occasion
             // 
+            this.cmbOS_Occasion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbOS_Occasion.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbOS_Occasion.FormattingEnabled = true;
             this.cmbOS_Occasion.IntegralHeight = false;
@@ -384,6 +385,7 @@
             // 
             // cmbDepart
             // 
+            this.cmbDepart.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbDepart.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbDepart.FormattingEnabled = true;
             this.cmbDepart.ItemHeight = 24;
@@ -405,6 +407,7 @@
             // 
             // cmbRequester
             // 
+            this.cmbRequester.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRequester.Font = new System.Drawing.Font("Calibri", 12F);
             this.cmbRequester.FormattingEnabled = true;
             this.cmbRequester.IntegralHeight = false;

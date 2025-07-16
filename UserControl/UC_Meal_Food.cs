@@ -227,7 +227,14 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = "SELECT DISTINCT Department FROM tbl_Users WHERE Department IS NOT NULL";
+                    string query = @"
+                SELECT DISTINCT Department 
+                FROM tbl_InternalFoodOrder 
+                WHERE Department IS NOT NULL
+                UNION
+                SELECT DISTINCT Department 
+                FROM tbl_ExternalFoodOrder 
+                WHERE Department IS NOT NULL";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -292,7 +299,7 @@ namespace HRAdmin.UserControl
             // Set default weekly filter if no date range is provided
             DateTime today = DateTime.Today;
             DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Start of the week (Sunday)
-            DateTime weekEnd = weekStart.AddDays(7); // End of the week (Saturday)
+            DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1); // End of the week (Saturday, inclusive)
             if (!startDate.HasValue)
             {
                 startDate = weekStart;
@@ -301,55 +308,63 @@ namespace HRAdmin.UserControl
             {
                 endDate = weekEnd;
             }
+            else
+            {
+                // Normalize endDate to the end of the day
+                endDate = endDate.Value.Date.AddDays(1).AddTicks(-1);
+            }
+
+            // Normalize startDate to the beginning of the day
+            startDate = startDate.Value.Date;
 
             string query = "";
             if (occasionType == "Internal")
             {
                 query = @"
-                    SELECT 'Internal' AS OrderSource, 
-                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                    FROM tbl_InternalFoodOrder
-                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                          AND (@Department IS NULL OR Department = @Department)
-                          AND RequestDate >= @StartDate
-                          AND RequestDate < @EndDate
-                    ORDER BY RequestDate ASC";
+            SELECT 'Internal' AS OrderSource, 
+                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
+            FROM tbl_InternalFoodOrder
+            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                  AND (@Department IS NULL OR Department = @Department)
+                  AND RequestDate >= @StartDate
+                  AND RequestDate <= @EndDate
+            ORDER BY RequestDate ASC";
             }
             else if (occasionType == "External")
             {
                 query = @"
-                    SELECT 'External' AS OrderSource,
-                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-                    FROM tbl_ExternalFoodOrder
-                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                          AND (@Department IS NULL OR Department = @Department)
-                          AND RequestDate >= @StartDate
-                          AND RequestDate < @EndDate
-                    ORDER BY RequestDate ASC";
+            SELECT 'External' AS OrderSource,
+                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
+            FROM tbl_ExternalFoodOrder
+            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                  AND (@Department IS NULL OR Department = @Department)
+                  AND RequestDate >= @StartDate
+                  AND RequestDate <= @EndDate
+            ORDER BY RequestDate ASC";
             }
             else
             {
                 query = @"
-                    SELECT 'Internal' AS OrderSource, 
-                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-                    FROM tbl_InternalFoodOrder
-                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                          AND (@Department IS NULL OR Department = @Department)
-                          AND RequestDate >= @StartDate
-                          AND RequestDate < @EndDate
-                    UNION ALL
-                    SELECT 'External' AS OrderSource,
-                           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-                    FROM tbl_ExternalFoodOrder
-                    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                          AND (@Department IS NULL OR Department = @Department)
-                          AND RequestDate >= @StartDate
-                          AND RequestDate < @EndDate
-                    ORDER BY RequestDate ASC";
+            SELECT 'Internal' AS OrderSource, 
+                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
+            FROM tbl_InternalFoodOrder
+            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                  AND (@Department IS NULL OR Department = @Department)
+                  AND RequestDate >= @StartDate
+                  AND RequestDate <= @EndDate
+            UNION ALL
+            SELECT 'External' AS OrderSource,
+                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
+            FROM tbl_ExternalFoodOrder
+            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+                  AND (@Department IS NULL OR Department = @Department)
+                  AND RequestDate >= @StartDate
+                  AND RequestDate <= @EndDate
+            ORDER BY RequestDate ASC";
             }
 
             try
@@ -365,7 +380,7 @@ namespace HRAdmin.UserControl
                         cmd.Parameters.AddWithValue("@StartDate", startDate.Value);
                         cmd.Parameters.AddWithValue("@EndDate", endDate.Value);
 
-                        Debug.WriteLine($"Executing LoadData with RequesterID: {(string.IsNullOrEmpty(requesterID) ? "NULL" : requesterID)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, OccasionType: {(string.IsNullOrEmpty(occasionType) ? "NULL" : occasionType)}, StartDate: {startDate.Value.ToString("yyyy-MM-dd")}, EndDate: {endDate.Value.ToString("yyyy-MM-dd")}");
+                        Debug.WriteLine($"Executing LoadData with RequesterID: {(string.IsNullOrEmpty(requesterID) ? "NULL" : requesterID)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, OccasionType: {(string.IsNullOrEmpty(occasionType) ? "NULL" : occasionType)}, StartDate: {startDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}, EndDate: {endDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -1993,6 +2008,7 @@ namespace HRAdmin.UserControl
                 footerTbl.WriteSelectedRows(0, -1, 36, 20, writer.DirectContent);
             }
         }
+
         private void cmbOccasion_SelectedIndexChanged(object sender, EventArgs e) { }
         private void txtEvent_TextChanged(object sender, EventArgs e) { }
         private void dtDelivery_ValueChanged(object sender, EventArgs e) { }
