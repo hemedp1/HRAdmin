@@ -61,6 +61,7 @@ namespace HRAdmin
                                 UserSession.loggedInIndex = Index;
                                 UserSession.loggedInName = Name;
                                 UserSession.loggedInfullName = fullName;
+                                
                                 //UserSession.LoggedInBank = bank;
                                 //UserSession.LoggedInAccNo = accountNo;
                                 //MessageBox.Show($"DDSDSDDWDWWD: {Index}");

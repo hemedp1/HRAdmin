@@ -61,6 +61,7 @@ namespace HRAdmin.Forms
             loggedInIndex = index;
             loggedInName = Name;
             loggedInfullName = fullName;
+            
             //LoggedInBank = bank;
             //LoggedInAccNo = accountNo;
             //lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
@@ -540,7 +541,7 @@ namespace HRAdmin.Forms
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
             btnApproval.Visible = false;
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName);
             addControls(ug);
         }
 
