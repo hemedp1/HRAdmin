@@ -23,7 +23,7 @@ namespace HRAdmin.UserControl
 {
     public partial class UC_M_MiscellaneousClaim : System.Windows.Forms.UserControl
     {
-        private string loggedInName;
+        private string LoggedInUser;
         private string loggedInDepart;
         private string loggedInIndex;
         private DataTable cachedData; // Declare cachedData
@@ -34,7 +34,7 @@ namespace HRAdmin.UserControl
         public UC_M_MiscellaneousClaim(string username, string department, string emp)
         {
             InitializeComponent();
-            loggedInName = username;
+            LoggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
             
@@ -72,7 +72,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = false;
             Form_Home.sharedbtnApproval.Visible = false;
 
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInName, loggedInDepart, loggedInIndex);
+            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 
@@ -92,7 +92,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
             else if (selectedType == "Benefit")
@@ -101,7 +101,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
         }
@@ -116,7 +116,7 @@ namespace HRAdmin.UserControl
                     string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Username", loggedInName);
+                        cmd.Parameters.AddWithValue("@Username", LoggedInUser);
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -681,7 +681,7 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict withdrawal to only the user's own orders
-            if (requester != loggedInName)
+            if (requester != LoggedInUser)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -820,7 +820,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
                             cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -890,7 +890,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -917,7 +917,7 @@ namespace HRAdmin.UserControl
             else
             {
                 // Check if the user is trying to approve their own claim
-                if (requester == loggedInName)
+                if (requester == LoggedInUser)
                 {
                     MessageBox.Show("You cannot approve your own claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -960,7 +960,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1065,7 +1065,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
                             cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1141,7 +1141,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1168,7 +1168,7 @@ namespace HRAdmin.UserControl
             else
             {
                 // Check if the user is trying to reject their own claim
-                if (requester == loggedInName)
+                if (requester == LoggedInUser)
                 {
                     MessageBox.Show("You cannot reject your own claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -1216,7 +1216,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1265,7 +1265,7 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict viewing to only the user's own orders unless they are in ACCOUNT or HR & ADMIN
-            if (loggedInDepart != "ACCOUNT" && loggedInDepart != "HR & ADMIN" && requester != loggedInName)
+            if (loggedInDepart != "ACCOUNT" && loggedInDepart != "HR & ADMIN" && requester != LoggedInUser)
             {
                 MessageBox.Show("You can only view your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
