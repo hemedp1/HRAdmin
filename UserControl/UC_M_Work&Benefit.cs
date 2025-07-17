@@ -23,13 +23,15 @@ namespace HRAdmin.UserControl
         private string expensesType; // To store the selected ExpensesType
         private DataGridViewCellStyle defaultCellStyle; // Store default cell style for reverting
 
-        public UC_M_Work(string username, string department, string selectedType, string emp)
+        public UC_M_Work(string Name, string department, string selectedType, string emp)
         {
             InitializeComponent();
-            loggedInName = username;
+            loggedInName = Name;
             loggedInDepart = department;
             loggedInIndex = emp;
             expensesType = selectedType;
+
+            MessageBox.Show($"AAAAAAAAAAAAAA: {loggedInName}");
             InitializeDataTable();
             ConfigureDataGridView();
             StyleDataGridView(dgvW);

@@ -13,13 +13,13 @@ namespace HRAdmin.UserControl
 {
     public partial class UC_Acc_Account: System.Windows.Forms.UserControl
     {
-        private string loggedInUser;
+        private string loggedInName;
         private string loggedInDepart;
         private string loggedInIndex;
         public UC_Acc_Account(string username, string department, string emp)
         {
             InitializeComponent();
-            loggedInUser = username;
+            loggedInName = username;
             loggedInDepart = department;
             loggedInIndex = emp;
         }
@@ -30,7 +30,7 @@ namespace HRAdmin.UserControl
             //Form_Home.sharedbtnMCReport.Visible = true;
             //Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
