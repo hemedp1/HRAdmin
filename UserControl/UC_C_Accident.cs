@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Services.Description;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using static Org.BouncyCastle.Asn1.Cmp.Challenge;
@@ -26,14 +27,16 @@ namespace HRAdmin.UserControl
         private string loggedInUser;
         private string loggedInIndex;
         private string loggedInDepart;
-        public UC_C_Accident(string username, string Index, string Depart)
+        private string loggedInfullName;
+        public UC_C_Accident(string username, string Index, string Depart, string fullName)
         {
             InitializeComponent();
             this.Load += UC_C_Accident_Load;
             loggedInUser = username;
             loggedInIndex = Index;
             loggedInDepart = Depart;
-
+            loggedInfullName = fullName;
+            //MessageBox.Show($"Error on Report ID Selection: {loggedInfullName}");
             groupBox2.Visible = false;
             Grp6 = groupBox6;
             AutoScroll = true;

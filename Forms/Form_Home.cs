@@ -24,6 +24,7 @@ namespace HRAdmin.Forms
         private string loggedInUser;
         private string loggedInDepart;
         private string loggedInName;
+        private string loggedInfullName;
         private string LoggedInBank;
         private string LoggedInAccNo;
 
@@ -52,13 +53,14 @@ namespace HRAdmin.Forms
         public static Button sharedbtnApproval; //miscellaneous claim report
 
 
-        public Form_Home(string username, string depart, string index, string Name)
+        public Form_Home(string username, string depart, string index, string Name, string fullName)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = depart;
             loggedInIndex = index;
             loggedInName = Name;
+            loggedInfullName = fullName;
             //LoggedInBank = bank;
             //LoggedInAccNo = accountNo;
             //lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
@@ -483,7 +485,7 @@ namespace HRAdmin.Forms
             btnCarCondition.Visible = false;
             btn_AccidentPDF.Visible = true;
             label1.Text = "Admin > Car Reservation > Accident";
-            UC_C_Accident ug = new UC_C_Accident(loggedInUser, loggedInIndex, loggedInDepart);
+            UC_C_Accident ug = new UC_C_Accident(loggedInUser, loggedInIndex, loggedInDepart, loggedInfullName);
             //groupBox6.Visible = false;
             addControls(ug);
         }
@@ -492,7 +494,7 @@ namespace HRAdmin.Forms
         {
             btn_AccidentPDF.Visible = false;
             label1.Text = "Admin > Car Reservation > Accident > View Report";
-            UC_C_AccidentPDF ug = new UC_C_AccidentPDF(loggedInUser, loggedInIndex, loggedInDepart);
+            UC_C_AccidentPDF ug = new UC_C_AccidentPDF(loggedInUser, loggedInIndex, loggedInDepart, loggedInfullName);
             addControls(ug);
 
         }

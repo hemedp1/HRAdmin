@@ -65,7 +65,7 @@ namespace HRAdmin
                                 //UserSession.LoggedInAccNo = accountNo;
                                 //MessageBox.Show($"DDSDSDDWDWWD: {Index}");
                                 this.Hide();
-                                Form_Home mainForm = new Form_Home(username, depart, Index, Name);
+                                Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName);
                                    
                                 mainForm.Show();
                             }

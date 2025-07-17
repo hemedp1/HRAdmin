@@ -34,11 +34,13 @@ namespace HRAdmin.UserControl
         private string loggedInUser;
         private string loggedInIndex;
         private string loggedInDepart;
-        public UC_C_AccidentPDF(string username, string Index, string Depart)
+        private string loggedInfullName;
+        public UC_C_AccidentPDF(string username, string Index, string Depart, string fullName)
         {
             loggedInUser = username;
             loggedInIndex = Index;
             loggedInDepart = Depart;
+            loggedInfullName = fullName;
             InitializeComponent();
             Load += UC_C_AccidentPDF_Load;
             loadfilter();
@@ -826,7 +828,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedLabel.Text = "Admin > Car Reservation > Accident";
 
             Form_Home.sharedbtn_AccidentPDF.Visible = true;
-            UC_C_Accident ug = new UC_C_Accident(loggedInUser, loggedInIndex, loggedInDepart);
+            UC_C_Accident ug = new UC_C_Accident(loggedInUser, loggedInIndex, loggedInDepart, loggedInfullName);
             addControls(ug);
         }
         private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
