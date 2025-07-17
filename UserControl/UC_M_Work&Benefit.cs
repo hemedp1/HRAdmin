@@ -30,8 +30,8 @@ namespace HRAdmin.UserControl
             loggedInDepart = department;
             loggedInIndex = emp;
             expensesType = selectedType;
+            MessageBox.Show($"AAAAAAAAAAAAAA: {loggedInName}");
 
-            MessageBox.Show($"BADMINTON: {loggedInName}");
             InitializeDataTable();
             ConfigureDataGridView();
             StyleDataGridView(dgvW);

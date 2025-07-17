@@ -37,6 +37,7 @@ namespace HRAdmin.UserControl
             loggedInName = username;
             loggedInDepart = department;
             loggedInIndex = emp;
+            
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
             LoadUsernames();
             LoadDepartments();

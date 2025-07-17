@@ -16,12 +16,13 @@ namespace HRAdmin.UserControl
         private string loggedInName;
         private string loggedInDepart;
         private string loggedInIndex;
-        public UC_Acc_Account(string username, string department, string emp)
+        public UC_Acc_Account(string department, string emp, string Name)
         {
             InitializeComponent();
-            loggedInName = username;
+            loggedInName = Name;
             loggedInDepart = department;
             loggedInIndex = emp;
+            
         }
 
         private void btnMClaim_Click(object sender, EventArgs e)
