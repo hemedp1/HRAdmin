@@ -417,6 +417,7 @@ namespace HRAdmin.UserControl
         {
             dgvMS.AutoGenerateColumns = false;
             dgvMS.Columns.Clear();
+            dgvMS.ReadOnly = true;
 
             dgvMS.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
