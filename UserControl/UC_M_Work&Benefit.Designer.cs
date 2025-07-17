@@ -96,6 +96,11 @@
             this.dgvW.Size = new System.Drawing.Size(1473, 350);
             this.dgvW.TabIndex = 0;
             this.dgvW.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvW_CellContentClick);
+            this.dgvW.CellBeginEdit += dgvW_CellBeginEdit;
+            this.dgvW.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvW_CellEndEdit);
+            this.dgvW.CellClick += dgvW_CellClick;
+            
+            
             // 
             // btnBack
             // 
@@ -165,6 +170,8 @@
             this.ResumeLayout(false);
 
         }
+
+       
 
         #endregion
 

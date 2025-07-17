@@ -11,6 +11,7 @@ namespace HRAdmin.Components
         public static string LoggedInUser { get; set; }
         public static string loggedInDepart { get; set; }
         public static string loggedInIndex { get; set; }
+        public static string loggedInfullName { get; set; }
         public static string loggedInName { get; set; }
         public static string LoggedInBank { get; set; }
         public static string LoggedInAccNo { get; set; }
