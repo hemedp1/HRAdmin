@@ -17,7 +17,7 @@ namespace HRAdmin.UserControl
 {
     public partial class UC_M_Work : System.Windows.Forms.UserControl
     {
-        private string loggedInUser;
+        private string loggedInName;
         private string loggedInDepart;
         private string loggedInIndex;
         private string expensesType; // To store the selected ExpensesType
@@ -26,7 +26,7 @@ namespace HRAdmin.UserControl
         public UC_M_Work(string username, string department, string selectedType, string emp)
         {
             InitializeComponent();
-            loggedInUser = username;
+            loggedInName = username;
             loggedInDepart = department;
             loggedInIndex = emp;
             expensesType = selectedType;
@@ -522,7 +522,7 @@ namespace HRAdmin.UserControl
                         foreach (DataRow row in validRows.Rows)
                         {
                             row["Requester"] = row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"]?.ToString())
-                                ? loggedInUser : row["Requester"];
+                                ? loggedInName : row["Requester"];
                             row["EmpNo"] = row["EmpNo"] == DBNull.Value || string.IsNullOrEmpty(row["EmpNo"]?.ToString())
                                 ? loggedInIndex : row["EmpNo"];
                             row["Department"] = row["Department"] == DBNull.Value || string.IsNullOrEmpty(row["Department"]?.ToString())
@@ -574,7 +574,7 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
-                        UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, expensesType, loggedInIndex);
+                        UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, expensesType, loggedInIndex);
                         addControls(ug);
                     }
                 }
@@ -614,7 +614,7 @@ namespace HRAdmin.UserControl
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
     }
