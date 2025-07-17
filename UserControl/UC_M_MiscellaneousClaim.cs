@@ -23,7 +23,7 @@ namespace HRAdmin.UserControl
 {
     public partial class UC_M_MiscellaneousClaim : System.Windows.Forms.UserControl
     {
-        private string loggedInUser;
+        private string loggedInName;
         private string loggedInDepart;
         private string loggedInIndex;
         private DataTable cachedData; // Declare cachedData
@@ -34,7 +34,7 @@ namespace HRAdmin.UserControl
         public UC_M_MiscellaneousClaim(string username, string department, string emp)
         {
             InitializeComponent();
-            loggedInUser = username;
+            loggedInName = username;
             loggedInDepart = department;
             loggedInIndex = emp;
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
@@ -71,7 +71,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = false;
             Form_Home.sharedbtnApproval.Visible = false;
 
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInName, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 
@@ -91,7 +91,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
             else if (selectedType == "Benefit")
@@ -100,7 +100,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInUser, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
         }
@@ -115,7 +115,7 @@ namespace HRAdmin.UserControl
                     string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
+                        cmd.Parameters.AddWithValue("@Username", loggedInName);
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -680,7 +680,7 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict withdrawal to only the user's own orders
-            if (requester != loggedInUser)
+            if (requester != loggedInName)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -818,7 +818,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInName);
                             cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -888,7 +888,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInName);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -951,7 +951,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInName);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1055,7 +1055,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInName);
                             cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1131,7 +1131,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInName);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1199,7 +1199,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInName);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1248,7 +1248,7 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict viewing to only the user's own orders unless they are in ACCOUNT or HR & ADMIN
-            if (loggedInDepart != "ACCOUNT" && loggedInDepart != "HR & ADMIN" && requester != loggedInUser)
+            if (loggedInDepart != "ACCOUNT" && loggedInDepart != "HR & ADMIN" && requester != loggedInName)
             {
                 MessageBox.Show("You can only view your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -1559,8 +1559,8 @@ namespace HRAdmin.UserControl
                         // Add hyperlink to the Invoice column using temporary file
                         PdfPCell invoiceCell = new PdfPCell();
                         invoiceCell.Border = iTextSharp.text.Rectangle.BOX;
-                        invoiceCell.HorizontalAlignment = Element.ALIGN_RIGHT; // Align text to the left
-                        //invoiceCell.Padding = f;
+                        invoiceCell.Padding = 5f; // Add padding to give space around the text
+
                         string invoicePath = item["Invoice"] as string;
                         if (!string.IsNullOrEmpty(invoicePath) && File.Exists(invoicePath))
                         {
@@ -1568,15 +1568,12 @@ namespace HRAdmin.UserControl
                             Anchor invoiceLink = new Anchor("View", linkFont);
                             invoiceLink.Reference = $"file:///{invoicePath.Replace("\\", "/")}";
                             linkPhrase.Add(invoiceLink);
-                            invoiceCell.AddElement(linkPhrase);
+                            invoiceCell.AddElement(linkPhrase); // Add the phrase to the cell
                         }
                         else
                         {
                             invoiceCell.AddElement(new Phrase("No Invoice", bodyFont));
                         }
-                        //invoiceCell.HorizontalAlignment = Element.ALIGN_MIDDLE ; // Align text to the left
-                        //invoiceCell.VerticalAlignment = Element.ALIGN_TOP;   // Align text to the top
-                        
                         detailsTable2.AddCell(invoiceCell);
 
                         totalAmount += decimal.TryParse(invoiceAmount, out decimal amount) ? amount : 0;
