@@ -66,6 +66,9 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cmbECtype = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -101,6 +104,7 @@
             // 
             // cmbDepart
             // 
+            this.cmbDepart.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbDepart.DropDownWidth = 200;
             this.cmbDepart.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbDepart.FormattingEnabled = true;
@@ -123,6 +127,7 @@
             // 
             // cmbRequester
             // 
+            this.cmbRequester.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRequester.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbRequester.FormattingEnabled = true;
             this.cmbRequester.IntegralHeight = false;
@@ -320,6 +325,9 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.label13);
+            this.panel4.Controls.Add(this.label14);
+            this.panel4.Controls.Add(this.cmbECtype);
             this.panel4.Controls.Add(this.dtpEnd);
             this.panel4.Controls.Add(this.label9);
             this.panel4.Controls.Add(this.label12);
@@ -521,6 +529,42 @@
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label13.Location = new System.Drawing.Point(1172, 22);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(18, 27);
+            this.label13.TabIndex = 136;
+            this.label13.Text = ":";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label14.Location = new System.Drawing.Point(971, 22);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(195, 27);
+            this.label14.TabIndex = 135;
+            this.label14.Text = "Expenses claim type";
+            // 
+            // cmbECtype
+            // 
+            this.cmbECtype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbECtype.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbECtype.FormattingEnabled = true;
+            this.cmbECtype.IntegralHeight = false;
+            this.cmbECtype.ItemHeight = 27;
+            this.cmbECtype.Items.AddRange(new object[] {
+            "Work",
+            "Benefit"});
+            this.cmbECtype.Location = new System.Drawing.Point(1196, 19);
+            this.cmbECtype.Name = "cmbECtype";
+            this.cmbECtype.Size = new System.Drawing.Size(250, 35);
+            this.cmbECtype.TabIndex = 134;
+            this.cmbECtype.SelectedIndexChanged += new System.EventHandler(this.cmbECtype_SelectedIndexChanged);
+            // 
             // UC_M_MiscellaneousClaim
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -585,5 +629,8 @@
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel P_Authorization;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.ComboBox cmbECtype;
     }
 }
