@@ -40,7 +40,7 @@ namespace HRAdmin
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    string query = "SELECT Name1, Department, IndexNo FROM tbl_Users WHERE Username = @Username AND Password = @Password";
+                    string query = "SELECT Name, Name1, Department, IndexNo FROM tbl_Users WHERE Username = @Username AND Password = @Password";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", username);
@@ -54,11 +54,13 @@ namespace HRAdmin
                                 
                                 string depart = reader["Department"].ToString();
                                 string Index = reader["IndexNo"].ToString();
+                                string fullName = reader["Name"].ToString();
                                 string Name = reader["Name1"].ToString();
                                 UserSession.LoggedInUser = username;
                                 UserSession.loggedInDepart = depart;
                                 UserSession.loggedInIndex = Index;
                                 UserSession.loggedInName = Name;
+                                UserSession.loggedInfullName = fullName;
                                 //UserSession.LoggedInBank = bank;
                                 //UserSession.LoggedInAccNo = accountNo;
                                 //MessageBox.Show($"DDSDSDDWDWWD: {Index}");
