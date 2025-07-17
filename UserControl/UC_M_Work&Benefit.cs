@@ -35,17 +35,23 @@ namespace HRAdmin.UserControl
             StyleDataGridView(dgvW);
             dgvW.DataError += DgvW_DataError;
             dgvW.CellValueChanged += dgvW_CellValueChanged;
-            dgvW.CellFormatting += dgvW_CellFormatting; // Add CellFormatting event handler
+            dgvW.CellFormatting += dgvW_CellFormatting;
         }
 
         private void UC_M_Work_Load(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in dgvW.Rows)
             {
-                bool attached = row.Cells["Invoice"].Value is byte[];
-                row.Cells["InvoiceAttached"].Value = attached ? "✅" : "❌";
-                row.Cells["btnInvoice"].Value = attached ? "View / Reupload" : "Upload";
+                UpdateInvoiceButtonState(row);
             }
+        }
+        private void UpdateInvoiceButtonState(DataGridViewRow row)
+        {
+            //if (row.IsNewRow) return;
+
+            bool hasPdf = row.Cells["Invoice"].Value is byte[] pdfData && pdfData.Length > 0;
+            row.Cells["InvoiceAttached"].Value = hasPdf ? "✅" : "❌";
+            ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = hasPdf ? "View / Reupload" : "Upload";
         }
 
         private void DgvW_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -93,13 +99,11 @@ namespace HRAdmin.UserControl
             DataGridViewButtonColumn btnCol = new DataGridViewButtonColumn
             {
                 HeaderText = "Invoice",
-                Text = "Reupload/View",
-                UseColumnTextForButtonValue = true,
+                Text = "Upload",
+                UseColumnTextForButtonValue = false, // Critical change
                 Name = "btnInvoice"
             };
             dgvW.Columns.Add(btnCol);
-
-            // Allow adding new rows by default
             dgvW.AllowUserToAddRows = true;
         }
 
@@ -121,12 +125,21 @@ namespace HRAdmin.UserControl
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
+                // Skip handling for these specific columns
+                string columnName = dgvW.Columns[e.ColumnIndex].Name;
+                if (columnName == "btnInvoice" || columnName == "InvoiceAttached" || columnName == "Invoice")
+                {
+                    return;
+                }
+
                 DataGridViewRow row = dgvW.Rows[e.RowIndex];
+
                 // Assign ID when a new row is created or edited
                 if (row.Cells["ID"].Value == null || Convert.IsDBNull(row.Cells["ID"].Value))
                 {
                     AssignNextId(row);
                 }
+
                 // Automatically add a new row when the user starts entering data
                 if (!dgvW.Rows.Cast<DataGridViewRow>().Any(r => r.IsNewRow && r.Index == dgvW.Rows.Count - 1))
                 {
@@ -135,35 +148,76 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+        private void UpdateInvoiceButtonState(DataGridViewRow row, bool forceUpdate = false)
+        {
+            if (row.IsNewRow) return;
 
+            // Only update if forced or if the invoice state actually changed
+            bool currentHasPdf = row.Cells["Invoice"].Value is byte[] pdfData && pdfData.Length > 0;
+            bool currentAttachedState = row.Cells["InvoiceAttached"].Value?.ToString() == "✅";
+            bool currentButtonState = row.Cells["btnInvoice"].Value?.ToString() == "View / Reupload";
+
+            if (forceUpdate ||
+                (currentHasPdf && (!currentAttachedState || !currentButtonState)) ||
+                (!currentHasPdf && (currentAttachedState || currentButtonState)))
+            {
+                row.Cells["InvoiceAttached"].Value = currentHasPdf ? "✅" : "❌";
+                ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = currentHasPdf ? "View / Reupload" : "Upload";
+            }
+        }
+        private void dgvW_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            UpdateInvoiceButtonState(dgvW.Rows[e.RowIndex]);
+        }
+        private void dgvW_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                UpdateInvoiceButtonState(dgvW.Rows[e.RowIndex]);
+            }
+        }
         private void dgvW_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == dgvW.Columns["Invoice Amount"].Index && e.RowIndex >= 0)
             {
                 if (e.Value != null && e.Value != DBNull.Value)
                 {
-                    // Format the cell to display "RM" followed by the amount
                     e.Value = $"RM {Convert.ToDecimal(e.Value):N2}";
                     e.FormattingApplied = true;
                 }
                 else
                 {
-                    // Display only "RM" when the cell is empty
                     e.Value = "RM";
                     e.FormattingApplied = true;
                 }
             }
         }
+        private void dgvW_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                // Skip if we're clicking the button column itself
+                if (dgvW.Columns[e.ColumnIndex].Name == "btnInvoice")
+                    return;
 
+                // Refresh the button state immediately
+                BeginInvoke((MethodInvoker)delegate {
+                    UpdateInvoiceButtonState(dgvW.Rows[e.RowIndex]);
+                });
+            }
+        }
         private void dgvW_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+
             if (dgvW.Columns[e.ColumnIndex].Name == "btnInvoice" && e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvW.Rows[e.RowIndex];
-                byte[] currentPdf = row.Cells["Invoice"].Value as byte[];
+                if (row.IsNewRow) return;
 
-                // Fresh attachment (no existing PDF) - skip confirmation
-                if (currentPdf == null)
+                byte[] currentPdf = row.Cells["Invoice"].Value as byte[];
+                bool hasPdf = currentPdf != null && currentPdf.Length > 0;
+
+                if (!hasPdf)
                 {
                     using (OpenFileDialog ofd = new OpenFileDialog())
                     {
@@ -176,8 +230,7 @@ namespace HRAdmin.UserControl
                             {
                                 byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
                                 row.Cells["Invoice"].Value = fileBytes;
-                                row.Cells["InvoiceAttached"].Value = "✅";
-                                ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = "View / Reupload";
+                                UpdateInvoiceButtonState(row);
                             }
                             catch (Exception ex)
                             {
@@ -186,10 +239,9 @@ namespace HRAdmin.UserControl
                             }
                         }
                     }
-                    return; // Exit after handling fresh attachment
+                    return;
                 }
 
-                // Existing PDF - show reattach/view options
                 string message = "An invoice is already uploaded. Do you want to reupload it?\n\n" +
                                  "Yes: Reupload\n" +
                                  "No: View";
@@ -206,6 +258,7 @@ namespace HRAdmin.UserControl
                         {
                             byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
                             row.Cells["Invoice"].Value = fileBytes;
+                            UpdateInvoiceButtonState(row);
                         }
                     }
                 }
