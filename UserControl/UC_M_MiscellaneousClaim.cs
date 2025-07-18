@@ -1265,13 +1265,6 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            // Restrict viewing to only the user's own orders unless they are in ACCOUNT or HR & ADMIN
-            if (loggedInDepart != "ACCOUNT" && loggedInDepart != "HR & ADMIN" && requester != LoggedInUser)
-            {
-                MessageBox.Show("You can only view your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             // Proceed with generating and viewing the PDF
             Debug.WriteLine($"Selected SerialNo: {serialNo}");
             string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
