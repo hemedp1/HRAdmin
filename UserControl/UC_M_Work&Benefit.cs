@@ -377,10 +377,9 @@ namespace HRAdmin.UserControl
                     con.Open();
                     transaction = con.BeginTransaction();
 
-                    // Generate serial number
                     string checkSerialNoQuery = @"SELECT MAX(CAST(RIGHT(SerialNo, CHARINDEX('_', REVERSE(SerialNo)) - 1) AS INT)) 
-                                FROM tbl_DetailClaimForm 
-                                WHERE SerialNo LIKE @DatePattern";
+                                        FROM tbl_DetailClaimForm 
+                                        WHERE SerialNo LIKE @DatePattern";
                     string datePattern = $"_%{DateTime.Now:ddMMyyyy}_%";
                     int nextNumber = 1;
 
@@ -397,18 +396,18 @@ namespace HRAdmin.UserControl
                     string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
-                   (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
-            VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";
+    (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
+    VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
-                   (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
-                    HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
-            VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
-                    @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
+                                        (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
+                                         HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
+                                        VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
+                                                @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
 
                     string checkDuplicateQuery = @"SELECT COUNT(*) 
-            FROM tbl_DetailClaimForm 
-            WHERE InvoiceNo = @InvoiceNo AND InvoiceAmount = @InvoiceAmount AND InvoiceDate = @InvoiceDate";
+                                         FROM tbl_DetailClaimForm 
+                                         WHERE InvoiceNo = @InvoiceNo AND InvoiceAmount = @InvoiceAmount AND InvoiceDate = @InvoiceDate";
 
                     DataTable dt = (DataTable)dgvW.DataSource;
                     DataTable newRows = dt?.GetChanges(DataRowState.Added);
@@ -419,7 +418,7 @@ namespace HRAdmin.UserControl
                         return;
                     }
 
-                    // Validate that each row is either fully completed or fully empty, including invoice attachment
+                    // Validate that each row is either fully completed or fully empty
                     foreach (DataGridViewRow row in dgvW.Rows)
                     {
                         if (row.IsNewRow) continue; // Skip the new row placeholder
@@ -429,16 +428,14 @@ namespace HRAdmin.UserControl
                                           row.Cells["Invoice Amount"].Value == null || row.Cells["Invoice Amount"].Value == DBNull.Value &&
                                           row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
                                           row.Cells["Invoice Date"].Value == null || row.Cells["Invoice Date"].Value == DBNull.Value &&
-                                          row.Cells["Invoice"].Value == null &&
-                                          row.Cells["InvoiceAttached"].Value == null;
+                                          row.Cells["Invoice"].Value == null;
 
                         bool isRowFullyFilled = row.Cells["Vendor"].Value != null && !string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
                                                row.Cells["Item"].Value != null && !string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
                                                row.Cells["Invoice Amount"].Value != null && row.Cells["Invoice Amount"].Value != DBNull.Value &&
                                                row.Cells["Invoice No"].Value != null && !string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
                                                row.Cells["Invoice Date"].Value != null && row.Cells["Invoice Date"].Value != DBNull.Value &&
-                                               row.Cells["Invoice"].Value != null &&
-                                               row.Cells["InvoiceAttached"].Value != null && row.Cells["InvoiceAttached"].Value.ToString() != "❌";
+                                               row.Cells["Invoice"].Value != null;
 
                         if (!isRowEmpty && !isRowFullyFilled)
                         {
@@ -453,10 +450,10 @@ namespace HRAdmin.UserControl
                                 emptyColumns.Add("Invoice No");
                             if (row.Cells["Invoice Date"].Value == null || row.Cells["Invoice Date"].Value == DBNull.Value)
                                 emptyColumns.Add("Invoice Date");
-                            if (row.Cells["Invoice"].Value == null || row.Cells["InvoiceAttached"].Value?.ToString() == "❌")
+                            if (row.Cells["Invoice"].Value == null)
                                 emptyColumns.Add("Invoice");
 
-                            // Highlight empty or invalid cells in red
+                            // Highlight empty cells in red
                             foreach (string colName in emptyColumns)
                             {
                                 row.Cells[colName].Style.BackColor = Color.Red;
