@@ -701,7 +701,7 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = "DELETE FROM tbl_MasterClaimForm WHERE SerialNo = @SerialNo";
+                    string query = "BEGIN TRANSACTION;\r\nDELETE FROM tbl_DetailClaimForm WHERE SerialNo = @SerialNo;\r\nDELETE FROM tbl_MasterClaimForm WHERE SerialNo = @SerialNo;\r\nCOMMIT;";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
