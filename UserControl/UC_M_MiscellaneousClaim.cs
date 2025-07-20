@@ -23,7 +23,7 @@ namespace HRAdmin.UserControl
 {
     public partial class UC_M_MiscellaneousClaim : System.Windows.Forms.UserControl
     {
-        private string loggedInName;
+        private string LoggedInUser;
         private string loggedInDepart;
         private string loggedInIndex;
         private DataTable cachedData; // Declare cachedData
@@ -34,7 +34,7 @@ namespace HRAdmin.UserControl
         public UC_M_MiscellaneousClaim(string username, string department, string emp)
         {
             InitializeComponent();
-            loggedInName = username;
+            LoggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
             
@@ -72,7 +72,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = false;
             Form_Home.sharedbtnApproval.Visible = false;
 
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInName, loggedInDepart, loggedInIndex);
+            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
         }
 
@@ -92,7 +92,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
             else if (selectedType == "Benefit")
@@ -101,7 +101,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex);
                 addControls(ug);
             }
         }
@@ -116,7 +116,7 @@ namespace HRAdmin.UserControl
                     string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Username", loggedInName);
+                        cmd.Parameters.AddWithValue("@Username", LoggedInUser);
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -417,6 +417,7 @@ namespace HRAdmin.UserControl
         {
             dgvMS.AutoGenerateColumns = false;
             dgvMS.Columns.Clear();
+            dgvMS.ReadOnly = true;
 
             dgvMS.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
@@ -681,7 +682,7 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict withdrawal to only the user's own orders
-            if (requester != loggedInName)
+            if (requester != LoggedInUser)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -700,7 +701,7 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = "DELETE FROM tbl_MasterClaimForm WHERE SerialNo = @SerialNo";
+                    string query = "BEGIN TRANSACTION;\r\nDELETE FROM tbl_DetailClaimForm WHERE SerialNo = @SerialNo;\r\nDELETE FROM tbl_MasterClaimForm WHERE SerialNo = @SerialNo;\r\nCOMMIT;";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -754,13 +755,14 @@ namespace HRAdmin.UserControl
             DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
             DataGridViewRow selectedRow = selectedCell.OwningRow;
             string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+            string requester = selectedRow.Cells["Requester"].Value?.ToString();
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
 
             // Validate the selection
-            if (string.IsNullOrEmpty(serialNo))
+            if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
             {
                 MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -819,7 +821,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
                             cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -889,7 +891,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -915,6 +917,13 @@ namespace HRAdmin.UserControl
             }
             else
             {
+                // Check if the user is trying to approve their own claim
+                if (requester == LoggedInUser)
+                {
+                    MessageBox.Show("You cannot approve your own claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
                 if (loggedInDepart != requesterDepartment)
@@ -952,7 +961,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -991,13 +1000,14 @@ namespace HRAdmin.UserControl
             DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
             DataGridViewRow selectedRow = selectedCell.OwningRow;
             string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+            string requester = selectedRow.Cells["Requester"].Value?.ToString();
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
 
             // Validate the selection
-            if (string.IsNullOrEmpty(serialNo))
+            if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
             {
                 MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1056,7 +1066,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByAccount", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
                             cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1132,7 +1142,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1158,6 +1168,13 @@ namespace HRAdmin.UserControl
             }
             else
             {
+                // Check if the user is trying to reject their own claim
+                if (requester == LoggedInUser)
+                {
+                    MessageBox.Show("You cannot reject your own claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
                 if (loggedInDepart != requesterDepartment)
@@ -1200,7 +1217,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", loggedInName);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1248,13 +1265,6 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            // Restrict viewing to only the user's own orders unless they are in ACCOUNT or HR & ADMIN
-            if (loggedInDepart != "ACCOUNT" && loggedInDepart != "HR & ADMIN" && requester != loggedInName)
-            {
-                MessageBox.Show("You can only view your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
             // Proceed with generating and viewing the PDF
             Debug.WriteLine($"Selected SerialNo: {serialNo}");
             string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
@@ -1287,10 +1297,13 @@ namespace HRAdmin.UserControl
                 {
                     conn.Open();
                     string query = @"
-                    SELECT SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-                           HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate
-                    FROM tbl_MasterClaimForm
-                    WHERE SerialNo = @SerialNo";
+                    SELECT m.SerialNo, u.Name AS Requester, m.EmpNo, m.Department, m.BankName, m.AccountNo, m.ExpensesType, m.RequestDate, 
+                           m.HODApprovalStatus, m.ApprovedByHOD, m.HODApprovedDate, 
+                           m.HRApprovalStatus, m.ApprovedByHR, m.HRApprovedDate, 
+                           m.AccountApprovalStatus, m.ApprovedByAccount, m.AccountApprovedDate
+                    FROM tbl_MasterClaimForm m
+                    JOIN tbl_Users u ON m.EmpNo = u.IndexNo
+                    WHERE m.SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);

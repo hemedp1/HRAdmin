@@ -65,7 +65,7 @@ namespace HRAdmin.Forms
             //LoggedInBank = bank;
             //LoggedInAccNo = accountNo;
             //lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
-            lblUsername.Text = $"Hi, {loggedInName}!"; // Display username
+            lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
             Menu.Dock = DockStyle.Right;
             btnAddpeople.Visible = false;
             btn_New.Visible = false;
@@ -717,6 +717,11 @@ namespace HRAdmin.Forms
 
             UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex);
             addControls(ug);
+        }
+
+        private void lblUsername_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
