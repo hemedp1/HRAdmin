@@ -23,6 +23,7 @@ namespace HRAdmin.UserControl
             
             loggedInDepart = Depart;
             loggedInUser = username;
+            //MessageBox.Show($"Error on Report ID Selection: {loggedInDepart}");
             LoadPendingBookings();
             LoadData();
             dTDay.ValueChanged += dTDay_ValueChanged;
@@ -72,7 +73,7 @@ namespace HRAdmin.UserControl
                         // Check the value before assigning
                         if (string.IsNullOrWhiteSpace(loggedInDepart))
                         {
-                            MessageBox.Show("loggedInDepart is null or empty.");
+                            //MessageBox.Show("loggedInDepart is null or empty.");
                             return;
                         }
 
@@ -121,7 +122,8 @@ namespace HRAdmin.UserControl
                     con.Open();
 
                     /////   The PIC must same department
-                    string checkdepart = "SELECT Depart FROM tbl_CarBookings WHERE BookingID = @BookingID";
+                    string checkdepart = "SELECT DriverName, Depart FROM tbl_CarBookings WHERE BookingID = @BookingID";
+                    //string check = "select a.Username,a.Department,a.Position, b.AccessLevel from tbl_Users a left join tbl_UsersLevel b ON a.Position = b.TitlePosition";
                     using (SqlCommand checkCmd = new SqlCommand(checkdepart, con))
                     {
                         checkCmd.Parameters.AddWithValue("@BookingID", bookingID);

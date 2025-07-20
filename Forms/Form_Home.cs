@@ -486,7 +486,7 @@ namespace HRAdmin.Forms
             btnCarCondition.Visible = false;
             btn_AccidentPDF.Visible = true;
             label1.Text = "Admin > Car Reservation > Accident";
-            UC_C_Accident ug = new UC_C_Accident(loggedInUser, loggedInIndex, loggedInDepart, loggedInfullName);
+            UC_C_Accident ug = new UC_C_Accident(loggedInUser, loggedInIndex, loggedInDepart, loggedInName);
             //groupBox6.Visible = false;
             addControls(ug);
         }
@@ -495,7 +495,7 @@ namespace HRAdmin.Forms
         {
             btn_AccidentPDF.Visible = false;
             label1.Text = "Admin > Car Reservation > Accident > View Report";
-            UC_C_AccidentPDF ug = new UC_C_AccidentPDF(loggedInUser, loggedInIndex, loggedInDepart, loggedInfullName);
+            UC_C_AccidentPDF ug = new UC_C_AccidentPDF(loggedInUser, loggedInIndex, loggedInDepart, loggedInName);
             addControls(ug);
 
         }

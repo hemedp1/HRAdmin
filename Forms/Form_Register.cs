@@ -26,99 +26,93 @@ namespace HRAdmin.Forms
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            string newUsername = txtUser.Text.Trim();
+            string newPassword = txtNewPassword.Text.Trim();
+            string Department = comboBox1.Text.Trim();
+            string IndexNo = txtIndex.Text.Trim();
+
+            if (string.IsNullOrEmpty(newUsername) || string.IsNullOrEmpty(newPassword) ||
+                string.IsNullOrEmpty(Department) || string.IsNullOrEmpty(IndexNo))
             {
-                string newUsername = txtUser.Text.Trim();
-                string newPassword = txtNewPassword.Text.Trim();
-                string Department = comboBox1.Text.Trim();
-                string IndexNo = txtIndex.Text.Trim();
+                MessageBox.Show("Please fill in all fields.", "Registration Error",
+                               MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-                if (string.IsNullOrEmpty(newUsername) || string.IsNullOrEmpty(newPassword) || string.IsNullOrEmpty(Department) || string.IsNullOrEmpty(IndexNo))
+            try
+            {
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    MessageBox.Show("Please fill in all fields.", "Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                try
-                {
-                  
-                    string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-                    using (SqlConnection con = new SqlConnection(connectionString))
+                    con.Open();
+
+                    // Check if the username or index number already exists
+                    string checkQuery = @"SELECT COUNT(*) FROM tbl_Users 
+                                 WHERE (Username = @name) OR (IndexNo = @IndexNo)";
+
+                    SqlCommand checkCmd = new SqlCommand(checkQuery, con);
+                    checkCmd.Parameters.AddWithValue("@name", newUsername);
+                    checkCmd.Parameters.AddWithValue("@IndexNo", IndexNo);
+
+                    int existingRecords = (int)checkCmd.ExecuteScalar();
+
+                    if (existingRecords > 0)
                     {
-                        con.Open();
+                        // Additional check to see which one exists
+                        string specificCheck = @"SELECT 
+                                       CASE WHEN Username = @name THEN 'Username' 
+                                            WHEN IndexNo = @IndexNo THEN 'IndexNo' 
+                                       END 
+                                       FROM tbl_Users 
+                                       WHERE Username = @name OR IndexNo = @IndexNo";
 
-                        // Check if the room is already booked
-                        string checkQuery = @"SELECT COUNT(*) FROM tbl_Users WHERE Department = @depart AND Username = @name";
+                        SqlCommand specificCmd = new SqlCommand(specificCheck, con);
+                        specificCmd.Parameters.AddWithValue("@name", newUsername);
+                        specificCmd.Parameters.AddWithValue("@IndexNo", IndexNo);
 
-                        SqlCommand checkCmd = new SqlCommand(checkQuery, con);
-                        checkCmd.Parameters.AddWithValue("@depart", comboBox1.Text);
-                        checkCmd.Parameters.AddWithValue("@name", newUsername);
+                        string conflictField = (string)specificCmd.ExecuteScalar();
 
-                        int existingBookings = (int)checkCmd.ExecuteScalar();
+                        MessageBox.Show($"This {conflictField} is already registered.",
+                                      "Registration Error",
+                                      MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                        if (existingBookings > 0)
+                        if (conflictField == "Username")
                         {
-                            MessageBox.Show("This username already exist", "Please use another username.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             txtUser.Clear();
-                            txtNewPassword.Clear();
-                            return;
+                            txtUser.Focus();
                         }
-
-                        
-                        
-                        // Insert new booking
-                        string insertQuery = "INSERT INTO tbl_Users (Username, Department, Password, IndexNo) VALUES (@Username, @Department, @Password, @IndexNo)";
-
-                        
-
-                        SqlCommand insertCmd = new SqlCommand(insertQuery, con);
-
-                        insertCmd.Parameters.AddWithValue("@Username", newUsername);
-                        insertCmd.Parameters.AddWithValue("@Department", Department);
-                        insertCmd.Parameters.AddWithValue("@Password", newPassword); // ❗ Store hashed passwords in real apps!
-                        insertCmd.Parameters.AddWithValue("@IndexNo", IndexNo);
-
-
-
-                        insertCmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Registration successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        //txtUser.Clear();
-                        //txtNewPassword.Clear();
-                        this.Close(); // Close registration form
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
-                /*
-                try
-                {
-                    string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-
-                    using (SqlConnection con = new SqlConnection(connectionString))
-                    {
-                        con.Open();
-
-                        string query = "INSERT INTO tbl_Users (Username, Department, Password) VALUES (@Username, @Department, @Password)";
-                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        else
                         {
-                            cmd.Parameters.AddWithValue("@Username", newUsername);
-                            cmd.Parameters.AddWithValue("@Department", Department);
-                            cmd.Parameters.AddWithValue("@Password", newPassword); // ❗ Store hashed passwords in real apps!
-
-                            cmd.ExecuteNonQuery();
-                            MessageBox.Show("Registration successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            //txtUser.Clear();
-                            //txtNewPassword.Clear();
-                            this.Close(); // Close registration form
+                            txtIndex.Clear();
+                            txtIndex.Focus();
                         }
+
+                        txtNewPassword.Clear();
+                        return;
                     }
+
+                    // Insert new user
+                    string insertQuery = @"INSERT INTO tbl_Users 
+                                 (Username, Department, Password, IndexNo) 
+                                 VALUES (@Username, @Department, @Password, @IndexNo)";
+
+                    SqlCommand insertCmd = new SqlCommand(insertQuery, con);
+                    insertCmd.Parameters.AddWithValue("@Username", newUsername);
+                    insertCmd.Parameters.AddWithValue("@Department", Department);
+                    insertCmd.Parameters.AddWithValue("@Password", newPassword); // ❗ Store hashed passwords in real apps!
+                    insertCmd.Parameters.AddWithValue("@IndexNo", IndexNo);
+
+                    insertCmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Registration successful!", "Success",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close(); // Close registration form
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                } */
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Database error: {ex.Message}", "Error",
+                               MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

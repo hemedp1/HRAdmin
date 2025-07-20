@@ -27,16 +27,16 @@ namespace HRAdmin.UserControl
         private string loggedInUser;
         private string loggedInIndex;
         private string loggedInDepart;
-        private string loggedInfullName;
-        public UC_C_Accident(string username, string Index, string Depart, string fullName)
+        private string loggedInName;
+        public UC_C_Accident(string username, string Index, string Depart, string Name)
         {
             InitializeComponent();
             this.Load += UC_C_Accident_Load;
             loggedInUser = username;
             loggedInIndex = Index;
             loggedInDepart = Depart;
-            loggedInfullName = fullName;
-            //MessageBox.Show($"Error on Report ID Selection: {loggedInfullName}");
+            loggedInName = Name;
+            
             groupBox2.Visible = false;
             Grp6 = groupBox6;
             AutoScroll = true;
