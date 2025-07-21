@@ -20,16 +20,20 @@ namespace HRAdmin.UserControl
         private string loggedInName;
         private string loggedInDepart;
         private string loggedInIndex;
+        private string LoggedInBank;
+        private string LoggedInAccNo;
         private string expensesType; // To store the selected ExpensesType
         private DataGridViewCellStyle defaultCellStyle; // Store default cell style for reverting
 
-        public UC_M_Work(string Name, string department, string selectedType, string emp)
+        public UC_M_Work(string Name, string department, string selectedType, string emp, string bank, string accountNo)
         {
             InitializeComponent();
             loggedInName = Name;
             loggedInDepart = department;
             loggedInIndex = emp;
             expensesType = selectedType;
+            LoggedInBank = bank;
+            LoggedInAccNo = accountNo;
             //MessageBox.Show($"AAAAAAAAAAAAAA: {loggedInName}");
 
             InitializeDataTable();
@@ -609,7 +613,7 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
-                        UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, expensesType, loggedInIndex);
+                        UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, expensesType, loggedInIndex, LoggedInBank, LoggedInAccNo);
                         addControls(ug);
                     }
                 }
@@ -649,7 +653,7 @@ namespace HRAdmin.UserControl
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
     }

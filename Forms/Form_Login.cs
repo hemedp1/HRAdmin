@@ -40,7 +40,9 @@ namespace HRAdmin
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    string query = "SELECT Name, Name1, Department, IndexNo FROM tbl_Users WHERE Username = @Username AND Password = @Password";
+                    string query = "SELECT u.Name, u.Name1, u.Department, u.IndexNo, ud.BankName, ud.AccountNo \r\n" +
+                                   "FROM tbl_Users u \r\nINNER JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo \r\n" +
+                                   "WHERE u.Username = @Username AND u.Password = @Password";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", username);
@@ -56,17 +58,18 @@ namespace HRAdmin
                                 string Index = reader["IndexNo"].ToString();
                                 string fullName = reader["Name"].ToString();
                                 string Name = reader["Name1"].ToString();
+                                string bank = reader["BankName"].ToString();
+                                string accountNo = reader["AccountNo"].ToString();
                                 UserSession.LoggedInUser = username;
                                 UserSession.loggedInDepart = depart;
                                 UserSession.loggedInIndex = Index;
                                 UserSession.loggedInName = Name;
                                 UserSession.loggedInfullName = fullName;
-                                
-                                //UserSession.LoggedInBank = bank;
-                                //UserSession.LoggedInAccNo = accountNo;
+                                UserSession.LoggedInBank = bank;
+                                UserSession.LoggedInAccNo = accountNo;
                                 //MessageBox.Show($"DDSDSDDWDWWD: {Index}");
                                 this.Hide();
-                                Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName);
+                                Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName, bank, accountNo);
                                    
                                 mainForm.Show();
                             }

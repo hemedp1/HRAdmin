@@ -18,6 +18,8 @@ using iTextSharp.text;
 using System.IO;
 using iTextRectangle = iTextSharp.text.Rectangle;
 using WinFormsApp = System.Windows.Forms.Application;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using System.Reflection;
 
 namespace HRAdmin.UserControl
 {
@@ -26,18 +28,23 @@ namespace HRAdmin.UserControl
         private string LoggedInUser;
         private string loggedInDepart;
         private string loggedInIndex;
+        private string LoggedInBank;
+        private string LoggedInAccNo;
         private DataTable cachedData; // Declare cachedData
         private bool isNetworkErrorShown; // Declare isNetworkErrorShown
         private bool isNetworkUnavailable; // Declare isNetworkUnavailable
         private byte[] pdfBytes;
 
-        public UC_M_MiscellaneousClaim(string username, string department, string emp)
+        public UC_M_MiscellaneousClaim(string username, string department, string emp,string bank, string accountNo)
         {
             InitializeComponent();
             LoggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
-            
+            LoggedInBank = bank;
+            LoggedInAccNo = accountNo;
+
+
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
             LoadUsernames();
             LoadDepartments();
@@ -72,7 +79,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = false;
             Form_Home.sharedbtnApproval.Visible = false;
 
-            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex);
+            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
 
@@ -92,7 +99,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo);
                 addControls(ug);
             }
             else if (selectedType == "Benefit")
@@ -101,7 +108,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo);
                 addControls(ug);
             }
         }
@@ -160,7 +167,7 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = "SELECT Username FROM tbl_Users";
+                    string query = "SELECT Name1 FROM tbl_Users";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -169,9 +176,9 @@ namespace HRAdmin.UserControl
                             cmbRequester.Items.Add("All Users");
                             while (reader.Read())
                             {
-                                string username = reader["Username"].ToString();
-                                cmbRequester.Items.Add(username);
-                                Debug.WriteLine($"Loaded username: {username}");
+                                string Name1 = reader["Name1"].ToString();
+                                cmbRequester.Items.Add(Name1);
+                                Debug.WriteLine($"Loaded username: {Name1}");
                             }
                         }
                     }
@@ -1297,12 +1304,13 @@ namespace HRAdmin.UserControl
                 {
                     conn.Open();
                     string query = @"
-                    SELECT m.SerialNo, u.Name AS Requester, m.EmpNo, m.Department, m.BankName, m.AccountNo, m.ExpensesType, m.RequestDate, 
+                    SELECT m.SerialNo, u.Name AS Requester, m.EmpNo, m.Department, ud.BankName, ud.AccountNo, m.ExpensesType, m.RequestDate, 
                            m.HODApprovalStatus, m.ApprovedByHOD, m.HODApprovedDate, 
                            m.HRApprovalStatus, m.ApprovedByHR, m.HRApprovedDate, 
                            m.AccountApprovalStatus, m.ApprovedByAccount, m.AccountApprovedDate
                     FROM tbl_MasterClaimForm m
                     JOIN tbl_Users u ON m.EmpNo = u.IndexNo
+                    JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
                     WHERE m.SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {

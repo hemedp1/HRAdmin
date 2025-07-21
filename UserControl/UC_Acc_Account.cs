@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HRAdmin.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace HRAdmin.UserControl
 {
@@ -16,13 +17,17 @@ namespace HRAdmin.UserControl
         private string LoggedInUser;
         private string loggedInDepart;
         private string loggedInIndex;
-        public UC_Acc_Account(string department, string emp, string username)
+        private string LoggedInBank;
+        private string LoggedInAccNo;
+        public UC_Acc_Account(string department, string emp, string username, string bank, string accountNo)
         {
             InitializeComponent();
             LoggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
-            
+            LoggedInBank = bank;
+            LoggedInAccNo = accountNo;
+
         }
 
         private void btnMClaim_Click(object sender, EventArgs e)
@@ -31,7 +36,7 @@ namespace HRAdmin.UserControl
             //Form_Home.sharedbtnMCReport.Visible = true;
             //Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(LoggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
         private void addControls(System.Windows.Forms.UserControl userControl)

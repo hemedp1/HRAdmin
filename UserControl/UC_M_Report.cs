@@ -26,6 +26,8 @@ namespace HRAdmin.UserControl
         private string loggedInUser;
         private string loggedInDepart;
         private string loggedInIndex;
+        private string LoggedInBank;
+        private string LoggedInAccNo;
         private string expensesType;
         private byte[] pdfBytes;
         private DataTable cachedData;
@@ -75,7 +77,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = true;
             Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
 
