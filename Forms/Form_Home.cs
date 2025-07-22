@@ -27,6 +27,7 @@ namespace HRAdmin.Forms
         private string loggedInfullName;
         private string LoggedInBank;
         private string LoggedInAccNo;
+        private string logginInUserAccessLevel;
 
         private int borderSize = 2;
         public static Panel sharedPanel;
@@ -53,7 +54,8 @@ namespace HRAdmin.Forms
         public static Button sharedbtnApproval; //miscellaneous claim report
 
 
-        public Form_Home(string username, string depart, string index, string Name, string fullName, string bank, string accountNo)
+        //public Form_Home(string username, string depart, string index, string Name, string fullName, string UL)
+        public Form_Home(string username, string depart, string index, string Name, string fullName, string bank, string accountNo, string UL)
         {
             InitializeComponent();
             loggedInUser = username;
@@ -61,6 +63,10 @@ namespace HRAdmin.Forms
             loggedInIndex = index;
             loggedInName = Name;
             loggedInfullName = fullName;
+            logginInUserAccessLevel = UL;
+
+            //LoggedInBank = bank;
+            //LoggedInAccNo = accountNo;
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
 
@@ -355,7 +361,7 @@ namespace HRAdmin.Forms
                                     btn_Accident.Visible = false;
                                     btnCarCondition.Visible = false;
                                     label1.Text = "Admin > Car Reservation > Check";
-                                    UC_C_CarCheckFromManager ug = new UC_C_CarCheckFromManager(loggedInUser, loggedInDepart);
+                                    UC_C_CarCheckFromManager ug = new UC_C_CarCheckFromManager(loggedInUser, loggedInDepart, logginInUserAccessLevel);
                                     addControls(ug);
                                 }
                             }
@@ -541,7 +547,7 @@ namespace HRAdmin.Forms
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
             btnApproval.Visible = false;
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, LoggedInBank, LoggedInAccNo);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, logginInUserAccessLevel, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
 
@@ -693,7 +699,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex, logginInUserAccessLevel);
             addControls(ug);
         }
 
@@ -715,7 +721,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex, logginInUserAccessLevel);
             addControls(ug);
         }
 

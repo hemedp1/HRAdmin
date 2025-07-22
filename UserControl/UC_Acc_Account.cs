@@ -19,7 +19,8 @@ namespace HRAdmin.UserControl
         private string loggedInIndex;
         private string LoggedInBank;
         private string LoggedInAccNo;
-        public UC_Acc_Account(string department, string emp, string username, string bank, string accountNo)
+        private string logginInUserAccessLevel;
+        public UC_Acc_Account(string department, string emp, string username, string bank, string accountNo, string UL)
         {
             InitializeComponent();
             LoggedInUser = username;
@@ -27,6 +28,7 @@ namespace HRAdmin.UserControl
             loggedInIndex = emp;
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
+            logginInUserAccessLevel = UL;
 
         }
 
@@ -36,7 +38,7 @@ namespace HRAdmin.UserControl
             //Form_Home.sharedbtnMCReport.Visible = true;
             //Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             addControls(ug);
         }
         private void addControls(System.Windows.Forms.UserControl userControl)

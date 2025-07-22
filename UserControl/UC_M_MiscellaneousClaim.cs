@@ -29,13 +29,14 @@ namespace HRAdmin.UserControl
         private string loggedInDepart;
         private string loggedInIndex;
         private string LoggedInBank;
+        private string logginInUserAccessLevel;
         private string LoggedInAccNo;
         private DataTable cachedData; // Declare cachedData
         private bool isNetworkErrorShown; // Declare isNetworkErrorShown
         private bool isNetworkUnavailable; // Declare isNetworkUnavailable
         private byte[] pdfBytes;
 
-        public UC_M_MiscellaneousClaim(string username, string department, string emp, string bank, string accountNo)
+        public UC_M_MiscellaneousClaim(string username, string department, string emp,string bank, string accountNo, string UL)
         {
             InitializeComponent();
             LoggedInUser = username;
@@ -43,6 +44,7 @@ namespace HRAdmin.UserControl
             loggedInIndex = emp;
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
+            logginInUserAccessLevel = UL;
 
 
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
@@ -79,7 +81,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = false;
             Form_Home.sharedbtnApproval.Visible = false;
 
-            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
+            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             addControls(ug);
         }
 
@@ -99,7 +101,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
                 addControls(ug);
             }
             else if (selectedType == "Benefit")
@@ -108,7 +110,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
                 addControls(ug);
             }
         }

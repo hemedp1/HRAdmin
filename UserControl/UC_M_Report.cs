@@ -29,17 +29,19 @@ namespace HRAdmin.UserControl
         private string LoggedInBank;
         private string LoggedInAccNo;
         private string expensesType;
+        private string logginInUserAccessLevel;
         private byte[] pdfBytes;
         private DataTable cachedData;
         private bool isNetworkErrorShown;
         private bool isNetworkUnavailable;
 
-        public UC_M_Report(string username, string department, string emp)
+        public UC_M_Report(string username, string department, string emp, string UL)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
+            logginInUserAccessLevel = UL;
             LoadUsernames();
             LoadDepartments();
             cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
@@ -54,6 +56,7 @@ namespace HRAdmin.UserControl
             cmbRequester.SelectedIndex = -1;
             cmbDepart.SelectedIndex = -1;
             dgvVR.DataSource = null; // Ensure DataGridView starts empty
+            this.logginInUserAccessLevel = logginInUserAccessLevel;
         }
 
         private void addControls(System.Windows.Forms.UserControl userControl)
@@ -77,7 +80,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = true;
             Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             addControls(ug);
         }
 

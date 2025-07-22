@@ -17,12 +17,15 @@ namespace HRAdmin.UserControl
     {
         private string loggedInUser;
         private string loggedInDepart;
-        public UC_C_CarCheckFromManager(string username, string Depart)
+        private string logginInUserAccessLevel;
+        public UC_C_CarCheckFromManager(string username, string Depart, string UL)
         {
             InitializeComponent();
             
             loggedInDepart = Depart;
             loggedInUser = username;
+            logginInUserAccessLevel = UL;
+            MessageBox.Show($"logginInUserAccessLevel: {UL}");
             //MessageBox.Show($"Error on Report ID Selection: {loggedInDepart}");
             LoadPendingBookings();
             LoadData();
@@ -122,23 +125,52 @@ namespace HRAdmin.UserControl
                     con.Open();
 
                     /////   The PIC must same department
-                    string checkdepart = "SELECT DriverName, Depart FROM tbl_CarBookings WHERE BookingID = @BookingID";
-                    //string check = "select a.Username,a.Department,a.Position, b.AccessLevel from tbl_Users a left join tbl_UsersLevel b ON a.Position = b.TitlePosition";
+                    //string checkdepart = "SELECT DriverName, Depart FROM tbl_CarBookings WHERE BookingID = @BookingID";  -- original query
+
+                    string checkdepart = @"
+    SELECT q.DriverName, q.Depart, u.Position, l.AccessLevel 
+    FROM tbl_CarBookings q 
+    LEFT JOIN tbl_Users u ON q.DriverName = u.Username 
+    LEFT JOIN tbl_UsersLevel l ON u.Position = l.TitlePosition 
+    WHERE BookingID = @BookingID";
+
                     using (SqlCommand checkCmd = new SqlCommand(checkdepart, con))
                     {
                         checkCmd.Parameters.AddWithValue("@BookingID", bookingID);
-                        object resultt = checkCmd.ExecuteScalar();
-                        string department = resultt?.ToString();
 
-                        //MessageBox.Show($"department: {department}");
-                        //MessageBox.Show($"loggedInDepart: {loggedInDepart}");
-
-                        if (string.IsNullOrEmpty(department) || department != loggedInDepart)
+                        using (SqlDataReader reader = checkCmd.ExecuteReader())
                         {
-                            MessageBox.Show("Cannot proceed. Must be on the same department.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
+                            if (reader.Read())
+                            {
+                                string department = reader["Depart"]?.ToString();
+                                string accessLevelStr = reader["AccessLevel"]?.ToString();
+
+                                if (string.IsNullOrEmpty(department) || department != loggedInDepart)
+                                {
+                                    MessageBox.Show("Cannot proceed. Must be in the same department.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+
+                                if (!int.TryParse(accessLevelStr, out int requestorAccessLevel) ||
+                                    !int.TryParse(logginInUserAccessLevel, out int currentUserAccessLevel))
+                                {
+                                    MessageBox.Show("Access level data is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
+                                }
+
+                                if (currentUserAccessLevel >= requestorAccessLevel)
+                                {
+                                    MessageBox.Show("Cannot proceed. Only your superior can approve this action.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("No matching booking found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
                         }
                     }
+
 
 
                     //      Pass all case, verify execute

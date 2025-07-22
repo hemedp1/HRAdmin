@@ -40,8 +40,11 @@ namespace HRAdmin
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    string query = "SELECT u.Name, u.Name1, u.Department, u.IndexNo, ud.BankName, ud.AccountNo \r\n" +
-                                   "FROM tbl_Users u \r\nINNER JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo \r\n" +
+                    //string query = "SELECT Name, a.Name1, a.Department, a.IndexNo, b.AccessLevel \r\nFROM tbl_Users a left join tbl_UsersLevel b ON a.Position = b.TitlePosition  WHERE Username = @Username AND Password = @Password";
+                    string query = "SELECT u.Name, u.Name1, u.Department, u.IndexNo, ud.BankName, ud.AccountNo, f.AccessLevel  \r\n" +
+                                   "FROM tbl_Users u \r\n" +
+                                   "INNER JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo \r\n" +
+                                   "INNER JOIN tbl_UsersLevel f ON u.Position = f.TitlePosition \r\n" +
                                    "WHERE u.Username = @Username AND u.Password = @Password";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -58,6 +61,8 @@ namespace HRAdmin
                                 string Index = reader["IndexNo"].ToString();
                                 string fullName = reader["Name"].ToString();
                                 string Name = reader["Name1"].ToString();
+                                string UL = reader["AccessLevel"].ToString();
+
                                 string bank = reader["BankName"].ToString();
                                 string accountNo = reader["AccountNo"].ToString();
                                 UserSession.LoggedInUser = username;
@@ -65,12 +70,18 @@ namespace HRAdmin
                                 UserSession.loggedInIndex = Index;
                                 UserSession.loggedInName = Name;
                                 UserSession.loggedInfullName = fullName;
+                                UserSession.logginInUserAccessLevel = UL;
+
+                                //UserSession.LoggedInBank = bank;
+                                //UserSession.LoggedInAccNo = accountNo;
+                                //MessageBox.Show($"logginInUserAccessLevel: {UL}");
                                 UserSession.LoggedInBank = bank;
                                 UserSession.LoggedInAccNo = accountNo;
                                 //MessageBox.Show($"DDSDSDDWDWWD: {Index}");
                                 this.Hide();
-                                Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName, bank, accountNo);
-                                   
+                                //Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName, UL);
+                                Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName, bank, accountNo, UL);
+
                                 mainForm.Show();
                             }
                             else

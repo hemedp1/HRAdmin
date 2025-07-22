@@ -22,10 +22,11 @@ namespace HRAdmin.UserControl
         private string loggedInIndex;
         private string LoggedInBank;
         private string LoggedInAccNo;
+        private string logginInUserAccessLevel;
         private string expensesType; // To store the selected ExpensesType
         private DataGridViewCellStyle defaultCellStyle; // Store default cell style for reverting
 
-        public UC_M_Work(string Name, string department, string selectedType, string emp, string bank, string accountNo)
+        public UC_M_Work(string Name, string department, string selectedType, string emp, string bank, string accountNo, string UL)
         {
             InitializeComponent();
             loggedInName = Name;
@@ -34,6 +35,7 @@ namespace HRAdmin.UserControl
             expensesType = selectedType;
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
+            logginInUserAccessLevel = UL;
             //MessageBox.Show($"AAAAAAAAAAAAAA: {loggedInName}");
 
             InitializeDataTable();
@@ -613,7 +615,7 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
-                        UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, expensesType, loggedInIndex, LoggedInBank, LoggedInAccNo);
+                        UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, expensesType, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
                         addControls(ug);
                     }
                 }
@@ -653,7 +655,7 @@ namespace HRAdmin.UserControl
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             addControls(ug);
         }
     }
