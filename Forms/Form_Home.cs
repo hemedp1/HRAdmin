@@ -55,6 +55,7 @@ namespace HRAdmin.Forms
 
 
         public Form_Home(string username, string depart, string index, string Name, string fullName, string UL)
+        public Form_Home(string username, string depart, string index, string Name, string fullName, string bank, string accountNo)
         {
             InitializeComponent();
             loggedInUser = username;
@@ -66,6 +67,9 @@ namespace HRAdmin.Forms
 
             //LoggedInBank = bank;
             //LoggedInAccNo = accountNo;
+            LoggedInBank = bank;
+            LoggedInAccNo = accountNo;
+
             //lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
             lblUsername.Text = $"Hi, {loggedInUser}!"; // Display username
             Menu.Dock = DockStyle.Right;
@@ -543,7 +547,7 @@ namespace HRAdmin.Forms
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
             btnApproval.Visible = false;
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
 
