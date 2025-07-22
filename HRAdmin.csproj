@@ -186,12 +186,6 @@
     <Compile Include="UserControl\UC_Meal_InternalMenu.Designer.cs">
       <DependentUpon>UC_Meal_InternalMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControl\UC_Meal_ViewReport.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControl\UC_Meal_ViewReport.Designer.cs">
-      <DependentUpon>UC_Meal_ViewReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserControl\UC_M_Approval.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -203,12 +197,6 @@
     </Compile>
     <Compile Include="UserControl\UC_M_MiscellaneousClaim.Designer.cs">
       <DependentUpon>UC_M_MiscellaneousClaim.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControl\UC_M_Report.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UserControl\UC_M_Report.Designer.cs">
-      <DependentUpon>UC_M_Report.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControl\UC_M_Work&amp;Benefit.cs">
       <SubType>UserControl</SubType>
@@ -353,17 +341,11 @@
     <EmbeddedResource Include="UserControl\UC_Meal_InternalMenu.resx">
       <DependentUpon>UC_Meal_InternalMenu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControl\UC_Meal_ViewReport.resx">
-      <DependentUpon>UC_Meal_ViewReport.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_Approval.resx">
       <DependentUpon>UC_M_Approval.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_MiscellaneousClaim.resx">
       <DependentUpon>UC_M_MiscellaneousClaim.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UserControl\UC_M_Report.resx">
-      <DependentUpon>UC_M_Report.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_M_Work&amp;Benefit.resx">
       <DependentUpon>UC_M_Work&amp;Benefit.cs</DependentUpon>

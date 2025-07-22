@@ -29,12 +29,14 @@ namespace HRAdmin.UserControl
         private bool isNetworkErrorShown;
         private bool isNetworkUnavailable;
 
-        public UC_M_Approval(string username, string department, string emp, string UL)
+        public UC_M_Approval(string username, string department, string emp, string UL, string bank, string accNo)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
+            LoggedInBank = bank;
+            LoggedInAccNo = accNo;
             logginInUserAccessLevel = UL;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
             isNetworkErrorShown = false;

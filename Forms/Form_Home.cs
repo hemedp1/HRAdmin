@@ -64,9 +64,6 @@ namespace HRAdmin.Forms
             loggedInName = Name;
             loggedInfullName = fullName;
             logginInUserAccessLevel = UL;
-
-            //LoggedInBank = bank;
-            //LoggedInAccNo = accountNo;
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
 
@@ -365,7 +362,7 @@ namespace HRAdmin.Forms
                                     addControls(ug);
                                 }
                             }
-                            else
+
                             {
                                 //Form_Home.sharedButtonbtnApp.Visible = false;
                             }
@@ -597,8 +594,8 @@ namespace HRAdmin.Forms
             btnVisitor.Visible = false;
 
 
-            UC_Meal_ViewReport ug = new UC_Meal_ViewReport(loggedInUser, loggedInDepart);
-            addControls(ug);
+            //UC_Meal_ViewReport ug = new UC_Meal_ViewReport(loggedInUser, loggedInDepart);
+            //addControls(ug);
         }
 
         private void btnNewVisitor_Click(object sender, EventArgs e)
@@ -699,8 +696,8 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex, logginInUserAccessLevel);
-            addControls(ug);
+            //UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
+            //addControls(ug);
         }
 
         private void btnApproval_Click(object sender, EventArgs e)
@@ -721,7 +718,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex, logginInUserAccessLevel);
+            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             addControls(ug);
         }
 
