@@ -54,8 +54,8 @@ namespace HRAdmin.Forms
         public static Button sharedbtnApproval; //miscellaneous claim report
 
 
-        public Form_Home(string username, string depart, string index, string Name, string fullName, string UL)
-        public Form_Home(string username, string depart, string index, string Name, string fullName, string bank, string accountNo)
+        //public Form_Home(string username, string depart, string index, string Name, string fullName, string UL)
+        public Form_Home(string username, string depart, string index, string Name, string fullName, string bank, string accountNo, string UL)
         {
             InitializeComponent();
             loggedInUser = username;
@@ -547,7 +547,7 @@ namespace HRAdmin.Forms
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
             btnApproval.Visible = false;
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, LoggedInBank, LoggedInAccNo);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, logginInUserAccessLevel, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
 
@@ -699,7 +699,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex, logginInUserAccessLevel);
             addControls(ug);
         }
 
@@ -721,7 +721,7 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex);
+            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex, logginInUserAccessLevel);
             addControls(ug);
         }
 

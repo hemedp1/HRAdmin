@@ -24,16 +24,18 @@ namespace HRAdmin.UserControl
         private string loggedInIndex;
         private string LoggedInBank;
         private string LoggedInAccNo;
+        private string logginInUserAccessLevel;
         private DataTable cachedData; // For caching data
         private bool isNetworkErrorShown;
         private bool isNetworkUnavailable;
 
-        public UC_M_Approval(string username, string department, string emp)
+        public UC_M_Approval(string username, string department, string emp, string UL)
         {
             InitializeComponent();
             loggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
+            logginInUserAccessLevel = UL;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
             isNetworkErrorShown = false;
             isNetworkUnavailable = false;
@@ -71,7 +73,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = true;
             Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             addControls(ug);
         }
 
