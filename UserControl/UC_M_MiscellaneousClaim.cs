@@ -35,7 +35,7 @@ namespace HRAdmin.UserControl
         private bool isNetworkUnavailable; // Declare isNetworkUnavailable
         private byte[] pdfBytes;
 
-        public UC_M_MiscellaneousClaim(string username, string department, string emp,string bank, string accountNo)
+        public UC_M_MiscellaneousClaim(string username, string department, string emp, string bank, string accountNo)
         {
             InitializeComponent();
             LoggedInUser = username;
