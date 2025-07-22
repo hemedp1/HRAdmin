@@ -10,6 +10,8 @@ namespace HRAdmin.Components
     {
         public static string LoggedInUser { get; set; }
         public static string loggedInDepart { get; set; }
+
+        public static string logginInUserAccessLevel {  get; set; } 
         public static string loggedInIndex { get; set; }
         public static string loggedInfullName { get; set; }
         public static string loggedInName { get; set; }

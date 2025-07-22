@@ -40,7 +40,7 @@ namespace HRAdmin
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    string query = "SELECT Name, Name1, Department, IndexNo FROM tbl_Users WHERE Username = @Username AND Password = @Password";
+                    string query = "SELECT Name, a.Name1, a.Department, a.IndexNo, b.AccessLevel \r\nFROM tbl_Users a left join tbl_UsersLevel b ON a.Position = b.TitlePosition  WHERE Username = @Username AND Password = @Password";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", username);
@@ -56,17 +56,20 @@ namespace HRAdmin
                                 string Index = reader["IndexNo"].ToString();
                                 string fullName = reader["Name"].ToString();
                                 string Name = reader["Name1"].ToString();
+                                string UL = reader["AccessLevel"].ToString();
+
                                 UserSession.LoggedInUser = username;
                                 UserSession.loggedInDepart = depart;
                                 UserSession.loggedInIndex = Index;
                                 UserSession.loggedInName = Name;
                                 UserSession.loggedInfullName = fullName;
-                                
+                                UserSession.logginInUserAccessLevel = UL;
+
                                 //UserSession.LoggedInBank = bank;
                                 //UserSession.LoggedInAccNo = accountNo;
-                                //MessageBox.Show($"DDSDSDDWDWWD: {Index}");
+                                //MessageBox.Show($"logginInUserAccessLevel: {UL}");
                                 this.Hide();
-                                Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName);
+                                Form_Home mainForm = new Form_Home(username, depart, Index, Name, fullName, UL);
                                    
                                 mainForm.Show();
                             }
