@@ -718,8 +718,8 @@ namespace HRAdmin.Forms
             btnMCReport.Visible = false;
             btnApproval.Visible = false;
 
-            UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
-            addControls(ug);
+            //UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
+            //addControls(ug);
         }
 
         private void lblUsername_Click(object sender, EventArgs e)
