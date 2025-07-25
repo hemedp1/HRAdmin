@@ -94,6 +94,12 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("AccountApprovalStatus", typeof(string));
             dt.Columns.Add("ApprovedByAccount", typeof(string));
             dt.Columns.Add("AccountApprovedDate", typeof(DateTime));
+            dt.Columns.Add("Account2ApprovalStatus", typeof(string));
+            dt.Columns.Add("ApprovedByAccount2", typeof(string));
+            dt.Columns.Add("Account2ApprovedDate", typeof(DateTime));
+            dt.Columns.Add("Account3ApprovalStatus", typeof(string));
+            dt.Columns.Add("ApprovedByAccount3", typeof(string));
+            dt.Columns.Add("Account3ApprovedDate", typeof(DateTime));
             dt.Columns.Add("Vendor", typeof(string));
             dt.Columns.Add("Item", typeof(string));
             dt.Columns.Add("Invoice Amount", typeof(decimal));
@@ -306,6 +312,12 @@ namespace HRAdmin.UserControl
             dgvW.Columns["AccountApprovalStatus"].Visible = false;
             dgvW.Columns["ApprovedByAccount"].Visible = false;
             dgvW.Columns["AccountApprovedDate"].Visible = false;
+            dgvW.Columns["Account2ApprovalStatus"].Visible = false;
+            dgvW.Columns["ApprovedByAccount2"].Visible = false;
+            dgvW.Columns["Account2ApprovedDate"].Visible = false;
+            dgvW.Columns["Account3ApprovalStatus"].Visible = false;
+            dgvW.Columns["ApprovedByAccount3"].Visible = false;
+            dgvW.Columns["Account3ApprovedDate"].Visible = false;
             dgvW.Columns["Invoice"].Visible = false;
         }
 
@@ -413,9 +425,9 @@ namespace HRAdmin.UserControl
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
                                         (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
-                                         HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus) 
+                                         HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus, Account2ApprovalStatus, Account3ApprovalStatus) 
                                         VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
-                                                @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus)";
+                                                @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus, @Account2ApprovalStatus, @Account3ApprovalStatus)";
 
                     string checkDuplicateQuery = @"SELECT COUNT(*) 
                                          FROM tbl_DetailClaimForm 
@@ -577,6 +589,10 @@ namespace HRAdmin.UserControl
                                 ? "Pending" : row["HRApprovalStatus"];
                             row["AccountApprovalStatus"] = row["AccountApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["AccountApprovalStatus"]?.ToString())
                                 ? "Pending" : row["AccountApprovalStatus"];
+                            row["Account2ApprovalStatus"] = row["Account2ApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["Account2ApprovalStatus"]?.ToString())
+                                ? "Pending" : row["Account2ApprovalStatus"];
+                            row["Account3ApprovalStatus"] = row["Account3ApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["Account3ApprovalStatus"]?.ToString())
+                                ? "Pending" : row["Account3ApprovalStatus"];
 
                             row["SerialNo"] = serialNo;
 
@@ -606,6 +622,8 @@ namespace HRAdmin.UserControl
                                 cmdMaster.Parameters.AddWithValue("@HODApprovalStatus", row["HODApprovalStatus"]);
                                 cmdMaster.Parameters.AddWithValue("@HRApprovalStatus", row["HRApprovalStatus"]);
                                 cmdMaster.Parameters.AddWithValue("@AccountApprovalStatus", row["AccountApprovalStatus"]);
+                                cmdMaster.Parameters.AddWithValue("@Account2ApprovalStatus", row["Account2ApprovalStatus"]);
+                                cmdMaster.Parameters.AddWithValue("@Account3ApprovalStatus", row["Account3ApprovalStatus"]);
                                 cmdMaster.ExecuteNonQuery();
                             }
                         }
