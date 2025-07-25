@@ -8,10 +8,12 @@ namespace HRAdmin.Components
 {
     public static class UserSession
     {
+        public static List<string> UserRoles { get; set; } = new List<string>();
         public static string LoggedInUser { get; set; }
         public static string loggedInDepart { get; set; }
-
         public static string logginInUserAccessLevel {  get; set; } 
+        public static string logginDepart1stLvl { get; set; }
+        public static string logginDepart0Lvl { get; set; }
         public static string loggedInIndex { get; set; }
         public static string loggedInfullName { get; set; }
         public static string loggedInName { get; set; }
