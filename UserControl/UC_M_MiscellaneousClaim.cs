@@ -20,6 +20,7 @@ using iTextRectangle = iTextSharp.text.Rectangle;
 using WinFormsApp = System.Windows.Forms.Application;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Reflection;
+using HRAdmin.Components;
 
 namespace HRAdmin.UserControl
 {
@@ -39,6 +40,7 @@ namespace HRAdmin.UserControl
         public UC_M_MiscellaneousClaim(string username, string department, string emp,string bank, string accountNo, string UL)
         {
             InitializeComponent();
+            //string gg = UserSession.LoggedInBank;
             LoggedInUser = username;
             loggedInDepart = department;
             loggedInIndex = emp;
@@ -272,7 +274,8 @@ namespace HRAdmin.UserControl
 
             string query = @"
         SELECT SerialNo, Requester, Department, ExpensesType, RequestDate, HODApprovalStatus, ApprovedByHOD, HODApprovedDate, 
-               HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate 
+               HRApprovalStatus, ApprovedByHR, HRApprovedDate, AccountApprovalStatus, ApprovedByAccount, AccountApprovedDate,
+               Account2ApprovalStatus, ApprovedByAccount2, Account2ApprovedDate, Account3ApprovalStatus, ApprovedByAccount3, Account3ApprovedDate
         FROM tbl_MasterClaimForm
         WHERE (@StartDate IS NULL OR CAST(RequestDate AS DATE) >= @StartDate)
               AND (@EndDate IS NULL OR CAST(RequestDate AS DATE) <= @EndDate)
@@ -584,8 +587,88 @@ namespace HRAdmin.UserControl
 
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
+                Name = "Account2ApprovalStatus",
+                HeaderText = "Account1 Status Check",
+                DataPropertyName = "Account2ApprovalStatus",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new System.Drawing.Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "ApprovedByAccount2",
+                HeaderText = "Approved By",
+                DataPropertyName = "ApprovedByAccount2",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new System.Drawing.Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Account2ApprovedDate",
+                HeaderText = "Approved Date",
+                DataPropertyName = "Account2ApprovedDate",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new System.Drawing.Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Account3ApprovalStatus",
+                HeaderText = "Account3 Status Check",
+                DataPropertyName = "Account3ApprovalStatus",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new System.Drawing.Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "ApprovedByAccount3",
+                HeaderText = "Approved By",
+                DataPropertyName = "ApprovedByAccount3",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new System.Drawing.Font("Arial", 11)
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Account3ApprovedDate",
+                HeaderText = "Approved Date",
+                DataPropertyName = "Account3ApprovedDate",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new System.Drawing.Font("Arial", 11),
+                    Format = "dd.MM.yyyy"
+                },
+            });
+
+            dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
+            {
                 Name = "AccountApprovalStatus",
-                HeaderText = "Account Status Check",
+                HeaderText = "General Affair Status Check",
                 DataPropertyName = "AccountApprovalStatus",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
