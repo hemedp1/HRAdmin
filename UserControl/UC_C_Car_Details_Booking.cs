@@ -104,6 +104,7 @@ namespace HRAdmin.UserControl
                         WHEN DateApprove IS NULL THEN 'Pending'
                         ELSE CONVERT(VARCHAR, DateApprove, 120)
                     END AS DateApprove,
+
                     CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
                     CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
                     FROM tbl_CarBookings 

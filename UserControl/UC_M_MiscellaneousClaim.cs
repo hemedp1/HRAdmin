@@ -160,7 +160,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        
         private void cmbECtype_SelectedIndexChanged(object sender, EventArgs e)
         {
             string ExpensesType = cmbECtype.SelectedItem?.ToString();
@@ -212,12 +211,19 @@ namespace HRAdmin.UserControl
         private void LoadData()
         {
             string query = @"
-                            SELECT  
+                            SELECT 
                                 a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
-                                a.HODApprovalStatus, a.ApprovedByHOD, a.HODApprovedDate, 
+                                a.HODApprovalStatus, CASE 
+                                WHEN a.ApprovedByHOD IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.ApprovedByHOD, 120)
+                                END AS ApprovedByHOD,   CASE 
+                                WHEN a.HODApprovedDate IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.HODApprovedDate, 120)
+                                END AS HODApprovedDate, 
                                 a.HRApprovalStatus, a.ApprovedByHR, a.HRApprovedDate, 
                                 a.AccountApprovalStatus, a.ApprovedByAccount, a.AccountApprovedDate, 
                                 b.Username, c.AccessLevel, b.SuperApprover, d.Department1
+                            
                             FROM 
                                 tbl_MasterClaimForm a
                             LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
@@ -378,7 +384,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void UC_Miscellaneous_Load(object sender, EventArgs e)
         {
             cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
@@ -1286,7 +1291,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Please select a cell in the order row to view.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             // Get the selected row
             DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
             DataGridViewRow selectedRow = selectedCell.OwningRow;
@@ -1299,10 +1303,8 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Invalid order selection: SerialNo or Requester is missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
             // Proceed with generating and viewing the PDF
-            //Debug.WriteLine($"Selected SerialNo: {serialNo}");
-            string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
+            //string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
             pdfBytes = GeneratePDF(serialNo);
             if (pdfBytes != null)
             {
