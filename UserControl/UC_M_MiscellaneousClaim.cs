@@ -37,7 +37,6 @@ namespace HRAdmin.UserControl
         private bool isNetworkUnavailable; // Declare isNetworkUnavailable
         private byte[] pdfBytes;
 
-
         private DataTable masterData; // Stores all loaded data
         private BindingSource bs = new BindingSource(); // For filtering
 
@@ -51,8 +50,6 @@ namespace HRAdmin.UserControl
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
             logginInUserAccessLevel = UL;
-
-
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
             //LoadUsernames();
             //LoadDepartments();
@@ -163,102 +160,26 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        /*private void LoadUsernames()
-        {
-            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-            {
-                try
-                {
-                    con.Open();
-                    string query = "SELECT Name1 FROM tbl_Users";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            cmbRequester.Items.Clear();
-                            cmbRequester.Items.Add("All Users");
-                            while (reader.Read())
-                            {
-                                string Name1 = reader["Name1"].ToString();
-                                cmbRequester.Items.Add(Name1);
-                                Debug.WriteLine($"Loaded username: {Name1}");
-                            }
-                        }
-                    }
-                    cmbRequester.SelectedIndex = 0;
-                    Debug.WriteLine("Usernames loaded successfully.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error loading usernames: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error loading usernames: {ex.Message}");
-                }
-            }
-        }
-        */
-        private void LoadUsernamesByDepartment()
-        {
-            //if (cmbDepart.SelectedIndex >= 1)
-            //   {
-            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-            {
-                string query = "SELECT DISTINCT Requester FROM tbl_MasterClaimForm WHERE Department = @Dept";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@Dept", cmbDepart.Text); // Replace with your variable
-
-                    con.Open();
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        cmbRequester.Items.Clear();
-                        cmbRequester.Items.Add("All Users"); // Add "All Users" option
-
-                        while (reader.Read())
-                        {
-                            string requester = reader["Requester"].ToString();
-                            cmbRequester.Items.Add(requester);
-                        }
-                    }
-                }
-            }
-
-            // }
-            /*using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-            {
-                try
-                {
-                    con.Open();
-                    string query = "SELECT Username FROM tbl_Users WHERE Department = @Department";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@Department", department);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            cmbRequester.Items.Clear();
-                            cmbRequester.Items.Add("All Users"); // Add "All Users" option
-                            while (reader.Read())
-                            {
-                                string username = reader["Username"].ToString();
-                                cmbRequester.Items.Add(username);
-                                Debug.WriteLine($"Loaded username: {username} for department: {department}");
-                            }
-                        }
-                    }
-                    Debug.WriteLine($"Usernames loaded successfully for department: {department}");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error loading usernames: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error loading usernames for department {department}: {ex.Message}");
-                }
-            } */
-        }
         
         private void cmbECtype_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadData();
+            string ExpensesType = cmbECtype.SelectedItem?.ToString();
+
+            if (!string.IsNullOrEmpty(ExpensesType))
+            {
+                if (ExpensesType == "-- All --")
+                {
+                    BindDataGridView(masterData); // Show all
+                }
+                else
+                {
+                    var filtered = masterData.AsEnumerable()
+                        .Where(r => r.Field<string>("ExpensesType") == ExpensesType)
+                        .CopyToDataTable();
+
+                    BindDataGridView(filtered);
+                }
+            }
         }
         private void dtpStart_ValueChanged(object sender, EventArgs e)
         {
@@ -270,91 +191,144 @@ namespace HRAdmin.UserControl
         }
         private void cmbRequester_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadData();
+            string selectedReq = cmbRequester.SelectedItem?.ToString();
+
+            if (!string.IsNullOrEmpty(selectedReq))
+            {
+                if (selectedReq == "-- All --")
+                {
+                    BindDataGridView(masterData); // Show all
+                }
+                else
+                {
+                    var filtered = masterData.AsEnumerable()
+                        .Where(r => r.Field<string>("Requester") == selectedReq)
+                        .CopyToDataTable();
+
+                    BindDataGridView(filtered);
+                }
+            }
         }
         private void LoadData()
         {
             string query = @"
-        SELECT  
-            a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
-            a.HODApprovalStatus, a.ApprovedByHOD, a.HODApprovedDate, 
-            a.HRApprovalStatus, a.ApprovedByHR, a.HRApprovedDate, 
-            a.AccountApprovalStatus, a.ApprovedByAccount, a.AccountApprovedDate, 
-            b.Username, c.AccessLevel, b.SuperApprover, d.Department1
-        FROM 
-            tbl_MasterClaimForm a
-        LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
-        LEFT JOIN tbl_UsersLevel c ON b.Position = c.TitlePosition
-        LEFT JOIN tbl_Department d ON b.Department = d.Department0
-        WHERE 
-            (@StartDate IS NULL OR CAST(a.RequestDate AS DATE) >= @StartDate)
-            AND (@EndDate IS NULL OR CAST(a.RequestDate AS DATE) <= @EndDate)
-            AND (
-                EXISTS (
-                    SELECT 1 
-                    FROM tbl_Department 
-                    WHERE Department3 = @LoggedInDept OR Department4 = @LoggedInDept OR Department5 = @LoggedInDept
-                )
-                OR a.Department IN (
-                    SELECT Department0
-                    FROM tbl_Department
-                    WHERE Department1 = @LoggedInDept
-                )
-                OR a.Department = @LoggedInDept
-            )
-        ORDER BY a.RequestDate ASC";
+                            SELECT  
+                                a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
+                                a.HODApprovalStatus, a.ApprovedByHOD, a.HODApprovedDate, 
+                                a.HRApprovalStatus, a.ApprovedByHR, a.HRApprovedDate, 
+                                a.AccountApprovalStatus, a.ApprovedByAccount, a.AccountApprovedDate, 
+                                b.Username, c.AccessLevel, b.SuperApprover, d.Department1
+                            FROM 
+                                tbl_MasterClaimForm a
+                            LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
+                            LEFT JOIN tbl_UsersLevel c ON b.Position = c.TitlePosition
+                            LEFT JOIN tbl_Department d ON b.Department = d.Department0
+                            WHERE 
+                                (@StartDate IS NULL OR CAST(a.RequestDate AS DATE) >= @StartDate)
+                                AND (@EndDate IS NULL OR CAST(a.RequestDate AS DATE) <= @EndDate)
+                                AND (
+                                    EXISTS (
+                                        SELECT 1 
+                                        FROM tbl_Department 
+                                        WHERE Department3 = @LoggedInDept OR Department4 = @LoggedInDept OR Department5 = @LoggedInDept
+                                    )
+                                    OR a.Department IN (
+                                        SELECT Department0
+                                        FROM tbl_Department
+                                        WHERE Department1 = @LoggedInDept
+                                    )
+                                    OR a.Department = @LoggedInDept
+                                )
+                            ORDER BY a.RequestDate ASC";
+
+            SqlConnection con = null;
 
             try
             {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString);
+                con.Open();
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    cmd.Parameters.AddWithValue("@LoggedInDept", loggedInDepart);
+
+                    DateTime startDate = dtpStart.Value.Date;
+                    DateTime endDate = dtpEnd.Value.Date;
+
+                    if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
                     {
-                        cmd.Parameters.AddWithValue("@LoggedInDept", loggedInDepart);
-
-                        DateTime startDate = dtpStart.Value.Date;
-                        DateTime endDate = dtpEnd.Value.Date;
-
-                        if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
-                        {
-                            cmd.Parameters.AddWithValue("@StartDate", startDate);
-                            cmd.Parameters.AddWithValue("@EndDate", endDate);
-                        }
-                        else
-                        {
-                            DateTime today = DateTime.Today;
-                            DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Sunday
-                            DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
-                            cmd.Parameters.AddWithValue("@StartDate", weekStart);
-                            cmd.Parameters.AddWithValue("@EndDate", weekEnd);
-                        }
-
-                        DataTable dt = new DataTable();
-                        masterData = new DataTable();
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            da.Fill(masterData);
-                            da.Fill(dt);
-                        }
-
-                        // Fill cmbDepart with only departments found in tbl_MasterClaimForm
-                        var uniqueDepts = masterData.AsEnumerable()
-                            .Select(r => r.Field<string>("Department"))
-                            .Where(d => !string.IsNullOrEmpty(d))
-                            .Distinct()
-                            .OrderBy(d => d)
-                            .ToList();
-
-                        cmbDepart.Items.Clear();
-                        cmbDepart.Items.Add("-- All --");
-                        cmbDepart.Items.AddRange(uniqueDepts.ToArray());
-                        cmbDepart.SelectedIndex = 0;
-
-                        cachedData = dt.Copy();
-                        BindDataGridView(dt);
+                        cmd.Parameters.AddWithValue("@StartDate", startDate);
+                        cmd.Parameters.AddWithValue("@EndDate", endDate);
                     }
+                    else
+                    {
+                        DateTime today = DateTime.Today;
+                        DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Sunday
+                        DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
+                        cmd.Parameters.AddWithValue("@StartDate", weekStart);
+                        cmd.Parameters.AddWithValue("@EndDate", weekEnd);
+                    }
+
+                    DataTable dt = new DataTable();
+                    masterData = new DataTable();
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(masterData);
+                        da.Fill(dt);
+                    }
+
+                    // Temporarily remove event handlers if necessary
+                    cmbDepart.SelectedIndexChanged -= cmbDepart_SelectedIndexChanged;
+                    cmbRequester.SelectedIndexChanged -= cmbRequester_SelectedIndexChanged;
+                    cmbECtype.SelectedIndexChanged -= cmbECtype_SelectedIndexChanged;
+
+                    // Department
+                    var uniqueDepts = masterData.AsEnumerable()
+                        .Select(r => r.Field<string>("Department"))
+                        .Where(d => !string.IsNullOrEmpty(d))
+                        .Distinct()
+                        .OrderBy(d => d)
+                        .ToList();
+
+                    cmbDepart.Items.Clear();
+                    cmbDepart.Items.Add("-- All --");
+                    cmbDepart.Items.AddRange(uniqueDepts.ToArray());
+                    cmbDepart.SelectedIndex = 0;
+
+                    // Requester
+                    var requesters = masterData.AsEnumerable()
+                        .Select(r => r.Field<string>("Requester"))
+                        .Where(d => !string.IsNullOrEmpty(d))
+                        .Distinct()
+                        .OrderBy(d => d)
+                        .ToList();
+
+                    cmbRequester.Items.Clear();
+                    cmbRequester.Items.Add("-- All --");
+                    cmbRequester.Items.AddRange(requesters.ToArray());
+                    cmbRequester.SelectedIndex = 0;
+
+                    // Expenses Type
+                    var expenseTypes = masterData.AsEnumerable()
+                        .Select(r => r.Field<string>("ExpensesType"))
+                        .Where(d => !string.IsNullOrEmpty(d))
+                        .Distinct()
+                        .OrderBy(d => d)
+                        .ToList();
+
+                    cmbECtype.Items.Clear();
+                    cmbECtype.Items.Add("-- All --");
+                    cmbECtype.Items.AddRange(expenseTypes.ToArray());
+                    cmbECtype.SelectedIndex = 0;
+
+                    // Restore event handlers
+                    cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
+                    cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
+                    cmbECtype.SelectedIndexChanged += cmbECtype_SelectedIndexChanged;
+
+                    cachedData = dt.Copy();
+                    BindDataGridView(dt);
                 }
             }
             catch (Exception ex)
@@ -373,6 +347,14 @@ namespace HRAdmin.UserControl
                 else
                 {
                     MessageBox.Show("Network unavailable and no cached data available.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            finally
+            {
+                // Ensure the connection is closed
+                if (con != null && con.State == ConnectionState.Open)
+                {
+                    con.Close();
                 }
             }
         }
@@ -706,7 +688,7 @@ namespace HRAdmin.UserControl
             // Attach CellFormatting event handler to handle HRApprovedDate display
             dgvMS.CellFormatting += dgvMS_CellFormatting;
 
-            Debug.WriteLine("DataGridView updated successfully.");
+            //Debug.WriteLine("DataGridView updated successfully.");
         }
         // CellFormatting event handler to display "-" for HRApprovedDate when ExpensesType is "Work"
         private void dgvMS_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -793,7 +775,7 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error withdrawing order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error withdrawing order: {ex.Message}");
+                    //Debug.WriteLine($"Error withdrawing order: {ex.Message}");
                 }
             }
         }
@@ -897,7 +879,7 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error approving order: {ex.Message}");
+                    //Debug.WriteLine($"Error approving order: {ex.Message}");
                 }
             }
             // Handle HR & ADMIN department approval
@@ -967,7 +949,7 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error approving order: {ex.Message}");
+                    //Debug.WriteLine($"Error approving order: {ex.Message}");
                 }
             }
             else
@@ -1037,7 +1019,7 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error approving order: {ex.Message}");
+                    //Debug.WriteLine($"Error approving order: {ex.Message}");
                 }
             }
         }
@@ -1141,7 +1123,7 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error rejecting order: {ex.Message}");
+                    //Debug.WriteLine($"Error rejecting order: {ex.Message}");
                 }
             }
             else if (loggedInDepart == "HR & ADMIN")
@@ -1217,7 +1199,7 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error rejecting order: {ex.Message}");
+                    //Debug.WriteLine($"Error rejecting order: {ex.Message}");
                 }
             }
             else
@@ -1292,7 +1274,7 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error rejecting order: {ex.Message}");
+                    //Debug.WriteLine($"Error rejecting order: {ex.Message}");
                 }
             }
         }
@@ -1319,7 +1301,7 @@ namespace HRAdmin.UserControl
             }
 
             // Proceed with generating and viewing the PDF
-            Debug.WriteLine($"Selected SerialNo: {serialNo}");
+            //Debug.WriteLine($"Selected SerialNo: {serialNo}");
             string selectedMeal = cmbType.SelectedItem?.ToString() ?? "DefaultMeal";
             pdfBytes = GeneratePDF(serialNo);
             if (pdfBytes != null)
