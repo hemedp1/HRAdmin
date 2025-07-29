@@ -213,15 +213,72 @@ namespace HRAdmin.UserControl
             string query = @"
                             SELECT 
                                 a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
-                                a.HODApprovalStatus, CASE 
+                                a.HODApprovalStatus, 
+
+                                CASE 
                                 WHEN a.ApprovedByHOD IS NULL THEN 'Pending'
                                 ELSE CONVERT(VARCHAR, a.ApprovedByHOD, 120)
-                                END AS ApprovedByHOD,   CASE 
+                                END AS ApprovedByHOD,   
+
+                                CASE 
                                 WHEN a.HODApprovedDate IS NULL THEN 'Pending'
                                 ELSE CONVERT(VARCHAR, a.HODApprovedDate, 120)
                                 END AS HODApprovedDate, 
-                                a.HRApprovalStatus, a.ApprovedByHR, a.HRApprovedDate, 
-                                a.AccountApprovalStatus, a.ApprovedByAccount, a.AccountApprovedDate, 
+
+                                a.HRApprovalStatus,
+
+                                CASE 
+                                WHEN a.ApprovedByHR IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.ApprovedByHR, 120)
+                                END AS ApprovedByHR,
+
+                                CASE 
+                                WHEN a.HRApprovedDate IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.HRApprovedDate, 120)
+                                END AS HRApprovedDate,
+
+                                a.AccountApprovalStatus, 
+                                
+                                CASE 
+                                WHEN a.ApprovedByAccount IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.ApprovedByAccount, 120)
+                                END AS ApprovedByAccount,
+
+                                CASE 
+                                WHEN a.AccountApprovedDate IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.AccountApprovedDate, 120)
+                                END AS AccountApprovedDate,
+
+                                CASE 
+                                WHEN a.Account2ApprovalStatus IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.Account2ApprovalStatus, 120)
+                                END AS Account2ApprovalStatus,
+
+                                CASE 
+                                WHEN a.ApprovedByAccount2 IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.ApprovedByAccount2, 120)
+                                END AS ApprovedByAccount2,
+
+                                CASE 
+                                WHEN a.Account2ApprovedDate IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.Account2ApprovedDate, 120)
+                                END AS Account2ApprovedDate,
+
+                                CASE 
+                                WHEN a.Account3ApprovalStatus IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.Account3ApprovalStatus, 120)
+                                END AS Account3ApprovalStatus,
+
+                                CASE 
+                                WHEN a.ApprovedByAccount3 IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.ApprovedByAccount3, 120)
+                                END AS ApprovedByAccount3,
+
+                                CASE 
+                                WHEN a.Account3ApprovedDate IS NULL THEN 'Pending'
+                                ELSE CONVERT(VARCHAR, a.Account3ApprovedDate, 120)
+                                END AS Account3ApprovedDate,
+                                
                                 b.Username, c.AccessLevel, b.SuperApprover, d.Department1
                             
                             FROM 
