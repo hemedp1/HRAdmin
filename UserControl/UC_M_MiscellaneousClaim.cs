@@ -414,8 +414,31 @@ namespace HRAdmin.UserControl
 
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Prevent recursive calls during programmatic changes
+            cmbRequester.SelectedIndexChanged -= cmbRequester_SelectedIndexChanged;
+
+            // Get the selected department
             string selectedDept = cmbDepart.SelectedItem?.ToString();
 
+            // Filter requesters based on the selected department
+            var requesters = masterData.AsEnumerable()
+                .Where(r => selectedDept == "-- All --" || r.Field<string>("Department") == selectedDept)
+                .Select(r => r.Field<string>("Requester"))
+                .Where(d => !string.IsNullOrEmpty(d))
+                .Distinct()
+                .OrderBy(d => d)
+                .ToList();
+
+            // Update cmbRequester
+            cmbRequester.Items.Clear();
+            cmbRequester.Items.Add("-- All --");
+            cmbRequester.Items.AddRange(requesters.ToArray());
+            cmbRequester.SelectedIndex = 0;
+
+            // Reattach the event handler
+            cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
+
+            // Filter DataGridView (preserve existing behavior)
             if (!string.IsNullOrEmpty(selectedDept))
             {
                 if (selectedDept == "-- All --")
