@@ -29,7 +29,7 @@ namespace HRAdmin.UserControl
             loggedInDepart = Depart;
             loggedInUser = username;
             logginInUserAccessLevel = UL;
-            
+            //MessageBox.Show($"logginInUserAccessLevesssssl: {logginInUserAccessLevel}");
             LoadPendingBookings();
             LoadData();
             dTDay.ValueChanged += dTDay_ValueChanged;
@@ -42,6 +42,7 @@ namespace HRAdmin.UserControl
         }
         private void LoadPendingBookings()
         {
+            //MessageBox.Show($"logginInUserAccessLevel: {logginInUserAccessLevel}");
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
             {
                 try
@@ -151,7 +152,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btnCheck_Click(object sender, EventArgs e)
         {
             if (dataGridView1.CurrentRow == null)
@@ -261,7 +261,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -444,7 +443,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void ConfigureDataGridView(DataTable dt)
         {
             dataGridView1.Columns.Clear();
@@ -511,7 +509,6 @@ namespace HRAdmin.UserControl
         {
 
         }
-
         private void dTDay_ValueChanged(object sender, EventArgs e)
         {
             LoadData();

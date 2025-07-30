@@ -544,7 +544,7 @@ namespace HRAdmin.Forms
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
             btnApproval.Visible = false;
-            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, logginInUserAccessLevel, LoggedInBank, LoggedInAccNo);
+            UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
 

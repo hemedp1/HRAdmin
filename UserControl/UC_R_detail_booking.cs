@@ -459,7 +459,6 @@ namespace HRAdmin.UserControl
         {
 
         }
-
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Admin > Reserve Meeting Room && Schedule";
@@ -471,7 +470,6 @@ namespace HRAdmin.UserControl
             UC_R_DetailsRoom ug = new UC_R_DetailsRoom(loggedInUser);
             addControls(ug);
         }
-
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
         {
 

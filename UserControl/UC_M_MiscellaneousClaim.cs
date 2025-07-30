@@ -22,6 +22,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Reflection;
 using HRAdmin.Components;
 
+
 namespace HRAdmin.UserControl
 {
     public partial class UC_M_MiscellaneousClaim : System.Windows.Forms.UserControl
@@ -30,7 +31,6 @@ namespace HRAdmin.UserControl
         private string loggedInDepart;
         private string loggedInIndex;
         private string LoggedInBank;
-        private string logginInUserAccessLevel;
         private string LoggedInAccNo;
         private DataTable cachedData; // Declare cachedData
         private bool isNetworkErrorShown; // Declare isNetworkErrorShown
@@ -40,7 +40,7 @@ namespace HRAdmin.UserControl
         private DataTable masterData; // Stores all loaded data
         private BindingSource bs = new BindingSource(); // For filtering
 
-        public UC_M_MiscellaneousClaim(string username, string department, string emp, string bank, string accountNo, string UL)
+        public UC_M_MiscellaneousClaim(string username, string department, string emp, string bank, string accountNo)
         {
             InitializeComponent();
             //string gg = UserSession.LoggedInBank;
@@ -49,8 +49,9 @@ namespace HRAdmin.UserControl
             loggedInIndex = emp;
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
-            logginInUserAccessLevel = UL;
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
+            string userlevel = UserSession.logginInUserAccessLevel;
+            string userfullName = UserSession.loggedInName;
             //LoadUsernames();
             //LoadDepartments();
             LoadData(); // Initial load with default weekly filter
@@ -60,6 +61,8 @@ namespace HRAdmin.UserControl
             isNetworkErrorShown = false;
             isNetworkUnavailable = false;
             this.Load += UC_Miscellaneous_Load;
+            MessageBox.Show($"loggedInName: {UserSession.loggedInName}");
+            MessageBox.Show($"logginInUserAccessLevel: {UserSession.logginInUserAccessLevel}");
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -82,7 +85,7 @@ namespace HRAdmin.UserControl
             Form_Home.sharedbtnMCReport.Visible = false;
             Form_Home.sharedbtnApproval.Visible = false;
 
-            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
+            UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
         private void btnNext_Click(object sender, EventArgs e)
@@ -101,7 +104,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo);
                 addControls(ug);
             }
             else if (selectedType == "Benefit")
@@ -110,7 +113,7 @@ namespace HRAdmin.UserControl
                 Form_Home.sharedbtnMCReport.Visible = false;
                 Form_Home.sharedbtnApproval.Visible = false;
 
-                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
+                UC_M_Work ug = new UC_M_Work(LoggedInUser, loggedInDepart, selectedType, loggedInIndex, LoggedInBank, LoggedInAccNo);
                 addControls(ug);
             }
         }
@@ -210,99 +213,88 @@ namespace HRAdmin.UserControl
         }
         private void LoadData()
         {
-            string query = @"
-                            SELECT 
-                                a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
-                                a.HODApprovalStatus, 
+            bool showOwnRecords = int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) && accessLevel < 1;
 
-                                CASE 
-                                WHEN a.ApprovedByHOD IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.ApprovedByHOD, 120)
-                                END AS ApprovedByHOD,   
+            string query = "";
 
-                                CASE 
-                                WHEN a.HODApprovedDate IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.HODApprovedDate, 120)
-                                END AS HODApprovedDate, 
-
-                                a.HRApprovalStatus,
-
-                                CASE 
-                                WHEN a.ApprovedByHR IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.ApprovedByHR, 120)
-                                END AS ApprovedByHR,
-
-                                CASE 
-                                WHEN a.HRApprovedDate IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.HRApprovedDate, 120)
-                                END AS HRApprovedDate,
-
-                                a.AccountApprovalStatus, 
-                                
-                                CASE 
-                                WHEN a.ApprovedByAccount IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.ApprovedByAccount, 120)
-                                END AS ApprovedByAccount,
-
-                                CASE 
-                                WHEN a.AccountApprovedDate IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.AccountApprovedDate, 120)
-                                END AS AccountApprovedDate,
-
-                                CASE 
-                                WHEN a.Account2ApprovalStatus IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.Account2ApprovalStatus, 120)
-                                END AS Account2ApprovalStatus,
-
-                                CASE 
-                                WHEN a.ApprovedByAccount2 IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.ApprovedByAccount2, 120)
-                                END AS ApprovedByAccount2,
-
-                                CASE 
-                                WHEN a.Account2ApprovedDate IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.Account2ApprovedDate, 120)
-                                END AS Account2ApprovedDate,
-
-                                CASE 
-                                WHEN a.Account3ApprovalStatus IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.Account3ApprovalStatus, 120)
-                                END AS Account3ApprovalStatus,
-
-                                CASE 
-                                WHEN a.ApprovedByAccount3 IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.ApprovedByAccount3, 120)
-                                END AS ApprovedByAccount3,
-
-                                CASE 
-                                WHEN a.Account3ApprovedDate IS NULL THEN 'Pending'
-                                ELSE CONVERT(VARCHAR, a.Account3ApprovedDate, 120)
-                                END AS Account3ApprovedDate,
-                                
-                                b.Username, c.AccessLevel, b.SuperApprover, d.Department1
-                            
-                            FROM 
-                                tbl_MasterClaimForm a
-                            LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
-                            LEFT JOIN tbl_UsersLevel c ON b.Position = c.TitlePosition
-                            LEFT JOIN tbl_Department d ON b.Department = d.Department0
-                            WHERE 
-                                (@StartDate IS NULL OR CAST(a.RequestDate AS DATE) >= @StartDate)
-                                AND (@EndDate IS NULL OR CAST(a.RequestDate AS DATE) <= @EndDate)
-                                AND (
-                                    EXISTS (
-                                        SELECT 1 
-                                        FROM tbl_Department 
-                                        WHERE Department3 = @LoggedInDept OR Department4 = @LoggedInDept OR Department5 = @LoggedInDept
-                                    )
-                                    OR a.Department IN (
-                                        SELECT Department0
-                                        FROM tbl_Department
-                                        WHERE Department1 = @LoggedInDept
-                                    )
-                                    OR a.Department = @LoggedInDept
-                                )
-                            ORDER BY a.RequestDate ASC";
+            if (showOwnRecords)
+            {
+                // Query 2: Show only logged-in user's own records
+                query = @"
+            SELECT 
+                a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
+                a.HODApprovalStatus, 
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByHOD, 120), 'Pending') AS ApprovedByHOD, 
+                ISNULL(CONVERT(VARCHAR, a.HODApprovedDate, 120), 'Pending') AS HODApprovedDate, 
+                a.HRApprovalStatus,
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByHR, 120), 'Pending') AS ApprovedByHR,
+                ISNULL(CONVERT(VARCHAR, a.HRApprovedDate, 120), 'Pending') AS HRApprovedDate,
+                a.AccountApprovalStatus, 
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount, 120), 'Pending') AS ApprovedByAccount,
+                ISNULL(CONVERT(VARCHAR, a.AccountApprovedDate, 120), 'Pending') AS AccountApprovedDate,
+                ISNULL(CONVERT(VARCHAR, a.Account2ApprovalStatus, 120), 'Pending') AS Account2ApprovalStatus,
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount2, 120), 'Pending') AS ApprovedByAccount2,
+                ISNULL(CONVERT(VARCHAR, a.Account2ApprovedDate, 120), 'Pending') AS Account2ApprovedDate,
+                ISNULL(CONVERT(VARCHAR, a.Account3ApprovalStatus, 120), 'Pending') AS Account3ApprovalStatus,
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount3, 120), 'Pending') AS ApprovedByAccount3,
+                ISNULL(CONVERT(VARCHAR, a.Account3ApprovedDate, 120), 'Pending') AS Account3ApprovedDate,
+                b.Username, c.AccessLevel, b.SuperApprover, d.Department1
+            FROM 
+                tbl_MasterClaimForm a
+            LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
+            LEFT JOIN tbl_UsersLevel c ON b.Position = c.TitlePosition
+            LEFT JOIN tbl_Department d ON b.Department = d.Department0
+            WHERE
+                b.Name1 = @LoggedInUser
+                AND (@StartDate IS NULL OR CAST(a.RequestDate AS DATE) >= @StartDate)
+                AND (@EndDate IS NULL OR CAST(a.RequestDate AS DATE) <= @EndDate)
+            ORDER BY a.RequestDate ASC";
+            }
+            else
+            {
+                // Query 1: Original query (department filtering)
+                query = @"
+            SELECT 
+                a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
+                a.HODApprovalStatus, 
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByHOD, 120), 'Pending') AS ApprovedByHOD, 
+                ISNULL(CONVERT(VARCHAR, a.HODApprovedDate, 120), 'Pending') AS HODApprovedDate, 
+                a.HRApprovalStatus,
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByHR, 120), 'Pending') AS ApprovedByHR,
+                ISNULL(CONVERT(VARCHAR, a.HRApprovedDate, 120), 'Pending') AS HRApprovedDate,
+                a.AccountApprovalStatus, 
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount, 120), 'Pending') AS ApprovedByAccount,
+                ISNULL(CONVERT(VARCHAR, a.AccountApprovedDate, 120), 'Pending') AS AccountApprovedDate,
+                ISNULL(CONVERT(VARCHAR, a.Account2ApprovalStatus, 120), 'Pending') AS Account2ApprovalStatus,
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount2, 120), 'Pending') AS ApprovedByAccount2,
+                ISNULL(CONVERT(VARCHAR, a.Account2ApprovedDate, 120), 'Pending') AS Account2ApprovedDate,
+                ISNULL(CONVERT(VARCHAR, a.Account3ApprovalStatus, 120), 'Pending') AS Account3ApprovalStatus,
+                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount3, 120), 'Pending') AS ApprovedByAccount3,
+                ISNULL(CONVERT(VARCHAR, a.Account3ApprovedDate, 120), 'Pending') AS Account3ApprovedDate,
+                b.Username, c.AccessLevel, b.SuperApprover, d.Department1
+            FROM 
+                tbl_MasterClaimForm a
+            LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
+            LEFT JOIN tbl_UsersLevel c ON b.Position = c.TitlePosition
+            LEFT JOIN tbl_Department d ON b.Department = d.Department0
+            WHERE 
+                (@StartDate IS NULL OR CAST(a.RequestDate AS DATE) >= @StartDate)
+                AND (@EndDate IS NULL OR CAST(a.RequestDate AS DATE) <= @EndDate)
+                AND (
+                    EXISTS (
+                        SELECT 1 
+                        FROM tbl_Department 
+                        WHERE Department3 = @LoggedInDept OR Department4 = @LoggedInDept OR Department5 = @LoggedInDept
+                    )
+                    OR a.Department IN (
+                        SELECT Department0
+                        FROM tbl_Department
+                        WHERE Department1 = @LoggedInDept
+                    )
+                    OR a.Department = @LoggedInDept
+                )
+            ORDER BY a.RequestDate ASC";
+            }
 
             SqlConnection con = null;
 
@@ -313,7 +305,9 @@ namespace HRAdmin.UserControl
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
+                    // Parameters
                     cmd.Parameters.AddWithValue("@LoggedInDept", loggedInDepart);
+                    cmd.Parameters.AddWithValue("@LoggedInUser", UserSession.loggedInName); // <-- Add user parameter
 
                     DateTime startDate = dtpStart.Value.Date;
                     DateTime endDate = dtpEnd.Value.Date;
@@ -326,12 +320,13 @@ namespace HRAdmin.UserControl
                     else
                     {
                         DateTime today = DateTime.Today;
-                        DateTime weekStart = today.AddDays(-(int)today.DayOfWeek); // Sunday
+                        DateTime weekStart = today.AddDays(-(int)today.DayOfWeek);
                         DateTime weekEnd = weekStart.AddDays(7).AddTicks(-1);
                         cmd.Parameters.AddWithValue("@StartDate", weekStart);
                         cmd.Parameters.AddWithValue("@EndDate", weekEnd);
                     }
 
+                    // Fill tables
                     DataTable dt = new DataTable();
                     masterData = new DataTable();
 
@@ -341,12 +336,11 @@ namespace HRAdmin.UserControl
                         da.Fill(dt);
                     }
 
-                    // Temporarily remove event handlers if necessary
+                    // ComboBox loading
                     cmbDepart.SelectedIndexChanged -= cmbDepart_SelectedIndexChanged;
                     cmbRequester.SelectedIndexChanged -= cmbRequester_SelectedIndexChanged;
                     cmbECtype.SelectedIndexChanged -= cmbECtype_SelectedIndexChanged;
 
-                    // Department
                     var uniqueDepts = masterData.AsEnumerable()
                         .Select(r => r.Field<string>("Department"))
                         .Where(d => !string.IsNullOrEmpty(d))
@@ -359,7 +353,6 @@ namespace HRAdmin.UserControl
                     cmbDepart.Items.AddRange(uniqueDepts.ToArray());
                     cmbDepart.SelectedIndex = 0;
 
-                    // Requester
                     var requesters = masterData.AsEnumerable()
                         .Select(r => r.Field<string>("Requester"))
                         .Where(d => !string.IsNullOrEmpty(d))
@@ -372,7 +365,6 @@ namespace HRAdmin.UserControl
                     cmbRequester.Items.AddRange(requesters.ToArray());
                     cmbRequester.SelectedIndex = 0;
 
-                    // Expenses Type
                     var expenseTypes = masterData.AsEnumerable()
                         .Select(r => r.Field<string>("ExpensesType"))
                         .Where(d => !string.IsNullOrEmpty(d))
@@ -385,7 +377,6 @@ namespace HRAdmin.UserControl
                     cmbECtype.Items.AddRange(expenseTypes.ToArray());
                     cmbECtype.SelectedIndex = 0;
 
-                    // Restore event handlers
                     cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
                     cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
                     cmbECtype.SelectedIndexChanged += cmbECtype_SelectedIndexChanged;
@@ -414,13 +405,13 @@ namespace HRAdmin.UserControl
             }
             finally
             {
-                // Ensure the connection is closed
                 if (con != null && con.State == ConnectionState.Open)
                 {
                     con.Close();
                 }
             }
         }
+
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedDept = cmbDepart.SelectedItem?.ToString();
@@ -1396,8 +1387,8 @@ namespace HRAdmin.UserControl
                            m.HRApprovalStatus, m.ApprovedByHR, m.HRApprovedDate, 
                            m.AccountApprovalStatus, m.ApprovedByAccount, m.AccountApprovedDate
                     FROM tbl_MasterClaimForm m
-                    JOIN tbl_Users u ON m.EmpNo = u.IndexNo
-                    JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
+                    LEFT JOIN tbl_Users u ON m.EmpNo = u.IndexNo
+                    LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
                     WHERE m.SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {

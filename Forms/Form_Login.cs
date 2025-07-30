@@ -101,7 +101,7 @@ namespace HRAdmin
 
                         // Store all collected roles
                         UserSession.UserRoles = userRoles;
-
+                        
                         // Debug output
                         Debug.WriteLine($"User Roles: {string.Join(", ", userRoles)}");
 
