@@ -61,8 +61,8 @@ namespace HRAdmin.UserControl
             isNetworkErrorShown = false;
             isNetworkUnavailable = false;
             this.Load += UC_Miscellaneous_Load;
-            MessageBox.Show($"loggedInName: {UserSession.loggedInName}");
-            MessageBox.Show($"logginInUserAccessLevel: {UserSession.logginInUserAccessLevel}");
+            //MessageBox.Show($"loggedInName: {UserSession.loggedInName}");
+            //MessageBox.Show($"logginInUserAccessLevel: {UserSession.logginInUserAccessLevel}");
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -124,7 +124,11 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
-                    string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
+                    string query = "SELECT a.Username, a.Name1, a.Position, b.TitlePosition, b.AccessLevel " +
+               "FROM tbl_Users a " +
+               "LEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition " +
+               "WHERE a.Username = @Username";
+
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", LoggedInUser);
@@ -133,29 +137,29 @@ namespace HRAdmin.UserControl
                         {
                             if (reader.Read())
                             {
-                                string AA = reader["AA"].ToString();
-                                string MA = reader["MA"].ToString();
+                                int accessLevel = Convert.ToInt32(reader["AccessLevel"]);
 
-                                // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
-                                if (AA == "1")
+         
+                                if (accessLevel >= 1)
                                 {
-                                    //P_Authorization.Visible = false;
+                                    P_Authorization.Visible = true;
                                 }
-                                else if (MA == "2")
+                                else if (accessLevel == 0)
                                 {
-                                    //P_Authorization.Visible = true; 
+                                    P_Authorization.Visible = false;
                                 }
                                 else
                                 {
-                                    //P_Authorization.Visible = false;
+                                    P_Authorization.Visible = false;
                                 }
                             }
                             else
                             {
-                                //P_Authorization.Visible = false;
+                                P_Authorization.Visible = true;
                             }
                         }
                     }
+
                 }
             }
             catch (Exception ex)
