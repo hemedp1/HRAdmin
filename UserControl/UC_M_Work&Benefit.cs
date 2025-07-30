@@ -420,8 +420,8 @@ namespace HRAdmin.UserControl
                     string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
-    (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
-    VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";
+                                                        (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
+                                                 VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
                                         (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
@@ -580,6 +580,10 @@ namespace HRAdmin.UserControl
                                 ? loggedInIndex : row["EmpNo"];
                             row["Department"] = row["Department"] == DBNull.Value || string.IsNullOrEmpty(row["Department"]?.ToString())
                                 ? loggedInDepart : row["Department"];
+                            row["BankName"] = row["BankName"] == DBNull.Value || string.IsNullOrEmpty(row["BankName"]?.ToString())
+                                ? LoggedInBank : row["BankName"];
+                            row["AccountNo"] = row["AccountNo"] == DBNull.Value || string.IsNullOrEmpty(row["AccountNo"]?.ToString())
+                                ? LoggedInAccNo : row["AccountNo"];
                             row["RequestDate"] = row["RequestDate"] == DBNull.Value ? DateTime.Now : row["RequestDate"];
                             row["ExpensesType"] = row["ExpensesType"] == DBNull.Value || string.IsNullOrEmpty(row["ExpensesType"]?.ToString())
                                 ? expensesType : row["ExpensesType"];

@@ -1396,8 +1396,8 @@ namespace HRAdmin.UserControl
                            m.HRApprovalStatus, m.ApprovedByHR, m.HRApprovedDate, 
                            m.AccountApprovalStatus, m.ApprovedByAccount, m.AccountApprovedDate
                     FROM tbl_MasterClaimForm m
-                    JOIN tbl_Users u ON m.EmpNo = u.IndexNo
-                    JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
+                    LEFT JOIN tbl_Users u ON m.EmpNo = u.IndexNo
+                    LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
                     WHERE m.SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
