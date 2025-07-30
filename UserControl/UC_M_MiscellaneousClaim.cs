@@ -411,7 +411,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedDept = cmbDepart.SelectedItem?.ToString();

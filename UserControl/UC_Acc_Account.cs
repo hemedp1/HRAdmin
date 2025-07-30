@@ -28,7 +28,6 @@ namespace HRAdmin.UserControl
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
         }
-        
         private void btnMClaim_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
@@ -53,7 +52,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
