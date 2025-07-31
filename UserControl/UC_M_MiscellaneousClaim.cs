@@ -876,7 +876,7 @@ namespace HRAdmin.UserControl
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
-
+            string depatmen = selectedRow.Cells["Department"].Value?.ToString();
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
             {
@@ -964,15 +964,17 @@ namespace HRAdmin.UserControl
             // Handle HR & ADMIN department approval
             else if (loggedInDepart == "HR & ADMIN")
             {
+              //  MessageBox.Show($"expensesType: {expensesType}");
+               // MessageBox.Show($"depatmen: {depatmen}");
                 // Check if the ExpensesType is Work
-                if (expensesType == "Work")
+                if (expensesType == "Work" && depatmen != "HR & ADMIN")////////////////////
                 {
                     MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Check if HODApprovalStatus is Pending
-                if (hodApprovalStatus == "Pending")
+                if (hodApprovalStatus == "Pending" && depatmen != "HR & ADMIN")//////////////
                 {
                     MessageBox.Show("This order cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
