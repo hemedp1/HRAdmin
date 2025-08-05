@@ -61,8 +61,8 @@ namespace HRAdmin.UserControl
             isNetworkErrorShown = false;
             isNetworkUnavailable = false;
             this.Load += UC_Miscellaneous_Load;
-            MessageBox.Show($"loggedInName: {UserSession.loggedInName}");
-            MessageBox.Show($"logginInUserAccessLevel: {UserSession.logginInUserAccessLevel}");
+            //MessageBox.Show($"loggedInName: {UserSession.loggedInName}");
+            //MessageBox.Show($"logginInUserAccessLevel: {UserSession.logginInUserAccessLevel}");
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -476,7 +476,7 @@ namespace HRAdmin.UserControl
                 Font = new System.Drawing.Font("Arial", 11, FontStyle.Bold),
             };
 
-            int fixedColumnWidth = 150;
+            int fixedColumnWidth = 180;
 
             // Add columns as in the original code
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
@@ -628,7 +628,7 @@ namespace HRAdmin.UserControl
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "Account2ApprovalStatus",
-                HeaderText = "Account1 Status Check",
+                HeaderText = "Account 1 Status Check",
                 DataPropertyName = "Account2ApprovalStatus",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
@@ -668,7 +668,7 @@ namespace HRAdmin.UserControl
             dgvMS.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "Account3ApprovalStatus",
-                HeaderText = "Account3 Status Check",
+                HeaderText = "Account 2 Status Check",
                 DataPropertyName = "Account3ApprovalStatus",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
@@ -872,6 +872,8 @@ namespace HRAdmin.UserControl
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+            string account2ApprovalStatus = selectedRow.Cells["Account2ApprovalStatus"].Value?.ToString();
+            string account3ApprovalStatus = selectedRow.Cells["Account3ApprovalStatus"].Value?.ToString();
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
 
             // Validate the selection
@@ -882,7 +884,7 @@ namespace HRAdmin.UserControl
             }
 
             // Check if any department has rejected the order
-            if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected" || accountApprovalStatus == "Rejected")
+            if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected" || accountApprovalStatus == "Rejected" || account2ApprovalStatus == "Rejected" || account3ApprovalStatus == "Rejected")
             {
                 MessageBox.Show("This order cannot be approved because it has been rejected by one or more departments.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -1569,18 +1571,7 @@ namespace HRAdmin.UserControl
                     string ApprovedByHOD = orderDetails["ApprovedByHOD"].ToString();
                     string HODApprovedDate = orderDetails["HODApprovedDate"].ToString();
                     HODApprovalPara.IndentationLeft = -50f;
-                    if (string.IsNullOrEmpty(ApprovedByHOD))
-                    {
-                        HODApprovalPara.Add(new Chunk("HOD Approval      : Pending", bodyFont));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(HODApprovedDate))
-                        {
-                            HODApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
-                        }
-                        HODApprovalPara.Add(new Chunk($"Approved by HOD      : {ApprovedByHOD}   {HODApprovedDate}", bodyFont));
-                    }
+                    HODApprovalPara.Add(new Chunk($"HOD Approval      : {(string.IsNullOrEmpty(ApprovedByHOD) ? "Pending" : $"{ApprovedByHOD}   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}")}", bodyFont));
                     HODApprovalPara.SpacingBefore = 0f;
                     rightCell.AddElement(HODApprovalPara);
 
@@ -1597,18 +1588,7 @@ namespace HRAdmin.UserControl
                         string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
                         string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
                         HRApprovalPara.IndentationLeft = -50f;
-                        if (string.IsNullOrEmpty(ApprovedByHR))
-                        {
-                            HRApprovalPara.Add(new Chunk("HR Approval         : Pending", bodyFont));
-                        }
-                        else
-                        {
-                            if (string.IsNullOrEmpty(HRApprovedDate))
-                            {
-                                HRApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
-                            }
-                            HRApprovalPara.Add(new Chunk($"Approved by HR         : {ApprovedByHR}   {HRApprovedDate}", bodyFont));
-                        }
+                        HRApprovalPara.Add(new Chunk($"HR Approval         : {(string.IsNullOrEmpty(ApprovedByHR) ? "Pending" : $"{ApprovedByHR}   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}")}", bodyFont));
                         HRApprovalPara.SpacingBefore = 0f;
                         rightCell.AddElement(HRApprovalPara);
 
@@ -1623,19 +1603,28 @@ namespace HRAdmin.UserControl
                     string ApprovedByAccount = orderDetails["ApprovedByAccount"].ToString();
                     string AccountApprovedDate = orderDetails["AccountApprovedDate"].ToString();
                     AccountApprovalPara.IndentationLeft = -50f;
-                    if (string.IsNullOrEmpty(ApprovedByAccount))
-                    {
-                        AccountApprovalPara.Add(new Chunk("Account Approval : Pending", bodyFont));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(AccountApprovedDate))
-                        {
-                            AccountApprovedDate = DateTime.Now.ToString("dd.MM.yyyy");
-                        }
-                        AccountApprovalPara.Add(new Chunk($"Approved by Account : {ApprovedByAccount}   {AccountApprovedDate}", bodyFont));
-                    }
+                    AccountApprovalPara.Add(new Chunk($"Account Approval : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Pending" : $"{ApprovedByAccount}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}")}", bodyFont));
                     AccountApprovalPara.SpacingBefore = 0f;
+
+                    // Add watermark with hosiden.jpg behind Account Approval name and date
+                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "Hosiden logo.jpg");
+                    if (File.Exists(imagePath1) && !string.IsNullOrEmpty(ApprovedByAccount)) // Only add watermark if approved
+                    {
+                        iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
+                        float xPosition = document.PageSize.Width * 0.75f; // Approximately 70% of page width for right column (e.g., ~420f for A4)
+                        float yPosition = document.PageSize.Height - 202f; // Approximate Y position near top of approvals (e.g., ~700f for A4)
+                        float width = 60f; // Width to fit behind the text
+                        float height = 60f; // Height to fit behind the text
+                        watermark.SetAbsolutePosition(xPosition, yPosition);
+                        watermark.ScaleToFit(width, height); // Scale to fit behind the text area
+
+                        PdfContentByte under = writer.DirectContentUnder;
+                        PdfGState gState = new PdfGState();
+                        gState.FillOpacity = 0.1f; // (0.0f to 1.0f)
+                        under.SetGState(gState);
+                        under.AddImage(watermark);
+                    }
+
                     rightCell.AddElement(AccountApprovalPara);
 
                     Paragraph approvedAccountPara = new Paragraph();

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_MiscellaneousClaim));
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -50,6 +50,9 @@
             this.btnViewInvoice = new System.Windows.Forms.Button();
             this.btnWithdraw = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cmbECtype = new System.Windows.Forms.ComboBox();
             this.dtpEnd = new System.Windows.Forms.DateTimePicker();
             this.label9 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -66,9 +69,6 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.cmbECtype = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -161,14 +161,14 @@
             // 
             this.dgvMS.BackgroundColor = System.Drawing.Color.White;
             this.dgvMS.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvMS.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgvMS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMS.Location = new System.Drawing.Point(0, 0);
             this.dgvMS.Name = "dgvMS";
@@ -345,6 +345,42 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1853, 140);
             this.panel4.TabIndex = 1;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label13.Location = new System.Drawing.Point(1172, 22);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(18, 27);
+            this.label13.TabIndex = 136;
+            this.label13.Text = ":";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label14.Location = new System.Drawing.Point(971, 22);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(195, 27);
+            this.label14.TabIndex = 135;
+            this.label14.Text = "Expenses claim type";
+            // 
+            // cmbECtype
+            // 
+            this.cmbECtype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbECtype.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbECtype.FormattingEnabled = true;
+            this.cmbECtype.IntegralHeight = false;
+            this.cmbECtype.ItemHeight = 27;
+            this.cmbECtype.Items.AddRange(new object[] {
+            "Work",
+            "Benefit"});
+            this.cmbECtype.Location = new System.Drawing.Point(1196, 19);
+            this.cmbECtype.Name = "cmbECtype";
+            this.cmbECtype.Size = new System.Drawing.Size(250, 35);
+            this.cmbECtype.TabIndex = 134;
+            this.cmbECtype.SelectedIndexChanged += new System.EventHandler(this.cmbECtype_SelectedIndexChanged);
             // 
             // dtpEnd
             // 
@@ -528,42 +564,6 @@
             this.label4.Size = new System.Drawing.Size(18, 27);
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label13.Location = new System.Drawing.Point(1172, 22);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(18, 27);
-            this.label13.TabIndex = 136;
-            this.label13.Text = ":";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label14.Location = new System.Drawing.Point(971, 22);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(195, 27);
-            this.label14.TabIndex = 135;
-            this.label14.Text = "Expenses claim type";
-            // 
-            // cmbECtype
-            // 
-            this.cmbECtype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbECtype.Font = new System.Drawing.Font("Calibri", 13F);
-            this.cmbECtype.FormattingEnabled = true;
-            this.cmbECtype.IntegralHeight = false;
-            this.cmbECtype.ItemHeight = 27;
-            this.cmbECtype.Items.AddRange(new object[] {
-            "Work",
-            "Benefit"});
-            this.cmbECtype.Location = new System.Drawing.Point(1196, 19);
-            this.cmbECtype.Name = "cmbECtype";
-            this.cmbECtype.Size = new System.Drawing.Size(250, 35);
-            this.cmbECtype.TabIndex = 134;
-            this.cmbECtype.SelectedIndexChanged += new System.EventHandler(this.cmbECtype_SelectedIndexChanged);
             // 
             // UC_M_MiscellaneousClaim
             // 
