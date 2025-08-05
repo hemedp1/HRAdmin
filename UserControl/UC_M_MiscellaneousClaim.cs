@@ -982,6 +982,59 @@ namespace HRAdmin.UserControl
                     return;
                 }
 
+                if (hodApprovalStatus == "Pending" && depatmen == "HR & ADMIN")//////////////
+                {
+                    //MessageBox.Show("This order cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    // Confirm HR approval with the user
+                    DialogResult result1 = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result1 != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    // Update the database for HR approval
+                    try
+                    {
+                        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                        {
+                            con.Open();
+                            string query = @"
+            UPDATE tbl_MasterClaimForm 
+            SET HODApprovalStatus = @HODApprovalStatus, 
+                ApprovedByHOD = @ApprovedByHOD, 
+                HODApprovedDate = @HODApprovedDate 
+            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+
+
+                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            {
+                                cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
+                                cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
+                                cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                                int rowsAffected = cmd.ExecuteNonQuery();
+                                if (rowsAffected > 0)
+                                {
+                                    MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    // Refresh the DataGridView
+                                    LoadData();
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        //Debug.WriteLine($"Error approving order: {ex.Message}");
+                    }
+                    return;
+                }
+
                 // Check if the order is already approved by HR
                 if (hrApprovalStatus == "Approved")
                 {
