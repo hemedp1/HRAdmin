@@ -124,7 +124,11 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
-                    string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
+                    string query = "SELECT a.Username, a.Name1, a.Position, b.TitlePosition, b.AccessLevel " +
+               "FROM tbl_Users a " +
+               "LEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition " +
+               "WHERE a.Username = @Username";
+
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", LoggedInUser);
@@ -133,29 +137,29 @@ namespace HRAdmin.UserControl
                         {
                             if (reader.Read())
                             {
-                                string AA = reader["AA"].ToString();
-                                string MA = reader["MA"].ToString();
+                                int accessLevel = Convert.ToInt32(reader["AccessLevel"]);
 
-                                // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
-                                if (AA == "1")
+         
+                                if (accessLevel >= 1)
                                 {
-                                    //P_Authorization.Visible = false;
+                                    P_Authorization.Visible = true;
                                 }
-                                else if (MA == "2")
+                                else if (accessLevel == 0)
                                 {
-                                    //P_Authorization.Visible = true; 
+                                    P_Authorization.Visible = false;
                                 }
                                 else
                                 {
-                                    //P_Authorization.Visible = false;
+                                    P_Authorization.Visible = false;
                                 }
                             }
                             else
                             {
-                                //P_Authorization.Visible = false;
+                                P_Authorization.Visible = true;
                             }
                         }
                     }
+
                 }
             }
             catch (Exception ex)
@@ -411,7 +415,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Prevent recursive calls during programmatic changes
@@ -875,7 +878,7 @@ namespace HRAdmin.UserControl
             string account2ApprovalStatus = selectedRow.Cells["Account2ApprovalStatus"].Value?.ToString();
             string account3ApprovalStatus = selectedRow.Cells["Account3ApprovalStatus"].Value?.ToString();
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
-
+            string depatmen = selectedRow.Cells["Department"].Value?.ToString();
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
             {
@@ -963,15 +966,17 @@ namespace HRAdmin.UserControl
             // Handle HR & ADMIN department approval
             else if (loggedInDepart == "HR & ADMIN")
             {
+              //  MessageBox.Show($"expensesType: {expensesType}");
+               // MessageBox.Show($"depatmen: {depatmen}");
                 // Check if the ExpensesType is Work
-                if (expensesType == "Work")
+                if (expensesType == "Work" && depatmen != "HR & ADMIN")////////////////////
                 {
                     MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Check if HODApprovalStatus is Pending
-                if (hodApprovalStatus == "Pending")
+                if (hodApprovalStatus == "Pending" && depatmen != "HR & ADMIN")//////////////
                 {
                     MessageBox.Show("This order cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;

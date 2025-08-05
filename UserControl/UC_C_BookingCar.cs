@@ -14,6 +14,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+//using System.Net;
+//using System.Net.Mail;
+using HRAdmin.Components;
 
 namespace HRAdmin.UserControl
 {
@@ -34,8 +37,31 @@ namespace HRAdmin.UserControl
             dTDay.ValueChanged += dTDay_ValueChanged;
             PopulateTimeComboBoxes();
         }
+        /*private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress("syazwanbunander1997@gmail.com"); // ✅ Sender email
+                mail.To.Add(toEmail);
+                mail.Subject = subject;
+                mail.Body = body;
+                mail.IsBodyHtml = true;
 
-    
+                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+                smtp.Credentials = new NetworkCredential("syazwanbunander1997@gmail.com", "htam xlil vnzn kiwq"); // ✅ Must match sender
+                smtp.EnableSsl = true;
+
+                smtp.Send(mail);
+                MessageBox.Show("Notification for your booking will be sent to your approver.", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //MessageBox.Show("Notification for your booking will be sent to your approver.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to send notification email: " + ex.Message);
+            }
+        }*/
+
 
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -135,7 +161,6 @@ namespace HRAdmin.UserControl
         {
             CheckUserAccess(loggedInUser);
         }
-
         private void UC_C_BookingCar_Load(object sender, EventArgs e)
         {
             dTDay.ValueChanged += dTDay_ValueChanged;
@@ -234,6 +259,43 @@ namespace HRAdmin.UserControl
                     insertCmd.ExecuteNonQuery();
 
                     MessageBox.Show("Booking successfully submitted!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    /*
+                    string destination = txtDes.Text;
+
+
+                    //string requestDate = DateTime.Now.ToString("dd MMM yyyy");
+                    string requestdate = dTDay.Text;
+                    DateTime parsedDate = DateTime.Parse(requestdate);
+                    string formattedDate = parsedDate.ToString("dd/MM/yyyy");
+
+                    Console.WriteLine(formattedDate);
+
+                    string purpose = txtPurpose.Text;
+                    string requester = UserSession.loggedInName;
+
+                    string subject = "HEM Admin Accessibility Notification: New Car Booking Request Awaiting Approval";
+
+                    string body = $@"
+                                    <p>Dear Approver,</p>
+                                    <p>A new <strong>car booking request</strong> has been submitted by <strong>{requester}</strong>.</p>
+
+                                    <p><u>Booking Summary:</u></p>
+                                    <ul>
+                                        <li><strong>Destination:</strong> {destination}</li>
+                                        <li><strong>Request Date:</strong> {formattedDate}</li>
+                                        <li><strong>Purpose:</strong> {purpose}</li>
+                                    </ul>
+
+                                    <p>Please log in to the system to review and approve the request.</p>
+
+                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                ";
+
+                    SendEmail("hemedp1@hosiden.com", subject, body);
+                    */
+
+                    //SendEmail("hemedp1@hosiden.com", "New Request Submitted", "A new request has been submitted for your approval.");
+
                 }
             }
             catch (Exception ex)
