@@ -1465,14 +1465,14 @@ namespace HRAdmin.UserControl
                 {
                     conn.Open();
                     string query = @"
-                    SELECT m.SerialNo, u.Name AS Requester, m.EmpNo, m.Department, ud.BankName, ud.AccountNo, m.ExpensesType, m.RequestDate, 
-                           m.HODApprovalStatus, m.ApprovedByHOD, m.HODApprovedDate, 
-                           m.HRApprovalStatus, m.ApprovedByHR, m.HRApprovedDate, 
-                           m.AccountApprovalStatus, m.ApprovedByAccount, m.AccountApprovedDate
-                    FROM tbl_MasterClaimForm m
-                    LEFT JOIN tbl_Users u ON m.EmpNo = u.IndexNo
-                    LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
-                    WHERE m.SerialNo = @SerialNo";
+            SELECT m.SerialNo, u.Name AS Requester, m.EmpNo, m.Department, ud.BankName, ud.AccountNo, m.ExpensesType, m.RequestDate, 
+                   m.HODApprovalStatus, m.ApprovedByHOD, m.HODApprovedDate, 
+                   m.HRApprovalStatus, m.ApprovedByHR, m.HRApprovedDate, 
+                   m.AccountApprovalStatus, m.ApprovedByAccount, m.AccountApprovedDate
+            FROM tbl_MasterClaimForm m
+            LEFT JOIN tbl_Users u ON m.EmpNo = u.IndexNo
+            LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
+            WHERE m.SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -1507,9 +1507,9 @@ namespace HRAdmin.UserControl
                     }
 
                     string itemsQuery = @"
-                    SELECT SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice
-                    FROM tbl_DetailClaimForm
-                    WHERE SerialNo = @SerialNo";
+            SELECT SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, Invoice
+            FROM tbl_DetailClaimForm
+            WHERE SerialNo = @SerialNo";
                     using (SqlCommand cmd = new SqlCommand(itemsQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@SerialNo", serialNo);
@@ -1547,7 +1547,9 @@ namespace HRAdmin.UserControl
                 {
                     Document document = new Document(PageSize.A4, 36f, 36f, 36f, 36f);
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
-                    writer.PageEvent = new PdfPageEventHelper();
+
+                    // Custom page event handler for watermark
+                    writer.PageEvent = new WatermarkPageEvent();
                     document.Open();
 
                     iTextSharp.text.Font titleFont = FontFactory.GetFont("Helvetica", 12f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -1664,21 +1666,21 @@ namespace HRAdmin.UserControl
                     AccountApprovalPara.Add(new Chunk($"Account Approval : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Pending" : $"{ApprovedByAccount}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}")}", bodyFont));
                     AccountApprovalPara.SpacingBefore = 0f;
 
-                    // Add watermark with hosiden.jpg behind Account Approval name and date
-                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "Hosiden logo.jpg");
+                    // Add watermark with logo.png behind Account Approval name and date
+                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
                     if (File.Exists(imagePath1) && !string.IsNullOrEmpty(ApprovedByAccount)) // Only add watermark if approved
                     {
                         iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
                         float xPosition = document.PageSize.Width * 0.75f; // Approximately 70% of page width for right column (e.g., ~420f for A4)
-                        float yPosition = document.PageSize.Height - 202f; // Approximate Y position near top of approvals (e.g., ~700f for A4)
-                        float width = 60f; // Width to fit behind the text
-                        float height = 60f; // Height to fit behind the text
+                        float yPosition = document.PageSize.Height - 217f; // Approximate Y position near top of approvals (e.g., ~700f for A4)
+                        float width = 80f; // Width to fit behind the text
+                        float height = 80f; // Height to fit behind the text
                         watermark.SetAbsolutePosition(xPosition, yPosition);
                         watermark.ScaleToFit(width, height); // Scale to fit behind the text area
 
                         PdfContentByte under = writer.DirectContentUnder;
                         PdfGState gState = new PdfGState();
-                        gState.FillOpacity = 0.1f; // (0.0f to 1.0f)
+                        gState.FillOpacity = 0.05f; // Set opacity to 5% (0.0f to 1.0f)
                         under.SetGState(gState);
                         under.AddImage(watermark);
                     }
@@ -1797,6 +1799,36 @@ namespace HRAdmin.UserControl
             {
                 MessageBox.Show($"Error generating PDF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
+            }
+        }
+
+        // Custom page event handler for adding watermark on all pages
+        public class WatermarkPageEvent : PdfPageEventHelper
+        {
+            public override void OnEndPage(PdfWriter writer, Document document)
+            {
+                string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                if (File.Exists(imagePath))
+                {
+                    iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath);
+                    float pageWidth = document.PageSize.Width;
+                    float pageHeight = document.PageSize.Height;
+                    float scaleFactor = 0.7f; // Reduce size to 60% of the page dimensions
+                    watermark.ScaleToFit(pageWidth * scaleFactor, pageHeight * scaleFactor); // Scale to a smaller size
+
+                    watermark.RotationDegrees = 0; // Rotate for watermark effect
+
+                    // Center the watermark
+                    float x = (pageWidth - watermark.ScaledWidth) / 2;
+                    float y = (pageHeight - watermark.ScaledHeight) / 2;
+                    watermark.SetAbsolutePosition(x, y);
+
+                    PdfContentByte under = writer.DirectContentUnder;
+                    PdfGState gState = new PdfGState();
+                    gState.FillOpacity = 0.05f; // Set opacity to 5% (0.0f to 1.0f)
+                    under.SetGState(gState);
+                    under.AddImage(watermark);
+                }
             }
         }
         public class PdfPageEventHelper : iTextSharp.text.pdf.PdfPageEventHelper
