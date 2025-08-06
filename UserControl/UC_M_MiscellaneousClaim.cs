@@ -1813,7 +1813,7 @@ namespace HRAdmin.UserControl
                     iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath);
                     float pageWidth = document.PageSize.Width;
                     float pageHeight = document.PageSize.Height;
-                    float scaleFactor = 0.7f; // Reduce size to 60% of the page dimensions
+                    float scaleFactor = 0.7f; // Reduce size to 70% of the page dimensions
                     watermark.ScaleToFit(pageWidth * scaleFactor, pageHeight * scaleFactor); // Scale to a smaller size
 
                     watermark.RotationDegrees = 0; // Rotate for watermark effect
