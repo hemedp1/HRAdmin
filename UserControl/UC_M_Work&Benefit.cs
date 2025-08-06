@@ -675,7 +675,7 @@ namespace HRAdmin.UserControl
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(loggedInName, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, loggedInName);
             addControls(ug);
         }
     }
