@@ -457,7 +457,7 @@ namespace HRAdmin.UserControl
                     Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 10f);
                     PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
                     writer.CloseStream = false;
-
+                    writer.PageEvent = new WatermarkPageEvent();
                     pdfDoc.Open();
 
 
@@ -717,6 +717,24 @@ namespace HRAdmin.UserControl
 
                     columnSetup1(verifyTable, "", "", "Checked by", cCheck, font);
                     columnSetup1(verifyTable, "", "", "Approved by", cApp, font);  // c26 + " - " + c29 + " - " + c27
+                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                    if (File.Exists(imagePath1) && (!string.IsNullOrEmpty(cApp) || cApp == "Pending")) // Only add watermark if approved or pending
+                    {
+                        iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
+                        float xPosition = pdfDoc.PageSize.Width * 0.70f; // Approximately 75% of page width
+                        float yPosition = pdfDoc.PageSize.Height - 806f;  // Approximate Y position
+                        float width = 80f;
+                        float height = 80f;
+                        watermark.SetAbsolutePosition(xPosition, yPosition);
+                        watermark.ScaleToFit(width, height);
+
+                        PdfContentByte under = writer.DirectContentUnder;
+                        PdfGState gState = new PdfGState();
+                        gState.FillOpacity = 0.05f;
+                        under.SetGState(gState);
+                        under.AddImage(watermark);
+                    }
+
                     pdfDoc.Add(verifyTable);
 
                     PdfPTable footerTbl = new PdfPTable(1);
@@ -769,6 +787,35 @@ namespace HRAdmin.UserControl
                     viewerControl.Dock = DockStyle.Fill;
                     previewForm.Controls.Add(viewerControl);
                     previewForm.ShowDialog();
+                }
+            }
+        }
+
+        public class WatermarkPageEvent : PdfPageEventHelper
+        {
+            public override void OnEndPage(PdfWriter writer, Document document)
+            {
+                string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                if (File.Exists(imagePath))
+                {
+                    iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath);
+                    float pageWidth = document.PageSize.Width;
+                    float pageHeight = document.PageSize.Height;
+                    float scaleFactor = 0.7f; // Reduce size to 70% of the page dimensions
+                    watermark.ScaleToFit(pageWidth * scaleFactor, pageHeight * scaleFactor); // Scale to a smaller size
+
+                    watermark.RotationDegrees = 0; // Rotate for watermark effect
+
+                    // Center the watermark
+                    float x = (pageWidth - watermark.ScaledWidth) / 2;
+                    float y = (pageHeight - watermark.ScaledHeight) / 2;
+                    watermark.SetAbsolutePosition(x, y);
+
+                    PdfContentByte under = writer.DirectContentUnder;
+                    PdfGState gState = new PdfGState();
+                    gState.FillOpacity = 0.05f; // Set opacity to 5% (0.0f to 1.0f)
+                    under.SetGState(gState);
+                    under.AddImage(watermark);
                 }
             }
         }

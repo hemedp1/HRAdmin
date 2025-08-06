@@ -1833,7 +1833,7 @@ namespace HRAdmin.UserControl
                     AccountApprovalPara.IndentationLeft = -50f;
                     AccountApprovalPara.Add(new Chunk($"Account Approval : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Pending" : $"{ApprovedByAccount}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}")}", bodyFont));
                     AccountApprovalPara.SpacingBefore = 0f;
-
+                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                     // Add watermark with logo.png behind Account Approval name and date
                     string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
                     if (File.Exists(imagePath1) && !string.IsNullOrEmpty(ApprovedByAccount)) // Only add watermark if approved
@@ -1852,7 +1852,7 @@ namespace HRAdmin.UserControl
                         under.SetGState(gState);
                         under.AddImage(watermark);
                     }
-
+                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                     rightCell.AddElement(AccountApprovalPara);
 
                     Paragraph approvedAccountPara = new Paragraph();
