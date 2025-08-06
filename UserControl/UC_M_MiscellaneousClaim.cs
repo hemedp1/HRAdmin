@@ -62,7 +62,7 @@ namespace HRAdmin.UserControl
             isNetworkUnavailable = false;
             this.Load += UC_Miscellaneous_Load;
             //MessageBox.Show($"loggedInName: {UserSession.loggedInName}");
-            //MessageBox.Show($"logginInUserAccessLevel: {UserSession.logginInUserAccessLevel}");
+            //MessageBox.Show($"LoggedInUser: {UserSession.LoggedInUser}");
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -874,11 +874,12 @@ namespace HRAdmin.UserControl
             string requester = selectedRow.Cells["Requester"].Value?.ToString();
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
-            string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
             string account2ApprovalStatus = selectedRow.Cells["Account2ApprovalStatus"].Value?.ToString();
             string account3ApprovalStatus = selectedRow.Cells["Account3ApprovalStatus"].Value?.ToString();
+            string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
-            string depatmen = selectedRow.Cells["Department"].Value?.ToString();
+            string department = selectedRow.Cells["Department"].Value?.ToString();
+
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
             {
@@ -887,137 +888,108 @@ namespace HRAdmin.UserControl
             }
 
             // Check if any department has rejected the order
-            if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected" || accountApprovalStatus == "Rejected" || account2ApprovalStatus == "Rejected" || account3ApprovalStatus == "Rejected")
+            if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected" ||
+                account2ApprovalStatus == "Rejected" || account3ApprovalStatus == "Rejected" ||
+                accountApprovalStatus == "Rejected")
             {
                 MessageBox.Show("This order cannot be approved because it has been rejected by one or more departments.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Handle ACCOUNT department approval
-            if (loggedInDepart == "ACCOUNT")
+            // Get user access level from tbl_UsersLevel by joining with tbl_Users
+            int userAccessLevel = 2;
+            try
             {
-                // Check if HODApprovalStatus is Pending
-                if (hodApprovalStatus == "Pending")
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
-                    MessageBox.Show("This order cannot be approved by Account because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // Check if HRApprovalStatus is Pending and ExpensesType is not Work
-                if (hrApprovalStatus == "Pending" && expensesType != "Work")
-                {
-                    MessageBox.Show("This order cannot be approved by Account because HR approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // Check if the order is already approved by Account
-                if (accountApprovalStatus == "Approved")
-                {
-                    MessageBox.Show("This order has already been approved by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                // Confirm Account approval with the user
-                DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (result != DialogResult.Yes)
-                {
-                    return;
-                }
-
-                // Update the database for Account approval
-                try
-                {
-                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                    con.Open();
+                    string query = @"
+                SELECT ul.AccessLevel 
+                FROM tbl_UsersLevel ul
+                left JOIN tbl_Users u ON ul.TitlePosition = u.Position
+                WHERE u.Username = @Username";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        con.Open();
-                        string query = @"
-            UPDATE tbl_MasterClaimForm 
-            SET AccountApprovalStatus = @AccountApprovalStatus, 
-                ApprovedByAccount = @ApprovedByAccount, 
-                AccountApprovedDate = @AccountApprovedDate 
-            WHERE SerialNo = @SerialNo AND AccountApprovalStatus = 'Pending'";
-                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        cmd.Parameters.AddWithValue("@Username", LoggedInUser);
+                        object result = cmd.ExecuteScalar();
+                        MessageBox.Show($"result: {result}");
+                        MessageBox.Show($"userAccessLevel: {userAccessLevel}");
+                        if (result != null)
                         {
-                            cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
-                            cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@SerialNo", serialNo);
-
-                            int rowsAffected = cmd.ExecuteNonQuery();
-                            if (rowsAffected > 0)
-                            {
-                                MessageBox.Show("Order approved successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                // Refresh the DataGridView
-                                LoadData();
-                            }
-                            else
-                            {
-                                MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
+                            userAccessLevel = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            MessageBox.Show("User access level not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //Debug.WriteLine($"Error approving order: {ex.Message}");
-                }
             }
-            // Handle HR & ADMIN department approval
-            else if (loggedInDepart == "HR & ADMIN")
+            catch (Exception ex)
             {
-              //  MessageBox.Show($"expensesType: {expensesType}");
-               // MessageBox.Show($"depatmen: {depatmen}");
-                // Check if the ExpensesType is Work
-                if (expensesType == "Work" && depatmen != "HR & ADMIN")////////////////////
-                {
-                    MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                MessageBox.Show("Error retrieving user access level: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                // Check if HODApprovalStatus is Pending
-                if (hodApprovalStatus == "Pending" && depatmen != "HR & ADMIN")//////////////
+            // Handle ACCOUNT department approvals
+            if (loggedInDepart == "ACCOUNT" || loggedInDepart == "ga")
+            {
+                // Handle Account2ApprovalStatus (AccessLevel 0)
+                if (userAccessLevel == 0)
                 {
-                    MessageBox.Show("This order cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                    // Check if HODApprovalStatus is Pending or Rejected for Work expenses
+                    if (expensesType == "Work")
+                    {
+                        if (hodApprovalStatus == "Pending")
+                        {
+                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (hodApprovalStatus == "Rejected")
+                        {
+                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
 
-                if (hodApprovalStatus == "Pending" && depatmen == "HR & ADMIN")//////////////
-                {
-                    //MessageBox.Show("This order cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    // Confirm HR approval with the user
-                    DialogResult result1 = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (result1 != DialogResult.Yes)
+                    // Check if already approved
+                    if (account2ApprovalStatus == "Approved")
+                    {
+                        MessageBox.Show("This order has already been approved by Account2.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Confirm Account2 approval
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account2?", "Confirm Account2 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result != DialogResult.Yes)
                     {
                         return;
                     }
 
-                    // Update the database for HR approval
+                    // Update database for Account2 approval
                     try
                     {
                         using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                         {
                             con.Open();
                             string query = @"
-            UPDATE tbl_MasterClaimForm 
-            SET HODApprovalStatus = @HODApprovalStatus, 
-                ApprovedByHOD = @ApprovedByHOD, 
-                HODApprovedDate = @HODApprovedDate 
-            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
-
-
+                        UPDATE tbl_MasterClaimForm 
+                        SET Account2ApprovalStatus = @Account2ApprovalStatus, 
+                            ApprovedByAccount2 = @ApprovedByAccount2, 
+                            Account2ApprovedDate = @Account2ApprovedDate 
+                        WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
-                                cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
-                                cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
+                                cmd.Parameters.AddWithValue("@Account2ApprovalStatus", "Approved");
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@Account2ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    // Refresh the DataGridView
+                                    MessageBox.Show("Order approved successfully by Account2.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
                                 }
                                 else
@@ -1030,7 +1002,207 @@ namespace HRAdmin.UserControl
                     catch (Exception ex)
                     {
                         MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        //Debug.WriteLine($"Error approving order: {ex.Message}");
+                    }
+                }
+                // Handle Account3ApprovalStatus (AccessLevel 1)
+                else if (userAccessLevel == 1)
+                {
+                    // Check if Account2ApprovalStatus is Pending or Rejected
+                    if (account2ApprovalStatus == "Pending")
+                    {
+                        MessageBox.Show("This order cannot be approved by Account3 because Account2 approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (account2ApprovalStatus == "Rejected")
+                    {
+                        MessageBox.Show("This order cannot be approved by Account3 because Account2 approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Check if already approved
+                    if (account3ApprovalStatus == "Approved")
+                    {
+                        MessageBox.Show("This order has already been approved by Account3.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Confirm Account3 approval
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account3?", "Confirm Account3 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    // Update database for Account3 approval
+                    try
+                    {
+                        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                        {
+                            con.Open();
+                            string query = @"
+                        UPDATE tbl_MasterClaimForm 
+                        SET Account3ApprovalStatus = @Account3ApprovalStatus, 
+                            ApprovedByAccount3 = @ApprovedByAccount3, 
+                            Account3ApprovedDate = @Account3ApprovedDate 
+                        WHERE SerialNo = @SerialNo AND Account3ApprovalStatus = 'Pending'";
+                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            {
+                                cmd.Parameters.AddWithValue("@Account3ApprovalStatus", "Approved");
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount3", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@Account3ApprovedDate", DateTime.Now);
+                                cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                                int rowsAffected = cmd.ExecuteNonQuery();
+                                if (rowsAffected > 0)
+                                {
+                                    MessageBox.Show("Order approved successfully by Account3.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    LoadData();
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                // Handle AccountApprovalStatus (AccessLevel 3)
+                else if (userAccessLevel == 3)
+                {
+                    // Check if Account3ApprovalStatus is Pending or Rejected
+                    if (account3ApprovalStatus == "Pending")
+                    {
+                        MessageBox.Show("This order cannot be approved by Account because Account3 approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (account3ApprovalStatus == "Rejected")
+                    {
+                        MessageBox.Show("This order cannot be approved by Account because Account3 approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Check if already approved
+                    if (accountApprovalStatus == "Approved")
+                    {
+                        MessageBox.Show("This order has already been approved by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Confirm Account approval
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    // Update database for Account approval
+                    try
+                    {
+                        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                        {
+                            con.Open();
+                            string query = @"
+                        UPDATE tbl_MasterClaimForm 
+                        SET AccountApprovalStatus = @AccountApprovalStatus, 
+                            ApprovedByAccount = @ApprovedByAccount, 
+                            AccountApprovedDate = @AccountApprovedDate 
+                        WHERE SerialNo = @SerialNo AND AccountApprovalStatus = 'Pending'";
+                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            {
+                                cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
+                                cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                                int rowsAffected = cmd.ExecuteNonQuery();
+                                if (rowsAffected > 0)
+                                {
+                                    MessageBox.Show("Order approved successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    LoadData();
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("You do not have the required access level to approve this order.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            // Handle HR & ADMIN department approval
+            else if (loggedInDepart == "HR & ADMIN")
+            {
+                // Check if the ExpensesType is Work
+                if (expensesType == "Work" && department != "HR & ADMIN")
+                {
+                    MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if HODApprovalStatus is Pending
+                if (hodApprovalStatus == "Pending" && department != "HR & ADMIN")
+                {
+                    MessageBox.Show("This order cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (hodApprovalStatus == "Pending" && department == "HR & ADMIN")
+                {
+                    // Confirm HR approval with the user
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result != DialogResult.Yes)
+                    {
+                        return;
+                    }
+
+                    // Update the database for HR approval
+                    try
+                    {
+                        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                        {
+                            con.Open();
+                            string query = @"
+                        UPDATE tbl_MasterClaimForm 
+                        SET HODApprovalStatus = @HODApprovalStatus, 
+                            ApprovedByHOD = @ApprovedByHOD, 
+                            HODApprovedDate = @HODApprovedDate 
+                        WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            {
+                                cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
+                                cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
+                                cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                                int rowsAffected = cmd.ExecuteNonQuery();
+                                if (rowsAffected > 0)
+                                {
+                                    MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    LoadData();
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     return;
                 }
@@ -1043,8 +1215,8 @@ namespace HRAdmin.UserControl
                 }
 
                 // Confirm HR approval with the user
-                DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (result != DialogResult.Yes)
+                DialogResult resultHR = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (resultHR != DialogResult.Yes)
                 {
                     return;
                 }
@@ -1056,11 +1228,11 @@ namespace HRAdmin.UserControl
                     {
                         con.Open();
                         string query = @"
-            UPDATE tbl_MasterClaimForm 
-            SET HRApprovalStatus = @HRApprovalStatus, 
-                ApprovedByHR = @ApprovedByHR, 
-                HRApprovedDate = @HRApprovedDate 
-            WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
+                    UPDATE tbl_MasterClaimForm 
+                    SET HRApprovalStatus = @HRApprovalStatus, 
+                        ApprovedByHR = @ApprovedByHR, 
+                        HRApprovedDate = @HRApprovedDate 
+                    WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
@@ -1072,7 +1244,6 @@ namespace HRAdmin.UserControl
                             if (rowsAffected > 0)
                             {
                                 MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                // Refresh the DataGridView
                                 LoadData();
                             }
                             else
@@ -1085,7 +1256,6 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //Debug.WriteLine($"Error approving order: {ex.Message}");
                 }
             }
             else
@@ -1126,11 +1296,11 @@ namespace HRAdmin.UserControl
                     {
                         con.Open();
                         string query = @"
-            UPDATE tbl_MasterClaimForm 
-            SET HODApprovalStatus = @HODApprovalStatus, 
-                ApprovedByHOD = @ApprovedByHOD, 
-                HODApprovedDate = @HODApprovedDate 
-            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+                    UPDATE tbl_MasterClaimForm 
+                    SET HODApprovalStatus = @HODApprovalStatus, 
+                        ApprovedByHOD = @ApprovedByHOD, 
+                        HODApprovedDate = @HODApprovedDate 
+                    WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
@@ -1142,7 +1312,6 @@ namespace HRAdmin.UserControl
                             if (rowsAffected > 0)
                             {
                                 MessageBox.Show("Order approved successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                // Refresh the DataGridView
                                 LoadData();
                             }
                             else
@@ -1155,7 +1324,6 @@ namespace HRAdmin.UserControl
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //Debug.WriteLine($"Error approving order: {ex.Message}");
                 }
             }
         }
