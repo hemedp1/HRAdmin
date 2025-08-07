@@ -1151,10 +1151,10 @@ namespace HRAdmin.UserControl
                 }
             }
             // Handle HR & ADMIN department approval
-            else if (loggedInDepart == "HR & ADMIN")
+            else if (loggedInDepart == "HR & ADMIN" && department != "ISO")
             {
                 // Check if the ExpensesType is Work
-                if (expensesType == "Work" && department != "HR & ADMIN")
+                if (expensesType == "Work" && department != "HR & ADMIN" && department != "ISO")
                 {
                     MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -1276,12 +1276,12 @@ namespace HRAdmin.UserControl
                 }
 
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
-                //string requesterDepartment = serialNo.Split('_')[0].Trim();
-                //if (loggedInDepart != requesterDepartment)
-                // {
-                //    MessageBox.Show($"You are not authorized to approve this order. Only HOD from {requesterDepartment} department can approve.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                //    return;
-                //}
+                string requesterDepartment = serialNo.Split('_')[0].Trim();
+                if (((loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY")  && (loggedInDepart == "GENERAL AFFAIRS" && requesterDepartment == "ISO"))               
+                {
+                    MessageBox.Show($"You are not authorized to approve this order. Only HOD from {requesterDepartment} department can approve.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 // Check if the order is already approved by HOD
                 if (hodApprovalStatus == "Approved")

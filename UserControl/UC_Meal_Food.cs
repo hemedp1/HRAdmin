@@ -43,7 +43,6 @@ namespace HRAdmin.UserControl
 
         public DateTime EventDate { get; set; }
         public string OccasionType { get; set; }
-
         public UC_Meal_Food(string eventDetails, string eventTime1, DateTime deliveryTime, string loggedInUser, string department)
         {
             InitializeComponent();
@@ -65,7 +64,6 @@ namespace HRAdmin.UserControl
             isNetworkErrorShown = false;
             this.Load += UC_Food_Load;
         }
-
         public UC_Meal_Food(string eventDetails, DateTime eventTime, string loggedInUser, string department)
         {
             InitializeComponent();
@@ -86,12 +84,10 @@ namespace HRAdmin.UserControl
             isNetworkErrorShown = false;
             this.Load += UC_Food_Load;
         }
-
         private void dTDay_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
         }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -106,7 +102,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void CheckUserAccess()
         {
             try
@@ -153,7 +148,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error checking user access: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void LoadUsernames()
         {
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -186,7 +180,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void LoadUsernamesByDepartment(string department)
         {
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -219,7 +212,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void LoadDepartments()
         {
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -259,7 +251,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void LoadData(string requesterID = null, string department = null, string occasionType = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             if (dgv_OS == null)
@@ -435,7 +426,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void cmbRequester_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
@@ -461,7 +451,6 @@ namespace HRAdmin.UserControl
 
             LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
         }
-
         private void cmbDepart_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
@@ -501,7 +490,6 @@ namespace HRAdmin.UserControl
 
             LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
         }
-
         private void cmbOS_Occasion_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
@@ -526,7 +514,6 @@ namespace HRAdmin.UserControl
 
             LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
         }
-
         private void dtpStart_ValueChanged(object sender, EventArgs e)
         {
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
@@ -550,7 +537,6 @@ namespace HRAdmin.UserControl
 
             LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
         }
-
         private void dtpEnd_ValueChanged(object sender, EventArgs e)
         {
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
@@ -574,7 +560,6 @@ namespace HRAdmin.UserControl
 
             LoadData(selectedUsername, selectedDepartment, selectedOccasion, startDate, endDate);
         }
-
         private void button3_Click(object sender, EventArgs e)
         {
             string selectedOccasion = cmbOccasion.SelectedItem?.ToString();
@@ -624,7 +609,6 @@ namespace HRAdmin.UserControl
                 addControls(ug);
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "HR && Admin";
@@ -634,7 +618,6 @@ namespace HRAdmin.UserControl
             UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void button3_Click_1(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
@@ -712,7 +695,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btnApprove_Click(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
@@ -792,7 +774,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btnWithdraw_Click(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
@@ -900,7 +881,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btNext_Click(object sender, EventArgs e)
         {
             string selectedOccasion = cmbOccasion.SelectedItem?.ToString();
@@ -950,7 +930,6 @@ namespace HRAdmin.UserControl
                 addControls(ug);
             }
         }
-
         private void btnCheck_Click(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
@@ -1027,18 +1006,15 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void UC_Food_Load(object sender, EventArgs e)
         {
             CheckUserAccess();
             LoadData();
         }
-
         private bool IsNetworkAvailable()
         {
             return NetworkInterface.GetIsNetworkAvailable();
         }
-
         private void BindDataGridView(DataTable dt)
         {
             dgv_OS.AutoGenerateColumns = false;
@@ -1237,7 +1213,6 @@ namespace HRAdmin.UserControl
             dgv_OS.CellBorderStyle = DataGridViewCellBorderStyle.None;
             Debug.WriteLine("DataGridView updated successfully.");
         }
-
         private void btnView_Click(object sender, EventArgs e)
         {
             ViewExistingPDF();
@@ -1328,6 +1303,8 @@ namespace HRAdmin.UserControl
                     Document document = new Document(PageSize.A4.Rotate(), 36f, 36f, 36f, 36f);
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
                     writer.PageEvent = new PdfPageEventHelper();
+                    writer.CloseStream = false;
+                    writer.PageEvent = new WatermarkPageEvent();
                     document.Open();
 
                     iTextSharp.text.Font titleFont = FontFactory.GetFont("Helvetica", 12f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -1537,7 +1514,6 @@ namespace HRAdmin.UserControl
                 return null;
             }
         }
-
         private byte[] GenerateExternalPDF(string orderId)
         {
             try
@@ -1642,6 +1618,7 @@ namespace HRAdmin.UserControl
                     Document document = new Document(PageSize.A4.Rotate(), 36f, 36f, 36f, 36f);
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
                     writer.PageEvent = new PdfPageEventHelper();
+                    writer.PageEvent = new WatermarkPageEvent();
                     document.Open();
 
                     iTextSharp.text.Font titleFont = FontFactory.GetFont("Helvetica", 12f, iTextSharp.text.Font.NORMAL, BaseColor.BLACK);
@@ -1812,11 +1789,12 @@ namespace HRAdmin.UserControl
 
                     document.Add(detailsTable2);
 
-                    // Only proceed with food items if at least one package is selected
+                    // Only proceed with food items if at least one package is selected -----------------------------------------------------------------------------------------------
                     if (breakfastPackage != "-" || lunchPackage != "-" || teaPackage != "-")
                     {
+                        
                         document.NewPage();
-
+                        
                         PdfPTable foodItemsTable = new PdfPTable(2);
                         foodItemsTable.WidthPercentage = 100;
                         foodItemsTable.SetWidths(new float[] { 1f, 1f });
@@ -1939,7 +1917,6 @@ namespace HRAdmin.UserControl
                 return null;
             }
         }
-
         private void AddFoodItemsToCell(PdfPCell cell, List<string> items, iTextSharp.text.Font font)
         {
             foreach (var item in items)
@@ -1950,14 +1927,13 @@ namespace HRAdmin.UserControl
                 cell.AddElement(p);
             }
         }
-
         private void AddStyledTableRow(PdfPTable table, string label, string value, iTextSharp.text.Font labelFont, iTextSharp.text.Font valueFont, int rowIndex, bool multiLine = false)
         {
             PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
             PdfPCell valueCell = new PdfPCell(new Phrase(value, valueFont)) { MinimumHeight = 20f };
 
-            labelCell.BackgroundColor = new BaseColor(255, 255, 255);
-            valueCell.BackgroundColor = new BaseColor(255, 255, 255);
+            //labelCell.BackgroundColor = new BaseColor(255, 255, 255);
+            //valueCell.BackgroundColor = new BaseColor(255, 255, 255);
 
             labelCell.Phrase = new Phrase(label, new iTextSharp.text.Font(labelFont.BaseFont, labelFont.Size, labelFont.Style, BaseColor.BLACK));
             valueCell.Phrase = new Phrase(value, new iTextSharp.text.Font(valueFont.BaseFont, valueFont.Size, valueFont.Style, BaseColor.BLACK));
@@ -1977,7 +1953,6 @@ namespace HRAdmin.UserControl
             table.AddCell(labelCell);
             table.AddCell(valueCell);
         }
-
         private void ViewPdf(byte[] pdfBytes)
         {
             if (pdfBytes != null)
@@ -2008,9 +1983,36 @@ namespace HRAdmin.UserControl
                 footerTbl.WriteSelectedRows(0, -1, 36, 20, writer.DirectContent);
             }
         }
-
         private void cmbOccasion_SelectedIndexChanged(object sender, EventArgs e) { }
         private void txtEvent_TextChanged(object sender, EventArgs e) { }
         private void dtDelivery_ValueChanged(object sender, EventArgs e) { }
+        public class WatermarkPageEvent : PdfPageEventHelper
+        {
+            public override void OnEndPage(PdfWriter writer, Document document)
+            {
+                string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                if (File.Exists(imagePath))
+                {
+                    iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath);
+                    float pageWidth = document.PageSize.Width;
+                    float pageHeight = document.PageSize.Height;
+                    float scaleFactor = 0.7f; // Reduce size to 70% of the page dimensions
+                    watermark.ScaleToFit(pageWidth * scaleFactor, pageHeight * scaleFactor); // Scale to a smaller size
+
+                    watermark.RotationDegrees = 0; // Rotate for watermark effect
+
+                    // Center the watermark
+                    float x = (pageWidth - watermark.ScaledWidth) / 2;
+                    float y = (pageHeight - watermark.ScaledHeight) / 2;
+                    watermark.SetAbsolutePosition(x, y);
+
+                    PdfContentByte under = writer.DirectContentUnder;
+                    PdfGState gState = new PdfGState();
+                    gState.FillOpacity = 0.05f; // Set opacity to 5% (0.0f to 1.0f)
+                    under.SetGState(gState);
+                    under.AddImage(watermark);
+                }
+            }
+        }
     }
 }
