@@ -220,9 +220,10 @@ namespace HRAdmin.UserControl
         private void LoadData()
         {
             bool showOwnRecords = int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) && accessLevel < 1;
+            //bool showOwnRecords = int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) && accessLevel < 1 && accessLevel < 8;
 
             string query = "";
-
+            //MessageBox.Show($"LoggedInUser: {UserSession.logginInUserAccessLevel}");
             if (showOwnRecords)
             {
                 // Query 2: Show only logged-in user's own records

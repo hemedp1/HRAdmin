@@ -718,7 +718,7 @@ namespace HRAdmin.UserControl
                     columnSetup1(verifyTable, "", "", "Checked by", cCheck, font);
                     columnSetup1(verifyTable, "", "", "Approved by", cApp, font);  // c26 + " - " + c29 + " - " + c27
                     string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
-                    if (File.Exists(imagePath1) && (!string.IsNullOrEmpty(cApp) || cApp == "Pending")) // Only add watermark if approved or pending
+                    if (File.Exists(imagePath1) && (!string.IsNullOrEmpty(cApp) && cApp != "Pending")) // Only add watermark if approved or pending
                     {
                         iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
                         float xPosition = pdfDoc.PageSize.Width * 0.70f; // Approximately 75% of page width
