@@ -1428,6 +1428,26 @@ namespace HRAdmin.UserControl
                     }
                     approvedPara.SpacingBefore = 0f;
                     rightCell.AddElement(approvedPara);
+                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                    // Add watermark with logo.png behind Account Approval name and date
+                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                    if (File.Exists(imagePath1) && !string.IsNullOrEmpty(approvedBy)) // Only add watermark if approved
+                    {
+                        iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
+                        float xPosition = document.PageSize.Width * 0.72f; // Approximately 70% of page width for right column (e.g., ~420f for A4)
+                        float yPosition = document.PageSize.Height - 217f; // Approximate Y position near top of approvals (e.g., ~700f for A4)
+                        float width = 80f; // Width to fit behind the text
+                        float height = 80f; // Height to fit behind the text
+                        watermark.SetAbsolutePosition(xPosition, yPosition);
+                        watermark.ScaleToFit(width, height); // Scale to fit behind the text area
+
+                        PdfContentByte under = writer.DirectContentUnder;
+                        PdfGState gState = new PdfGState();
+                        gState.FillOpacity = 0.05f; // Set opacity to 5% (0.0f to 1.0f)
+                        under.SetGState(gState);
+                        under.AddImage(watermark);
+                    }
+                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                     Paragraph approvedHrPara = new Paragraph();
                     approvedHrPara.Add(new Chunk("", bodyFont));
@@ -1744,6 +1764,25 @@ namespace HRAdmin.UserControl
                     }
                     approvedPara.SpacingBefore = 0f;
                     rightCell.AddElement(approvedPara);
+                    // Add watermark with logo.png behind Account Approval name and date
+                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                    if (File.Exists(imagePath1) && !string.IsNullOrEmpty(approvedBy)) // Only add watermark if approved
+                    {
+                        iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
+                        float xPosition = document.PageSize.Width * 0.72f; // Approximately 70% of page width for right column (e.g., ~420f for A4)
+                        float yPosition = document.PageSize.Height - 217f; // Approximate Y position near top of approvals (e.g., ~700f for A4)
+                        float width = 80f; // Width to fit behind the text
+                        float height = 80f; // Height to fit behind the text
+                        watermark.SetAbsolutePosition(xPosition, yPosition);
+                        watermark.ScaleToFit(width, height); // Scale to fit behind the text area
+
+                        PdfContentByte under = writer.DirectContentUnder;
+                        PdfGState gState = new PdfGState();
+                        gState.FillOpacity = 0.05f; // Set opacity to 5% (0.0f to 1.0f)
+                        under.SetGState(gState);
+                        under.AddImage(watermark);
+                    }
+                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                     Paragraph approvedHrPara = new Paragraph();
                     approvedHrPara.Add(new Chunk("", bodyFont));
@@ -1799,14 +1838,14 @@ namespace HRAdmin.UserControl
                         foodItemsTable.WidthPercentage = 100;
                         foodItemsTable.SetWidths(new float[] { 1f, 1f });
                         foodItemsTable.SpacingBefore = 15f;
-                        foodItemsTable.DefaultCell.BorderColor = darkGray;
+                        //foodItemsTable.DefaultCell.BorderColor = darkGray;
                         foodItemsTable.KeepTogether = true;
 
                         PdfPCell headingCell = new PdfPCell(new Phrase($"Meals for Packages - Breakfast: {breakfastPackage}, Lunch: {lunchPackage}, Tea: {teaPackage}", mealsHeadingFont));
                         headingCell.Colspan = 2;
-                        headingCell.BackgroundColor = BaseColor.WHITE;
+                        //headingCell.BackgroundColor = BaseColor.WHITE;
                         headingCell.Border = iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        headingCell.BorderColor = darkGray;
+                        //headingCell.BorderColor = darkGray;
                         headingCell.BorderWidth = 1.5f;
                         headingCell.Padding = 5f;
                         headingCell.HorizontalAlignment = Element.ALIGN_LEFT;
@@ -1817,9 +1856,9 @@ namespace HRAdmin.UserControl
                         {
                             PdfPCell breakfastHeadingCell = new PdfPCell(new Phrase($"BREAKFAST PACKING: {orderDetails["B_Nofpax_P"]}", sectionTitleFont));
                             breakfastHeadingCell.Colspan = 2;
-                            breakfastHeadingCell.BackgroundColor = BaseColor.WHITE;
+                            //breakfastHeadingCell.BackgroundColor = BaseColor.WHITE;
                             breakfastHeadingCell.Border = iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                            breakfastHeadingCell.BorderColor = darkGray;
+                            //breakfastHeadingCell.BorderColor = darkGray;
                             breakfastHeadingCell.BorderWidth = 1.5f;
                             breakfastHeadingCell.Padding = 5f;
                             breakfastHeadingCell.HorizontalAlignment = Element.ALIGN_LEFT;
@@ -1827,9 +1866,9 @@ namespace HRAdmin.UserControl
 
                             PdfPCell breakfastCell = new PdfPCell();
                             breakfastCell.Colspan = 2;
-                            breakfastCell.BackgroundColor = BaseColor.WHITE;
+                            //breakfastCell.BackgroundColor = BaseColor.WHITE;
                             breakfastCell.Border = iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                            breakfastCell.BorderColor = darkGray;
+                            //breakfastCell.BorderColor = darkGray;
                             breakfastCell.BorderWidth = 1.5f;
                             breakfastCell.Padding = 5f;
                             AddFoodItemsToCell(breakfastCell, menuItems["BREAKFAST_PACKING"], italicBodyFont);
@@ -1841,18 +1880,18 @@ namespace HRAdmin.UserControl
                         {
                             PdfPCell lunchHeadingCell = new PdfPCell(new Phrase("LUNCH", sectionTitleFont));
                             lunchHeadingCell.Colspan = 2;
-                            lunchHeadingCell.BackgroundColor = BaseColor.WHITE;
+                            //lunchHeadingCell.BackgroundColor = BaseColor.WHITE;
                             lunchHeadingCell.Border = iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                            lunchHeadingCell.BorderColor = darkGray;
+                            //lunchHeadingCell.BorderColor = darkGray;
                             lunchHeadingCell.BorderWidth = 1.5f;
                             lunchHeadingCell.Padding = 5f;
                             lunchHeadingCell.HorizontalAlignment = Element.ALIGN_LEFT;
                             foodItemsTable.AddCell(lunchHeadingCell);
 
                             PdfPCell lunchBuffetCell = new PdfPCell();
-                            lunchBuffetCell.BackgroundColor = BaseColor.WHITE;
+                            //lunchBuffetCell.BackgroundColor = BaseColor.WHITE;
                             lunchBuffetCell.Border = iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                            lunchBuffetCell.BorderColor = darkGray;
+                            //lunchBuffetCell.BorderColor = darkGray;
                             lunchBuffetCell.BorderWidth = 1.5f;
                             lunchBuffetCell.Padding = 5f;
                             Paragraph lunchBuffetTitle = new Paragraph($"BUFFET: {orderDetails["L_Nofpax_B"]}", sectionTitleFont);
@@ -1862,9 +1901,9 @@ namespace HRAdmin.UserControl
                             foodItemsTable.AddCell(lunchBuffetCell);
 
                             PdfPCell lunchPackingCell = new PdfPCell();
-                            lunchPackingCell.BackgroundColor = BaseColor.WHITE;
+                            //lunchPackingCell.BackgroundColor = BaseColor.WHITE;
                             lunchPackingCell.Border = iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                            lunchPackingCell.BorderColor = darkGray;
+                            //lunchPackingCell.BorderColor = darkGray;
                             lunchPackingCell.BorderWidth = 1.5f;
                             lunchPackingCell.Padding = 5f;
                             Paragraph lunchPackingTitle = new Paragraph($"PACKING: {orderDetails["L_Nofpax_P"]}", sectionTitleFont);
@@ -1879,9 +1918,9 @@ namespace HRAdmin.UserControl
                         {
                             PdfPCell teaHeadingCell = new PdfPCell(new Phrase($"TEA PACKING: {orderDetails["T_Nofpax_P"]}", sectionTitleFont));
                             teaHeadingCell.Colspan = 2;
-                            teaHeadingCell.BackgroundColor = BaseColor.WHITE;
+                            //teaHeadingCell.BackgroundColor = BaseColor.WHITE;
                             teaHeadingCell.Border = iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                            teaHeadingCell.BorderColor = darkGray;
+                            //teaHeadingCell.BorderColor = darkGray;
                             teaHeadingCell.BorderWidth = 1.5f;
                             teaHeadingCell.Padding = 5f;
                             teaHeadingCell.HorizontalAlignment = Element.ALIGN_LEFT;
@@ -1889,9 +1928,9 @@ namespace HRAdmin.UserControl
 
                             PdfPCell teaCell = new PdfPCell();
                             teaCell.Colspan = 2;
-                            teaCell.BackgroundColor = BaseColor.WHITE;
+                            //teaCell.BackgroundColor = BaseColor.WHITE;
                             teaCell.Border = iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                            teaCell.BorderColor = darkGray;
+                            //teaCell.BorderColor = darkGray;
                             teaCell.BorderWidth = 1.5f;
                             teaCell.Padding = 5f;
                             AddFoodItemsToCell(teaCell, menuItems["TEA_PACKING"], italicBodyFont);

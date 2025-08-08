@@ -48,7 +48,6 @@ namespace HRAdmin.UserControl
             // Ensure all DataGridViews are visible
             SetDataGridViewsVisibility(true);
         }
-
         private void SetDataGridViewsVisibility(bool visible)
         {
             // Breakfast
@@ -69,7 +68,6 @@ namespace HRAdmin.UserControl
             dgvB_T_P.Visible = visible;
             dgvC_T_P.Visible = visible;
         }
-
         private void btSExternal_Click(object sender, EventArgs e)
         {
             // Check if at least one package is selected
@@ -232,7 +230,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 addControls(ug);
             }
         }
-
         private void CheckUserAccess(string username)
         {
             try
@@ -282,7 +279,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
-
         public byte[] GeneratePDF(string orderId)
         {
             try
@@ -292,6 +288,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                     Document document = new Document(PageSize.A4.Rotate(), 36f, 36f, 36f, 36f);
                     PdfWriter writer = PdfWriter.GetInstance(document, ms);
                     writer.PageEvent = new PdfPageEventHelper();
+                    writer.PageEvent = new WatermarkPageEvent();
                     document.Open();
 
                     // Define fonts
@@ -586,9 +583,9 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         // Breakfast Packing Heading
                         PdfPCell breakfastHeadingCell = new PdfPCell(new Phrase($"BREAKFAST PACKING: {txtB_Pack.Text}", sectionTitleFont));
                         breakfastHeadingCell.Colspan = 2;
-                        breakfastHeadingCell.BackgroundColor = BaseColor.WHITE;
+                        //breakfastHeadingCell.BackgroundColor = BaseColor.WHITE;
                         breakfastHeadingCell.Border = iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        breakfastHeadingCell.BorderColor = darkGray;
+                        //breakfastHeadingCell.BorderColor = darkGray;
                         breakfastHeadingCell.BorderWidth = 1.5f;
                         breakfastHeadingCell.Padding = 5f;
                         breakfastHeadingCell.HorizontalAlignment = Element.ALIGN_LEFT;
@@ -597,9 +594,9 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         // Breakfast Packing Items
                         PdfPCell breakfastCell = new PdfPCell();
                         breakfastCell.Colspan = 2;
-                        breakfastCell.BackgroundColor = BaseColor.WHITE;
+                        //breakfastCell.BackgroundColor = BaseColor.WHITE;
                         breakfastCell.Border = iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        breakfastCell.BorderColor = darkGray;
+                        //breakfastCell.BorderColor = darkGray;
                         breakfastCell.BorderWidth = 1.5f;
                         breakfastCell.Padding = 5f;
                         foreach (DataRow row in breakfastPackingItems.Rows)
@@ -619,9 +616,9 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         // Lunch Heading
                         PdfPCell lunchHeadingCell = new PdfPCell(new Phrase("LUNCH", sectionTitleFont));
                         lunchHeadingCell.Colspan = 2;
-                        lunchHeadingCell.BackgroundColor = BaseColor.WHITE;
+                        //lunchHeadingCell.BackgroundColor = BaseColor.WHITE;
                         lunchHeadingCell.Border = iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        lunchHeadingCell.BorderColor = darkGray;
+                        //lunchHeadingCell.BorderColor = darkGray;
                         lunchHeadingCell.BorderWidth = 1.5f;
                         lunchHeadingCell.Padding = 5f;
                         lunchHeadingCell.HorizontalAlignment = Element.ALIGN_LEFT;
@@ -629,9 +626,9 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
 
                         // Lunch Buffet and Lunch Packing
                         PdfPCell lunchBuffetCell = new PdfPCell();
-                        lunchBuffetCell.BackgroundColor = BaseColor.WHITE;
+                        //lunchBuffetCell.BackgroundColor = BaseColor.WHITE;
                         lunchBuffetCell.Border = iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        lunchBuffetCell.BorderColor = darkGray;
+                        //lunchBuffetCell.BorderColor = darkGray;
                         lunchBuffetCell.BorderWidth = 1.5f;
                         lunchBuffetCell.Padding = 5f;
                         Paragraph lunchBuffetTitle = new Paragraph($"BUFFET: {txtL_Buffet.Text}", sectionTitleFont);
@@ -648,9 +645,9 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         foodItemsTable.AddCell(lunchBuffetCell);
 
                         PdfPCell lunchPackingCell = new PdfPCell();
-                        lunchPackingCell.BackgroundColor = BaseColor.WHITE;
+                        //lunchPackingCell.BackgroundColor = BaseColor.WHITE;
                         lunchPackingCell.Border = iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        lunchPackingCell.BorderColor = darkGray;
+                        //lunchPackingCell.BorderColor = darkGray;
                         lunchPackingCell.BorderWidth = 1.5f;
                         lunchPackingCell.Padding = 5f;
                         Paragraph lunchPackingTitle = new Paragraph($"PACKING: {txtL_Pack.Text}", sectionTitleFont);
@@ -673,9 +670,9 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         // Tea Packing Heading
                         PdfPCell teaHeadingCell = new PdfPCell(new Phrase($"TEA PACKING: {txtT_Pack.Text}", sectionTitleFont));
                         teaHeadingCell.Colspan = 2;
-                        teaHeadingCell.BackgroundColor = BaseColor.WHITE;
+                        //teaHeadingCell.BackgroundColor = BaseColor.WHITE;
                         teaHeadingCell.Border = iTextSharp.text.Rectangle.TOP_BORDER | iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        teaHeadingCell.BorderColor = darkGray;
+                        //teaHeadingCell.BorderColor = darkGray;
                         teaHeadingCell.BorderWidth = 1.5f;
                         teaHeadingCell.Padding = 5f;
                         teaHeadingCell.HorizontalAlignment = Element.ALIGN_LEFT;
@@ -684,9 +681,9 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         // Tea Packing Items
                         PdfPCell teaCell = new PdfPCell();
                         teaCell.Colspan = 2;
-                        teaCell.BackgroundColor = BaseColor.WHITE;
+                        //teaCell.BackgroundColor = BaseColor.WHITE;
                         teaCell.Border = iTextSharp.text.Rectangle.LEFT_BORDER | iTextSharp.text.Rectangle.RIGHT_BORDER | iTextSharp.text.Rectangle.BOTTOM_BORDER;
-                        teaCell.BorderColor = darkGray;
+                        //teaCell.BorderColor = darkGray;
                         teaCell.BorderWidth = 1.5f;
                         teaCell.Padding = 5f;
                         foreach (DataRow row in teaPackingItems.Rows)
@@ -723,7 +720,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 return null;
             }
         }
-
         private void StorePdfInDatabase(string orderId, byte[] pdfBytes)
         {
             try
@@ -747,7 +743,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 MessageBox.Show($"Error storing PDF in database: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void ViewPdf(byte[] pdfBytes)
         {
             if (pdfBytes != null)
@@ -765,14 +760,13 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 MessageBox.Show("No PDF data available to view.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
         private void AddStyledTableRow(PdfPTable table, string label, string value, iTextSharp.text.Font labelFont, iTextSharp.text.Font valueFont, int rowIndex, bool multiLine = false)
         {
             PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
             PdfPCell valueCell = new PdfPCell(new Phrase(value, valueFont)) { MinimumHeight = 20f };
 
-            labelCell.BackgroundColor = new BaseColor(255, 255, 255);
-            valueCell.BackgroundColor = new BaseColor(255, 255, 255);
+            //labelCell.BackgroundColor = new BaseColor(255, 255, 255);
+            //valueCell.BackgroundColor = new BaseColor(255, 255, 255);
 
             labelCell.Phrase = new Phrase(label, new iTextSharp.text.Font(labelFont.BaseFont, labelFont.Size, labelFont.Style, BaseColor.BLACK));
             valueCell.Phrase = new Phrase(value, new iTextSharp.text.Font(valueFont.BaseFont, valueFont.Size, valueFont.Style, BaseColor.BLACK));
@@ -792,7 +786,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             table.AddCell(labelCell);
             table.AddCell(valueCell);
         }
-
         public class PdfPageEventHelper : iTextSharp.text.pdf.PdfPageEventHelper
         {
             public override void OnEndPage(PdfWriter writer, Document document)
@@ -806,7 +799,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 footerTbl.WriteSelectedRows(0, -1, 36, 20, writer.DirectContent);
             }
         }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -821,7 +813,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             CheckUserAccess(loggedInUser);
@@ -831,7 +822,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, DeliveryTime, loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void loadmenu()
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -951,7 +941,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 StyleDataGridView(dgvC_T_P);
             }
         }
-
         private void StyleDataGridView(DataGridView dgv)
         {
             dgv.ColumnHeadersVisible = false;
@@ -972,7 +961,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 column.ReadOnly = true;
             }
         }
-
         private void cmbB_Package_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbB_Package.SelectedItem == null) return;
@@ -981,7 +969,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             string query = $"SELECT Menu FROM tbl_Menu WHERE Package = '{selectedPackage}' AND Meal = 'BREAKFAST' AND Style = 'PACKING'";
             UpdateDataGridView(query, selectedPackage == "A" ? dgvA_B_P : selectedPackage == "B" ? dgvB_B_P : dgvC_B_P);
         }
-
         private void cmbL_Package_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbL_Package.SelectedItem == null) return;
@@ -992,7 +979,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             UpdateDataGridView(queryBuffet, selectedPackage == "A" ? dgvA_L_B : selectedPackage == "B" ? dgvB_L_B : dgvC_L_B);
             UpdateDataGridView(queryPacking, selectedPackage == "A" ? dgvA_L_P : selectedPackage == "B" ? dgvB_L_P : dgvC_L_P);
         }
-
         private void cmbT_Package_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbT_Package.SelectedItem == null) return;
@@ -1001,7 +987,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
             string query = $"SELECT Menu FROM tbl_Menu WHERE Package = '{selectedPackage}' AND Meal = 'TEA' AND Style = 'PACKING'";
             UpdateDataGridView(query, selectedPackage == "A" ? dgvA_T_P : selectedPackage == "B" ? dgvB_T_P : dgvC_T_P);
         }
-
         private void UpdateDataGridView(string query, DataGridView dgv)
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -1017,7 +1002,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 con.Close();
             }
         }
-
         private void txtB_Pack_TextChanged(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(txtB_Pack.Text))
@@ -1040,7 +1024,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 }
             }
         }
-
         private void txtL_Pack_TextChanged(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(txtL_Pack.Text))
@@ -1052,7 +1035,6 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 }
             }
         }
-
         private void txtT_Pack_TextChanged(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(txtT_Pack.Text))
@@ -1061,6 +1043,34 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 {
                     MessageBox.Show("Please enter a number between 0 and 100.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtT_Pack.Text = "";
+                }
+            }
+        }
+        public class WatermarkPageEvent : PdfPageEventHelper
+        {
+            public override void OnEndPage(PdfWriter writer, Document document)
+            {
+                string imagePath = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                if (File.Exists(imagePath))
+                {
+                    iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath);
+                    float pageWidth = document.PageSize.Width;
+                    float pageHeight = document.PageSize.Height;
+                    float scaleFactor = 0.7f; // Reduce size to 70% of the page dimensions
+                    watermark.ScaleToFit(pageWidth * scaleFactor, pageHeight * scaleFactor); // Scale to a smaller size
+
+                    watermark.RotationDegrees = 0; // Rotate for watermark effect
+
+                    // Center the watermark
+                    float x = (pageWidth - watermark.ScaledWidth) / 2;
+                    float y = (pageHeight - watermark.ScaledHeight) / 2;
+                    watermark.SetAbsolutePosition(x, y);
+
+                    PdfContentByte under = writer.DirectContentUnder;
+                    PdfGState gState = new PdfGState();
+                    gState.FillOpacity = 0.05f; // Set opacity to 5% (0.0f to 1.0f)
+                    under.SetGState(gState);
+                    under.AddImage(watermark);
                 }
             }
         }
