@@ -574,14 +574,12 @@ namespace HRAdmin.UserControl
                 // Error will be caught when trying to load next time
             }
         }
-
         [Serializable]
         private class MeetingSpaceConfig
         {
             public string Name { get; set; }
             public bool IsHidden { get; set; }
         }
-
         private class MeetingSpace
         {
             public Panel Panel { get; }
@@ -694,7 +692,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void CreateNewMeetingSpace()
         {
             string spaceName = "Meeting Space " + (_spaceConfigs.Count + 1);
@@ -703,7 +700,6 @@ namespace HRAdmin.UserControl
             SaveSpaceConfigs();
             CreateSpaceFromConfig(config);
         }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -718,7 +714,6 @@ namespace HRAdmin.UserControl
                 ShowNetworkNotification("Panel not found!", true);
             }
         }
-
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "HR && Admin";
@@ -734,7 +729,6 @@ namespace HRAdmin.UserControl
             UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void btnShowALL_Click(object sender, EventArgs e)
         {
             foreach (var space in _meetingSpaces)

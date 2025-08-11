@@ -14,8 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-//using System.Net;
-//using System.Net.Mail;
+using System.Net;
+using System.Net.Mail;
 using HRAdmin.Components;
 
 namespace HRAdmin.UserControl
@@ -29,7 +29,6 @@ namespace HRAdmin.UserControl
         public UC_C_BookingCar(string username, string index, string depart)
         {
             InitializeComponent();
-            
             loggedInUser = username;
             loggedInIndex = index;
             loggedInDepart = depart;
@@ -37,32 +36,56 @@ namespace HRAdmin.UserControl
             dTDay.ValueChanged += dTDay_ValueChanged;
             PopulateTimeComboBoxes();
         }
-        /*private void SendEmail(string toEmail, string subject, string body)
+        private void SendEmail(string toEmail, string subject, string body)
         {
             try
             {
-                MailMessage mail = new MailMessage();
-                mail.From = new MailAddress("syazwanbunander1997@gmail.com"); // ✅ Sender email
-                mail.To.Add(toEmail);
-                mail.Subject = subject;
-                mail.Body = body;
-                mail.IsBodyHtml = true;
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
 
-                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
-                smtp.Credentials = new NetworkCredential("syazwanbunander1997@gmail.com", "htam xlil vnzn kiwq"); // ✅ Must match sender
-                smtp.EnableSsl = true;
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
 
-                smtp.Send(mail);
-                MessageBox.Show("Notification for your booking will be sent to your approver.", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                //MessageBox.Show("Notification for your booking will be sent to your approver.");
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to send notification email: " + ex.Message);
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
             }
-        }*/
-
-
+        }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -196,7 +219,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("End time must be later than start time", "Invalid Time", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
-
             try
             {
                 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ if booked
@@ -222,22 +244,6 @@ namespace HRAdmin.UserControl
 
                     int existingBookings = (int)checkCmd.ExecuteScalar();
 
-                    //if (existingBookings > 0)
-                    //{
-                    //    MessageBox.Show("The selected date and time already reserved.", "Please choose another time.", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //     return;
-                    //}
-
-                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ error condition END and start not over 30m
-
-                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ If pass error condition
-
-                    //if (existingBookings > 0)
-                    //{
-                    //    MessageBox.Show("The selected date and time already reserved.","Please choose another time.", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //    return;
-                    //}
-
                     // Insert new booking
                     string insertQuery = @"
                 INSERT INTO tbl_CarBookings (DriverName, IndexNo, Depart, RequestDate, Destination, StartDate, EndDate, Purpose, StatusCheck, CheckBy, Status, ApproveBy, AssignedCar) " +
@@ -259,53 +265,121 @@ namespace HRAdmin.UserControl
                     insertCmd.ExecuteNonQuery();
 
                     MessageBox.Show("Booking successfully submitted!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    /*
-                    string destination = txtDes.Text;
+
+                    //+++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                    string query = @"
+                                    DECLARE @Dept0 VARCHAR(100), @Dept1 VARCHAR(100), @Dept2 VARCHAR(100), @Level INT;
+
+                                    -- Get current user's department and access level
+                                    SELECT 
+                                        @Dept0 = u.Department,
+                                        @Level = ul.AccessLevel
+                                    FROM tbl_Users u
+                                    LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
+                                    WHERE u.Username = @LoggedInUsername;
+
+                                    -- Get related departments
+                                    SELECT 
+                                        @Dept1 = Department1,
+                                        @Dept2 = Department2
+                                    FROM tbl_Department
+                                    WHERE Department0 = @Dept0;
+
+                                    ;WITH PossibleApprovers AS (
+                                        SELECT 
+                                            u.Username,
+                                            u.Department,
+                                            ud.Email,
+                                            ul.Position,
+                                            ul.AccessLevel
+                                        FROM tbl_Users u
+                                        LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
+                                        LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
+                                        INNER JOIN tbl_ApprovalRules ar 
+                                            ON ar.RequesterLevel = @Level 
+                                           AND ar.ApproverLevel = ul.AccessLevel
+                                        WHERE u.Department IN (@Dept0, @Dept1, @Dept2)
+                                    )
+                                    SELECT TOP 2 Email, Username
+                                    FROM PossibleApprovers
+                                    ORDER BY 
+                                        CASE 
+                                            WHEN Department = @Dept0 THEN 0
+                                            WHEN Department = @Dept1 THEN 1
+                                            ELSE 2
+                                        END,
+                                        AccessLevel ASC;
+";
+
+                    List<string> approverEmails = new List<string>();
+
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@LoggedInUsername", loggedInUser);
+                        conn.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string email = reader["Email"]?.ToString();
+                                if (!string.IsNullOrEmpty(email))
+                                {
+                                    approverEmails.Add(email);
+                                }
+                            }
+                        }
+                    }
+
+                    if (approverEmails.Count > 0)
+                    {
+                        string destination = txtDes.Text;
+                        DateTime parsedDate = DateTime.Parse(dTDay.Text);
+                        string formattedDate = parsedDate.ToString("dd/MM/yyyy");
+                        string purpose = txtPurpose.Text;
+                        string requester = UserSession.loggedInName;
+
+                        string subject = "HEM Admin Accessibility Notification: New Car Booking Request Awaiting Approval";
+
+                        string body = $@"
+        <p>Dear Approver,</p>
+        <p>A new <strong>car booking request</strong> has been submitted by <strong>{requester}</strong>.</p>
+
+        <p><u>Booking Summary:</u></p>
+        <ul>
+            <li><strong>Destination:</strong> {destination}</li>
+            <li><strong>Request Date:</strong> {formattedDate}</li>
+            <li><strong>Purpose:</strong> {purpose}</li>
+        </ul>
+
+        <p>Please log in to the system to review and approve the request.</p>
+
+        <p>Thank you,<br/>HEM Admin Accessibility</p>
+    ";
+
+                        foreach (var email in approverEmails)
+                        {
+                            SendEmail(email, subject, body);
+                        }
+                        MessageBox.Show("Notification for your booking will be sent to your approvers.", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("No approver found for your department.");
+                    }
 
 
-                    //string requestDate = DateTime.Now.ToString("dd MMM yyyy");
-                    string requestdate = dTDay.Text;
-                    DateTime parsedDate = DateTime.Parse(requestdate);
-                    string formattedDate = parsedDate.ToString("dd/MM/yyyy");
 
-                    Console.WriteLine(formattedDate);
-
-                    string purpose = txtPurpose.Text;
-                    string requester = UserSession.loggedInName;
-
-                    string subject = "HEM Admin Accessibility Notification: New Car Booking Request Awaiting Approval";
-
-                    string body = $@"
-                                    <p>Dear Approver,</p>
-                                    <p>A new <strong>car booking request</strong> has been submitted by <strong>{requester}</strong>.</p>
-
-                                    <p><u>Booking Summary:</u></p>
-                                    <ul>
-                                        <li><strong>Destination:</strong> {destination}</li>
-                                        <li><strong>Request Date:</strong> {formattedDate}</li>
-                                        <li><strong>Purpose:</strong> {purpose}</li>
-                                    </ul>
-
-                                    <p>Please log in to the system to review and approve the request.</p>
-
-                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
-                                ";
-
-                    SendEmail("hemedp1@hosiden.com", subject, body);
-                    */
-
-                    //SendEmail("hemedp1@hosiden.com", "New Request Submitted", "A new request has been submitted for your approval.");
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("QAn error occurred while processing the reservation: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("An error occurred while processing the reservation: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             LoadData();
-
-
-
         }
         private void LoadData()
         {
