@@ -1,4 +1,5 @@
-﻿using HRAdmin.Forms;
+﻿using HRAdmin.Components;
+using HRAdmin.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,10 +8,13 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace HRAdmin.UserControl
 {
@@ -32,16 +36,69 @@ namespace HRAdmin.UserControl
             LoadData();                // Prepare grid structure
             dTDay_ValueChanged(null, null);  // Trigger correct first-time load
         }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
 
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
+        }
         private void LoadPendingBookings(DateTime selectedDate)
         {
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
             {
-                string query = @"SELECT BookingID, DriverName, IndexNo, RequestDate, Destination, Purpose, AssignedCar, Status, ApproveBy, DateApprove, StatusCheck, CheckBy, DateChecked,
+                string query = @"SELECT BookingID, DriverName, IndexNo, RequestDate, Destination, Purpose, AssignedCar, Status, ApproveBy, DateApprove, StatusCheck, CheckBy, 
+                   CASE 
+                        WHEN DateChecked IS NULL THEN 'Pending'
+                        ELSE CONVERT(VARCHAR, DateChecked, 120)
+                    END AS DateChecked, 
                    CONVERT(VARCHAR(5), StartDate, 108) AS StartDate,
                    CONVERT(VARCHAR(5), EndDate, 108) AS EndDate
             FROM tbl_CarBookings
-            WHERE CONVERT(date, RequestDate) = @SelectedDate AND Status = 'Pending'";
+            WHERE CONVERT(date, RequestDate) = @SelectedDate AND StatusCheck = 'Checked' AND Status = 'Pending'";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -82,7 +139,7 @@ namespace HRAdmin.UserControl
                                     CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
                                     CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
                                 FROM tbl_CarBookings 
-                                WHERE Status = 'Pending'";
+                                WHERE StatusCheck = 'Checked' AND Status = 'Pending'";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -101,7 +158,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("No row selected. Please select a booking to approve or reject.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             if (!rB_App.Checked && !rB_Rej.Checked)
             {
                 MessageBox.Show("Please select either 'Approve' or 'Reject' before proceeding.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -118,6 +174,11 @@ namespace HRAdmin.UserControl
             DateTime selectedDate = dTDay.Value.Date;
             string meetingIDStr = dataGridView1.Rows[rowIndex].Cells[0]?.Value?.ToString();
             string selectedPerson = dataGridView1.Rows[rowIndex].Cells[1]?.Value?.ToString();
+            string ReqDate = dataGridView1.Rows[rowIndex].Cells[3]?.Value?.ToString();
+            string Destination = dataGridView1.Rows[rowIndex].Cells[4]?.Value?.ToString();
+            string timeout = dataGridView1.Rows[rowIndex].Cells[5]?.Value?.ToString();
+            string timeIN = dataGridView1.Rows[rowIndex].Cells[6]?.Value?.ToString();
+            string purpose = dataGridView1.Rows[rowIndex].Cells[8]?.Value?.ToString();
 
             if (string.IsNullOrEmpty(selectedPerson) || string.IsNullOrEmpty(meetingIDStr))
             {
@@ -163,10 +224,137 @@ namespace HRAdmin.UserControl
                     if (rB_App.Checked)
                     {
                         updateQuery = "UPDATE tbl_CarBookings SET AssignedCar = @Car, Status = 'Approved', ApproveBy = @loggedInUser, DateApprove = @selectedDate WHERE BookingID = @BookingID";
+                        MessageBox.Show("Car booking approved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                        string query1 = @"SELECT Email FROM tbl_UserDetail WHERE Username = @Username";
+                        List<string> approverEmails = new List<string>();
+
+                        using (SqlCommand emailCmd = new SqlCommand(query1, con))
+                        {
+                            emailCmd.Parameters.AddWithValue("@Username", selectedPerson);
+
+                            using (SqlDataReader reader = emailCmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string email = reader["Email"]?.ToString();
+                                    if (!string.IsNullOrEmpty(email))
+                                    {
+                                        approverEmails.Add(email);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (approverEmails.Count > 0)
+                        {
+                            DateTime parsedDate = DateTime.Parse(ReqDate);
+                            string formattedDate = parsedDate.ToString("dd/MM/yyyy");
+                            string subject = "HEM Admin Accessibility Notification: Your Car Booking Has Been Approved";
+                            string body = $@"
+                                                    <p>Dear Mr./Ms. {selectedPerson},</p>
+                                                    <p>Your <strong>car booking request</strong> has been <strong>approved</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+
+                    
+                                                    <p><u>Booking Details:</u></p>
+                                                    <ul>
+                                                        <li><strong>Purpose:</strong> {purpose}</li>
+                                                        <li><strong>Destination:</strong> {Destination}</li>
+                                                        <li><strong>Request Date:</strong> {formattedDate}</li>
+                                                        <li><strong>Time Out:</strong> {timeout}</li>
+                                                        <li><strong>Time In:</strong> {timeIN}</li>
+                                                        
+                                                    </ul>
+
+                                                     <p>Kindly log in to the system to <strong>acknowledge</strong> the booking and collect the <strong>key</strong> from the <strong>HR & ADMIN Department</strong>.</p>
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                            foreach (var email in approverEmails)
+                            {
+                                SendEmail(email, subject, body);
+                            }
+
+                            MessageBox.Show(
+                                "Notification has been sent to the requester confirming the booking approval.",
+                                "Notification Sent",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information
+                            );
+                        }
+
+                        //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                     }
                     else // If Reject is selected
                     {
+                        //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                        string query1 = @"SELECT Email FROM tbl_UserDetail WHERE Username = @Username";
+                        List<string> approverEmails = new List<string>();
+
+                        using (SqlCommand emailCmd = new SqlCommand(query1, con))
+                        {
+                            emailCmd.Parameters.AddWithValue("@Username", selectedPerson);
+
+                            using (SqlDataReader reader = emailCmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string email = reader["Email"]?.ToString();
+                                    if (!string.IsNullOrEmpty(email))
+                                    {
+                                        approverEmails.Add(email);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (approverEmails.Count > 0)
+                        {
+                            DateTime parsedDate = DateTime.Parse(ReqDate);
+                            string formattedDate = parsedDate.ToString("dd/MM/yyyy");
+                            string subject = "HEM Admin Accessibility Notification: Your Car Booking Has Been Rejected";
+                            string body = $@"
+                                                    <p>Dear Mr./Ms. {selectedPerson},</p>
+                                                    <p>Your <strong>car booking request</strong> has been <strong>rejected</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+
+                    
+                                                    <p><u>Booking Details:</u></p>
+                                                    <ul>
+                                                        <li><strong>Purpose:</strong> {purpose}</li>
+                                                        <li><strong>Destination:</strong> {Destination}</li>
+                                                        <li><strong>Request Date:</strong> {formattedDate}</li>
+                                                        <li><strong>Time Out:</strong> {timeout}</li>
+                                                        <li><strong>Time In:</strong> {timeIN}</li>
+                                                        
+                                                    </ul>
+
+                                                    <p>If you have further questions, please contact HR & ADMIN department directly.</p>
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                            foreach (var email in approverEmails)
+                            {
+                                SendEmail(email, subject, body);
+                            }
+
+                            MessageBox.Show(
+                                "Notification has been sent to the requester informing of the rejection.",
+                                "Notification Sent",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information
+                            );
+                        }
+
+                        //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                         updateQuery = "UPDATE tbl_CarBookings SET AssignedCar = 'Not Available', Status = 'Rejected', ApproveBy = @loggedInUser, DateApprove = @selectedDate WHERE BookingID = @BookingID";
+                        MessageBox.Show("Car booking Rejected successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
 
                     using (SqlCommand cmd = new SqlCommand(updateQuery, con))
@@ -184,7 +372,7 @@ namespace HRAdmin.UserControl
                 }
                 LoadPendingBookingsall();
                 //loadCars();
-                MessageBox.Show("Car booking approved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
 
                 cmbCarSelection.SelectedIndex = -1;
             }
@@ -277,11 +465,20 @@ namespace HRAdmin.UserControl
                 {
                     con.Open();
                     string query = @"
-                    SELECT BookingID, DriverName, IndexNo, RequestDate, Destination, Purpose, AssignedCar, Status, ApproveBy, DateApprove,StatusCheck, CheckBy, DateChecked,
+                    SELECT BookingID, DriverName, IndexNo, RequestDate, Destination, Purpose, AssignedCar, Status, ApproveBy, 
+                    CASE 
+                        WHEN DateApprove IS NULL THEN 'Pending'
+                        ELSE CONVERT(VARCHAR, DateApprove, 120)
+                    END AS DateApprove,
+                    StatusCheck, CheckBy, 
+                    CASE 
+                        WHEN DateChecked IS NULL THEN 'Pending'
+                        ELSE CONVERT(VARCHAR, DateChecked, 120)
+                    END AS DateChecked,
                            CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
                            CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
                     FROM tbl_CarBookings 
-                    WHERE CONVERT(date, RequestDate) = @SelectedDate AND Status = 'Pending'";
+                    WHERE CONVERT(date, RequestDate) = @SelectedDate AND StatusCheck = 'Checked' AND Status = 'Pending'";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -397,7 +594,6 @@ namespace HRAdmin.UserControl
             panel9.Visible = true;
           
         }
-
         private void rB_Rej_CheckedChanged(object sender, EventArgs e)
         {
             cmbCarSelection.Visible = false;
@@ -486,7 +682,6 @@ namespace HRAdmin.UserControl
             LoadData();  // Keeps columns and formatting intact
             LoadData1(); // Updates car availability
         }
-
         private void cmbOut_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadData1();

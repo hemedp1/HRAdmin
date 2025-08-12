@@ -229,16 +229,22 @@ namespace HRAdmin.UserControl
                 {
                     con.Open();
 
-                    /////   The PIC must same department
-                    //string checkdepart = "SELECT DriverName, Depart FROM tbl_CarBookings WHERE BookingID = @BookingID";  -- original query
-
                     string checkdepart = @"
-    SELECT q.DriverName, q.Depart, u.Position, l.AccessLevel 
-    FROM tbl_CarBookings q 
-    LEFT JOIN tbl_Users u ON q.DriverName = u.Username 
-    LEFT JOIN tbl_UsersLevel l ON u.Position = l.TitlePosition 
-    WHERE BookingID = @BookingID";
+            SELECT q.DriverName, q.Depart, q.StartDate, q.EndDate, q.Purpose, q.RequestDate, q.Destination, u.Position, l.AccessLevel 
+            FROM tbl_CarBookings q 
+            LEFT JOIN tbl_Users u ON q.DriverName = u.Username 
+            LEFT JOIN tbl_UsersLevel l ON u.Position = l.TitlePosition 
+            WHERE BookingID = @BookingID";
 
+                    string Username = string.Empty;
+                    string tujuan = string.Empty;
+                    string tempat = string.Empty;
+                    string timeOutFormatted = string.Empty;
+                    string timeInFormatted = string.Empty;
+                    string bookingDateFormatted = string.Empty;
+                    int requestorAccessLevel = -1;
+
+                    // First query to check
                     using (SqlCommand checkCmd = new SqlCommand(checkdepart, con))
                     {
                         checkCmd.Parameters.AddWithValue("@BookingID", bookingID);
@@ -247,16 +253,27 @@ namespace HRAdmin.UserControl
                         {
                             if (reader.Read())
                             {
-                                string department = reader["Depart"]?.ToString();
-                                string accessLevelStr = reader["AccessLevel"]?.ToString();
+                                Username = reader["DriverName"]?.ToString();
+                                tujuan = reader["Purpose"]?.ToString();
+                                tempat = reader["Destination"]?.ToString();
+                                DateTime? bookingDate = reader["RequestDate"] != DBNull.Value
+                                ? Convert.ToDateTime(reader["RequestDate"])
+                                : (DateTime?)null;
+                                bookingDateFormatted = bookingDate?.ToString("dd/MM/yyyy");
 
-                                //if (string.IsNullOrEmpty(department) || department != loggedInDepart)
-                                //{
-                                //    MessageBox.Show("Cannot proceed. Must be in the same department.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                //    return;
-                                //}
 
-                                if (!int.TryParse(accessLevelStr, out int requestorAccessLevel) ||
+                                TimeSpan? timeOut = reader["StartDate"] != DBNull.Value
+                                    ? (TimeSpan)reader["StartDate"]
+                                    : (TimeSpan?)null;
+                                timeOutFormatted = timeOut?.ToString(@"hh\:mm");
+
+                                TimeSpan? timeIn = reader["EndDate"] != DBNull.Value
+                                    ? (TimeSpan)reader["EndDate"]
+                                    : (TimeSpan?)null;
+                                timeInFormatted = timeIn?.ToString(@"hh\:mm");
+
+
+                                if (!int.TryParse(reader["AccessLevel"]?.ToString(), out requestorAccessLevel) ||
                                     !int.TryParse(logginInUserAccessLevel, out int currentUserAccessLevel))
                                 {
                                     MessageBox.Show("Access level data is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -272,14 +289,16 @@ namespace HRAdmin.UserControl
                             else
                             {
                                 MessageBox.Show("No matching booking found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
                             }
-                        }
-                    }
+                        } // Reader closes here
+                    } // checkCmd closes here
 
-
-                    MessageBox.Show($"logginInUserAccessLevesssssl: {logginInUserAccessLevel}");
-                    //      Pass all case, verify execute
-                    string query = "UPDATE tbl_CarBookings SET DateChecked = @DateChecked, StatusCheck = 'Checked', CheckBy = @loggedInUser WHERE BookingID = @BookingID";
+                    // Now run the update safely
+                    string query = @"
+            UPDATE tbl_CarBookings 
+            SET DateChecked = @DateChecked, StatusCheck = 'Checked', CheckBy = @loggedInUser 
+            WHERE BookingID = @BookingID";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -289,26 +308,88 @@ namespace HRAdmin.UserControl
 
                         try
                         {
-                            
                             int rowsAffected = cmd.ExecuteNonQuery();
 
                             if (rowsAffected > 0)
                             {
                                 MessageBox.Show("Reservation verified successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 LoadPendingBookings();
-                                //LoadData(); // Refresh DataGridView
+                                //+++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                string query1 = @"SELECT TOP 1 A.Department, A.AA, B.Email
+                                                FROM 
+                                                tbl_Users A
+                                                LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                WHERE A.Department = 'HR & ADMIN' AND AA = '1'";
+                                List<string> approverEmails = new List<string>();
+
+                                using (SqlCommand emailCmd = new SqlCommand(query1, con))
+                                {
+                                    //emailCmd.Parameters.AddWithValue("@Username", Username);
+
+                                    using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            string email = reader["Email"]?.ToString();
+                                            if (!string.IsNullOrEmpty(email))
+                                            {
+                                                approverEmails.Add(email);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (approverEmails.Count > 0)
+                                {
+                                    string destination = tempat;//txtDes.Text;
+                                    string purpose = tujuan; //txtPurpose.Text;
+
+                                    string subject = "HEM Admin Accessibility Notification: Car Booking Request Awaiting Final Approval";
+
+                                    string body = $@"
+                                                    <p>Dear Admin HR,</p>
+                                                    <p>A <strong>car booking request</strong> for <strong>Mr./Ms. <strong>{Username}</strong> has been <strong>approved by Mr./Ms. {UserSession.loggedInName}</strong> and is now awaiting your final approval.</p>
+
+                                                    <p><u>Booking Details:</u></p>
+                                                    <ul>
+                                                        <li><strong>Purpose:</strong> {purpose}</li>
+                                                        <li><strong>Destination:</strong> {destination}</li>
+                                                        <li><strong>Request Date:</strong> {bookingDateFormatted}</li>
+                                                        <li><strong>Time Out:</strong> {timeOutFormatted}</li>
+                                                        <li><strong>Time In:</strong> {timeInFormatted}</li>
+                                                        
+                                                    </ul>
+
+                                                     <p>Please log in to the system to <strong>review</strong> and <strong>approve</strong> or <strong>reject</strong> the request.</p>
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                    foreach (var email in approverEmails)
+                                    {
+                                        SendEmail(email, subject, body);
+                                    }
+
+                                    MessageBox.Show(
+                                        "A booking approval notification has been sent to the requester.",
+                                        "Notification Sent",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information
+                                    );
+                                }
+                                else
+                                {
+                                    MessageBox.Show("No record updated. Please check the Booking ID.", "Update Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                }
                             }
-                            else
-                            {
-                                MessageBox.Show("No record updated. Please check the Booking ID.", "Update Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            }
+                            //MessageBox.Show($"Username: {Username}");
                         }
                         catch (Exception ex)
                         {
                             MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                    }
-                }
+                    } // cmd closes here
+                } // connection closes here
             }
         }
         private void addControls(System.Windows.Forms.UserControl userControl)

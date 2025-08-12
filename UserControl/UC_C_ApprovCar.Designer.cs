@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_ApprovCar));
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -37,6 +37,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel6 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnApprove = new System.Windows.Forms.Button();
             this.panel9 = new System.Windows.Forms.Panel();
             this.cmbCarSelection = new System.Windows.Forms.ComboBox();
@@ -46,6 +47,8 @@
             this.rB_Rej = new System.Windows.Forms.RadioButton();
             this.rB_App = new System.Windows.Forms.RadioButton();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.cmbIn = new System.Windows.Forms.ComboBox();
+            this.cmbOut = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -55,9 +58,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
-            this.cmbIn = new System.Windows.Forms.ComboBox();
-            this.cmbOut = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -96,14 +96,14 @@
             // 
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
@@ -152,13 +152,28 @@
             // 
             // panel10
             // 
-            this.panel10.Controls.Add(this.button1);
             this.panel10.Controls.Add(this.btnApprove);
             this.panel10.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel10.Location = new System.Drawing.Point(0, 276);
             this.panel10.Name = "panel10";
             this.panel10.Size = new System.Drawing.Size(1186, 61);
             this.panel10.TabIndex = 2;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Calibri", 12F);
+            this.button1.ForeColor = System.Drawing.Color.Black;
+            this.button1.Location = new System.Drawing.Point(580, 13);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(139, 43);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Show All";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnApprove
             // 
@@ -255,6 +270,7 @@
             // 
             // panel7
             // 
+            this.panel7.Controls.Add(this.button1);
             this.panel7.Controls.Add(this.cmbIn);
             this.panel7.Controls.Add(this.cmbOut);
             this.panel7.Controls.Add(this.label5);
@@ -269,6 +285,36 @@
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(1186, 168);
             this.panel7.TabIndex = 0;
+            // 
+            // cmbIn
+            // 
+            this.cmbIn.DropDownHeight = 158;
+            this.cmbIn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbIn.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbIn.FormattingEnabled = true;
+            this.cmbIn.IntegralHeight = false;
+            this.cmbIn.ItemHeight = 29;
+            this.cmbIn.Location = new System.Drawing.Point(290, 110);
+            this.cmbIn.MaxLength = 8;
+            this.cmbIn.Name = "cmbIn";
+            this.cmbIn.Size = new System.Drawing.Size(284, 37);
+            this.cmbIn.TabIndex = 34;
+            this.cmbIn.SelectedIndexChanged += new System.EventHandler(this.cmbIn_SelectedIndexChanged);
+            // 
+            // cmbOut
+            // 
+            this.cmbOut.DropDownHeight = 158;
+            this.cmbOut.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOut.Font = new System.Drawing.Font("Calibri", 12F);
+            this.cmbOut.FormattingEnabled = true;
+            this.cmbOut.IntegralHeight = false;
+            this.cmbOut.ItemHeight = 29;
+            this.cmbOut.Location = new System.Drawing.Point(290, 59);
+            this.cmbOut.MaxLength = 8;
+            this.cmbOut.Name = "cmbOut";
+            this.cmbOut.Size = new System.Drawing.Size(284, 37);
+            this.cmbOut.TabIndex = 33;
+            this.cmbOut.SelectedIndexChanged += new System.EventHandler(this.cmbOut_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -365,54 +411,6 @@
             this.btnBack.TabIndex = 21;
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
-            // 
-            // cmbIn
-            // 
-            this.cmbIn.DropDownHeight = 158;
-            this.cmbIn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbIn.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmbIn.FormattingEnabled = true;
-            this.cmbIn.IntegralHeight = false;
-            this.cmbIn.ItemHeight = 29;
-            this.cmbIn.Location = new System.Drawing.Point(290, 110);
-            this.cmbIn.MaxLength = 8;
-            this.cmbIn.Name = "cmbIn";
-            this.cmbIn.Size = new System.Drawing.Size(284, 37);
-            this.cmbIn.TabIndex = 34;
-            this.cmbIn.SelectedIndexChanged += new System.EventHandler(this.cmbIn_SelectedIndexChanged);
-            // 
-            // cmbOut
-            // 
-            this.cmbOut.DropDownHeight = 158;
-            this.cmbOut.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbOut.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmbOut.FormattingEnabled = true;
-            this.cmbOut.IntegralHeight = false;
-            this.cmbOut.ItemHeight = 29;
-            this.cmbOut.Location = new System.Drawing.Point(290, 59);
-            this.cmbOut.MaxLength = 8;
-            this.cmbOut.Name = "cmbOut";
-            this.cmbOut.Size = new System.Drawing.Size(284, 37);
-            this.cmbOut.TabIndex = 33;
-            this.cmbOut.SelectedIndexChanged += new System.EventHandler(this.cmbOut_SelectedIndexChanged);
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.White;
-            this.button1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.button1.FlatAppearance.BorderSize = 0;
-            this.button1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Calibri", 12F);
-            this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(1066, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(120, 61);
-            this.button1.TabIndex = 25;
-            this.button1.Text = "Show All";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // UC_C_ApprovCar
             // 

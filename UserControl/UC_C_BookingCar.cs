@@ -337,6 +337,7 @@ namespace HRAdmin.UserControl
                         string destination = txtDes.Text;
                         DateTime parsedDate = DateTime.Parse(dTDay.Text);
                         string formattedDate = parsedDate.ToString("dd/MM/yyyy");
+
                         string purpose = txtPurpose.Text;
                         string requester = UserSession.loggedInName;
 
@@ -348,9 +349,12 @@ namespace HRAdmin.UserControl
 
         <p><u>Booking Summary:</u></p>
         <ul>
+            <li><strong>Purpose:</strong> {purpose}</li>
             <li><strong>Destination:</strong> {destination}</li>
             <li><strong>Request Date:</strong> {formattedDate}</li>
-            <li><strong>Purpose:</strong> {purpose}</li>
+            <li><strong>Time Out:</strong> {cmbOut.Text}</li>
+            <li><strong>Time In:</strong> {cmbIn.Text}</li>
+            
         </ul>
 
         <p>Please log in to the system to review and approve the request.</p>
