@@ -24,6 +24,8 @@ using iTextSharp.text;
 using System.IO;
 using iTextRectangle = iTextSharp.text.Rectangle;
 using WinFormsApp = System.Windows.Forms.Application;
+using System.Net.Mail;
+using System.Net;
 
 namespace HRAdmin.UserControl
 {
@@ -63,6 +65,56 @@ namespace HRAdmin.UserControl
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
             isNetworkErrorShown = false;
             this.Load += UC_Food_Load;
+        }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
+
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
         }
         public UC_Meal_Food(string eventDetails, DateTime eventTime, string loggedInUser, string department)
         {
@@ -993,6 +1045,85 @@ namespace HRAdmin.UserControl
                                      cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
                                      dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
                                      dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                            string requesterName = "";
+                            string expenType = "";
+                            string indexNum = "";
+                            string userEmails = "";
+                            DateTime requestDate = DateTime.MinValue;
+
+                            string getClaimDetailsQuery = $@"
+                                                            SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email
+                                                            FROM {tableName} A
+                                                            LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
+                                                            WHERE OrderID = @OrderID";
+
+                            List<string> approverEmails = new List<string>();
+
+                            using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                            {
+                                emailCmd.Parameters.Add("@OrderID", SqlDbType.NVarChar).Value = orderId;
+
+                                using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        string email = reader["Email"]?.ToString();
+                                        if (!string.IsNullOrEmpty(email))
+                                        {
+                                            approverEmails.Add(email);
+                                        }
+                                        requesterName = reader["Requester"]?.ToString();
+                                        expenType = reader["ExpensesType"]?.ToString();
+                                        indexNum = reader["EmpNo"]?.ToString();
+                                        userEmails = reader["Email"]?.ToString();
+                                        requestDate = reader["RequestDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["RequestDate"])
+                                            : DateTime.MinValue;
+                                    }
+                                }
+                            }
+
+                            if (approverEmails.Count > 0)
+                            {
+                                string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                string subject = "HEM Admin Accessibility Notification: New Canteen Food Request Awaiting For Your Review And Approval";
+                                string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    p>A new <strong>Canteen Food Request</strong> has been <strong>checked</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+
+                    
+                                                <p><u>Canteen Food Request Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Order ID:</strong> {orderId}</li>
+                                                    <li><strong>Occasion Type:</strong> {orderSource}</li>
+                                                    <li><strong>Event Detail:</strong> {EventOrPurpose}</li>
+                                                    <li><strong>Request Date:</strong> {RequestDate}</li>
+                                                    <li><strong>Delivery Date:</strong> {RequestDate}</li>
+                                                </ul>
+
+                                                    <p>The approved amount will be processed on the <strong>15th</strong> and <strong>30th</strong> of each month. If either date falls on a non-working day, payment will be made on the <strong>next</strong> or <strong>before</strong> working day.</p>
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                foreach (var email in approverEmails)
+                                {
+                                    SendEmail(email, subject, body);
+                                }
+
+                                MessageBox.Show(
+                                    "Notification has been sent to the requester confirming the claim status.",
+                                    "Notification Sent",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information
+                                );
+                            }
+
+                            //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                         }
                         else
                         {
