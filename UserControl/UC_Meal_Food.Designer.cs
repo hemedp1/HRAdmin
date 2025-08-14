@@ -28,13 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Meal_Food));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.dgv_OS = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.GB_Authorization = new System.Windows.Forms.GroupBox();
+            this.btnReject = new System.Windows.Forms.Button();
             this.btnCheck = new System.Windows.Forms.Button();
             this.btnApprove = new System.Windows.Forms.Button();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -117,14 +118,14 @@
             // 
             this.dgv_OS.BackgroundColor = System.Drawing.Color.White;
             this.dgv_OS.ColumnHeadersHeight = 29;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgv_OS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_OS.Location = new System.Drawing.Point(0, 240);
             this.dgv_OS.Name = "dgv_OS";
@@ -148,15 +149,33 @@
             // 
             // GB_Authorization
             // 
+            this.GB_Authorization.Controls.Add(this.btnReject);
             this.GB_Authorization.Controls.Add(this.btnCheck);
             this.GB_Authorization.Controls.Add(this.btnApprove);
             this.GB_Authorization.Dock = System.Windows.Forms.DockStyle.Left;
             this.GB_Authorization.Location = new System.Drawing.Point(460, 0);
             this.GB_Authorization.Name = "GB_Authorization";
-            this.GB_Authorization.Size = new System.Drawing.Size(450, 100);
+            this.GB_Authorization.Size = new System.Drawing.Size(630, 100);
             this.GB_Authorization.TabIndex = 0;
             this.GB_Authorization.TabStop = false;
             this.GB_Authorization.Text = "Authorization";
+            //this.GB_Authorization.Enter += new System.EventHandler(this.GB_Authorization_Enter);
+            // 
+            // btnReject
+            // 
+            this.btnReject.BackColor = System.Drawing.Color.Crimson;
+            this.btnReject.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnReject.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnReject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnReject.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnReject.Location = new System.Drawing.Point(440, 41);
+            this.btnReject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnReject.Name = "btnReject";
+            this.btnReject.Size = new System.Drawing.Size(124, 34);
+            this.btnReject.TabIndex = 102;
+            this.btnReject.Text = "Reject";
+            this.btnReject.UseVisualStyleBackColor = false;
+            this.btnReject.Click += new System.EventHandler(this.btnReject_Click);
             // 
             // btnCheck
             // 
@@ -701,5 +720,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox cmbOS_Occasion;
+        private System.Windows.Forms.Button btnReject;
     }
 }

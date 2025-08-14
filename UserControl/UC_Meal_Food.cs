@@ -161,7 +161,7 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
-                    string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
+                    string query = "SELECT AA FROM tbl_Users WHERE Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", loggedInUser);
@@ -171,14 +171,14 @@ namespace HRAdmin.UserControl
                             if (reader.Read())
                             {
                                 string AA = reader["AA"].ToString();
-                                string MA = reader["MA"].ToString();
 
                                 // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
-                                if (AA == "1")
+                                if (AA == "1" && loggedInDepart == "HR & ADMIN")
                                 {
                                     GB_Authorization.Visible = true;
+                                    btnApprove.Enabled = false;
                                 }
-                                else if (MA == "2")
+                                else if (AA == "2" && loggedInDepart == "HR & ADMIN")
                                 {
                                     GB_Authorization.Visible = true;
                                 }
@@ -782,6 +782,13 @@ namespace HRAdmin.UserControl
                 return;
             }
 
+            // Confirmation prompt before approving
+            DialogResult result = MessageBox.Show($"Are you sure you want to approve Order ID: {orderId}?", "Confirm Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return; // Exit if user clicks "No" or closes the dialog
+            }
+
             string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
 
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -826,6 +833,140 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+        private void btnReject_Click(object sender, EventArgs e)
+        {
+            if (dgv_OS.SelectedCells.Count == 0)
+            {
+                MessageBox.Show("Please select a cell in the order row to reject.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DataGridViewCell selectedCell = dgv_OS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+
+            string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
+            string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
+            string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
+            string approveStatus = selectedRow.Cells["ApproveStatus"].Value?.ToString(); // ✅ fixed .Value bug
+            string requesterId = selectedRow.Cells["RequesterID"]?.Value?.ToString();
+
+            if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource))
+            {
+                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                try
+                {
+                    con.Open();
+
+                    // Get AA value
+                    string aaQuery = "SELECT AA FROM tbl_Users WHERE Username = @Username";
+                    string aaValue = null;
+
+                    using (SqlCommand cmd = new SqlCommand(aaQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                                aaValue = reader["AA"]?.ToString();
+                        }
+                    }
+
+                    if (aaValue == null)
+                    {
+                        MessageBox.Show("Unable to determine user role.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
+                    string statusColumn, byColumn, dateColumn, deptColumn, currentStatus;
+
+                    if (aaValue == "1" && loggedInDepart == "HR & ADMIN")
+                    {
+                        statusColumn = "CheckStatus";
+                        byColumn = "CheckedBy";
+                        dateColumn = "CheckedDate";
+                        deptColumn = "CheckedDepartment";
+                        currentStatus = checkStatus;
+                    }
+                    else if (aaValue == "2" && loggedInDepart == "HR & ADMIN")
+                    {
+                        statusColumn = "ApproveStatus";
+                        byColumn = "ApprovedBy";
+                        dateColumn = "ApprovedDate";
+                        deptColumn = "ApprovedDepartment";
+                        currentStatus = approveStatus;
+                    }
+                    else
+                    {
+                        MessageBox.Show("You do not have permission to reject this order.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Check if already rejected or approved
+                    if (currentStatus == "Rejected")
+                    {
+                        MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (currentStatus == "Approved" || currentStatus == "Checked")
+                    {
+                        MessageBox.Show("This order has already been approved and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Confirm action
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Order ID: {orderId}?", "Confirm Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result != DialogResult.Yes) return;
+
+                    // Update query with concurrency check
+                    string updateQuery = $@"
+                UPDATE {tableName}
+                SET {statusColumn} = @Status,
+                    {byColumn} = @ByUser,
+                    {dateColumn} = @Date,
+                    {deptColumn} = @Department
+                WHERE OrderID = @OrderID
+                AND ({statusColumn} IS NULL OR {statusColumn} NOT IN ('Rejected','Approved','Checked'))";
+
+                    using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                    {
+                        updateCmd.Parameters.AddWithValue("@Status", "Rejected");
+                        updateCmd.Parameters.AddWithValue("@ByUser", loggedInUser);
+                        updateCmd.Parameters.AddWithValue("@Date", DateTime.Now);
+                        updateCmd.Parameters.AddWithValue("@Department", loggedInDepart);
+                        updateCmd.Parameters.AddWithValue("@OrderID", orderId);
+
+                        int rowsAffected = updateCmd.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Order status updated to Rejected.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LoadData(
+                                cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
+                                cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
+                                cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
+                                dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
+                                dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value
+                            );
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to update rejection status. The order may have been processed by someone else.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
         private void btnWithdraw_Click(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
@@ -1014,6 +1155,13 @@ namespace HRAdmin.UserControl
                 return;
             }
 
+            // Confirmation prompt before checking
+            DialogResult result = MessageBox.Show($"Are you sure you want to check Order ID: {orderId}?", "Confirm Checking", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return; // Exit if user clicks "No" or closes the dialog
+            }
+
             string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
 
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -1045,7 +1193,7 @@ namespace HRAdmin.UserControl
                                      cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
                                      dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
                                      dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
-
+                            /*
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -1120,7 +1268,7 @@ namespace HRAdmin.UserControl
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Information
                                 );
-                            }
+                            }*/
 
                             //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

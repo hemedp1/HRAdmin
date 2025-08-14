@@ -69,7 +69,7 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
-                    string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
+                    string query = "SELECT a.Username, a.Name1,a.AA, a.MA, a.Position, b.TitlePosition, b.AccessLevel\r\n\r\nFROM tbl_Users a\r\n\r\nLEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition WHERE a.Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", username);
@@ -80,14 +80,23 @@ namespace HRAdmin.UserControl
                             {
                                 string AA = reader["AA"].ToString();
                                 string MA = reader["MA"].ToString();
+                                int accessLevel = Convert.ToInt32(reader["AccessLevel"]);
 
-                               
+
                                 if (AA == "1")
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = true;
                                     Form_Home.sharedbuttonInspect.Visible = true;
-                                    Form_Home.sharedButton4.Visible = true;
-                                    Form_Home.sharedButton5.Visible = true;
+                                    if (accessLevel > 0 && loggedInDepart == "HR & Admin")
+                                    {
+                                        Form_Home.sharedButton4.Visible = true;
+                                        Form_Home.sharedButton5.Visible = true;
+                                    }
+                                    else
+                                    {
+                                        Form_Home.sharedButton4.Visible = false;
+                                        Form_Home.sharedButton5.Visible = false;
+                                    }
                                     Form_Home.sharedbtnVisitor.Visible = true;
                                     Form_Home.sharedbtnWithdrawEntry.Visible = true;
                                     Form_Home.sharedbtnNewVisitor.Visible = true;
@@ -111,8 +120,16 @@ namespace HRAdmin.UserControl
                                 else
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = false;
-                                    Form_Home.sharedButton4.Visible = false;
-                                    Form_Home.sharedButton5.Visible = false;
+                                    if (accessLevel > 0 && loggedInDepart == "HR & Admin")
+                                    {
+                                        Form_Home.sharedButton4.Visible = true;
+                                        Form_Home.sharedButton5.Visible = true;
+                                    }
+                                    else
+                                    {
+                                        Form_Home.sharedButton4.Visible = false;
+                                        Form_Home.sharedButton5.Visible = false;
+                                    }
                                     Form_Home.sharedbtnVisitor.Visible = false;
                                     Form_Home.sharedbtnWithdrawEntry.Visible = false;
                                     Form_Home.sharedbtnNewVisitor.Visible = false;
