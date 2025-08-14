@@ -49,6 +49,7 @@ namespace HRAdmin.UserControl
         public UC_M_MiscellaneousClaim(string username, string department, string emp, string bank, string accountNo, string fullname)
         {
             InitializeComponent();
+            
             //string gg = UserSession.LoggedInBank;
             LoggedInUser = username;
             loggedInDepart = department;
@@ -59,9 +60,6 @@ namespace HRAdmin.UserControl
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
             string userlevel = UserSession.logginInUserAccessLevel;
             string userfullName = UserSession.loggedInName;
-            //LoadUsernames();
-            //LoadDepartments();
-            LoadData(); // Initial load with default weekly filter
             cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
             cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
             cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
@@ -181,38 +179,35 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
-                    string query = "SELECT a.Username, a.Name1, a.Position, b.TitlePosition, b.AccessLevel " +
-               "FROM tbl_Users a " +
-               "LEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition " +
-               "WHERE a.Username = @Username";
+                    string query = "SELECT a.Username, a.Name1, a.Position, b.TitlePosition, b.AccessLevel FROM tbl_Users a LEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition WHERE a.Username = @Username";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Username", LoggedInUser);
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        cmd.Parameters.AddWithValue("@Username", UserSession.LoggedInUser);
+                        using (SqlDataReader reader2 = cmd.ExecuteReader())
                         {
-                            if (reader.Read())
+                        
+                            if (reader2.Read())
                             {
-                                int accessLevel = Convert.ToInt32(reader["AccessLevel"]);
-
-         
+                                int accessLevel = Convert.ToInt32(reader2["AccessLevel"]);
+                        
+                         
                                 if (accessLevel >= 1)
                                 {
-                                    P_Authorization.Visible = true;
+                                    groupBox3.Visible = true;
                                 }
-                                else if (accessLevel == 0)
+                                else if (accessLevel == 0 || accessLevel == 99)
                                 {
-                                    P_Authorization.Visible = false;
+                                    groupBox3.Visible = false;
                                 }
                                 else
                                 {
-                                    P_Authorization.Visible = false;
+                                    groupBox3.Visible = false;
                                 }
                             }
                             else
                             {
-                                P_Authorization.Visible = true;
+                                groupBox3.Visible = true;
                             }
                         }
                     }
@@ -3216,6 +3211,10 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                 footerTbl.AddCell(cell);
                 footerTbl.WriteSelectedRows(0, -1, 36, 20, writer.DirectContent);
             }
+        }
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }
