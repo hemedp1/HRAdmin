@@ -934,7 +934,7 @@ namespace HRAdmin.UserControl
             }
 
             // Handle ACCOUNT department approvals
-            if ((loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS") && hodApprovalStatus == "Approve")
+            if ((loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS") && hodApprovalStatus == "Approved")
             {
                 // Handle Account2ApprovalStatus (AccessLevel 0)
                 if (userAccessLevel == 99)
