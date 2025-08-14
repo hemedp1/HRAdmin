@@ -12,6 +12,9 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Diagnostics;
+using System.Net.Mail;
+using System.Net;
+using HRAdmin.Components;
 
 namespace HRAdmin.UserControl
 {
@@ -43,7 +46,56 @@ namespace HRAdmin.UserControl
             dgvW.CellValueChanged += dgvW_CellValueChanged;
             dgvW.CellFormatting += dgvW_CellFormatting;
         }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
 
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
+        }
         private void UC_M_Work_Load(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in dgvW.Rows)
@@ -59,7 +111,6 @@ namespace HRAdmin.UserControl
             row.Cells["InvoiceAttached"].Value = hasPdf ? "✅" : "❌";
             ((DataGridViewButtonCell)row.Cells["btnInvoice"]).Value = hasPdf ? "View / Reupload" : "Upload";
         }
-
         private void DgvW_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             if (e.ColumnIndex == dgvW.Columns["Invoice Date"].Index && e.Exception is FormatException)
@@ -70,7 +121,6 @@ namespace HRAdmin.UserControl
                 dgvW.Rows[e.RowIndex].Cells["Invoice Date"].Value = DBNull.Value;
             }
         }
-
         private void InitializeDataTable()
         {
             DataTable dt = new DataTable();
@@ -118,7 +168,6 @@ namespace HRAdmin.UserControl
             dgvW.Columns.Add(btnCol);
             dgvW.AllowUserToAddRows = true;
         }
-
         private void AssignNextId(DataGridViewRow row)
         {
             int maxId = 0;
@@ -132,7 +181,6 @@ namespace HRAdmin.UserControl
             }
             row.Cells["ID"].Value = maxId + 1;
         }
-
         private void dgvW_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
@@ -290,7 +338,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void ConfigureDataGridView()
         {
             dgvW.Columns["SerialNo"].Visible = false;
@@ -318,7 +365,6 @@ namespace HRAdmin.UserControl
             dgvW.Columns["Account3ApprovedDate"].Visible = false;
             dgvW.Columns["Invoice"].Visible = false;
         }
-
         private void StyleDataGridView(DataGridView dgv)
         {
             dgv.ColumnHeadersVisible = true;
@@ -383,8 +429,7 @@ namespace HRAdmin.UserControl
                 column.DefaultCellStyle = defaultCellStyle;
             }
         }
-
-        private void btnSubmit_Click(object sender, EventArgs e)
+        private void btnSubmit_Click(object sender, EventArgs e)       //-------------------------------------
         {
             List<int> missingPdfRows = new List<int>();
             List<int> incompleteRows = new List<int>();
@@ -416,6 +461,9 @@ namespace HRAdmin.UserControl
                     }
 
                     string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
+                    
+
+
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
                                                         (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
@@ -632,8 +680,139 @@ namespace HRAdmin.UserControl
 
                         transaction.Commit();
                         dt.AcceptChanges();
+
                         MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                        //+++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                        string query = @"
+                                    DECLARE @Dept0 VARCHAR(100), @Dept1 VARCHAR(100), @Dept2 VARCHAR(100), @Level INT;
+
+                                    -- Get current user's department and access level
+                                    SELECT 
+                                        @Dept0 = u.Department,
+                                        @Level = ul.AccessLevel
+                                    FROM tbl_Users u
+                                    LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
+                                    WHERE u.Username = @LoggedInUsername;
+
+                                    -- Get related departments
+                                    SELECT 
+                                        @Dept1 = Department1,
+                                        @Dept2 = Department2
+                                    FROM tbl_Department
+                                    WHERE Department0 = @Dept0;
+
+                                    ;WITH PossibleApprovers AS (
+                                        SELECT 
+                                            u.Username,
+                                            u.Department,
+                                            ud.Email,
+                                            ul.Position,
+                                            ul.AccessLevel
+                                        FROM tbl_Users u
+                                        LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
+                                        LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
+                                        INNER JOIN tbl_ApprovalRules ar 
+                                            ON ar.RequesterLevel = @Level 
+                                           AND ar.ApproverLevel = ul.AccessLevel
+                                        WHERE u.Department IN (@Dept0, @Dept1, @Dept2)
+                                    )
+                                    SELECT TOP 2 Email, Username
+                                    FROM PossibleApprovers
+                                    ORDER BY 
+                                        CASE 
+                                            WHEN Department = @Dept0 THEN 0
+                                            WHEN Department = @Dept1 THEN 1
+                                            ELSE 2
+                                        END,
+                                        AccessLevel ASC;
+";
+
+                        List<string> approverEmails = new List<string>();
+
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@LoggedInUsername", UserSession.LoggedInUser);
+                            conn.Open();
+
+                            using (SqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string email = reader["Email"]?.ToString();
+                                    if (!string.IsNullOrEmpty(email))
+                                    {
+                                        approverEmails.Add(email);
+                                    }
+                                }
+                            }
+                        }
+
+                        string requesterName = "";
+                        string Jenisexpenses = "";
+                        DateTime requestDate = DateTime.MinValue;
+
+                        string query1 = @"SELECT Requester, ExpensesType, RequestDate 
+                  FROM tbl_MasterClaimForm 
+                  WHERE SerialNo = @SerialNo";
+
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        {
+                            conn.Open();
+
+                            using (SqlCommand cmd = new SqlCommand(query1, conn))
+                            {
+                                cmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                using (SqlDataReader reader = cmd.ExecuteReader())
+                                {
+                                    if (reader.Read())
+                                    {
+                                        requesterName = reader["Requester"]?.ToString();
+                                        Jenisexpenses = reader["ExpensesType"]?.ToString();
+                                        requestDate = reader["RequestDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["RequestDate"])
+                                            : DateTime.MinValue;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Only send email if we have approvers
+                        if (approverEmails.Count > 0)
+                        {
+                            string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                            string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+
+                            string body = $@"
+                                            <p>Dear Approver,</p>
+                                            <p>A new <strong>Miscellaneous Claim</strong> has been submitted by <strong>{requesterName}</strong> and is awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Claim Type:</strong> {Jenisexpenses}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                            foreach (var email in approverEmails)
+                            {
+                                SendEmail(email, subject, body);
+                            }
+
+                            MessageBox.Show(
+                                "Notification has been sent to the approver(s).",
+                                "Notification Sent",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information
+                            );
+                        }
                         Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
                         UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, expensesType, loggedInIndex, LoggedInBank, LoggedInAccNo);
                         addControls(ug);
@@ -656,7 +835,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -671,7 +849,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";

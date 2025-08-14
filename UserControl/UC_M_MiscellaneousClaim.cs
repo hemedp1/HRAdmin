@@ -20,7 +20,12 @@ using iTextRectangle = iTextSharp.text.Rectangle;
 using WinFormsApp = System.Windows.Forms.Application;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Reflection;
+using System.Net.Mail;
+using System.Net;
 using HRAdmin.Components;
+using static iTextSharp.text.pdf.PdfDocument;
+using System.Threading;
+using System.Drawing.Drawing2D;
 
 
 namespace HRAdmin.UserControl
@@ -65,6 +70,56 @@ namespace HRAdmin.UserControl
             this.Load += UC_Miscellaneous_Load;
             //MessageBox.Show($"loggedInName: {UserSession.loggedInName}");
             //MessageBox.Show($"LoggedInUser: {UserSession.LoggedInUser}");
+        }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
+
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -932,7 +987,8 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error retrieving user access level: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
+            ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  ACCOUNT                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            
             // Handle ACCOUNT department approvals
             if ((loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS") && hodApprovalStatus == "Approved")
             {
@@ -962,7 +1018,7 @@ namespace HRAdmin.UserControl
                     }
 
                     // Confirm Account2 approval
-                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account2?", "Confirm Account2 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account 1?", "Confirm Account2 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -976,8 +1032,8 @@ namespace HRAdmin.UserControl
                             con.Open();
                             string query = @"
                 UPDATE tbl_MasterClaimForm 
-                SET Account2ApprovalStatus = @Account2ApprovalStatus, 
-                    ApprovedByAccount2 = @ApprovedByAccount2, 
+                SET Account2ApprovalStatus = @Account2ApprovalStatus,
+                    ApprovedByAccount2 = @ApprovedByAccount2,
                     Account2ApprovedDate = @Account2ApprovedDate 
                 WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                             using (SqlCommand cmd = new SqlCommand(query, con))
@@ -990,8 +1046,92 @@ namespace HRAdmin.UserControl
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order approved successfully by Account2.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Order approved successfully by 1st-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+
+
+                                    ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  Send  Notification to Account 2 approver                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                    // Step 2: Get 2nd level Account approver(s)
+                                    List<string> accountApproverEmails = new List<string>();
+                                    string getApproversQuery = @"
+                                                                SELECT B.Email 
+                                                                FROM tbl_Users A
+                                                                LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                                LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                                                WHERE A.Department = 'ACCOUNT' AND C.AccessLevel = '1'";  // First level account approver
+
+                                    using (SqlCommand cmd2 = new SqlCommand(getApproversQuery, con))
+                                    using (SqlDataReader reader = cmd2.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            string email = reader["Email"]?.ToString();
+                                            if (!string.IsNullOrWhiteSpace(email))
+                                            {
+                                                accountApproverEmails.Add(email);
+                                            }
+                                        }
+                                    }
+
+                                    // Step 3: Get claim details for email body
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"SELECT Requester, ExpensesType, RequestDate 
+                                        FROM tbl_MasterClaimForm 
+                                        WHERE SerialNo = @SerialNo";
+
+                                    using (SqlCommand cmd3 = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        cmd3.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = cmd3.ExecuteReader())
+                                        {
+                                            if (reader.Read())
+                                            {
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+                                    
+
+                                    // Step 4: Send email to 1st level Account approvers   hemacc1@hosiden.com
+                                    if (accountApproverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+
+                                        string body = $@"
+                                            <p>Dear Approver,</p>
+                                            <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>1st-Level Account</strong> and is now awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {expenType}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                                        foreach (var email in accountApproverEmails)///hemacc2@hosiden.com
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show("Notification sent to 2nd-Level Accounts approver.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    }
+
                                 }
                                 else
                                 {
@@ -1028,7 +1168,7 @@ namespace HRAdmin.UserControl
                     }
 
                     // Confirm Account3 approval
-                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account3?", "Confirm Account3 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account 2?", "Confirm Account3 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -1056,8 +1196,92 @@ namespace HRAdmin.UserControl
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order approved successfully by Account3.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Order approved successfully by 2nd-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+
+                                    ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  Send  Notification to GA (Account HOD 2 approver                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                    // Step 2: Get 2nd level Account approver(s)
+                                    List<string> accountApproverEmails = new List<string>();
+                                    string getApproversQuery = @"
+                                                                SELECT A.Department, A.Username,  B.Email, C.AccessLevel
+                                                                FROM
+                                                                tbl_Users A
+                                                                LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                                LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+
+                                                                WHERE Department= 'GENERAL AFFAIRS'";  // last level account approver
+
+                                    using (SqlCommand cmd2 = new SqlCommand(getApproversQuery, con))
+                                    using (SqlDataReader reader = cmd2.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            string email = reader["Email"]?.ToString();
+                                            if (!string.IsNullOrWhiteSpace(email))
+                                            {
+                                                accountApproverEmails.Add(email);
+                                            }
+                                        }
+                                    }
+
+                                    // Step 3: Get claim details for email body
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"SELECT Requester, ExpensesType, RequestDate 
+                                        FROM tbl_MasterClaimForm 
+                                        WHERE SerialNo = @SerialNo";
+
+                                    using (SqlCommand cmd3 = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        cmd3.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = cmd3.ExecuteReader())
+                                        {
+                                            if (reader.Read())
+                                            {
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+
+
+                                    // Step 4: Send email to 1st level Account approvers   hemacc1@hosiden.com
+                                    if (accountApproverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+
+                                        string body = $@"
+                                            <p>Dear Approver,</p>
+                                            <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>2nd-Level Account</strong> and is now awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {expenType}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                                        foreach (var email in accountApproverEmails)///hemacc2@hosiden.com
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show("Notification sent to 3rd-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    }
                                 }
                                 else
                                 {
@@ -1077,31 +1301,28 @@ namespace HRAdmin.UserControl
                     // Check if Account3ApprovalStatus is Pending or Rejected
                     if (account3ApprovalStatus == "Pending")
                     {
-                        MessageBox.Show("This order cannot be approved by Account because Account3 approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This order cannot be approved by Account because 2nd-Level Account approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     if (account3ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order cannot be approved by Account because Account3 approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This order cannot be approved by Account because 2nd-Level Account approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
                     // Check if loggedInDepart is GENERAL AFFAIRS
                     if (loggedInDepart != "GENERAL AFFAIRS")
                     {
                         MessageBox.Show("Only users from GENERAL AFFAIRS can approve this order.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
                     // Check if already approved
                     if (accountApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order has already been approved by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This order has already been approved by 3rd-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
                     // Confirm Account approval
-                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as 3rd-Level Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -1131,6 +1352,83 @@ namespace HRAdmin.UserControl
                                 {
                                     MessageBox.Show("Order approved successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+
+                                    //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    string indexNum = "";
+                                    string userEmails = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"
+                                                                    SELECT A.Requester, A.ExpensesType, A.RequestDate, A.EmpNo, B.Email
+                                                                    FROM tbl_MasterClaimForm A
+                                                                    LEFT JOIN tbl_UserDetail B ON A.EmpNo = B.IndexNo
+                                                                    WHERE SerialNo = @SerialNo";
+                                    List<string> approverEmails = new List<string>();
+
+                                    using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        emailCmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                        {
+                                            while (reader.Read())
+                                            {
+                                                string email = reader["Email"]?.ToString();
+                                                if (!string.IsNullOrEmpty(email))
+                                                {
+                                                    approverEmails.Add(email);
+                                                }
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                indexNum = reader["EmpNo"]?.ToString();
+                                                userEmails = reader["Email"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+
+                                    if (approverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: Your Miscellaneous Claim Has Been Approved!";
+                                        string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    <p>Your <strong>Miscellaneous Claim</strong> has been <strong>approved</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+
+                    
+                                                <p><u>Claim Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Requester:</strong> {requesterName}</li>
+                                                    <li><strong>Claim Type:</strong> {expenType}</li>
+                                                    <li><strong>Serial No:</strong> {serialNo}</li>
+                                                    <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                                </ul>
+
+                                                    <p>The approved amount will be processed on the <strong>15th</strong> and <strong>30th</strong> of each month. If either date falls on a non-working day, payment will be made on the <strong>next</strong> or <strong>before</strong> working day.</p>
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                        foreach (var email in approverEmails)
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show(
+                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification Sent",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Information
+                                        );
+                                    }
+
+                                    //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
                                 }
                                 else
                                 {
@@ -1150,6 +1448,9 @@ namespace HRAdmin.UserControl
                     return;
                 }
             }
+
+            ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  HR & ADMIN                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
             // Handle HR & ADMIN department approval
             else if (loggedInDepart == "HR & ADMIN" && department != "ISO")
             {
@@ -1200,6 +1501,84 @@ namespace HRAdmin.UserControl
                                 {
                                     MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+                                    // Step 2: Get 1st level Account approver(s)
+                                    List<string> accountApproverEmails = new List<string>();
+                                    string getApproversQuery = @"
+                                                    SELECT B.Email 
+                                                    FROM tbl_Users A
+                                                    LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                    LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                                    WHERE A.Department = 'ACCOUNT' AND C.AccessLevel = '99'";  // First level account approver
+
+                                    using (SqlCommand cmd5 = new SqlCommand(getApproversQuery, con))
+                                    using (SqlDataReader reader = cmd5.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            string email = reader["Email"]?.ToString();
+                                            if (!string.IsNullOrWhiteSpace(email))
+                                            {
+                                                accountApproverEmails.Add(email);
+                                            }
+                                        }
+                                    }
+
+                                    // Step 3: Get claim details for email body
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"SELECT Requester, ExpensesType, RequestDate 
+                                        FROM tbl_MasterClaimForm 
+                                        WHERE SerialNo = @SerialNo";
+
+                                    using (SqlCommand cmd6 = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        cmd6.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = cmd6.ExecuteReader())
+                                        {
+                                            if (reader.Read())
+                                            {
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+
+                                    // Step 4: Send email to 1st level Account approvers
+                                    if (accountApproverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+
+                                        string body = $@"
+                                            <p>Dear Approver,</p>
+                                            <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HR & ADMIN</strong> and is now awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {expenType}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                                        foreach (var email in accountApproverEmails)///hemacc2@hosiden.com
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show("Notification sent to First-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    }
                                 }
                                 else
                                 {
@@ -1266,6 +1645,9 @@ namespace HRAdmin.UserControl
                     MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
+            ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  HOD                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
             else
             {
                 // Check if the user is trying to approve their own claim
@@ -1297,19 +1679,21 @@ namespace HRAdmin.UserControl
                     return;
                 }
 
-                // Update the database for HOD approval
                 try
                 {
                     using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                     {
                         con.Open();
-                        string query = @"
+
+                        // Step 1: Update the HOD approval status
+                        string updateQuery = @"
             UPDATE tbl_MasterClaimForm 
             SET HODApprovalStatus = @HODApprovalStatus, 
                 ApprovedByHOD = @ApprovedByHOD, 
                 HODApprovedDate = @HODApprovedDate 
             WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
-                        using (SqlCommand cmd = new SqlCommand(query, con))
+
+                        using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
                             cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
@@ -1317,22 +1701,189 @@ namespace HRAdmin.UserControl
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                             int rowsAffected = cmd.ExecuteNonQuery();
-                            if (rowsAffected > 0)
+
+                            if (rowsAffected <= 0)
                             {
-                                MessageBox.Show("Order approved successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                LoadData();
-                            }
-                            else
-                            {
-                                MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Failed to approve the claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
                             }
                         }
+
+                        MessageBox.Show("Miscellaneous claim approved successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadData();
+
+                        //////////////////////// +++++++++++++++++++++++++++++++++++++++++++++++++++++           Email Noti HOD to Acc           +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+                        if (expensesType == "Work")
+                        {
+                            // Step 2: Get 1st level Account approver(s)
+                            List<string> accountApproverEmails = new List<string>();
+                            string getApproversQuery = @"
+                                                    SELECT B.Email 
+                                                    FROM tbl_Users A
+                                                    LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                    LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                                    WHERE A.Department = 'ACCOUNT' AND C.AccessLevel = '99'";  // First level account approver
+
+                            using (SqlCommand cmd = new SqlCommand(getApproversQuery, con))
+                            using (SqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string email = reader["Email"]?.ToString();
+                                    if (!string.IsNullOrWhiteSpace(email))
+                                    {
+                                        accountApproverEmails.Add(email);
+                                    }
+                                }
+                            }
+
+                            // Step 3: Get claim details for email body
+                            string requesterName = "";
+                            string expenType = "";
+                            DateTime requestDate = DateTime.MinValue;
+
+                            string getClaimDetailsQuery = @"SELECT Requester, ExpensesType, RequestDate 
+                                        FROM tbl_MasterClaimForm 
+                                        WHERE SerialNo = @SerialNo";
+
+                            using (SqlCommand cmd = new SqlCommand(getClaimDetailsQuery, con))
+                            {
+                                cmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                using (SqlDataReader reader = cmd.ExecuteReader())
+                                {
+                                    if (reader.Read())
+                                    {
+                                        requesterName = reader["Requester"]?.ToString();
+                                        expenType = reader["ExpensesType"]?.ToString();
+                                        requestDate = reader["RequestDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["RequestDate"])
+                                            : DateTime.MinValue;
+                                    }
+                                }
+                            }
+
+                            // Step 4: Send email to 1st level Account approvers
+                            if (accountApproverEmails.Count > 0)
+                            {
+                                string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+
+                                string body = $@"
+                                            <p>Dear Approver,</p>
+                                            <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HOD</strong> and is now awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {expenType}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                                foreach (var email in accountApproverEmails)///hemacc2@hosiden.com
+                                {
+                                    SendEmail(email, subject, body);
+                                }
+
+                                MessageBox.Show("Notification sent to First-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                        else if (expensesType == "Benefit")
+                        {
+                            // Step 2: Get 1st level Account approver(s)
+                            List<string> accountApproverEmails = new List<string>();
+                            string getApproversQuery = @"
+                                                        SELECT A.Department, A.Username, B.Email, C.AccessLevel
+                                                        FROM tbl_Users A
+                                                        LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                        LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                                        WHERE Department = 'HR & ADMIN' AND AccessLevel > 1 AND AccessLevel < 7";   // First level account approver normala@hosiden.com.my  NurSyahir@hosiden.com.my
+
+                            using (SqlCommand cmd = new SqlCommand(getApproversQuery, con))
+                            using (SqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string email = reader["Email"]?.ToString();
+                                    if (!string.IsNullOrWhiteSpace(email))
+                                    {
+                                        accountApproverEmails.Add(email);
+                                    }
+                                }
+                            }
+
+                            // Step 3: Get claim details for email body
+                            string requesterName = "";
+                            string expenType = "";
+                            DateTime requestDate = DateTime.MinValue;
+
+                            string getClaimDetailsQuery = @"SELECT Requester, ExpensesType, RequestDate 
+                                        FROM tbl_MasterClaimForm 
+                                        WHERE SerialNo = @SerialNo";
+
+                            using (SqlCommand cmd = new SqlCommand(getClaimDetailsQuery, con))
+                            {
+                                cmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                using (SqlDataReader reader = cmd.ExecuteReader())
+                                {
+                                    if (reader.Read())
+                                    {
+                                        requesterName = reader["Requester"]?.ToString();
+                                        expenType = reader["ExpensesType"]?.ToString();
+                                        requestDate = reader["RequestDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["RequestDate"])
+                                            : DateTime.MinValue;
+                                    }
+                                }
+                            }
+
+                            // Step 4: Send email to 1st level Account approvers
+                            if (accountApproverEmails.Count > 0)
+                            {
+                                string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+
+                                string body = $@"
+                                            <p>Dear Approver,</p>
+                                            <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HOD</strong> and is now awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {expenType}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                                foreach (var email in accountApproverEmails)///hemacc2@hosiden.com
+                                {
+                                    SendEmail(email, subject, body);
+                                }
+
+                                MessageBox.Show("Notification sent to HR & ADMIN approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+
+                        
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error approving claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+
             }
         }
         private void btnReject_Click(object sender, EventArgs e)
@@ -1379,10 +1930,10 @@ namespace HRAdmin.UserControl
                 {
                     con.Open();
                     string query = @"
-SELECT ul.AccessLevel 
-FROM tbl_UsersLevel ul
-LEFT JOIN tbl_Users u ON ul.TitlePosition = u.Position
-WHERE u.Name1 = @Name1";
+                                    SELECT ul.AccessLevel 
+                                    FROM tbl_UsersLevel ul
+                                    LEFT JOIN tbl_Users u ON ul.TitlePosition = u.Position
+                                    WHERE u.Name1 = @Name1";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Name1", LoggedInUser);
@@ -1463,6 +2014,84 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                 {
                                     MessageBox.Show("Order rejected successfully by Account2.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+                                    //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    string indexNum = "";
+                                    string userEmails = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"
+                                                                    SELECT A.Requester, A.ExpensesType, A.RequestDate, A.EmpNo, B.Email
+                                                                    FROM tbl_MasterClaimForm A
+                                                                    LEFT JOIN tbl_UserDetail B ON A.EmpNo = B.IndexNo
+                                                                    WHERE SerialNo = @SerialNo";
+                                    List<string> approverEmails = new List<string>();
+
+                                    using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        emailCmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                        {
+                                            while (reader.Read())
+                                            {
+                                                string email = reader["Email"]?.ToString();
+                                                if (!string.IsNullOrEmpty(email))
+                                                {
+                                                    approverEmails.Add(email);
+                                                }
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                indexNum = reader["EmpNo"]?.ToString();
+                                                userEmails = reader["Email"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+
+                                    if (approverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: Your Miscellaneous Claim Has Been Rejected!";
+                                        string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    <p>We regret to inform you that your <strong>Miscellaneous Claim</strong> 
+                                                    (submitted on <strong>{formattedDate}</strong>) has been <strong>rejected</strong> 
+                                                    by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                    
+                                                <p><u>Claim Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Requester:</strong> {requesterName}</li>
+                                                    <li><strong>Claim Type:</strong> {expenType}</li>
+                                                    <li><strong>Serial No:</strong> {serialNo}</li>
+                                                    <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                                </ul>
+
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+   
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                        foreach (var email in approverEmails)
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show(
+                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification Sent",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Information
+                                        );
+                                    }
+
+                                    //=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                                 }
                                 else
                                 {
@@ -1514,11 +2143,11 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                         {
                             con.Open();
                             string query = @"
-UPDATE tbl_MasterClaimForm 
-SET Account3ApprovalStatus = @Account3ApprovalStatus, 
-    ApprovedByAccount3 = @ApprovedByAccount3, 
-    Account3ApprovedDate = @Account3ApprovedDate 
-WHERE SerialNo = @SerialNo AND Account3ApprovalStatus = 'Pending'";
+                                            UPDATE tbl_MasterClaimForm 
+                                            SET Account3ApprovalStatus = @Account3ApprovalStatus, 
+                                                ApprovedByAccount3 = @ApprovedByAccount3, 
+                                                Account3ApprovedDate = @Account3ApprovedDate 
+                                            WHERE SerialNo = @SerialNo AND Account3ApprovalStatus = 'Pending'";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account3ApprovalStatus", "Rejected");
@@ -1531,6 +2160,85 @@ WHERE SerialNo = @SerialNo AND Account3ApprovalStatus = 'Pending'";
                                 {
                                     MessageBox.Show("Order rejected successfully by Account3.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+
+//=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    string indexNum = "";
+                                    string userEmails = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"
+                                                                    SELECT A.Requester, A.ExpensesType, A.RequestDate, A.EmpNo, B.Email
+                                                                    FROM tbl_MasterClaimForm A
+                                                                    LEFT JOIN tbl_UserDetail B ON A.EmpNo = B.IndexNo
+                                                                    WHERE SerialNo = @SerialNo";
+                                    List<string> approverEmails = new List<string>();
+
+                                    using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        emailCmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                        {
+                                            while (reader.Read())
+                                            {
+                                                string email = reader["Email"]?.ToString();
+                                                if (!string.IsNullOrEmpty(email))
+                                                {
+                                                    approverEmails.Add(email);
+                                                }
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                indexNum = reader["EmpNo"]?.ToString();
+                                                userEmails = reader["Email"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+
+                                    if (approverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: Your Miscellaneous Claim Has Been Rejected!";
+                                        string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    <p>We regret to inform you that your <strong>Miscellaneous Claim</strong> 
+                                                    (submitted on <strong>{formattedDate}</strong>) has been <strong>rejected</strong> 
+                                                    by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                    
+                                                <p><u>Claim Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Requester:</strong> {requesterName}</li>
+                                                    <li><strong>Claim Type:</strong> {expenType}</li>
+                                                    <li><strong>Serial No:</strong> {serialNo}</li>
+                                                    <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                                </ul>
+
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+   
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                        foreach (var email in approverEmails)
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show(
+                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification Sent",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Information
+                                        );
+                                    }
+
+//=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                                 }
                                 else
                                 {
@@ -1590,11 +2298,11 @@ WHERE SerialNo = @SerialNo AND Account3ApprovalStatus = 'Pending'";
                         {
                             con.Open();
                             string query = @"
-UPDATE tbl_MasterClaimForm 
-SET AccountApprovalStatus = @AccountApprovalStatus, 
-    ApprovedByAccount = @ApprovedByAccount, 
-    AccountApprovedDate = @AccountApprovedDate 
-WHERE SerialNo = @SerialNo AND AccountApprovalStatus = 'Pending'";
+                                            UPDATE tbl_MasterClaimForm 
+                                            SET AccountApprovalStatus = @AccountApprovalStatus, 
+                                                ApprovedByAccount = @ApprovedByAccount, 
+                                                AccountApprovedDate = @AccountApprovedDate 
+                                            WHERE SerialNo = @SerialNo AND AccountApprovalStatus = 'Pending'";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Rejected");
@@ -1607,6 +2315,84 @@ WHERE SerialNo = @SerialNo AND AccountApprovalStatus = 'Pending'";
                                 {
                                     MessageBox.Show("Order rejected successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+                                    //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    string indexNum = "";
+                                    string userEmails = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"
+                                                                    SELECT A.Requester, A.ExpensesType, A.RequestDate, A.EmpNo, B.Email
+                                                                    FROM tbl_MasterClaimForm A
+                                                                    LEFT JOIN tbl_UserDetail B ON A.EmpNo = B.IndexNo
+                                                                    WHERE SerialNo = @SerialNo";
+                                    List<string> approverEmails = new List<string>();
+
+                                    using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        emailCmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                        {
+                                            while (reader.Read())
+                                            {
+                                                string email = reader["Email"]?.ToString();
+                                                if (!string.IsNullOrEmpty(email))
+                                                {
+                                                    approverEmails.Add(email);
+                                                }
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                indexNum = reader["EmpNo"]?.ToString();
+                                                userEmails = reader["Email"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+
+                                    if (approverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: Your Miscellaneous Claim Has Been Rejected!";
+                                        string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    <p>We regret to inform you that your <strong>Miscellaneous Claim</strong> 
+                                                    (submitted on <strong>{formattedDate}</strong>) has been <strong>rejected</strong> 
+                                                    by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                    
+                                                <p><u>Claim Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Requester:</strong> {requesterName}</li>
+                                                    <li><strong>Claim Type:</strong> {expenType}</li>
+                                                    <li><strong>Serial No:</strong> {serialNo}</li>
+                                                    <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                                </ul>
+
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+   
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                        foreach (var email in approverEmails)
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show(
+                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification Sent",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Information
+                                        );
+                                    }
+
+                                    //=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                                 }
                                 else
                                 {
@@ -1697,6 +2483,84 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatu
                                 {
                                     MessageBox.Show("Order rejected successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
+                                    //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                    string requesterName = "";
+                                    string expenType = "";
+                                    string indexNum = "";
+                                    string userEmails = "";
+                                    DateTime requestDate = DateTime.MinValue;
+
+                                    string getClaimDetailsQuery = @"
+                                                                    SELECT A.Requester, A.ExpensesType, A.RequestDate, A.EmpNo, B.Email
+                                                                    FROM tbl_MasterClaimForm A
+                                                                    LEFT JOIN tbl_UserDetail B ON A.EmpNo = B.IndexNo
+                                                                    WHERE SerialNo = @SerialNo";
+                                    List<string> approverEmails = new List<string>();
+
+                                    using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                                    {
+                                        emailCmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                        using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                        {
+                                            while (reader.Read())
+                                            {
+                                                string email = reader["Email"]?.ToString();
+                                                if (!string.IsNullOrEmpty(email))
+                                                {
+                                                    approverEmails.Add(email);
+                                                }
+                                                requesterName = reader["Requester"]?.ToString();
+                                                expenType = reader["ExpensesType"]?.ToString();
+                                                indexNum = reader["EmpNo"]?.ToString();
+                                                userEmails = reader["Email"]?.ToString();
+                                                requestDate = reader["RequestDate"] != DBNull.Value
+                                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                                    : DateTime.MinValue;
+                                            }
+                                        }
+                                    }
+
+                                    if (approverEmails.Count > 0)
+                                    {
+                                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                        string subject = "HEM Admin Accessibility Notification: Your Miscellaneous Claim Has Been Rejected!";
+                                        string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    <p>We regret to inform you that your <strong>Miscellaneous Claim</strong> 
+                                                    (submitted on <strong>{formattedDate}</strong>) has been <strong>rejected</strong> 
+                                                    by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                    
+                                                <p><u>Claim Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Requester:</strong> {requesterName}</li>
+                                                    <li><strong>Claim Type:</strong> {expenType}</li>
+                                                    <li><strong>Serial No:</strong> {serialNo}</li>
+                                                    <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                                </ul>
+
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+   
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                        foreach (var email in approverEmails)
+                                        {
+                                            SendEmail(email, subject, body);
+                                        }
+
+                                        MessageBox.Show(
+                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification Sent",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Information
+                                        );
+                                    }
+
+                                    //=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                                 }
                                 else
                                 {
@@ -1832,6 +2696,84 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                             {
                                 MessageBox.Show("Order rejected successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 LoadData();
+                                //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                string requesterName = "";
+                                string expenType = "";
+                                string indexNum = "";
+                                string userEmails = "";
+                                DateTime requestDate = DateTime.MinValue;
+
+                                string getClaimDetailsQuery = @"
+                                                                    SELECT A.Requester, A.ExpensesType, A.RequestDate, A.EmpNo, B.Email
+                                                                    FROM tbl_MasterClaimForm A
+                                                                    LEFT JOIN tbl_UserDetail B ON A.EmpNo = B.IndexNo
+                                                                    WHERE SerialNo = @SerialNo";
+                                List<string> approverEmails = new List<string>();
+
+                                using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                                {
+                                    emailCmd.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                    using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            string email = reader["Email"]?.ToString();
+                                            if (!string.IsNullOrEmpty(email))
+                                            {
+                                                approverEmails.Add(email);
+                                            }
+                                            requesterName = reader["Requester"]?.ToString();
+                                            expenType = reader["ExpensesType"]?.ToString();
+                                            indexNum = reader["EmpNo"]?.ToString();
+                                            userEmails = reader["Email"]?.ToString();
+                                            requestDate = reader["RequestDate"] != DBNull.Value
+                                                ? Convert.ToDateTime(reader["RequestDate"])
+                                                : DateTime.MinValue;
+                                        }
+                                    }
+                                }
+
+                                if (approverEmails.Count > 0)
+                                {
+                                    string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                    string subject = "HEM Admin Accessibility Notification: Your Miscellaneous Claim Has Been Rejected!";
+                                    string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    <p>We regret to inform you that your <strong>Miscellaneous Claim</strong> 
+                                                    (submitted on <strong>{formattedDate}</strong>) has been <strong>rejected</strong> 
+                                                    by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                    
+                                                <p><u>Claim Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Requester:</strong> {requesterName}</li>
+                                                    <li><strong>Claim Type:</strong> {expenType}</li>
+                                                    <li><strong>Serial No:</strong> {serialNo}</li>
+                                                    <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                                </ul>
+
+                                                <p>For more details, you may reach out to Mr./Ms. <strong>{UserSession.loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+   
+
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                    foreach (var email in approverEmails)
+                                    {
+                                        SendEmail(email, subject, body);
+                                    }
+
+                                    MessageBox.Show(
+                                        "Notification has been sent to the requester confirming the claim status.",
+                                        "Notification Sent",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information
+                                    );
+                                }
+
+                                //=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                             }
                             else
                             {
@@ -2233,7 +3175,6 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                 return null;
             }
         }
-
         // Custom page event handler for adding watermark on all pages
         public class WatermarkPageEvent : PdfPageEventHelper
         {
