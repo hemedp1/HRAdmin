@@ -96,16 +96,16 @@ namespace HRAdmin.UserControl
                                         //MessageBox.Show($"111");
                                         Form_Home.sharedButton4.Visible = true;
                                         Form_Home.sharedButton5.Visible = true;
+                                        Form_Home.sharedbtnVisitor.Visible = true;
+                                        Form_Home.sharedbtnWithdrawEntry.Visible = true;
+                                        Form_Home.sharedbtnNewVisitor.Visible = true;
+                                        Form_Home.sharedbtnUpdate.Visible = true;
                                     }
                                     else
                                     {
                              
                                         //.Show($"222");
                                     }
-                                    Form_Home.sharedbtnVisitor.Visible = true;
-                                    Form_Home.sharedbtnWithdrawEntry.Visible = true;
-                                    Form_Home.sharedbtnNewVisitor.Visible = true;
-                                    Form_Home.sharedbtnUpdate.Visible = true;
                                     Form_Home.sharedButtonbtnApp.Visible = true;
                                     Form_Home.sharedButtonBC.Visible = true;
                                     Form_Home.sharedButtonbtnWDcar.Visible = true;
