@@ -512,20 +512,20 @@ namespace HRAdmin.UserControl
             DateTime? startDate = dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value;
             DateTime? endDate = dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value;
 
-            Debug.WriteLine($"cmbDepart selected: {selectedDepartment}");
+            //Debug.WriteLine($"cmbDepart selected: {selectedDepartment}");
 
             // Update requester combo box based on selected department
             if (selectedDepartment == "All Departments" || string.IsNullOrEmpty(selectedDepartment))
             {
                 selectedDepartment = null;
                 LoadUsernames(); // Load all usernames
-                Debug.WriteLine("Loading all usernames for 'All Departments'.");
+               // Debug.WriteLine("Loading all usernames for 'All Departments'.");
             }
             else
             {
                 // Load usernames for the selected department
                 LoadUsernamesByDepartment(selectedDepartment);
-                Debug.WriteLine($"Loading usernames for department: {selectedDepartment}");
+               // Debug.WriteLine($"Loading usernames for department: {selectedDepartment}");
             }
 
             // Reset requester selection to "All Users" to avoid invalid selections

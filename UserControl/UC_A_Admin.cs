@@ -82,20 +82,25 @@ namespace HRAdmin.UserControl
                                 string MA = reader["MA"].ToString();
                                 int accessLevel = Convert.ToInt32(reader["AccessLevel"]);
 
+                                //MessageBox.Show($"AA.: {AA}");
+                                //MessageBox.Show($"MA: {MA}");
+                                //MessageBox.Show($"UserSession.loggedInDepart: {UserSession.loggedInDepart}");
+                                //MessageBox.Show($"AccessLevel: {accessLevel}");
 
-                                if (AA == "1")
+                                if (AA == "1" || AA == "2")
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = true;
                                     Form_Home.sharedbuttonInspect.Visible = true;
-                                    if (accessLevel > 0 && loggedInDepart == "HR & Admin")
+                                    if (accessLevel >= 0 && UserSession.loggedInDepart == "HR & ADMIN")
                                     {
+                                        //MessageBox.Show($"111");
                                         Form_Home.sharedButton4.Visible = true;
                                         Form_Home.sharedButton5.Visible = true;
                                     }
                                     else
                                     {
-                                        Form_Home.sharedButton4.Visible = false;
-                                        Form_Home.sharedButton5.Visible = false;
+                             
+                                        //.Show($"222");
                                     }
                                     Form_Home.sharedbtnVisitor.Visible = true;
                                     Form_Home.sharedbtnWithdrawEntry.Visible = true;
@@ -105,22 +110,25 @@ namespace HRAdmin.UserControl
                                     Form_Home.sharedButtonBC.Visible = true;
                                     Form_Home.sharedButtonbtnWDcar.Visible = true;
                                     Form_Home.sharedbtn_Accident.Visible = true;
+                                    //MessageBox.Show($"333");
                                 }
-                                else if (MA == "2")
+                                else if (MA == "2")   // && AA == "0"
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = true;
-                                    Form_Home.sharedButton4.Visible = true;
-                                    Form_Home.sharedButton5.Visible = true;
+                                    Form_Home.sharedButton4.Visible = false;
+                                    Form_Home.sharedButton5.Visible = false;
                                     Form_Home.sharedbtnVisitor.Visible = false;
                                     Form_Home.sharedbtnWithdrawEntry.Visible = false;
                                     Form_Home.sharedbtnNewVisitor.Visible = false;
                                     Form_Home.sharedbtnUpdate.Visible = false;
                                     Form_Home.sharedbtnMCReport.Visible = false; // Car Booking
+                                    //MessageBox.Show($"444");
                                 }
                                 else
                                 {
+                                    //MessageBox.Show($"555");
                                     Form_Home.sharedButtonbtnApp.Visible = false;
-                                    if (accessLevel > 0 && loggedInDepart == "HR & Admin")
+                                    if (accessLevel > 0 && UserSession.loggedInDepart == "HR & Admin")
                                     {
                                         Form_Home.sharedButton4.Visible = true;
                                         Form_Home.sharedButton5.Visible = true;
