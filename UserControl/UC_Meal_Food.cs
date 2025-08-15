@@ -769,6 +769,12 @@ namespace HRAdmin.UserControl
                 return;
             }
 
+            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
+            {
+                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             // Check if the order has been checked
             if (string.IsNullOrEmpty(checkStatus) || checkStatus != "Checked")
             {
@@ -780,6 +786,18 @@ namespace HRAdmin.UserControl
             if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
             {
                 MessageBox.Show("This order has already been approved.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
+            {
+                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Rejected")
+            {
+                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -909,6 +927,12 @@ namespace HRAdmin.UserControl
                     }
 
                     // Check if already rejected or approved
+                    if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
+                    {
+                        MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     if (currentStatus == "Rejected")
                     {
                         MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1029,7 +1053,7 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            if (!isHRAdmin && requesterID != loggedInUser)
+            if (requesterID != loggedInUser)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -1150,9 +1174,22 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("This order has already been checked.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
             {
                 MessageBox.Show("This order has already been approved and cannot be checked again.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
+            {
+                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Rejected")
+            {
+                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1532,10 +1569,17 @@ namespace HRAdmin.UserControl
             DataGridViewRow selectedRow = selectedCell.OwningRow;
             string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
             string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
+            string requesterID = selectedRow.Cells["RequesterID"].Value?.ToString();
 
             if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource))
             {
                 MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (requesterID != UserSession.LoggedInUser && UserSession.loggedInDepart != "HR & ADMIN")
+            {
+                MessageBox.Show("You can only view your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
