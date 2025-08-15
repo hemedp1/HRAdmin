@@ -957,10 +957,10 @@ namespace HRAdmin.UserControl
                 {
                     con.Open();
                     string query = @"
-        SELECT ul.AccessLevel 
-        FROM tbl_UsersLevel ul
-        LEFT JOIN tbl_Users u ON ul.TitlePosition = u.Position
-        WHERE u.Name1 = @Name1";
+                                    SELECT ul.AccessLevel 
+                                    FROM tbl_UsersLevel ul
+                                    LEFT JOIN tbl_Users u ON ul.TitlePosition = u.Position
+                                    WHERE u.Name1 = @Name1";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Name1", LoggedInUser);
@@ -985,13 +985,27 @@ namespace HRAdmin.UserControl
             ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  ACCOUNT                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             
             // Handle ACCOUNT department approvals
-            if ((loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS") && hodApprovalStatus == "Approved")
+            if (loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS") // && hodApprovalStatus == "Approved")
             {
                 // Handle Account2ApprovalStatus (AccessLevel 0)
                 if (userAccessLevel == 99)
                 {
                     // Check if HODApprovalStatus is Pending or Rejected for Work expenses
                     if (expensesType == "Work")
+                    {
+                        if (hodApprovalStatus == "Pending")
+                        {
+                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (hodApprovalStatus == "Rejected")
+                        {
+                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
+                    if (expensesType == "Benefit")
                     {
                         if (hodApprovalStatus == "Pending")
                         {
