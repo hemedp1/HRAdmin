@@ -716,7 +716,7 @@ namespace HRAdmin.UserControl
                                 byte[] imgData = (byte[])reader["Attachment"];
                                 pictureBox1.Image = ByteArrayToImage(imgData); 
                                 pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // Adjust image display
-                                //txtRemarksAdmin.Text = reader["Explanation"]?.ToString();
+                                txtRemarksAdmin.Text = reader["Remarks"]?.ToString();
                                 reader.Close();
                                 string query1 = "SELECT AA, MA, AC FROM tbl_Users WHERE Username = @Username";
                                 using (SqlCommand cmd1 = new SqlCommand(query1, con))
@@ -1017,23 +1017,42 @@ namespace HRAdmin.UserControl
         private void btnChecked_Click(object sender, EventArgs e)
         {
             string selectedDate = dTDay.Value.Date.ToString("yyyy-MM-dd");
-            DialogResult result = MessageBox.Show("Are you sure you want to verify this accident record?", "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (result == DialogResult.Yes)
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
             {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                con.Open();
+
+                string checkQuery = @"SELECT CheckStatus FROM tbl_AccidentCar WHERE CAST(DateReport AS DATE) = @Date 
+                                    AND ReportID = @ReportID";
+
+                using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
                 {
-                    con.Open();
+                    checkCmd.Parameters.Add("@Date", SqlDbType.Date).Value = selectedDate;
+                    checkCmd.Parameters.Add("@ReportID", SqlDbType.VarChar).Value = cmnRepID.Text.Trim();
+                    object statusresult = checkCmd.ExecuteScalar();
+                    string statusCheck = statusresult?.ToString();
+                    //MessageBox.Show($"statusresult : {statusCheck}");
+                    if (statusCheck == "Checked")
+                    {
+                        MessageBox.Show("This report has already been checked.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
+                DialogResult result = MessageBox.Show("Are you sure you want to verify this accident record?", "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
                     string query = @"UPDATE tbl_AccidentCar 
-                                   SET 
-                                      DateCheck = @DateCheck, 
-                                      CheckStatus = 'Checked', 
-                                      CheckedBy = @CheckedBy, 
-                                      Remarks = @Remarks,
-                                      CheckedByDepartment = @CheckedByDepartment
-                                   WHERE 
-                                      CAST(DateReport AS DATE) = @Date 
-                                      AND ReportID = @ReportID";
+                                    SET 
+                                        DateCheck = @DateCheck, 
+                                        CheckStatus = 'Checked', 
+                                        CheckedBy = @CheckedBy, 
+                                        Remarks = @Remarks,
+                                        CheckedByDepartment = @CheckedByDepartment
+                                    WHERE 
+                                        CAST(DateReport AS DATE) = @Date 
+                                        AND ReportID = @ReportID";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -1044,13 +1063,14 @@ namespace HRAdmin.UserControl
                         cmd.Parameters.Add("@ReportID", SqlDbType.VarChar).Value = cmnRepID.Text.Trim();
                         cmd.Parameters.Add("@Remarks", SqlDbType.VarChar).Value = txtRemarksAdmin.Text.Trim();
 
-                        
+
                         cmd.ExecuteNonQuery();
 
                         MessageBox.Show("Accident record verified successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
+            
         }
         private void btnApp_Admin_Click(object sender, EventArgs e)
         {
@@ -1061,22 +1081,39 @@ namespace HRAdmin.UserControl
                 {
                     con.Open();
 
-                    string checkQuery = @"SELECT CheckStatus FROM tbl_AccidentCar WHERE CAST(DateReport AS DATE) = @Date 
+                    string checkQuery = @"SELECT CheckStatus, ApproveStatus FROM tbl_AccidentCar WHERE CAST(DateReport AS DATE) = @Date 
                                         AND ReportID = @ReportID";
+
+                    string statusCheck = null;
+                    string approveStatus = null;
 
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
                     {
                         checkCmd.Parameters.Add("@Date", SqlDbType.Date).Value = selectedDate;
                         checkCmd.Parameters.Add("@ReportID", SqlDbType.VarChar).Value = cmnRepID.Text.Trim();
-                        object statusresult = checkCmd.ExecuteScalar();
-                        string statusCheck = statusresult?.ToString();
-                        //MessageBox.Show($"statusresult : {statusCheck}");
-                        if (string.IsNullOrEmpty(statusCheck) || statusCheck != "Checked")
+
+                        using (SqlDataReader reader = checkCmd.ExecuteReader())
                         {
-                            MessageBox.Show("Cannot proceed. Status Check must be 'Checked'.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
+                            if (reader.Read())
+                            {
+                                statusCheck = reader["CheckStatus"]?.ToString();
+                                approveStatus = reader["ApproveStatus"]?.ToString();
+                            }
                         }
                     }
+
+                    if (string.IsNullOrEmpty(statusCheck) || statusCheck != "Checked")
+                    {
+                        MessageBox.Show("Cannot proceed. Status Check must be 'Checked'.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (approveStatus == "Approve")
+                    {
+                        MessageBox.Show("This report has already been Approved.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
 
                     DialogResult result = MessageBox.Show("Are you sure you want to verify this accident record?", "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -1317,12 +1354,10 @@ namespace HRAdmin.UserControl
         {
             loadListNotApp(); // Refresh when driver changes
         }
-
         private void dtp_filter_ValueChanged(object sender, EventArgs e)
         {
             loadListNotApp();
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
 

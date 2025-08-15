@@ -32,8 +32,50 @@ namespace HRAdmin.UserControl
 
 
         }
+        private void LoadCar()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    string query = @"
+                SELECT TOP 1 AssignedCar
+                FROM tbl_CarBookings
+                WHERE DriverName = @DriverName
+                  AND Depart = @Depart
+                  AND Status = 'Approved'
+                  AND Acknowledgement IS NULL
+                  AND CompleteUseStatus IS NULL
+                  AND CAST(RequestDate AS DATE) = CAST(GETDATE() AS DATE)";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@DriverName", loggedInUser);
+                        cmd.Parameters.AddWithValue("@Depart", loggedInDepart);
+
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            car = result.ToString();
+                        }
+                        else
+                        {
+                            //label1.Text = "No car assigned.";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading Assigned Car: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void btnAcknowledge_Click(object sender, EventArgs e)
         {
+
             if (dataGridView2.CurrentRow == null)
             {
                 MessageBox.Show("No row selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -43,6 +85,8 @@ namespace HRAdmin.UserControl
             int rowIndex = dataGridView2.CurrentRow.Index;
             string IDStr = dataGridView2.Rows[rowIndex].Cells[0]?.Value?.ToString();
             string selectedPerson = dataGridView2.Rows[rowIndex].Cells[1]?.Value?.ToString();
+            string car = dataGridView2.Rows[rowIndex].Cells[15]?.Value?.ToString();
+
 
             if (string.IsNullOrEmpty(selectedPerson) || string.IsNullOrEmpty(IDStr))
             {
@@ -99,47 +143,7 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("An error occurred while acknowledging the terms and condition: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void LoadCar()
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
-                {
-                    con.Open();
 
-                    string query = @"
-                SELECT TOP 1 AssignedCar
-                FROM tbl_CarBookings
-                WHERE DriverName = @DriverName
-                  AND Depart = @Depart
-                  AND Status = 'Approved'
-                  AND Acknowledgement IS NULL
-                  AND CompleteUseStatus IS NULL
-                  AND CAST(RequestDate AS DATE) = CAST(GETDATE() AS DATE)"; 
-
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@DriverName", loggedInUser);
-                        cmd.Parameters.AddWithValue("@Depart", loggedInDepart);
-
-                        object result = cmd.ExecuteScalar();
-
-                        if (result != null && result != DBNull.Value)
-                        {
-                            car = result.ToString();
-                        }
-                        else
-                        {
-                            //label1.Text = "No car assigned.";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error loading Assigned Car: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
         private void loadUserData()
         {
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
