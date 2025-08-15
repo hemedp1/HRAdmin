@@ -39,7 +39,7 @@ namespace HRAdmin.UserControl
             cmbPackage.Items.Clear();
             cmbStyle.Items.Clear();
             cmbPackage.Items.AddRange(new string[] { "A", "B", "C" });
-            cmbMeal.Items.AddRange(new string[] { "BREAKFAST", "LUNCH", "TEA" });
+            cmbMeal.Items.AddRange(new string[] { "Breakfast", "Lunch", "Tea" });
             cmbStyle.Items.AddRange(new string[] { "Buffet", "Packing" });
 
             // Set default selections to load initial data
@@ -166,8 +166,31 @@ namespace HRAdmin.UserControl
             UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, DeliveryTime, loggedInUser, loggedInDepart);
             addControls(ug);
         }
+        private void cmbPackage_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbPackage.SelectedItem != null && cmbMeal.SelectedItem != null && cmbStyle.SelectedItem != null)
+            {
+                LoadMenuItems(cmbPackage.SelectedItem.ToString(), cmbMeal.SelectedItem.ToString(), cmbStyle.SelectedItem.ToString());
+            }
+        }
 
-        private void btnSubmit_Click(object sender, EventArgs e)
+        private void cmbMeal_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbPackage.SelectedItem != null && cmbMeal.SelectedItem != null && cmbStyle.SelectedItem != null)
+            {
+                LoadMenuItems(cmbPackage.SelectedItem.ToString(), cmbMeal.SelectedItem.ToString(), cmbStyle.SelectedItem.ToString());
+            }
+        }
+
+        private void cmbStyle_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbPackage.SelectedItem != null && cmbMeal.SelectedItem != null && cmbStyle.SelectedItem != null)
+            {
+                LoadMenuItems(cmbPackage.SelectedItem.ToString(), cmbMeal.SelectedItem.ToString(), cmbStyle.SelectedItem.ToString());
+            }
+        }
+
+        private void btnSubmit_Click_1(object sender, EventArgs e)
         {
             try
             {
@@ -218,30 +241,6 @@ namespace HRAdmin.UserControl
             catch (Exception ex)
             {
                 MessageBox.Show($"Error updating data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void cmbPackage_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmbPackage.SelectedItem != null && cmbMeal.SelectedItem != null && cmbStyle.SelectedItem != null)
-            {
-                LoadMenuItems(cmbPackage.SelectedItem.ToString(), cmbMeal.SelectedItem.ToString(), cmbStyle.SelectedItem.ToString());
-            }
-        }
-
-        private void cmbMeal_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmbPackage.SelectedItem != null && cmbMeal.SelectedItem != null && cmbStyle.SelectedItem != null)
-            {
-                LoadMenuItems(cmbPackage.SelectedItem.ToString(), cmbMeal.SelectedItem.ToString(), cmbStyle.SelectedItem.ToString());
-            }
-        }
-
-        private void cmbStyle_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmbPackage.SelectedItem != null && cmbMeal.SelectedItem != null && cmbStyle.SelectedItem != null)
-            {
-                LoadMenuItems(cmbPackage.SelectedItem.ToString(), cmbMeal.SelectedItem.ToString(), cmbStyle.SelectedItem.ToString());
             }
         }
     }

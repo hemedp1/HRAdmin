@@ -26,6 +26,7 @@ using iTextRectangle = iTextSharp.text.Rectangle;
 using WinFormsApp = System.Windows.Forms.Application;
 using System.Net.Mail;
 using System.Net;
+using System.Drawing.Drawing2D;
 
 namespace HRAdmin.UserControl
 {
@@ -1195,13 +1196,37 @@ namespace HRAdmin.UserControl
                                      dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
                             /*
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//*************************++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+              /*       
+
+                            List<string> approverEmails = new List<string>();
+                            string getApproversQuery = @"
+                                                        SELECT A.Department, A.Username, B.Email, C.AccessLevel
+                                                        FROM tbl_Users A
+                                                        LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                        LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                                        WHERE Department = 'HR & ADMIN' AND AccessLevel > 1 AND AccessLevel < 3";  // First level account approver
+
+                            using (SqlCommand cmd1 = new SqlCommand(getApproversQuery, con))
+                            using (SqlDataReader reader = cmd1.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string email = reader["Email"]?.ToString();
+                                    if (!string.IsNullOrWhiteSpace(email))
+                                    {
+                                        approverEmails.Add(email);
+                                    }
+                                }
+                            }
 
                             string requesterName = "";
-                            string expenType = "";
-                            string indexNum = "";
-                            string userEmails = "";
+                            string EventDetai = "";
+                            string OccasionTy = "";
+                            string OrderI = "";
                             DateTime requestDate = DateTime.MinValue;
+                            DateTime DelrequestDate = DateTime.MinValue;
+                            
 
                             string getClaimDetailsQuery = $@"
                                                             SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email
@@ -1209,7 +1234,6 @@ namespace HRAdmin.UserControl
                                                             LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
                                                             WHERE OrderID = @OrderID";
 
-                            List<string> approverEmails = new List<string>();
 
                             using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
                             {
@@ -1217,19 +1241,18 @@ namespace HRAdmin.UserControl
 
                                 using (SqlDataReader reader = emailCmd.ExecuteReader())
                                 {
-                                    while (reader.Read())
+                                  
+                                    if (reader.Read())
                                     {
-                                        string email = reader["Email"]?.ToString();
-                                        if (!string.IsNullOrEmpty(email))
-                                        {
-                                            approverEmails.Add(email);
-                                        }
-                                        requesterName = reader["Requester"]?.ToString();
-                                        expenType = reader["ExpensesType"]?.ToString();
-                                        indexNum = reader["EmpNo"]?.ToString();
-                                        userEmails = reader["Email"]?.ToString();
+                                        requesterName = reader["RequesterID"]?.ToString();
+                                        EventDetai = reader["EventDetails"]?.ToString();
+                                        OccasionTy = reader["OccasionType"]?.ToString();
+                                        OrderI = reader["OrderID"]?.ToString();
                                         requestDate = reader["RequestDate"] != DBNull.Value
                                             ? Convert.ToDateTime(reader["RequestDate"])
+                                            : DateTime.MinValue;
+                                        DelrequestDate = reader["DeliveryDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["DeliveryDate"])
                                             : DateTime.MinValue;
                                     }
                                 }
@@ -1238,6 +1261,7 @@ namespace HRAdmin.UserControl
                             if (approverEmails.Count > 0)
                             {
                                 string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
                                 string subject = "HEM Admin Accessibility Notification: New Canteen Food Request Awaiting For Your Review And Approval";
                                 string body = $@"
                                                     <p>Dear Mr./Ms. {requesterName},</p>
@@ -1248,9 +1272,9 @@ namespace HRAdmin.UserControl
                                                 <ul>
                                                     <li><strong>Order ID:</strong> {orderId}</li>
                                                     <li><strong>Occasion Type:</strong> {orderSource}</li>
-                                                    <li><strong>Event Detail:</strong> {EventOrPurpose}</li>
-                                                    <li><strong>Request Date:</strong> {RequestDate}</li>
-                                                    <li><strong>Delivery Date:</strong> {RequestDate}</li>
+                                                    <li><strong>Event Detail:</strong> {EventDetai}</li>
+                                                    <li><strong>Request Date:</strong> {formattedDate}</li>
+                                                    <li><strong>Delivery Date:</strong> {formattedDate1}</li>
                                                 </ul>
 
                                                     <p>The approved amount will be processed on the <strong>15th</strong> and <strong>30th</strong> of each month. If either date falls on a non-working day, payment will be made on the <strong>next</strong> or <strong>before</strong> working day.</p>
@@ -1268,8 +1292,8 @@ namespace HRAdmin.UserControl
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Information
                                 );
-                            }*/
-
+                            }
+              */
                             //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                         }

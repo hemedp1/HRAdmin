@@ -41,11 +41,11 @@ namespace HRAdmin.UserControl
         private void InitializeComboBox()
         {
             // Assuming a ComboBox named cmbMeal is added to the designer
-            cmbMeal.Items.AddRange(new string[] { "BREAKFAST", "LUNCH", "TEA", "DINNER" });
+            cmbMeal.Items.AddRange(new string[] { "Breakfast", "Lunch", "Tea", "Dinner" });
             cmbMeal.SelectedIndex = -1; // No default selection
             cmbMeal.SelectedIndexChanged += cbMealType_SelectedIndexChanged;
 
-            cmbType.Items.AddRange(new string[] { "FOOD", "OTHER", "WATER" });
+            cmbType.Items.AddRange(new string[] { "Food", "Other", "Water" });
             cmbType.SelectedIndex = -1; // No default selection
             cmbType.SelectedIndexChanged += cmbType_SelectedIndexChanged;
         }
@@ -199,19 +199,29 @@ namespace HRAdmin.UserControl
             addControls(ug);
         }
 
-        private void gbExternal_Enter(object sender, EventArgs e)
+        private void dgv_FD_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
+            string mealType = cmbMeal.SelectedItem?.ToString();
+            string type = cmbType.SelectedItem?.ToString();
+
+            if (!string.IsNullOrEmpty(mealType) && !string.IsNullOrEmpty(type))
+            {
+                foreach (DataGridViewRow row in dgv_FD.Rows)
+                {
+                    if (row.IsNewRow) continue; // Skip the new row placeholder
+                    if (row.Cells["Meal"].Value == null || string.IsNullOrEmpty(row.Cells["Meal"].Value.ToString()))
+                    {
+                        row.Cells["Meal"].Value = mealType;
+                    }
+                    if (row.Cells["Type"].Value == null || string.IsNullOrEmpty(row.Cells["Type"].Value.ToString()))
+                    {
+                        row.Cells["Type"].Value = type;
+                    }
+                }
+            }
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void btSExternal_Click(object sender, EventArgs e)
+        private void btnSubmit_Click(object sender, EventArgs e)
         {
             // Check if a meal is selected
             if (cmbMeal.Enabled && cmbMeal.Visible && cmbMeal.SelectedItem == null)
@@ -251,32 +261,6 @@ namespace HRAdmin.UserControl
             catch (Exception ex)
             {
                 MessageBox.Show($"Error updating data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void gbExternal_Enter_1(object sender, EventArgs e)
-        {
-        }
-
-        private void dgv_FD_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        {
-            string mealType = cmbMeal.SelectedItem?.ToString();
-            string type = cmbType.SelectedItem?.ToString();
-
-            if (!string.IsNullOrEmpty(mealType) && !string.IsNullOrEmpty(type))
-            {
-                foreach (DataGridViewRow row in dgv_FD.Rows)
-                {
-                    if (row.IsNewRow) continue; // Skip the new row placeholder
-                    if (row.Cells["Meal"].Value == null || string.IsNullOrEmpty(row.Cells["Meal"].Value.ToString()))
-                    {
-                        row.Cells["Meal"].Value = mealType;
-                    }
-                    if (row.Cells["Type"].Value == null || string.IsNullOrEmpty(row.Cells["Type"].Value.ToString()))
-                    {
-                        row.Cells["Type"].Value = type;
-                    }
-                }
             }
         }
     }
