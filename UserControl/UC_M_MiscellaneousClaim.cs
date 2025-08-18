@@ -49,7 +49,7 @@ namespace HRAdmin.UserControl
         public UC_M_MiscellaneousClaim(string username, string department, string emp, string bank, string accountNo, string fullname)
         {
             InitializeComponent();
-            
+
             //string gg = UserSession.LoggedInBank;
             LoggedInUser = username;
             loggedInDepart = department;
@@ -186,12 +186,12 @@ namespace HRAdmin.UserControl
                         cmd.Parameters.AddWithValue("@Username", UserSession.LoggedInUser);
                         using (SqlDataReader reader2 = cmd.ExecuteReader())
                         {
-                        
+
                             if (reader2.Read())
                             {
                                 int accessLevel = Convert.ToInt32(reader2["AccessLevel"]);
-                        
-                         
+
+
                                 if (accessLevel >= 1)
                                 {
                                     groupBox3.Visible = true;
@@ -983,7 +983,7 @@ namespace HRAdmin.UserControl
                 return;
             }
             ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  ACCOUNT                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            
+
             // Handle ACCOUNT department approvals
             if (loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS") // && hodApprovalStatus == "Approved")
             {
@@ -1108,7 +1108,7 @@ namespace HRAdmin.UserControl
                                             }
                                         }
                                     }
-                                    
+
 
                                     // Step 4: Send email to 1st level Account approvers   hemacc1@hosiden.com
                                     if (accountApproverEmails.Count > 0)
@@ -1668,7 +1668,7 @@ namespace HRAdmin.UserControl
 
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
-                if (((loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY")  && (loggedInDepart == "GENERAL AFFAIRS" && loggedInDepart != requesterDepartment))               
+                if (((loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY") && (loggedInDepart == "GENERAL AFFAIRS" && loggedInDepart != requesterDepartment))
                 {
                     MessageBox.Show($"You are not authorized to approve this order. Only HOD from {requesterDepartment} department can approve.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -1885,7 +1885,7 @@ namespace HRAdmin.UserControl
                             }
                         }
 
-                        
+
                     }
                 }
                 catch (Exception ex)
@@ -2170,7 +2170,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                     MessageBox.Show("Order rejected successfully by Account3.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
 
-//=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                    //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                                     string requesterName = "";
                                     string expenType = "";
@@ -2246,7 +2246,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                         );
                                     }
 
-//=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                    //=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                                 }
                                 else
@@ -3231,19 +3231,45 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
 
         }
     }
-/*
-SELECT 
-    A.SerialNo, 
-    A.ExpensesType, 
-    A.RequestDate,
-    SUM(B.InvoiceAmount) AS TotalAmount
-FROM tbl_MasterClaimForm A
-LEFT JOIN tbl_DetailClaimForm B 
-    ON A.SerialNo = B.SerialNo
-WHERE A.RequestDate BETWEEN '2025-08-01' AND '2025-08-15'
-GROUP BY 
-    A.SerialNo, 
-    A.ExpensesType, 
-    A.RequestDate;*/
+    /*
+    SELECT 
+        A.SerialNo, 
+        A.ExpensesType, 
+        A.RequestDate,
+        SUM(B.InvoiceAmount) AS TotalAmount
+    FROM tbl_MasterClaimForm A
+    LEFT JOIN tbl_DetailClaimForm B 
+        ON A.SerialNo = B.SerialNo
+    WHERE A.RequestDate BETWEEN '2025-08-01' AND '2025-08-15'
+    GROUP BY 
+        A.SerialNo, 
+        A.ExpensesType, 
+        A.RequestDate;
+
+    ------------------------------------
+        Grand total
+    ------------------------------------
+    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+
+    	SELECT SUM(TotalAmount) AS GrandTotal
+FROM (
+    SELECT 
+        A.SerialNo, 
+        A.ExpensesType, 
+        A.RequestDate,
+        C.Email,
+        SUM(B.InvoiceAmount) AS TotalAmount
+    FROM tbl_MasterClaimForm A
+    LEFT JOIN tbl_DetailClaimForm B ON A.SerialNo = B.SerialNo
+    LEFT JOIN tbl_UserDetail C ON A.EmpNo = C.IndexNo
+    WHERE A.RequestDate BETWEEN '2025-08-15' AND '2025-08-30'
+    GROUP BY 
+        A.SerialNo, 
+        A.ExpensesType, 
+        A.RequestDate,
+        C.Email
+) AS X;
+     */
 
 }
