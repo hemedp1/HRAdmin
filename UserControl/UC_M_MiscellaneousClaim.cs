@@ -363,7 +363,7 @@ namespace HRAdmin.UserControl
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     // Parameters
-                    cmd.Parameters.AddWithValue("@LoggedInDept", loggedInDepart);
+                    cmd.Parameters.AddWithValue("@LoggedInDept", UserSession.loggedInDepart);
                     cmd.Parameters.AddWithValue("@LoggedInUser", UserSession.loggedInName); // <-- Add user parameter
 
                     DateTime startDate = dtpStart.Value.Date;
@@ -1668,7 +1668,7 @@ namespace HRAdmin.UserControl
 
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
-                if (((loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY") && (loggedInDepart == "GENERAL AFFAIRS" && loggedInDepart != requesterDepartment))
+                if (((UserSession.loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY") && (UserSession.loggedInDepart == "GENERAL AFFAIRS" && UserSession.loggedInDepart != requesterDepartment))
                 {
                     MessageBox.Show($"You are not authorized to approve this order. Only HOD from {requesterDepartment} department can approve.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -1966,7 +1966,7 @@ namespace HRAdmin.UserControl
             }
 
             // Handle ACCOUNT department rejection
-            if ((loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS"))
+            if ((UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS"))
             {
                 // Handle Account2ApprovalStatus (AccessLevel 99)
                 if (userAccessLevel == 99)
@@ -2080,7 +2080,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2227,7 +2227,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2265,7 +2265,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                 else if (userAccessLevel == 3)
                 {
                     // Check if loggedInDepart is GENERAL AFFAIRS
-                    if (loggedInDepart != "GENERAL AFFAIRS")
+                    if (UserSession.loggedInDepart != "GENERAL AFFAIRS")
                     {
                         MessageBox.Show("Only users from GENERAL AFFAIRS can reject this order.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -2381,7 +2381,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2422,7 +2422,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                 }
             }
             // Handle HR & ADMIN department rejection
-            else if (loggedInDepart == "HR & ADMIN")
+            else if (UserSession.loggedInDepart == "HR & ADMIN")
             {
                 // Check if ExpensesType is Work
                 if (expensesType == "Work" && department != "HR & ADMIN")
@@ -2549,7 +2549,7 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatu
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2654,7 +2654,7 @@ WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
 
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
-                if (loggedInDepart != requesterDepartment)
+                if (UserSession.loggedInDepart != requesterDepartment)
                 {
                     MessageBox.Show($"You are not authorized to reject this order. Only HOD from {requesterDepartment} department can reject.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -2762,7 +2762,7 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to Mr./Ms. <strong>{UserSession.loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to Mr./Ms. <strong>{UserSession.loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>

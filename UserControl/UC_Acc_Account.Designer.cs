@@ -31,12 +31,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Acc_Account));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnMClaim = new System.Windows.Forms.Button();
+            this.btnSReport = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.White;
+            this.groupBox1.Controls.Add(this.btnSReport);
             this.groupBox1.Controls.Add(this.btnMClaim);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
@@ -44,7 +46,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox1.Size = new System.Drawing.Size(2019, 1176);
+            this.groupBox1.Size = new System.Drawing.Size(1795, 941);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Account";
@@ -59,26 +61,45 @@
             this.btnMClaim.ForeColor = System.Drawing.Color.Black;
             this.btnMClaim.Image = ((System.Drawing.Image)(resources.GetObject("btnMClaim.Image")));
             this.btnMClaim.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnMClaim.Location = new System.Drawing.Point(6, 41);
+            this.btnMClaim.Location = new System.Drawing.Point(5, 33);
             this.btnMClaim.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnMClaim.Name = "btnMClaim";
             this.btnMClaim.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnMClaim.Size = new System.Drawing.Size(259, 72);
+            this.btnMClaim.Size = new System.Drawing.Size(230, 58);
             this.btnMClaim.TabIndex = 10;
             this.btnMClaim.Tag = "Miscellaneous Claim";
             this.btnMClaim.Text = "            Miscellaneous Claim";
             this.btnMClaim.UseVisualStyleBackColor = true;
             this.btnMClaim.Click += new System.EventHandler(this.btnMClaim_Click);
             // 
+            // btnSReport
+            // 
+            this.btnSReport.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.btnSReport.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnSReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSReport.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.btnSReport.ForeColor = System.Drawing.Color.Black;
+            this.btnSReport.Image = ((System.Drawing.Image)(resources.GetObject("btnSReport.Image")));
+            this.btnSReport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnSReport.Location = new System.Drawing.Point(241, 33);
+            this.btnSReport.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnSReport.Name = "btnSReport";
+            this.btnSReport.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnSReport.Size = new System.Drawing.Size(230, 58);
+            this.btnSReport.TabIndex = 11;
+            this.btnSReport.Tag = "Summary Report";
+            this.btnSReport.Text = "Summary Report";
+            this.btnSReport.UseVisualStyleBackColor = true;
+            this.btnSReport.Click += new System.EventHandler(this.btnSReport_Click);
+            // 
             // UC_Acc_Account
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "UC_Acc_Account";
-            this.Size = new System.Drawing.Size(2019, 1176);
+            this.Size = new System.Drawing.Size(1795, 941);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -88,5 +109,6 @@
 
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnMClaim;
+        private System.Windows.Forms.Button btnSReport;
     }
 }

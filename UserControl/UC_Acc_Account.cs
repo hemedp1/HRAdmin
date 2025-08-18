@@ -57,5 +57,13 @@ namespace HRAdmin.UserControl
         {
 
         }
+
+        private void btnSReport_Click(object sender, EventArgs e)
+        {
+            Form_Home.sharedLabel.Text = "Account > Summary Report";
+
+            UC_M_SummaryReport ug = new UC_M_SummaryReport();
+            addControls(ug);
+        }
     }
 }
