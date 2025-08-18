@@ -363,7 +363,7 @@ namespace HRAdmin.UserControl
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     // Parameters
-                    cmd.Parameters.AddWithValue("@LoggedInDept", loggedInDepart);
+                    cmd.Parameters.AddWithValue("@LoggedInDept", UserSession.loggedInDepart);
                     cmd.Parameters.AddWithValue("@LoggedInUser", UserSession.loggedInName); // <-- Add user parameter
 
                     DateTime startDate = dtpStart.Value.Date;
@@ -868,7 +868,7 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict withdrawal to only the user's own orders
-            if (requester != LoggedInUser)
+            if (requester != UserSession.LoggedInUser)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -945,7 +945,7 @@ namespace HRAdmin.UserControl
                 account2ApprovalStatus == "Rejected" || account3ApprovalStatus == "Rejected" ||
                 accountApprovalStatus == "Rejected")
             {
-                MessageBox.Show("This order cannot be approved because it has been rejected by one or more departments.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("This Miscellaneous Claim cannot be approved because it has been rejected by one or more departments.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -963,7 +963,7 @@ namespace HRAdmin.UserControl
                                     WHERE u.Name1 = @Name1";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Name1", LoggedInUser);
+                        cmd.Parameters.AddWithValue("@Name1", UserSession.LoggedInUser);
                         object result = cmd.ExecuteScalar();
                         if (result != null)
                         {
@@ -985,7 +985,7 @@ namespace HRAdmin.UserControl
             ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  ACCOUNT                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             // Handle ACCOUNT department approvals
-            if (loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS") // && hodApprovalStatus == "Approved")
+            if (UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS") // && hodApprovalStatus == "Approved")
             {
                 // Handle Account2ApprovalStatus (AccessLevel 0)
                 if (userAccessLevel == 99)
@@ -995,12 +995,12 @@ namespace HRAdmin.UserControl
                     {
                         if (hodApprovalStatus == "Pending")
                         {
-                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                         if (hodApprovalStatus == "Rejected")
                         {
-                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                     }
@@ -1009,12 +1009,12 @@ namespace HRAdmin.UserControl
                     {
                         if (hodApprovalStatus == "Pending")
                         {
-                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                         if (hodApprovalStatus == "Rejected")
                         {
-                            MessageBox.Show("This order cannot be approved by Account2 because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                     }
@@ -1022,12 +1022,12 @@ namespace HRAdmin.UserControl
                     // Check if already approved
                     if (account2ApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order has already been approved by Account2.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been approved by 1st-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account2 approval
-                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account 1?", "Confirm Account2 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Miscellaneous Claim  for Serial No: {serialNo} as 1st-Level Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -1048,14 +1048,14 @@ namespace HRAdmin.UserControl
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account2ApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", UserSession.LoggedInUser);
                                 cmd.Parameters.AddWithValue("@Account2ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order approved successfully by 1st-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim approved successfully by 1st-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
 
 
@@ -1117,7 +1117,7 @@ namespace HRAdmin.UserControl
                                         string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
 
                                         string body = $@"
-                                            <p>Dear Approver,</p>
+                                            <p>Dear Approver - Account,</p>
                                             <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>1st-Level Account</strong> and is now awaiting your review.</p>
 
                                             <p><u>Claim Details:</u></p>
@@ -1144,14 +1144,14 @@ namespace HRAdmin.UserControl
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to approve the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error approving Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 // Handle Account3ApprovalStatus (AccessLevel 1)
@@ -1160,24 +1160,24 @@ namespace HRAdmin.UserControl
                     // Check if Account2ApprovalStatus is Pending or Rejected
                     if (account2ApprovalStatus == "Pending")
                     {
-                        MessageBox.Show("This order cannot be approved by Account3 because Account2 approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be approved by 2nd-Level Account because 1st-Level Account approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     if (account2ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order cannot be approved by Account3 because Account2 approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be approved by 2nd-Level Account because 1st-Level Account approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if already approved
                     if (account3ApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order has already been approved by Account3.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been approved by 2nd-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account3 approval
-                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as Account 2?", "Confirm Account3 Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Miscellaneous Claim for Serial No: {serialNo} as 2nd-Level Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -1198,14 +1198,14 @@ namespace HRAdmin.UserControl
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account3ApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount3", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount3", UserSession.LoggedInUser);
                                 cmd.Parameters.AddWithValue("@Account3ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order approved successfully by 2nd-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim approved successfully by 2nd-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
 
                                     ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  Send  Notification to GA (Account HOD 2 approver                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1268,7 +1268,7 @@ namespace HRAdmin.UserControl
                                         string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
 
                                         string body = $@"
-                                            <p>Dear Approver,</p>
+                                            <p>Dear Approver - Account,</p>
                                             <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>2nd-Level Account</strong> and is now awaiting your review.</p>
 
                                             <p><u>Claim Details:</u></p>
@@ -1294,14 +1294,14 @@ namespace HRAdmin.UserControl
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to approve the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error approving Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 // Handle AccountApprovalStatus (AccessLevel 3)
@@ -1310,28 +1310,28 @@ namespace HRAdmin.UserControl
                     // Check if Account3ApprovalStatus is Pending or Rejected
                     if (account3ApprovalStatus == "Pending")
                     {
-                        MessageBox.Show("This order cannot be approved by Account because 2nd-Level Account approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be approved by Account because 2nd-Level Account approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     if (account3ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order cannot be approved by Account because 2nd-Level Account approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be approved by Account because 2nd-Level Account approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     // Check if loggedInDepart is GENERAL AFFAIRS
                     if (loggedInDepart != "GENERAL AFFAIRS")
                     {
-                        MessageBox.Show("Only users from GENERAL AFFAIRS can approve this order.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Only users from GENERAL AFFAIRS can approve this Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     // Check if already approved
                     if (accountApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order has already been approved by 3rd-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been approved by 3rd-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     // Confirm Account approval
-                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as 3rd-Level Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Miscellaneous Claim for Serial No: {serialNo} as 3rd-Level Account?", "Confirm Account Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -1352,14 +1352,14 @@ namespace HRAdmin.UserControl
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount", UserSession.LoggedInUser);
                                 cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order approved successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim approved successfully by 3rd-Leve Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
 
                                     //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1441,19 +1441,19 @@ namespace HRAdmin.UserControl
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to approve the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error approving Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("You do not have the required access level to approve this order.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("You do not have the required access level to approve this Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
@@ -1461,7 +1461,7 @@ namespace HRAdmin.UserControl
             ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  HR & ADMIN                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             // Handle HR & ADMIN department approval
-            else if (loggedInDepart == "HR & ADMIN" && department != "ISO")
+            else if (UserSession.loggedInDepart == "HR & ADMIN" && department != "ISO")
             {
                 // Check if the ExpensesType is Work
                 if (expensesType == "Work" && department != "HR & ADMIN" && department != "ISO")
@@ -1473,14 +1473,14 @@ namespace HRAdmin.UserControl
                 // Check if HODApprovalStatus is Pending
                 if (hodApprovalStatus == "Pending" && department != "HR & ADMIN")
                 {
-                    MessageBox.Show("This order cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 if (hodApprovalStatus == "Pending" && department == "HR & ADMIN")
                 {
                     // Confirm HR approval with the user
-                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to approve Miscellaneous Claim for Serial No: {serialNo} as HOD?", "Confirm HOD Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -1501,14 +1501,14 @@ namespace HRAdmin.UserControl
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
                                 cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous claim approved successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
                                     // Step 2: Get 1st level Account approver(s)
                                     List<string> accountApproverEmails = new List<string>();
@@ -1565,7 +1565,7 @@ namespace HRAdmin.UserControl
                                         string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
 
                                         string body = $@"
-                                            <p>Dear Approver,</p>
+                                            <p>Dear Approver - Account,</p>
                                             <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HR & ADMIN</strong> and is now awaiting your review.</p>
 
                                             <p><u>Claim Details:</u></p>
@@ -1591,14 +1591,14 @@ namespace HRAdmin.UserControl
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to approve the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error approving Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     return;
                 }
@@ -1606,12 +1606,12 @@ namespace HRAdmin.UserControl
                 // Check if the order is already approved by HR
                 if (hrApprovalStatus == "Approved")
                 {
-                    MessageBox.Show("This order has already been approved by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim has already been approved by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Confirm HR approval with the user
-                DialogResult resultHR = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult resultHR = MessageBox.Show($"Are you sure you want to approve Miscellaneous Claim for Serial No: {serialNo} as HR?", "Confirm HR Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (resultHR != DialogResult.Yes)
                 {
                     return;
@@ -1624,34 +1624,113 @@ namespace HRAdmin.UserControl
                     {
                         con.Open();
                         string query = @"
-            UPDATE tbl_MasterClaimForm 
-            SET HRApprovalStatus = @HRApprovalStatus, 
-                ApprovedByHR = @ApprovedByHR, 
-                HRApprovedDate = @HRApprovedDate 
-            WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
+                                        UPDATE tbl_MasterClaimForm 
+                                        SET HRApprovalStatus = @HRApprovalStatus, 
+                                            ApprovedByHR = @ApprovedByHR, 
+                                            HRApprovedDate = @HRApprovedDate 
+                                        WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", UserSession.LoggedInUser);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                             int rowsAffected = cmd.ExecuteNonQuery();
                             if (rowsAffected > 0)
                             {
-                                MessageBox.Show("Order approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show("Miscellaneous Claim approved successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 LoadData();
+
+                                // Step 2: Get 1st level Account approver(s)
+                                List<string> accountApproverEmails = new List<string>();
+                                string getApproversQuery = @"
+                                                    SELECT B.Email 
+                                                    FROM tbl_Users A
+                                                    LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                    LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                                    WHERE A.Department = 'ACCOUNT' AND C.AccessLevel = '99'";  // First level account approver
+
+                                using (SqlCommand cmd5 = new SqlCommand(getApproversQuery, con))
+                                using (SqlDataReader reader = cmd5.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        string email = reader["Email"]?.ToString();
+                                        if (!string.IsNullOrWhiteSpace(email))
+                                        {
+                                            accountApproverEmails.Add(email);
+                                        }
+                                    }
+                                }
+
+                                // Step 3: Get claim details for email body
+                                string requesterName = "";
+                                string expenType = "";
+                                DateTime requestDate = DateTime.MinValue;
+
+                                string getClaimDetailsQuery = @"SELECT Requester, ExpensesType, RequestDate 
+                                        FROM tbl_MasterClaimForm 
+                                        WHERE SerialNo = @SerialNo";
+
+                                using (SqlCommand cmd6 = new SqlCommand(getClaimDetailsQuery, con))
+                                {
+                                    cmd6.Parameters.Add("@SerialNo", SqlDbType.NVarChar).Value = serialNo;
+
+                                    using (SqlDataReader reader = cmd6.ExecuteReader())
+                                    {
+                                        if (reader.Read())
+                                        {
+                                            requesterName = reader["Requester"]?.ToString();
+                                            expenType = reader["ExpensesType"]?.ToString();
+                                            requestDate = reader["RequestDate"] != DBNull.Value
+                                                ? Convert.ToDateTime(reader["RequestDate"])
+                                                : DateTime.MinValue;
+                                        }
+                                    }
+                                }
+
+                                // Step 4: Send email to 1st level Account approvers
+                                if (accountApproverEmails.Count > 0)
+                                {
+                                    string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                                    string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+
+                                    string body = $@"
+                                            <p>Dear Approver - Account,</p>
+                                            <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HR & ADMIN</strong> and is now awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {expenType}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                                    foreach (var email in accountApproverEmails)///hemacc2@hosiden.com
+                                    {
+                                        SendEmail(email, subject, body);
+                                    }
+
+                                    MessageBox.Show("Notification sent to First-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Failed to approve the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Failed to approve the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error approving order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error approving Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -1662,27 +1741,27 @@ namespace HRAdmin.UserControl
                 // Check if the user is trying to approve their own claim
                 if (requester == LoggedInUser)
                 {
-                    MessageBox.Show("You cannot approve your own claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("You cannot approve your own Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
-                if (((loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY") && (loggedInDepart == "GENERAL AFFAIRS" && loggedInDepart != requesterDepartment))
+                if (((UserSession.loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY") && (UserSession.loggedInDepart == "GENERAL AFFAIRS" && UserSession.loggedInDepart != requesterDepartment))
                 {
-                    MessageBox.Show($"You are not authorized to approve this order. Only HOD from {requesterDepartment} department can approve.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"You are not authorized to approve this Miscellaneous Claim. Only HOD from {requesterDepartment} department can approve.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Check if the order is already approved by HOD
                 if (hodApprovalStatus == "Approved")
                 {
-                    MessageBox.Show("This order has already been approved by HOD.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim has already been approved by HOD.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Confirm HOD approval with the user
-                DialogResult result = MessageBox.Show($"Are you sure you want to approve Serial No: {serialNo} as HOD?", "Confirm HOD Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult result = MessageBox.Show($"Are you sure you want to approve Miscellaneous Claim for Serial No: {serialNo} as HOD?", "Confirm HOD Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result != DialogResult.Yes)
                 {
                     return;
@@ -1705,7 +1784,7 @@ namespace HRAdmin.UserControl
                         using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1713,7 +1792,7 @@ namespace HRAdmin.UserControl
 
                             if (rowsAffected <= 0)
                             {
-                                MessageBox.Show("Failed to approve the claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Failed to approve the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 return;
                             }
                         }
@@ -1779,7 +1858,7 @@ namespace HRAdmin.UserControl
                                 string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
 
                                 string body = $@"
-                                            <p>Dear Approver,</p>
+                                            <p>Dear Approver - Account,</p>
                                             <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HOD</strong> and is now awaiting your review.</p>
 
                                             <p><u>Claim Details:</u></p>
@@ -1800,7 +1879,7 @@ namespace HRAdmin.UserControl
                                     SendEmail(email, subject, body);
                                 }
 
-                                MessageBox.Show("Notification sent to First-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show("Notification sent to 1st-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
                         else if (expensesType == "Benefit")
@@ -1860,7 +1939,7 @@ namespace HRAdmin.UserControl
                                 string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
 
                                 string body = $@"
-                                            <p>Dear Approver,</p>
+                                            <p>Dear Approver - HR,</p>
                                             <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HOD</strong> and is now awaiting your review.</p>
 
                                             <p><u>Claim Details:</u></p>
@@ -1890,7 +1969,7 @@ namespace HRAdmin.UserControl
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error approving claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error approving Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
             }
@@ -1900,7 +1979,7 @@ namespace HRAdmin.UserControl
             // Check if a cell is selected in the DataGridView
             if (dgvMS.SelectedCells.Count == 0)
             {
-                MessageBox.Show("Please select a cell in the order row to reject.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please select a cell in the Miscellaneous Claim row to reject.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1927,7 +2006,7 @@ namespace HRAdmin.UserControl
             // Check if AccountApprovalStatus is Approved (no one can reject if Account has approved)
             if (accountApprovalStatus == "Approved")
             {
-                MessageBox.Show("This order cannot be rejected because it has been approved by Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("This Miscellaneous Claim cannot be rejected because it has been approved by Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1945,7 +2024,7 @@ namespace HRAdmin.UserControl
                                     WHERE u.Name1 = @Name1";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Name1", LoggedInUser);
+                        cmd.Parameters.AddWithValue("@Name1", UserSession.LoggedInUser);
                         object result = cmd.ExecuteScalar();
                         if (result != null)
                         {
@@ -1966,7 +2045,7 @@ namespace HRAdmin.UserControl
             }
 
             // Handle ACCOUNT department rejection
-            if ((loggedInDepart == "ACCOUNT" || loggedInDepart == "GENERAL AFFAIRS"))
+            if ((UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS"))
             {
                 // Handle Account2ApprovalStatus (AccessLevel 99)
                 if (userAccessLevel == 99)
@@ -1974,26 +2053,26 @@ namespace HRAdmin.UserControl
                     // Check if HODApprovalStatus is Rejected (no need to reject if already rejected)
                     if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order has already been rejected by a previous department.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by a previous department.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if Account2ApprovalStatus is Approved
                     if (account2ApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order cannot be rejected by Account2 because it has already been approved by Account2.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("tThis Miscellaneous Claim cannot be rejected by 1st because it has already been approved by Account2.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if Account2ApprovalStatus is Rejected
                     if (account2ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order has already been rejected by Account2.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by Account2.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account2 rejection
-                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as Account2?", "Confirm Account2 Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as Account2?", "Confirm Account2 Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -2006,22 +2085,22 @@ namespace HRAdmin.UserControl
                         {
                             con.Open();
                             string query = @"
-UPDATE tbl_MasterClaimForm 
-SET Account2ApprovalStatus = @Account2ApprovalStatus, 
-    ApprovedByAccount2 = @ApprovedByAccount2, 
-    Account2ApprovedDate = @Account2ApprovedDate 
-WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
+                                        UPDATE tbl_MasterClaimForm 
+                                        SET Account2ApprovalStatus = @Account2ApprovalStatus, 
+                                            ApprovedByAccount2 = @ApprovedByAccount2, 
+                                            Account2ApprovedDate = @Account2ApprovedDate 
+                                        WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account2ApprovalStatus", "Rejected");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", UserSession.LoggedInUser);
                                 cmd.Parameters.AddWithValue("@Account2ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order rejected successfully by Account2.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim rejected successfully by Account2.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
                                     //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -2080,7 +2159,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{UserSession.loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2092,7 +2171,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                         }
 
                                         MessageBox.Show(
-                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification has been sent to the requester confirming the Miscellaneous Claim status.",
                                             "Notification Sent",
                                             MessageBoxButtons.OK,
                                             MessageBoxIcon.Information
@@ -2104,14 +2183,14 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to reject the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error rejecting Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 // Handle Account3ApprovalStatus (AccessLevel 1)
@@ -2120,26 +2199,26 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                     // Check if HODApprovalStatus or Account2ApprovalStatus is Rejected
                     if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected" || account2ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order has already been rejected by a previous department.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by a previous department.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if Account3ApprovalStatus is Approved
                     if (account3ApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order cannot be rejected by Account3 because it has already been approved by Account3.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account3 because it has already been approved by Account3.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if Account3ApprovalStatus is Rejected
                     if (account3ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order has already been rejected by Account3.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by Account3.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account3 rejection
-                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as Account3?", "Confirm Account3 Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as Account3?", "Confirm Account3 Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -2167,7 +2246,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order rejected successfully by Account3.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim rejected successfully by Account3.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
 
                                     //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -2239,7 +2318,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                         }
 
                                         MessageBox.Show(
-                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification has been sent to the requester confirming the Miscellaneous Claim status.",
                                             "Notification Sent",
                                             MessageBoxButtons.OK,
                                             MessageBoxIcon.Information
@@ -2251,14 +2330,14 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to reject the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error rejecting Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 // Handle AccountApprovalStatus (AccessLevel 3)
@@ -2267,7 +2346,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                     // Check if loggedInDepart is GENERAL AFFAIRS
                     if (loggedInDepart != "GENERAL AFFAIRS")
                     {
-                        MessageBox.Show("Only users from GENERAL AFFAIRS can reject this order.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Only users from GENERAL AFFAIRS can reject this Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -2275,26 +2354,26 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                     if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected" ||
                         account2ApprovalStatus == "Rejected" || account3ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order has already been rejected by a previous department.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by a previous department.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if AccountApprovalStatus is Approved
                     if (accountApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order cannot be rejected by Account because it has already been approved by Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account because it has already been approved by Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if AccountApprovalStatus is Rejected
                     if (accountApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order has already been rejected by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account rejection
-                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as Account?", "Confirm Account Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as Account?", "Confirm Account Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -2322,7 +2401,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order rejected successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim rejected successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
                                     //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -2393,7 +2472,7 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                         }
 
                                         MessageBox.Show(
-                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification has been sent to the requester confirming the Miscellaneous Claim status.",
                                             "Notification Sent",
                                             MessageBoxButtons.OK,
                                             MessageBoxIcon.Information
@@ -2405,25 +2484,26 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to reject the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error rejecting Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("You do not have the required access level to reject this order.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("You do not have the required access level to reject this Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
             // Handle HR & ADMIN department rejection
-            else if (loggedInDepart == "HR & ADMIN")
+            else if (UserSession.loggedInDepart == "HR & ADMIN")
             {
+  
                 // Check if ExpensesType is Work
                 if (expensesType == "Work" && department != "HR & ADMIN")
                 {
@@ -2434,29 +2514,29 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                 // Check if HODApprovalStatus is Rejected
                 if (hodApprovalStatus == "Rejected")
                 {
-                    MessageBox.Show("This order has already been rejected by HOD.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim has already been rejected by HOD.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Handle HR & ADMIN acting as HOD for their own department
-                if (department == "HR & ADMIN" && hodApprovalStatus == "Pending")
+                if (department == "HR & ADMIN" && hodApprovalStatus == "Pending" && expensesType == "Work")
                 {
                     // Check if HRApprovalStatus is Approved (HR & ADMIN also handles HR approval)
                     if (hrApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This order cannot be rejected by HR because it has already been approved by HR.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by HR because it has already been approved by HR.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if HRApprovalStatus is Rejected
                     if (hrApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This order has already been rejected by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm HR rejection
-                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as HR?", "Confirm HR Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as HOD?", "Confirm HOD Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -2468,29 +2548,26 @@ WHERE SerialNo = @SerialNo AND Account2ApprovalStatus = 'Pending'";
                         using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                         {
                             con.Open();
-                            string query = @"
-UPDATE tbl_MasterClaimForm 
-SET HODApprovalStatus = @HODApprovalStatus, 
-    ApprovedByHOD = @ApprovedByHOD, 
-    HODApprovedDate = @HODApprovedDate,
-    HRApprovalStatus = @HRApprovalStatus, 
-    ApprovedByHR = @ApprovedByHR, 
-    HRApprovedDate = @HRApprovedDate 
-WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatus = 'Pending'";
-                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            string query11 = @"
+                                            UPDATE tbl_MasterClaimForm 
+                                            SET HODApprovalStatus = @HODApprovalStatus, 
+                                                ApprovedByHOD = @ApprovedByHOD, 
+                                                HODApprovedDate = @HODApprovedDate
+                                            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatus = 'Pending'";
+                            using (SqlCommand cmd11 = new SqlCommand(query11, con))
                             {
-                                cmd.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
-                                cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
-                                cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
-                                cmd.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
-                                cmd.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
-                                cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
-                                cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+                                cmd11.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
+                                cmd11.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
+                                cmd11.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
+                                //cmd11.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
+                                //cmd11.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
+                                //cmd11.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
+                                cmd11.Parameters.AddWithValue("@SerialNo", serialNo);
 
-                                int rowsAffected = cmd.ExecuteNonQuery();
+                                int rowsAffected = cmd11.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Order rejected successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim rejected successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
                                     //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -2549,7 +2626,7 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatu
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{UserSession.loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2561,7 +2638,7 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatu
                                         }
 
                                         MessageBox.Show(
-                                            "Notification has been sent to the requester confirming the claim status.",
+                                            "Notification has been sent to the requester confirming the Miscellaneous Claim status.",
                                             "Notification Sent",
                                             MessageBoxButtons.OK,
                                             MessageBoxIcon.Information
@@ -2573,14 +2650,14 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatu
                                 }
                                 else
                                 {
-                                    MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("Failed to reject the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Error rejecting Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     return;
                 }
@@ -2588,19 +2665,19 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatu
                 // Check if HRApprovalStatus is Approved
                 if (hrApprovalStatus == "Approved")
                 {
-                    MessageBox.Show("This order cannot be rejected by HR because it has already been approved by HR.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim cannot be rejected by HR because it has already been approved by HR.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Check if HRApprovalStatus is Rejected
                 if (hrApprovalStatus == "Rejected")
                 {
-                    MessageBox.Show("This order has already been rejected by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim has already been rejected by HR.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Confirm HR rejection
-                DialogResult resultHR = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as HR?", "Confirm HR Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult resultHR = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as HR?", "Confirm HR Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (resultHR != DialogResult.Yes)
                 {
                     return;
@@ -2613,69 +2690,70 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending' AND HRApprovalStatu
                     {
                         con.Open();
                         string query = @"
-UPDATE tbl_MasterClaimForm 
-SET HRApprovalStatus = @HRApprovalStatus, 
-    ApprovedByHR = @ApprovedByHR, 
-    HRApprovedDate = @HRApprovedDate 
-WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
+                            UPDATE tbl_MasterClaimForm 
+                            SET HRApprovalStatus = @HRApprovalStatus, 
+                                ApprovedByHR = @ApprovedByHR, 
+                                HRApprovedDate = @HRApprovedDate 
+                            WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", UserSession.LoggedInUser);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                             int rowsAffected = cmd.ExecuteNonQuery();
                             if (rowsAffected > 0)
                             {
-                                MessageBox.Show("Order rejected successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show("Miscellaneous Claim rejected successfully by HR.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 LoadData();
                             }
                             else
                             {
-                                MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Failed to reject the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error rejecting Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
+                //MessageBox.Show("HR & ADMIN2");
                 // Check if the user is trying to reject their own claim
-                if (requester == LoggedInUser)
+                if (requester == UserSession.LoggedInUser)
                 {
-                    MessageBox.Show("You cannot reject your own claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("You cannot reject your own Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
-                if (loggedInDepart != requesterDepartment)
+                if (UserSession.loggedInDepart != requesterDepartment)
                 {
-                    MessageBox.Show($"You are not authorized to reject this order. Only HOD from {requesterDepartment} department can reject.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"You are not authorized to reject this Miscellaneous Claim. Only HOD from {requesterDepartment} department can reject.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Check if HODApprovalStatus is Approved
                 if (hodApprovalStatus == "Approved")
                 {
-                    MessageBox.Show("This order cannot be rejected because it has already been approved by HOD.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim cannot be rejected because it has already been approved by HOD.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Check if HODApprovalStatus is Rejected
                 if (hodApprovalStatus == "Rejected")
                 {
-                    MessageBox.Show("This order has already been rejected by HOD.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("This Miscellaneous Claim has already been rejected by HOD.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 // Confirm HOD rejection
-                DialogResult result = MessageBox.Show($"Are you sure you want to reject Serial No: {serialNo} as HOD?", "Confirm HOD Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as HOD?", "Confirm HOD Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result != DialogResult.Yes)
                 {
                     return;
@@ -2688,22 +2766,22 @@ WHERE SerialNo = @SerialNo AND HRApprovalStatus = 'Pending'";
                     {
                         con.Open();
                         string query = @"
-UPDATE tbl_MasterClaimForm 
-SET HODApprovalStatus = @HODApprovalStatus, 
-    ApprovedByHOD = @ApprovedByHOD, 
-    HODApprovedDate = @HODApprovedDate 
-WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+                                        UPDATE tbl_MasterClaimForm 
+                                        SET HODApprovalStatus = @HODApprovalStatus, 
+                                            ApprovedByHOD = @ApprovedByHOD, 
+                                            HODApprovedDate = @HODApprovedDate 
+                                        WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", LoggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
                             int rowsAffected = cmd.ExecuteNonQuery();
                             if (rowsAffected > 0)
                             {
-                                MessageBox.Show("Order rejected successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show("Miscellaneous Claim rejected successfully by HOD.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 LoadData();
                                 //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -2762,7 +2840,7 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to Mr./Ms. <strong>{UserSession.loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to Mr./Ms. <strong>{UserSession.loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2774,7 +2852,7 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                                     }
 
                                     MessageBox.Show(
-                                        "Notification has been sent to the requester confirming the claim status.",
+                                        "Notification has been sent to the requester confirming the Miscellaneous Claim status.",
                                         "Notification Sent",
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Information
@@ -2786,14 +2864,14 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
                             }
                             else
                             {
-                                MessageBox.Show("Failed to reject the order. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Failed to reject the Miscellaneous Claim. It may not be pending or does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error rejecting order: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error rejecting Miscellaneous Claim: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
