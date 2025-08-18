@@ -963,7 +963,7 @@ namespace HRAdmin.UserControl
                                     WHERE u.Name1 = @Name1";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Name1", UserSession.LoggedInUser);
+                        cmd.Parameters.AddWithValue("@Name1", UserSession.loggedInName);
                         object result = cmd.ExecuteScalar();
                         if (result != null)
                         {
@@ -2024,7 +2024,7 @@ namespace HRAdmin.UserControl
                                     WHERE u.Name1 = @Name1";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Name1", UserSession.LoggedInUser);
+                        cmd.Parameters.AddWithValue("@Name1", UserSession.loggedInName);
                         object result = cmd.ExecuteScalar();
                         if (result != null)
                         {
