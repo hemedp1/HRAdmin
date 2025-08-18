@@ -155,6 +155,7 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("Invoice Date", typeof(DateTime));
             dt.Columns.Add("Invoice", typeof(byte[]));
             dt.Columns.Add("InvoiceAttached", typeof(string));
+            dt.Columns.Add("PaymentStatus", typeof(string));
 
             dgvW.DataSource = dt;
 
@@ -364,6 +365,7 @@ namespace HRAdmin.UserControl
             dgvW.Columns["ApprovedByAccount3"].Visible = false;
             dgvW.Columns["Account3ApprovedDate"].Visible = false;
             dgvW.Columns["Invoice"].Visible = false;
+            dgvW.Columns["PaymentStatus"].Visible = false;
         }
         private void StyleDataGridView(DataGridView dgv)
         {
@@ -471,9 +473,9 @@ namespace HRAdmin.UserControl
 
                     string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
                                         (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
-                                         HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus, Account2ApprovalStatus, Account3ApprovalStatus) 
+                                         HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus, Account2ApprovalStatus, Account3ApprovalStatus, PaymentStatus) 
                                         VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
-                                                @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus, @Account2ApprovalStatus, @Account3ApprovalStatus)";
+                                                @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus, @Account2ApprovalStatus, @Account3ApprovalStatus, @PaymentStatus)";
 
                     string checkDuplicateQuery = @"SELECT COUNT(*) 
                                          FROM tbl_DetailClaimForm 
@@ -643,6 +645,8 @@ namespace HRAdmin.UserControl
                                 ? "Pending" : row["Account2ApprovalStatus"];
                             row["Account3ApprovalStatus"] = row["Account3ApprovalStatus"] == DBNull.Value || string.IsNullOrEmpty(row["Account3ApprovalStatus"]?.ToString())
                                 ? "Pending" : row["Account3ApprovalStatus"];
+                            row["PaymentStatus"] = row["PaymentStatus"] == DBNull.Value || string.IsNullOrEmpty(row["PaymentStatus"]?.ToString())
+                                ? "Pending" : row["PaymentStatus"];
 
                             row["SerialNo"] = serialNo;
 
@@ -674,6 +678,7 @@ namespace HRAdmin.UserControl
                                 cmdMaster.Parameters.AddWithValue("@AccountApprovalStatus", row["AccountApprovalStatus"]);
                                 cmdMaster.Parameters.AddWithValue("@Account2ApprovalStatus", row["Account2ApprovalStatus"]);
                                 cmdMaster.Parameters.AddWithValue("@Account3ApprovalStatus", row["Account3ApprovalStatus"]);
+                                cmdMaster.Parameters.AddWithValue("@PaymentStatus", row["PaymentStatus"]);
                                 cmdMaster.ExecuteNonQuery();
                             }
                         }

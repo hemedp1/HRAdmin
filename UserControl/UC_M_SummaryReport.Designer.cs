@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_SummaryReport));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnBack = new System.Windows.Forms.Button();
             this.gbSummary = new System.Windows.Forms.GroupBox();
@@ -37,7 +37,6 @@
             this.dgvSR = new System.Windows.Forms.DataGridView();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.cmbECtype = new System.Windows.Forms.ComboBox();
             this.dtpEnd = new System.Windows.Forms.DateTimePicker();
             this.dtpStart = new System.Windows.Forms.DateTimePicker();
             this.label11 = new System.Windows.Forms.Label();
@@ -46,11 +45,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnExcel = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.lblGrandTotal = new System.Windows.Forms.Label();
             this.btnUpdate = new System.Windows.Forms.Button();
+            this.cmbPS = new System.Windows.Forms.ComboBox();
             this.flowLayoutPanel1.SuspendLayout();
             this.gbSummary.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -109,14 +105,14 @@
             // 
             this.dgvSR.BackgroundColor = System.Drawing.Color.White;
             this.dgvSR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvSR.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvSR.DefaultCellStyle = dataGridViewCellStyle3;
             this.dgvSR.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvSR.Location = new System.Drawing.Point(0, 0);
             this.dgvSR.Name = "dgvSR";
@@ -130,7 +126,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label13.Location = new System.Drawing.Point(1138, 26);
+            this.label13.Location = new System.Drawing.Point(1095, 26);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(18, 27);
             this.label13.TabIndex = 143;
@@ -142,25 +138,9 @@
             this.label14.Font = new System.Drawing.Font("Calibri", 13F);
             this.label14.Location = new System.Drawing.Point(937, 26);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(195, 27);
+            this.label14.Size = new System.Drawing.Size(152, 27);
             this.label14.TabIndex = 142;
-            this.label14.Text = "Expenses claim type";
-            // 
-            // cmbECtype
-            // 
-            this.cmbECtype.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbECtype.Font = new System.Drawing.Font("Calibri", 13F);
-            this.cmbECtype.FormattingEnabled = true;
-            this.cmbECtype.IntegralHeight = false;
-            this.cmbECtype.ItemHeight = 27;
-            this.cmbECtype.Items.AddRange(new object[] {
-            "Work",
-            "Benefit"});
-            this.cmbECtype.Location = new System.Drawing.Point(1162, 23);
-            this.cmbECtype.Name = "cmbECtype";
-            this.cmbECtype.Size = new System.Drawing.Size(250, 35);
-            this.cmbECtype.TabIndex = 141;
-            this.cmbECtype.SelectedIndexChanged += new System.EventHandler(this.cmbECtype_SelectedIndexChanged);
+            this.label14.Text = "Payment status";
             // 
             // dtpEnd
             // 
@@ -225,20 +205,16 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.cmbECtype);
+            this.panel1.Controls.Add(this.cmbPS);
             this.panel1.Controls.Add(this.label13);
             this.panel1.Controls.Add(this.label14);
             this.panel1.Controls.Add(this.btnExcel);
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.dtpStart);
             this.panel1.Controls.Add(this.label10);
             this.panel1.Controls.Add(this.dtpEnd);
             this.panel1.Controls.Add(this.label8);
-            this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.lblGrandTotal);
             this.panel1.Controls.Add(this.btnUpdate);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(3, 32);
@@ -262,45 +238,6 @@
             this.btnExcel.UseVisualStyleBackColor = false;
             this.btnExcel.Click += new System.EventHandler(this.btnExcel_Click);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label2.Location = new System.Drawing.Point(638, 106);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(18, 27);
-            this.label2.TabIndex = 138;
-            this.label2.Text = ":";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label4.Location = new System.Drawing.Point(514, 106);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(118, 27);
-            this.label4.TabIndex = 137;
-            this.label4.Text = "Grand Total";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label3.Location = new System.Drawing.Point(692, 79);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(0, 27);
-            this.label3.TabIndex = 136;
-            // 
-            // lblGrandTotal
-            // 
-            this.lblGrandTotal.AutoSize = true;
-            this.lblGrandTotal.Font = new System.Drawing.Font("Calibri", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGrandTotal.Location = new System.Drawing.Point(662, 105);
-            this.lblGrandTotal.Name = "lblGrandTotal";
-            this.lblGrandTotal.Size = new System.Drawing.Size(18, 28);
-            this.lblGrandTotal.TabIndex = 135;
-            this.lblGrandTotal.Text = ".";
-            // 
             // btnUpdate
             // 
             this.btnUpdate.BackColor = System.Drawing.Color.White;
@@ -316,6 +253,19 @@
             this.btnUpdate.Text = "Update";
             this.btnUpdate.UseVisualStyleBackColor = false;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
+            // 
+            // cmbPS
+            // 
+            this.cmbPS.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPS.Font = new System.Drawing.Font("Calibri", 13F);
+            this.cmbPS.FormattingEnabled = true;
+            this.cmbPS.IntegralHeight = false;
+            this.cmbPS.ItemHeight = 27;
+            this.cmbPS.Location = new System.Drawing.Point(1119, 23);
+            this.cmbPS.Name = "cmbPS";
+            this.cmbPS.Size = new System.Drawing.Size(250, 35);
+            this.cmbPS.TabIndex = 144;
+            this.cmbPS.SelectedIndexChanged += new System.EventHandler(this.cmbPS_SelectedIndexChanged);
             // 
             // UC_M_SummaryReport
             // 
@@ -350,14 +300,10 @@
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.ComboBox cmbECtype;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DataGridView dgvSR;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lblGrandTotal;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnExcel;
+        private System.Windows.Forms.ComboBox cmbPS;
     }
 }

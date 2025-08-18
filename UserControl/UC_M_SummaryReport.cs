@@ -67,120 +67,27 @@ namespace HRAdmin.UserControl
         private void dtpStart_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
-            GrandTotal();
         }
 
         private void dtpEnd_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
-            GrandTotal();
         }
 
-        private void GrandTotal()
+        private void cmbPS_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string query = @"
-    SELECT SUM(TotalAmount) AS GrandTotal
-    FROM (
-        SELECT 
-            A.SerialNo, 
-            A.ExpensesType, 
-            A.RequestDate,
-            C.Email,
-            SUM(B.InvoiceAmount) AS TotalAmount
-        FROM tbl_MasterClaimForm A
-        LEFT JOIN tbl_DetailClaimForm B ON A.SerialNo = B.SerialNo
-        LEFT JOIN tbl_UserDetail C ON A.EmpNo = C.IndexNo
-        WHERE A.RequestDate BETWEEN @StartDate AND @EndDate
-        GROUP BY 
-            A.SerialNo, 
-            A.ExpensesType, 
-            A.RequestDate,
-            C.Email
-    ) AS X;";
+            string PaymentStatus = cmbPS.SelectedItem?.ToString();
 
-            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            if (!string.IsNullOrEmpty(PaymentStatus))
             {
-                try
-                {
-                    con.Open();
-
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        DateTime startDate = dtpStart.Value.Date;
-                        DateTime endDate = dtpEnd.Value.Date;
-
-                        if (startDate == DateTime.MinValue || endDate == DateTime.MinValue)
-                        {
-                            DateTime today = DateTime.Today;
-                            startDate = today.AddDays(-(int)today.DayOfWeek);
-                            endDate = startDate.AddDays(7).AddTicks(-1);
-                        }
-
-                        cmd.Parameters.AddWithValue("@StartDate", startDate);
-                        cmd.Parameters.AddWithValue("@EndDate", endDate);
-
-                        object result = cmd.ExecuteScalar();
-                        decimal grandTotal = (result == DBNull.Value) ? 0 : Convert.ToDecimal(result);
-
-                        lblGrandTotal.Text = "RM " + grandTotal.ToString("N2");
-                    }
-
-                    LoadExpenseTypes();
-                }
-                catch (Exception ex)
-                {
-                    if (!isNetworkErrorShown)
-                    {
-                        isNetworkErrorShown = true;
-                        MessageBox.Show("Error loading data: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
-                    if (cachedData != null)
-                    {
-                        BindDataGridView(cachedData);
-                        MessageBox.Show("Network unavailable. Displaying cached data.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Network unavailable and no cached data available.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-            }
-        }
-
-        private void LoadExpenseTypes()
-        {
-            cmbECtype.SelectedIndexChanged -= cmbECtype_SelectedIndexChanged;
-
-            var expenseTypes = masterData.AsEnumerable()
-                .Select(r => r.Field<string>("ExpensesType"))
-                .Where(d => !string.IsNullOrEmpty(d))
-                .Distinct()
-                .OrderBy(d => d)
-                .ToList();
-
-            cmbECtype.Items.Clear();
-            cmbECtype.Items.Add("-- All --");
-            cmbECtype.Items.AddRange(expenseTypes.ToArray());
-            cmbECtype.SelectedIndex = 0;
-
-            cmbECtype.SelectedIndexChanged += cmbECtype_SelectedIndexChanged;
-        }
-
-        private void cmbECtype_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string ExpensesType = cmbECtype.SelectedItem?.ToString();
-
-            if (!string.IsNullOrEmpty(ExpensesType))
-            {
-                if (ExpensesType == "-- All --")
+                if (PaymentStatus == "-- All --")
                 {
                     BindDataGridView(masterData);
                 }
                 else
                 {
                     var filtered = masterData.AsEnumerable()
-                        .Where(r => r.Field<string>("ExpensesType") == ExpensesType)
+                        .Where(r => r.Field<string>("PaymentStatus") == PaymentStatus)
                         .CopyToDataTable();
 
                     BindDataGridView(filtered);
@@ -193,6 +100,7 @@ namespace HRAdmin.UserControl
             string query = @"
             SELECT 
                  A.SerialNo, 
+                 A.Requester,
                  A.ExpensesType, 
                  A.PaymentStatus,
                  A.RequestDate,
@@ -203,6 +111,7 @@ namespace HRAdmin.UserControl
             WHERE A.RequestDate BETWEEN @StartDate AND @EndDate
             GROUP BY 
                  A.SerialNo, 
+                 A.Requester,
                  A.ExpensesType, 
                  A.PaymentStatus,
                  A.RequestDate;";
@@ -242,21 +151,21 @@ namespace HRAdmin.UserControl
                         da.Fill(dt);
                     }
 
-                    cmbECtype.SelectedIndexChanged -= cmbECtype_SelectedIndexChanged;
+                    cmbPS.SelectedIndexChanged -= cmbPS_SelectedIndexChanged;
 
                     var expenseTypes = masterData.AsEnumerable()
-                        .Select(r => r.Field<string>("ExpensesType"))
+                        .Select(r => r.Field<string>("PaymentStatus"))
                         .Where(d => !string.IsNullOrEmpty(d))
                         .Distinct()
                         .OrderBy(d => d)
                         .ToList();
 
-                    cmbECtype.Items.Clear();
-                    cmbECtype.Items.Add("-- All --");
-                    cmbECtype.Items.AddRange(expenseTypes.ToArray());
-                    cmbECtype.SelectedIndex = 0;
+                    cmbPS.Items.Clear();
+                    cmbPS.Items.Add("-- All --");
+                    cmbPS.Items.AddRange(expenseTypes.ToArray());
+                    cmbPS.SelectedIndex = 0;
 
-                    cmbECtype.SelectedIndexChanged += cmbECtype_SelectedIndexChanged;
+                    cmbPS.SelectedIndexChanged += cmbPS_SelectedIndexChanged;
 
                     cachedData = dt.Copy();
                     BindDataGridView(dt);
@@ -291,6 +200,23 @@ namespace HRAdmin.UserControl
 
         private void BindDataGridView(DataTable dt)
         {
+            // Calculate the sum of TotalAmount for rows with valid PaymentStatus
+            decimal totalAmount = dt.AsEnumerable()
+                .Where(r => r["TotalAmount"] != DBNull.Value)
+                .Sum(r => Convert.ToDecimal(r["TotalAmount"]));
+
+            // Create a new DataTable to include the footer row
+            DataTable dtWithFooter = dt.Copy();
+            DataRow footerRow = dtWithFooter.NewRow();
+            footerRow["SerialNo"] = DBNull.Value; 
+            footerRow["Requester"] = DBNull.Value; 
+            footerRow["ExpensesType"] = DBNull.Value;
+            footerRow["RequestDate"] = DBNull.Value;
+            footerRow["TotalAmount"] = totalAmount; // Display the sum
+            footerRow["PaymentStatus"] = "Total"; // Label for the footer
+            dtWithFooter.Rows.Add(footerRow);
+
+            // Configure DataGridView
             dgvSR.AutoGenerateColumns = false;
             dgvSR.Columns.Clear();
             dgvSR.ReadOnly = true;
@@ -306,6 +232,19 @@ namespace HRAdmin.UserControl
                 Name = "SerialNo",
                 HeaderText = "Serial No",
                 DataPropertyName = "SerialNo",
+                Width = fixedColumnWidth,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    ForeColor = Color.MidnightBlue,
+                    Font = new System.Drawing.Font("Arial", 11)
+                },
+            });
+
+            dgvSR.Columns.Add(new DataGridViewTextBoxColumn()
+            {
+                Name = "Requester",
+                HeaderText = "Requester",
+                DataPropertyName = "Requester",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
@@ -344,13 +283,14 @@ namespace HRAdmin.UserControl
             dgvSR.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "TotalAmount",
-                HeaderText = "Total Amount",
+                HeaderText = "Amount",
                 DataPropertyName = "TotalAmount",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     ForeColor = Color.MidnightBlue,
-                    Font = new System.Drawing.Font("Arial", 11)
+                    Font = new System.Drawing.Font("Arial", 11),
+                    Format = "N2" // Format as currency with 2 decimal places
                 },
             });
 
@@ -367,14 +307,28 @@ namespace HRAdmin.UserControl
                 },
             });
 
-            dgvSR.DataSource = dt;
+            // Bind the DataTable with the footer row to the DataGridView
+            dgvSR.DataSource = dtWithFooter;
             dgvSR.CellBorderStyle = DataGridViewCellBorderStyle.None;
-            Debug.WriteLine("DataGridView updated successfully.");
+
+            // Optionally, style the footer row to stand out
+            dgvSR.Rows[dtWithFooter.Rows.Count - 1].DefaultCellStyle = new DataGridViewCellStyle
+            {
+                Font = new System.Drawing.Font("Arial", 11, FontStyle.Bold),
+                BackColor = Color.LightGray,
+                ForeColor = Color.Black
+            };
+
+            Debug.WriteLine("DataGridView updated successfully with total.");
         }
+
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             // Get the current data from the DataGridView
-            DataTable dt = (DataTable)dgvSR.DataSource;
+            DataTable dt = ((DataTable)dgvSR.DataSource).AsEnumerable()
+                .Take(((DataTable)dgvSR.DataSource).Rows.Count - 1) // Exclude footer row
+                .CopyToDataTable();
+
             if (dt == null || dt.Rows.Count == 0)
             {
                 MessageBox.Show("No data available to update.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -475,10 +429,14 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+
         private void btnExcel_Click(object sender, EventArgs e)
         {
-            // Get the current filtered data from the DataGridView
-            DataTable dt = (DataTable)dgvSR.DataSource;
+            // Get the current filtered data from the DataGridView, excluding the footer row
+            DataTable dt = ((DataTable)dgvSR.DataSource).AsEnumerable()
+                .Take(((DataTable)dgvSR.DataSource).Rows.Count - 1) // Exclude footer row
+                .CopyToDataTable();
+
             if (dt == null || dt.Rows.Count == 0)
             {
                 MessageBox.Show("No data available to export.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -487,12 +445,6 @@ namespace HRAdmin.UserControl
 
             // Create a new DataTable for Excel with the required columns
             DataTable excelData = new DataTable();
-            //excelData.Columns.Add("Serial No", typeof(string));
-            //excelData.Columns.Add("Requester", typeof(string));
-            //excelData.Columns.Add("Expenses Type", typeof(string));
-            //excelData.Columns.Add("Request Date", typeof(DateTime));
-            //excelData.Columns.Add("Item", typeof(string));
-            //excelData.Columns.Add("Total Amount", typeof(decimal));
 
             // Fetch requester and item details from the database based on SerialNo
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -505,7 +457,6 @@ namespace HRAdmin.UserControl
                 SELECT 
                     A.SerialNo AS [Serial No], 
                     A.Requester AS [Requester],
-                    A.ExpensesType AS [Expenses Type],
                     A.RequestDate AS [Request Date],
                     B.Item AS [GL A/C & Description],
                     SUM(B.InvoiceAmount) AS [Amount (RM)]
@@ -518,7 +469,6 @@ namespace HRAdmin.UserControl
                 GROUP BY 
                     A.SerialNo, 
                     A.Requester,
-                    A.ExpensesType,
                     A.RequestDate,
                     B.Item;";
 
@@ -538,7 +488,7 @@ namespace HRAdmin.UserControl
                     using (var workbook = new XLWorkbook())
                     {
                         var worksheet = workbook.Worksheets.Add("SummaryReport");
-                        worksheet.Cell("A1").InsertTable(excelData);
+                        var table = worksheet.Cell("A1").InsertTable(excelData);
 
                         // Auto-fit columns
                         worksheet.Columns().AdjustToContents();
@@ -553,9 +503,6 @@ namespace HRAdmin.UserControl
                             FileName = tempFilePath,
                             UseShellExecute = true
                         });
-
-                        // Optional: Delete the temporary file after opening (note: file may still be in use)
-                        // This will be handled by the system when the file is closed by the user
                     }
                 }
                 catch (Exception ex)
@@ -568,5 +515,7 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+
+        
     }
 }
