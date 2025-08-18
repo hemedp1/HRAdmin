@@ -3231,4 +3231,19 @@ WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
 
         }
     }
+/*
+SELECT 
+    A.SerialNo, 
+    A.ExpensesType, 
+    A.RequestDate,
+    SUM(B.InvoiceAmount) AS TotalAmount
+FROM tbl_MasterClaimForm A
+LEFT JOIN tbl_DetailClaimForm B 
+    ON A.SerialNo = B.SerialNo
+WHERE A.RequestDate BETWEEN '2025-08-01' AND '2025-08-15'
+GROUP BY 
+    A.SerialNo, 
+    A.ExpensesType, 
+    A.RequestDate;*/
+
 }
