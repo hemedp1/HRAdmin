@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_M_SummaryReport));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnBack = new System.Windows.Forms.Button();
             this.gbSummary = new System.Windows.Forms.GroupBox();
@@ -51,15 +51,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.lblGrandTotal = new System.Windows.Forms.Label();
             this.btnUpdate = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.flowLayoutPanel1.SuspendLayout();
             this.gbSummary.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSR)).BeginInit();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -90,11 +86,6 @@
             // 
             this.gbSummary.BackColor = System.Drawing.Color.White;
             this.gbSummary.Controls.Add(this.panel2);
-            this.gbSummary.Controls.Add(this.label13);
-            this.gbSummary.Controls.Add(this.label14);
-            this.gbSummary.Controls.Add(this.cmbECtype);
-            this.gbSummary.Controls.Add(this.label11);
-            this.gbSummary.Controls.Add(this.label10);
             this.gbSummary.Controls.Add(this.panel1);
             this.gbSummary.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gbSummary.Font = new System.Drawing.Font("Calibri", 14F);
@@ -118,14 +109,14 @@
             // 
             this.dgvSR.BackgroundColor = System.Drawing.Color.White;
             this.dgvSR.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvSR.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvSR.DefaultCellStyle = dataGridViewCellStyle4;
             this.dgvSR.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvSR.Location = new System.Drawing.Point(0, 0);
             this.dgvSR.Name = "dgvSR";
@@ -139,7 +130,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label13.Location = new System.Drawing.Point(1167, 61);
+            this.label13.Location = new System.Drawing.Point(1138, 26);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(18, 27);
             this.label13.TabIndex = 143;
@@ -149,7 +140,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label14.Location = new System.Drawing.Point(966, 61);
+            this.label14.Location = new System.Drawing.Point(937, 26);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(195, 27);
             this.label14.TabIndex = 142;
@@ -165,7 +156,7 @@
             this.cmbECtype.Items.AddRange(new object[] {
             "Work",
             "Benefit"});
-            this.cmbECtype.Location = new System.Drawing.Point(1191, 58);
+            this.cmbECtype.Location = new System.Drawing.Point(1162, 23);
             this.cmbECtype.Name = "cmbECtype";
             this.cmbECtype.Size = new System.Drawing.Size(250, 35);
             this.cmbECtype.TabIndex = 141;
@@ -175,7 +166,7 @@
             // 
             this.dtpEnd.Font = new System.Drawing.Font("Calibri", 13F);
             this.dtpEnd.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpEnd.Location = new System.Drawing.Point(643, 22);
+            this.dtpEnd.Location = new System.Drawing.Point(625, 23);
             this.dtpEnd.Name = "dtpEnd";
             this.dtpEnd.Size = new System.Drawing.Size(250, 34);
             this.dtpEnd.TabIndex = 139;
@@ -186,7 +177,7 @@
             this.dtpStart.Checked = false;
             this.dtpStart.Font = new System.Drawing.Font("Calibri", 13F);
             this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpStart.Location = new System.Drawing.Point(258, 29);
+            this.dtpStart.Location = new System.Drawing.Point(190, 23);
             this.dtpStart.Name = "dtpStart";
             this.dtpStart.Size = new System.Drawing.Size(250, 34);
             this.dtpStart.TabIndex = 138;
@@ -196,7 +187,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label11.Location = new System.Drawing.Point(628, 57);
+            this.label11.Location = new System.Drawing.Point(601, 26);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(18, 27);
             this.label11.TabIndex = 137;
@@ -206,7 +197,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label10.Location = new System.Drawing.Point(181, 57);
+            this.label10.Location = new System.Drawing.Point(166, 26);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(18, 27);
             this.label10.TabIndex = 136;
@@ -216,7 +207,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label8.Location = new System.Drawing.Point(59, 16);
+            this.label8.Location = new System.Drawing.Point(59, 26);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(101, 27);
             this.label8.TabIndex = 135;
@@ -226,7 +217,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label1.Location = new System.Drawing.Point(550, 29);
+            this.label1.Location = new System.Drawing.Point(502, 26);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(93, 27);
             this.label1.TabIndex = 134;
@@ -234,11 +225,14 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.pictureBox2);
-            this.panel1.Controls.Add(this.pictureBox1);
+            this.panel1.Controls.Add(this.cmbECtype);
+            this.panel1.Controls.Add(this.label13);
+            this.panel1.Controls.Add(this.label14);
             this.panel1.Controls.Add(this.btnExcel);
             this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.dtpStart);
+            this.panel1.Controls.Add(this.label10);
             this.panel1.Controls.Add(this.dtpEnd);
             this.panel1.Controls.Add(this.label8);
             this.panel1.Controls.Add(this.label4);
@@ -259,7 +253,7 @@
             this.btnExcel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnExcel.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnExcel.Location = new System.Drawing.Point(265, 106);
+            this.btnExcel.Location = new System.Drawing.Point(251, 99);
             this.btnExcel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnExcel.Name = "btnExcel";
             this.btnExcel.Size = new System.Drawing.Size(124, 34);
@@ -314,7 +308,7 @@
             this.btnUpdate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnUpdate.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnUpdate.Location = new System.Drawing.Point(95, 103);
+            this.btnUpdate.Location = new System.Drawing.Point(64, 99);
             this.btnUpdate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(124, 34);
@@ -322,22 +316,6 @@
             this.btnUpdate.Text = "Update";
             this.btnUpdate.UseVisualStyleBackColor = false;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(50, 138);
-            this.pictureBox1.TabIndex = 142;
-            this.pictureBox1.TabStop = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Location = new System.Drawing.Point(72, 3);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(100, 10);
-            this.pictureBox2.TabIndex = 143;
-            this.pictureBox2.TabStop = false;
             // 
             // UC_M_SummaryReport
             // 
@@ -350,13 +328,10 @@
             this.Size = new System.Drawing.Size(1482, 793);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.gbSummary.ResumeLayout(false);
-            this.gbSummary.PerformLayout();
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSR)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -384,7 +359,5 @@
         private System.Windows.Forms.Label lblGrandTotal;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnExcel;
-        private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
