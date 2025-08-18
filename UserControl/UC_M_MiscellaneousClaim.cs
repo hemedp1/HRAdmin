@@ -2306,7 +2306,7 @@ namespace HRAdmin.UserControl
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2344,7 +2344,7 @@ namespace HRAdmin.UserControl
                 else if (userAccessLevel == 3)
                 {
                     // Check if loggedInDepart is GENERAL AFFAIRS
-                    if (loggedInDepart != "GENERAL AFFAIRS")
+                    if (UserSession.loggedInDepart != "GENERAL AFFAIRS")
                     {
                         MessageBox.Show("Only users from GENERAL AFFAIRS can reject this Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -2460,7 +2460,7 @@ namespace HRAdmin.UserControl
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
