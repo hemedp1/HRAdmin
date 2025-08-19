@@ -235,8 +235,6 @@ namespace HRAdmin.UserControl
         {
 
         }
-
-
         private void CheckUserAccess2(string username)
         {
             try

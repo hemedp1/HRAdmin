@@ -344,23 +344,23 @@ namespace HRAdmin.UserControl
                         string subject = "HEM Admin Accessibility Notification: New Car Booking Request Awaiting Approval";
 
                         string body = $@"
-        <p>Dear Approver,</p>
-        <p>A new <strong>car booking request</strong> has been submitted by <strong>{requester}</strong>.</p>
+                                        <p>Dear Approver - HOD,</p>
+                                        <p>A new <strong>car booking request</strong> has been submitted by Mr./Ms. <strong>{requester}</strong>.</p>
 
-        <p><u>Booking Summary:</u></p>
-        <ul>
-            <li><strong>Purpose:</strong> {purpose}</li>
-            <li><strong>Destination:</strong> {destination}</li>
-            <li><strong>Request Date:</strong> {formattedDate}</li>
-            <li><strong>Time Out:</strong> {cmbOut.Text}</li>
-            <li><strong>Time In:</strong> {cmbIn.Text}</li>
+                                        <p><u>Booking Summary:</u></p>
+                                        <ul>
+                                            <li><strong>Purpose:</strong> {purpose}</li>
+                                            <li><strong>Destination:</strong> {destination}</li>
+                                            <li><strong>Request Date:</strong> {formattedDate}</li>
+                                            <li><strong>Time Out:</strong> {cmbOut.Text}</li>
+                                            <li><strong>Time In:</strong> {cmbIn.Text}</li>
             
-        </ul>
+                                        </ul>
 
-        <p>Please log in to the system to review and approve the request.</p>
+                                        <p>Please log in to the system to review and approve the request.</p>
 
-        <p>Thank you,<br/>HEM Admin Accessibility</p>
-    ";
+                                        <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                    ";
 
                         foreach (var email in approverEmails)
                         {

@@ -595,7 +595,6 @@ namespace HRAdmin.UserControl
 
                     }
 
-
                     string insertQuery = @"
                     INSERT INTO tbl_AccidentCar (DateReport, DriverInternal, IndexNo, Dept, Car, Destination, DriverExternal, NoofVehicle, PlatNo, VehicleType, InsuranceClass, InsuranceComp, IC, Tel, PolicyNo, Address, DateofAccident, Place, Time, PM, PoliceStation, ReportNo, ReportID, Attachment, Explanation, CheckStatus, ApproveStatus) " +
                                "VALUES (@DateReport, @DriverInternal, @IndexNo, @Dept, @Car, @Destination, @DriverExternal, @NoofVehicle, @PlatNo, @VehicleType, @InsuranceClass, @InsuranceComp, @IC, @Tel, @PolicyNo, @Address, @DateofAccident, @Place, @Time, @PM, @PoliceStation, @ReportNo, @ReportID, @Attachment, @Explanation, 'Pending', 'Pending')";
@@ -1037,6 +1036,11 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("This report has already been checked.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
+                    if (statusCheck == "Rejected")
+                    {
+                        MessageBox.Show("This accident record has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
 
                 DialogResult result = MessageBox.Show("Are you sure you want to verify this accident record?", "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -1102,13 +1106,22 @@ namespace HRAdmin.UserControl
                         }
                     }
 
-                    if (string.IsNullOrEmpty(statusCheck) || statusCheck != "Checked")
+                    if (statusCheck == "Pending")
                     {
                         MessageBox.Show("Cannot proceed. Status Check must be 'Checked'.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
-                    if (approveStatus == "Approve")
+                    if (statusCheck == "Rejected")
+                    {
+                        MessageBox.Show("This accident record has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (approveStatus == "Rejected")
+                    {
+                        MessageBox.Show("This accident record has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (approveStatus == "Approved")
                     {
                         MessageBox.Show("This report has already been Approved.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -1124,7 +1137,7 @@ namespace HRAdmin.UserControl
                             string query = @"UPDATE tbl_AccidentCar 
                                    SET 
                                       DateApprove = @DateApprove, 
-                                      ApproveStatus = 'Approve', 
+                                      ApproveStatus = 'Approved', 
                                       ApproveBy = @ApproveBy, 
                                       Remarks = @Remarks,
                                       ApproveByDepartment = @ApproveByDepartment
@@ -1366,5 +1379,110 @@ namespace HRAdmin.UserControl
             cmbdriver.DataSource = null;
             dtp_filter.Checked = false;
         }
+        private void btnRej_Admin_Click(object sender, EventArgs e)
+        {
+            string selectedDate = dTDay.Value.Date.ToString("yyyy-MM-dd");
+
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                con.Open();
+
+                string checkQuery = @"SELECT CheckStatus, ApproveStatus 
+                              FROM tbl_AccidentCar 
+                              WHERE CAST(DateReport AS DATE) = @Date 
+                              AND ReportID = @ReportID";
+
+                using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
+                {
+                    checkCmd.Parameters.Add("@Date", SqlDbType.Date).Value = selectedDate;
+                    checkCmd.Parameters.Add("@ReportID", SqlDbType.VarChar).Value = cmnRepID.Text.Trim();
+
+                    string statusCheck = null;
+                    string approveStatus = null;
+
+                    using (SqlDataReader reader = checkCmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            statusCheck = reader["CheckStatus"]?.ToString();
+                            approveStatus = reader["ApproveStatus"]?.ToString();
+                        }
+                    } // ✅ reader closed here
+
+                    if (statusCheck == null) return; // no record found
+
+                    // approve : pen → rej
+                    if (statusCheck == "Checked" && approveStatus == "Pending")
+                    {
+                        if (MessageBox.Show("Are you sure you want to reject this accident record?",
+                            "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            string query = @"UPDATE tbl_AccidentCar 
+                                     SET DateApprove = @DateApprove, 
+                                         ApproveStatus = 'Rejected', 
+                                         ApproveBy = @ApproveBy, 
+                                         Remarks = @Remarks,
+                                         ApproveByDepartment = @ApproveByDepartment
+                                     WHERE CAST(DateReport AS DATE) = @Date 
+                                       AND ReportID = @ReportID";
+
+                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            {
+                                cmd.Parameters.Add("@DateApprove", SqlDbType.Date).Value = selectedDate;
+                                cmd.Parameters.Add("@Date", SqlDbType.Date).Value = selectedDate;
+                                cmd.Parameters.Add("@ReportID", SqlDbType.VarChar).Value = cmnRepID.Text.Trim();
+                                cmd.Parameters.Add("@ApproveBy", SqlDbType.VarChar).Value = loggedInUser;
+                                cmd.Parameters.Add("@ApproveByDepartment", SqlDbType.VarChar).Value = loggedInDepart;
+                                cmd.Parameters.Add("@Remarks", SqlDbType.VarChar).Value = txtRemarksAdmin.Text.Trim();
+
+                                cmd.ExecuteNonQuery();
+                                MessageBox.Show("Accident record rejected successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                    // chck : pen → rej
+                    else if (statusCheck == "Pending" && approveStatus == "Pending")
+                    {
+                        if (MessageBox.Show("Are you sure you want to reject this accident record?",
+                            "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            string query = @"UPDATE tbl_AccidentCar 
+                                     SET DateCheck = @DateCheck, 
+                                         CheckStatus = 'Rejected', 
+                                         CheckedBy = @CheckedBy, 
+                                         Remarks = @Remarks,
+                                         CheckedByDepartment = @CheckedByDepartment
+                                     WHERE CAST(DateReport AS DATE) = @Date 
+                                       AND ReportID = @ReportID";
+
+                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            {
+                                cmd.Parameters.Add("@DateCheck", SqlDbType.Date).Value = selectedDate;
+                                cmd.Parameters.Add("@Date", SqlDbType.Date).Value = selectedDate;
+                                cmd.Parameters.Add("@ReportID", SqlDbType.VarChar).Value = cmnRepID.Text.Trim();
+                                cmd.Parameters.Add("@CheckedBy", SqlDbType.VarChar).Value = loggedInUser;
+                                cmd.Parameters.Add("@CheckedByDepartment", SqlDbType.VarChar).Value = loggedInDepart;
+                                cmd.Parameters.Add("@Remarks", SqlDbType.VarChar).Value = txtRemarksAdmin.Text.Trim();
+
+                                cmd.ExecuteNonQuery();
+                                MessageBox.Show("Accident record rejected successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                    // prevent reject again
+                    else if ((statusCheck == "Rejected" && approveStatus == "Pending") ||
+                             (statusCheck == "Checked" && approveStatus == "Rejected"))
+                    {
+                        MessageBox.Show("This accident record has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    else if (statusCheck == "Checked" && approveStatus == "Approved") 
+                    {
+                        MessageBox.Show("This accident record has already been approved.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+        }
+
+
     }
 }

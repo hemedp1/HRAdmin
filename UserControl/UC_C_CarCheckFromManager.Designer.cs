@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_CarCheckFromManager));
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -41,6 +41,7 @@
             this.dTDay = new System.Windows.Forms.DateTimePicker();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
+            this.btnRej = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -74,14 +75,14 @@
             // 
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
@@ -105,6 +106,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnRej);
             this.groupBox2.Controls.Add(this.btnCheck);
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.label9);
@@ -125,7 +127,7 @@
             this.btnCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCheck.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnCheck.Location = new System.Drawing.Point(308, 122);
+            this.btnCheck.Location = new System.Drawing.Point(218, 122);
             this.btnCheck.Name = "btnCheck";
             this.btnCheck.Size = new System.Drawing.Size(139, 43);
             this.btnCheck.TabIndex = 29;
@@ -160,7 +162,7 @@
             this.dTDay.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dTDay.Location = new System.Drawing.Point(218, 70);
             this.dTDay.Name = "dTDay";
-            this.dTDay.Size = new System.Drawing.Size(229, 37);
+            this.dTDay.Size = new System.Drawing.Size(284, 37);
             this.dTDay.TabIndex = 26;
             this.dTDay.ValueChanged += new System.EventHandler(this.dTDay_ValueChanged);
             // 
@@ -187,6 +189,21 @@
             this.btnBack.TabIndex = 21;
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
+            // 
+            // btnRej
+            // 
+            this.btnRej.BackColor = System.Drawing.Color.White;
+            this.btnRej.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnRej.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnRej.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRej.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnRej.Location = new System.Drawing.Point(363, 122);
+            this.btnRej.Name = "btnRej";
+            this.btnRej.Size = new System.Drawing.Size(139, 43);
+            this.btnRej.TabIndex = 30;
+            this.btnRej.Text = "Reject";
+            this.btnRej.UseVisualStyleBackColor = false;
+            this.btnRej.Click += new System.EventHandler(this.btnRej_Click);
             // 
             // UC_C_CarCheckFromManager
             // 
@@ -220,5 +237,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.DateTimePicker dTDay;
+        private System.Windows.Forms.Button btnRej;
     }
 }

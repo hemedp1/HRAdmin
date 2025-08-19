@@ -255,7 +255,7 @@ namespace HRAdmin.UserControl
                             string subject = "HEM Admin Accessibility Notification: Your Car Booking Has Been Approved";
                             string body = $@"
                                                     <p>Dear Mr./Ms. {selectedPerson},</p>
-                                                    <p>Your <strong>car booking request</strong> has been <strong>approved</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+                                                    <p>Your <strong>car booking request</strong> has been <strong>approved</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
 
                     
                                                     <p><u>Booking Details:</u></p>
@@ -265,7 +265,7 @@ namespace HRAdmin.UserControl
                                                         <li><strong>Request Date:</strong> {formattedDate}</li>
                                                         <li><strong>Time Out:</strong> {timeout}</li>
                                                         <li><strong>Time In:</strong> {timeIN}</li>
-                                                        
+                                                
                                                     </ul>
 
                                                      <p>Kindly log in to the system to <strong>acknowledge</strong> the booking and collect the <strong>key</strong> from the <strong>HR & ADMIN Department</strong>.</p>
@@ -320,7 +320,7 @@ namespace HRAdmin.UserControl
                             string subject = "HEM Admin Accessibility Notification: Your Car Booking Has Been Rejected";
                             string body = $@"
                                                     <p>Dear Mr./Ms. {selectedPerson},</p>
-                                                    <p>Your <strong>car booking request</strong> has been <strong>rejected</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+                                                    <p>Your <strong>car booking request</strong> has been <strong>rejected</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
 
                     
                                                     <p><u>Booking Details:</u></p>

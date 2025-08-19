@@ -34,6 +34,7 @@ namespace HRAdmin.UserControl
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_Accident));
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.btnRej_Admin = new System.Windows.Forms.Button();
             this.btnApp_Admin = new System.Windows.Forms.Button();
             this.btnChecked = new System.Windows.Forms.Button();
             this.label72 = new System.Windows.Forms.Label();
@@ -198,6 +199,7 @@ namespace HRAdmin.UserControl
             // groupBox6
             // 
             this.groupBox6.BackColor = System.Drawing.Color.White;
+            this.groupBox6.Controls.Add(this.btnRej_Admin);
             this.groupBox6.Controls.Add(this.btnApp_Admin);
             this.groupBox6.Controls.Add(this.btnChecked);
             this.groupBox6.Controls.Add(this.label72);
@@ -213,6 +215,21 @@ namespace HRAdmin.UserControl
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "GA";
             // 
+            // btnRej_Admin
+            // 
+            this.btnRej_Admin.BackColor = System.Drawing.Color.White;
+            this.btnRej_Admin.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnRej_Admin.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnRej_Admin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRej_Admin.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnRej_Admin.Location = new System.Drawing.Point(915, 228);
+            this.btnRej_Admin.Name = "btnRej_Admin";
+            this.btnRej_Admin.Size = new System.Drawing.Size(139, 43);
+            this.btnRej_Admin.TabIndex = 68;
+            this.btnRej_Admin.Text = "Reject";
+            this.btnRej_Admin.UseVisualStyleBackColor = false;
+            this.btnRej_Admin.Click += new System.EventHandler(this.btnRej_Admin_Click);
+            // 
             // btnApp_Admin
             // 
             this.btnApp_Admin.BackColor = System.Drawing.Color.White;
@@ -220,7 +237,7 @@ namespace HRAdmin.UserControl
             this.btnApp_Admin.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnApp_Admin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnApp_Admin.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnApp_Admin.Location = new System.Drawing.Point(913, 225);
+            this.btnApp_Admin.Location = new System.Drawing.Point(770, 228);
             this.btnApp_Admin.Name = "btnApp_Admin";
             this.btnApp_Admin.Size = new System.Drawing.Size(139, 43);
             this.btnApp_Admin.TabIndex = 67;
@@ -235,7 +252,7 @@ namespace HRAdmin.UserControl
             this.btnChecked.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.btnChecked.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnChecked.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnChecked.Location = new System.Drawing.Point(759, 225);
+            this.btnChecked.Location = new System.Drawing.Point(616, 228);
             this.btnChecked.Name = "btnChecked";
             this.btnChecked.Size = new System.Drawing.Size(139, 43);
             this.btnChecked.TabIndex = 66;
@@ -1806,5 +1823,6 @@ namespace HRAdmin.UserControl
         private System.Windows.Forms.Panel panel4;
         private DateTimePicker dtp_filter;
         private Button button1;
+        private Button btnRej_Admin;
     }
 }
