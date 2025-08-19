@@ -386,32 +386,56 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
-                    string query = "SELECT AA, MA FROM tbl_Users WHERE Username = @Username";
+                    string query = "SELECT a.Username, a.Name1,a.AA, a.MA, a.Position, b.TitlePosition, b.AccessLevel\r\n\r\nFROM tbl_Users a\r\n\r\nLEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition WHERE a.Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Username", username);
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        using (SqlDataReader reader = cmd.ExecuteReader())  // Use SqlDataReader
                         {
                             if (reader.Read())
                             {
                                 string AA = reader["AA"].ToString();
                                 string MA = reader["MA"].ToString();
+                                int accessLevel = Convert.ToInt32(reader["AccessLevel"]);
 
-                                if (AA == "1")
+                                //MessageBox.Show($"AA.: {AA}");
+                                //MessageBox.Show($"MA: {MA}");
+                                //MessageBox.Show($"UserSession.loggedInDepart: {UserSession.loggedInDepart}");
+                                //MessageBox.Show($"AccessLevel: {accessLevel}");
+
+                                if (AA == "1" || AA == "2")
                                 {
-                                    Form_Home.sharedButton4.Visible = true;
-                                    Form_Home.sharedButton5.Visible = true;
+                                    if (accessLevel >= 0 && UserSession.loggedInDepart == "HR & ADMIN")
+                                    {
+                                        //MessageBox.Show($"111");
+                                        Form_Home.sharedButton4.Visible = true;
+                                        Form_Home.sharedButton5.Visible = true;
+                                    }
+                                    else
+                                    {
+
+                                        //.Show($"222");
+                                    }
+                                    //MessageBox.Show($"333");
                                 }
-                                else if (MA == "2")
-                                {
-                                    Form_Home.sharedButton4.Visible = true;
-                                    Form_Home.sharedButton5.Visible = true;
-                                }
-                                else
+                                else if (MA == "2")   // && AA == "0"
                                 {
                                     Form_Home.sharedButton4.Visible = false;
                                     Form_Home.sharedButton5.Visible = false;
+                                }
+                                else
+                                {
+                                    if (accessLevel > 0 && UserSession.loggedInDepart == "HR & Admin")
+                                    {
+                                        Form_Home.sharedButton4.Visible = true;
+                                        Form_Home.sharedButton5.Visible = true;
+                                    }
+                                    else
+                                    {
+                                        Form_Home.sharedButton4.Visible = false;
+                                        Form_Home.sharedButton5.Visible = false;
+                                    }
                                 }
                             }
                             else
