@@ -429,7 +429,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btnExcel_Click(object sender, EventArgs e)
         {
             // Get the current filtered data from the DataGridView, excluding the footer row
@@ -515,7 +514,5 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
-        
     }
 }
