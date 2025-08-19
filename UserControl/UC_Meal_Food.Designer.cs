@@ -159,7 +159,6 @@
             this.GB_Authorization.TabIndex = 0;
             this.GB_Authorization.TabStop = false;
             this.GB_Authorization.Text = "Authorization";
-            //this.GB_Authorization.Enter += new System.EventHandler(this.GB_Authorization_Enter);
             // 
             // btnReject
             // 

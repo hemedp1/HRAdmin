@@ -283,7 +283,7 @@ namespace HRAdmin.UserControl
             dgvSR.Columns.Add(new DataGridViewTextBoxColumn()
             {
                 Name = "TotalAmount",
-                HeaderText = "Amount",
+                HeaderText = "Amount (RM)",
                 DataPropertyName = "TotalAmount",
                 Width = fixedColumnWidth,
                 DefaultCellStyle = new DataGridViewCellStyle
