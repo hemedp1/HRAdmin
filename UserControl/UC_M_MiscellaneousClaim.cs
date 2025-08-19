@@ -2010,6 +2010,11 @@ namespace HRAdmin.UserControl
                 return;
             }
 
+            if (requester == UserSession.loggedInName)
+            {
+                MessageBox.Show("You cannot reject your own Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             // Get user access level from tbl_UsersLevel by joining with tbl_Users
             int userAccessLevel = 2;
             try
