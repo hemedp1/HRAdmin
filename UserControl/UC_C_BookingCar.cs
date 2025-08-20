@@ -551,7 +551,7 @@ namespace HRAdmin.UserControl
                 AND cb.RequestDate = @RequestDate
                 AND cb.StartDate <= @EndTime
                 AND cb.EndDate >= @StartTime
-                WHERE cb.AssignedCar IS NULL";
+                WHERE cb.AssignedCar IS NULL c.Status <> 'VIP' ";
 
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
             {
