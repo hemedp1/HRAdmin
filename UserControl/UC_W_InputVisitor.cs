@@ -1,16 +1,18 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office.Word;
+using DocumentFormat.OpenXml.Presentation;
+using HRAdmin.Forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using HRAdmin.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using System.Configuration;
-using System.Data.SqlClient;
 
 namespace HRAdmin.UserControl
 {
@@ -120,16 +122,31 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    string query = "SELECT DISTINCT Company FROM tbl_RegisterVisitor ORDER BY Company";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    SqlDataReader reader = cmd.ExecuteReader();
 
-                    cmbCompany.Items.Clear();
-                    while (reader.Read())
+                    string query = "SELECT DISTINCT Company FROM tbl_RegisterVisitor";
+                    if (!string.IsNullOrWhiteSpace(cmbCompany.Text))
                     {
-                        cmbCompany.Items.Add(reader["Company"].ToString());
+                        query += " WHERE Company LIKE @Company";
                     }
-                    reader.Close();
+                    query += " ORDER BY Company";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        if (!string.IsNullOrWhiteSpace(cmbCompany.Text))
+                        {
+                            cmd.Parameters.Add("@Company", SqlDbType.NVarChar).Value = "%" + cmbCompany.Text + "%";
+                        }
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            cmbCompany.Items.Clear();
+
+                            while (reader.Read())
+                            {
+                                cmbCompany.Items.Add(reader["Company"].ToString());
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -137,6 +154,7 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"Error loading companies: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void cmbCompany_SelectedIndexChanged(object sender, EventArgs e)
         {

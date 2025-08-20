@@ -213,7 +213,7 @@ namespace HRAdmin.UserControl
             footerRow["ExpensesType"] = DBNull.Value;
             footerRow["RequestDate"] = DBNull.Value;
             footerRow["TotalAmount"] = totalAmount; // Display the sum
-            footerRow["PaymentStatus"] = "Total"; // Label for the footer
+            footerRow["PaymentStatus"] = "Total Amount"; // Label for the footer
             dtWithFooter.Rows.Add(footerRow);
 
             // Configure DataGridView

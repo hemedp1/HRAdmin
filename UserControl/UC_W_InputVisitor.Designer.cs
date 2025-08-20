@@ -258,7 +258,6 @@
             // 
             // cmbCompany
             // 
-            this.cmbCompany.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCompany.Font = new System.Drawing.Font("Calibri", 13F);
             this.cmbCompany.FormattingEnabled = true;
             this.cmbCompany.Location = new System.Drawing.Point(228, 51);
