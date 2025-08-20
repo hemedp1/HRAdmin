@@ -416,7 +416,13 @@ namespace HRAdmin.UserControl
 
         private void gbCarInspect()
         {
+            MessageBox.Show($"Terms:{car}");
             groupBox3.Text = car + " Inspection Log"; // This updates the title of the GroupBox
+
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
 
         }
     }

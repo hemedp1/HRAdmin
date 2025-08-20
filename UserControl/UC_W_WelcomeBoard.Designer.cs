@@ -141,6 +141,7 @@
             this.lblPurpose.TabIndex = 127;
             this.lblPurpose.Text = "Purpose";
             this.lblPurpose.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblPurpose.Click += new System.EventHandler(this.lblPurpose_Click);
             // 
             // panel5
             // 

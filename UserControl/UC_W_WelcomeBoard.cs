@@ -379,5 +379,92 @@ namespace HRAdmin.UserControl
         private void label1_Click(object sender, EventArgs e) { }
         private void label2_Click(object sender, EventArgs e) { }
         private void dgv_Visitor_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+
+        private void lblPurpose_Click(object sender, EventArgs e)
+        {
+
+        }
+        /*
+         private void btnSearch_Click(object sender, EventArgs e)
+        {
+
+             try
+                {
+                    // Retrieve values from ComboBoxes, ignoring placeholders
+                    string prodCat = cmbPC.Text.Trim() != "Product Category" ? cmbPC.Text.Trim() : null;
+                    string product = cmbProduct.Text.Trim() != "Product" ? cmbProduct.Text.Trim() : null;
+                    string prodDesc = txtdesc.Text.Trim() != "Product Description" ? txtdesc.Text.Trim() : null;
+                    string  productCode= txtProdCode.Text.Trim() != "Product Code" ? txtProdCode.Text.Trim() : null;
+
+                    // Prepare the connection string
+                    string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+
+                    using (SqlConnection con = new SqlConnection(connectionString))
+                    {
+                        // Base query
+                        string query = @"
+                SELECT * 
+                FROM ITEMMASTER
+                WHERE 1 = 1"; // '1 = 1' allows us to append conditions dynamically
+
+                        // Dynamic conditions
+                        List<string> conditions = new List<string>();
+                        SqlCommand cmd = new SqlCommand();
+                        cmd.Connection = con;
+
+                        if (!string.IsNullOrWhiteSpace(prodCat))
+                        {
+                            conditions.Add("Product_Type LIKE @prodCat");
+                            cmd.Parameters.Add("@prodCat", SqlDbType.NVarChar).Value = "%" + prodCat + "%";
+                        } 
+                        if (!string.IsNullOrWhiteSpace(product))
+                        {
+                            conditions.Add("Product_ID LIKE @product");
+                            cmd.Parameters.Add("@product", SqlDbType.NVarChar).Value = "%" + product + "%";
+                        }
+                        if (!string.IsNullOrWhiteSpace(prodDesc))
+                        {
+                            conditions.Add("[Desc] LIKE @prodDesc");
+                            cmd.Parameters.Add("@prodDesc", SqlDbType.NVarChar).Value = "%" + prodDesc + "%";
+                        }
+                        if (!string.IsNullOrWhiteSpace(productCode))
+                        {
+                            conditions.Add("Product_code LIKE @productCode");
+                            cmd.Parameters.Add("@productCode", SqlDbType.NVarChar).Value = "%" + productCode + "%";
+                        }
+
+                        // Append conditions to the query
+                        if (conditions.Count > 0)
+                        {
+                            query += " AND " + string.Join(" AND ", conditions);
+                        }
+
+                        cmd.CommandText = query;
+
+                        // Execute query and load data into DataGridView
+                        using (SqlDataAdapter sqlDa = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dtbl = new DataTable();
+                            sqlDa.Fill(dtbl);
+
+                            if (dtbl.Rows.Count > 0)
+                            {
+                                dataG.DataSource = dtbl;
+                            }
+                            else
+                            {
+                                dataG.DataSource = null;
+                                MessageBox.Show("No data found for the selected criteria.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error occurred while loading data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+             }
+            
+        }
+        */
     }
 }
