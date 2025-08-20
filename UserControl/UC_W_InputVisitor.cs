@@ -23,7 +23,7 @@ namespace HRAdmin.UserControl
         private List<string> allVisitorNames; // To store the full list of visitor names
         private ComboBox[] visitorComboBoxes; // Array of visitor comboboxes for easier management
         private bool isUpdatingComboBoxes; // Flag to prevent recursive event calls
-
+        private System.Windows.Forms.Timer searchTimer;
         public UC_W_InputVisitor(string username, string department)
         {
             InitializeComponent();
@@ -45,7 +45,8 @@ namespace HRAdmin.UserControl
             {
                 comboBox.SelectedIndexChanged += VisitorComboBox_SelectedIndexChanged;
             }
-
+            // In constructor
+            cmbCompany.TextChanged += cmbCompany_TextChanged;   
             isUpdatingComboBoxes = false; // Initialize flag
 
             // Initially disable NOP and visitor comboboxes until a company is selected
@@ -55,7 +56,6 @@ namespace HRAdmin.UserControl
                 comboBox.Enabled = false;
             }
         }
-
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -70,7 +70,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Welcome Board";
@@ -85,9 +84,12 @@ namespace HRAdmin.UserControl
             UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void UC_InputVisitor_Load(object sender, EventArgs e)
         {
+            searchTimer = new System.Windows.Forms.Timer();
+            searchTimer.Interval = 500; // half a second delay
+            searchTimer.Tick += SearchTimer_Tick;
+
             // Populate ComboBox with numbers 1 to 10 if not already done in designer
             if (cmb_NOP.Items.Count == 0)
             {
@@ -113,55 +115,59 @@ namespace HRAdmin.UserControl
             // Populate visitor comboboxes (initially empty until a company is selected)
             PopulateVisitorComboBoxes();
         }
-
         private void PopulateCompanyComboBox()
         {
             try
             {
-                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
-                using (SqlConnection con = new SqlConnection(connectionString))
+                string filter = cmbCompany.Text.Trim();
+
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                using (SqlCommand cmd = new SqlCommand(@"SELECT DISTINCT TOP 20 Company 
+                                                 FROM tbl_RegisterVisitor 
+                                                 WHERE Company LIKE @Company + '%'
+                                                 ORDER BY Company;", con))
                 {
+                    cmd.Parameters.AddWithValue("@Company", filter);
+
                     con.Open();
 
-                    string query = "SELECT DISTINCT Company FROM tbl_RegisterVisitor";
-                    if (!string.IsNullOrWhiteSpace(cmbCompany.Text))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        query += " WHERE Company LIKE @Company";
-                    }
-                    query += " ORDER BY Company";
+                        List<string> companies = new List<string>();
 
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        if (!string.IsNullOrWhiteSpace(cmbCompany.Text))
+                        while (reader.Read())
                         {
-                            cmd.Parameters.Add("@Company", SqlDbType.NVarChar).Value = "%" + cmbCompany.Text + "%";
+                            companies.Add(reader["Company"].ToString());
                         }
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            cmbCompany.Items.Clear();
-
-                            while (reader.Read())
-                            {
-                                cmbCompany.Items.Add(reader["Company"].ToString());
-                            }
-                        }
+                        cmbCompany.Items.Clear();
+                        cmbCompany.Items.AddRange(companies.ToArray());
+                        cmbCompany.SelectionStart = cmbCompany.Text.Length;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading companies: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error loading companies: " + ex.Message);
             }
         }
 
-
+        private void cmbCompany_TextChanged(object sender, EventArgs e)
+        {
+            searchTimer.Stop();
+            searchTimer.Start();
+            PopulateCompanyComboBox();
+        }
+        private void SearchTimer_Tick(object sender, EventArgs e)
+        {
+            searchTimer.Stop();
+            PopulateCompanyComboBox(); // query DB only once after typing pauses
+        }
         private void cmbCompany_SelectedIndexChanged(object sender, EventArgs e)
         {
             // When company selection changes, update visitor comboboxes
             PopulateVisitorComboBoxes();
         }
-
         private void PopulateVisitorComboBoxes()
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -269,7 +275,6 @@ namespace HRAdmin.UserControl
                 UpdateAllVisitorComboBoxes(true); // Force reset on error
             }
         }
-
         private void VisitorComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (isUpdatingComboBoxes) return; // Prevent recursive calls
@@ -277,7 +282,6 @@ namespace HRAdmin.UserControl
             // Update all comboboxes to filter out selected visitors
             UpdateAllVisitorComboBoxes();
         }
-
         private void UpdateAllVisitorComboBoxes(bool forceReset = false)
         {
             if (isUpdatingComboBoxes && !forceReset) return; // Prevent recursive calls unless forced
@@ -359,7 +363,6 @@ namespace HRAdmin.UserControl
                 isUpdatingComboBoxes = false; // Reset flag
             }
         }
-
         private void btnSubmit_Click(object sender, EventArgs e)
         {
             if (cmbCompany.SelectedItem == null)
@@ -437,7 +440,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"Error submitting visitor details: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void cmb_NOP_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (int.TryParse(cmb_NOP.SelectedItem?.ToString(), out int numberOfVisitors))
@@ -466,7 +468,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void UpdateVisibleComboBoxes(int numberOfVisitors)
         {
             for (int i = 0; i < visitorComboBoxes.Length; i++)
@@ -475,7 +476,6 @@ namespace HRAdmin.UserControl
                 visitorComboBoxes[i].SelectedIndex = -1; // Clear selection for all ComboBoxes, visible or not
             }
         }
-
         private void txtPurpose_TextChanged(object sender, EventArgs e)
         {
 
