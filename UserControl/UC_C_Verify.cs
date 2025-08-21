@@ -85,6 +85,7 @@ namespace HRAdmin.UserControl
             int rowIndex = dataGridView2.CurrentRow.Index;
             string IDStr = dataGridView2.Rows[rowIndex].Cells[0]?.Value?.ToString();
             string selectedPerson = dataGridView2.Rows[rowIndex].Cells[1]?.Value?.ToString();
+            string goDateStr = dataGridView2.Rows[rowIndex].Cells[4]?.Value?.ToString();
             string car = dataGridView2.Rows[rowIndex].Cells[15]?.Value?.ToString();
 
 
@@ -99,7 +100,27 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Invalid ID format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
+            if (!string.IsNullOrEmpty(goDateStr) && DateTime.TryParse(goDateStr, out DateTime goDate))
+            {
+                // Compare only the date part
+                if (goDate.Date != DateTime.Now.Date)
+                {
+                    MessageBox.Show(
+                        $"You can only acknowledge on your booking date: {goDate:dd MMM yyyy}.",
+                        "Acknowledgement Not Allowed",
+                                                MessageBoxButtons.OK,
+                                    MessageBoxIcon.Warning);
+                    return; // stop further processing
+                }
+            }
+            else
+            {
+                MessageBox.Show("Invalid GoDate value.",
+                                "Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
+            }
             DialogResult confirm = MessageBox.Show($"Do you agree to these terms and conditions?",
                                                    $"Verify Confirmation",
                                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -419,7 +440,6 @@ namespace HRAdmin.UserControl
 
         private void gbCarInspect()
         {
-            MessageBox.Show($"Terms:{car}");
             groupBox3.Text = car + " Inspection Log"; // This updates the title of the GroupBox
 
         }

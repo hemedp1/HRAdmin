@@ -118,15 +118,19 @@ namespace HRAdmin.UserControl
                 dataGridView1.DefaultCellStyle = new DataGridViewCellStyle
                 {
                     Font = new System.Drawing.Font("Arial", 11, System.Drawing.FontStyle.Regular),
-                    //ForeColor = System.Drawing.Color.MidnightBlue
+                    ForeColor = System.Drawing.Color.MidnightBlue,
+                    SelectionBackColor = System.Drawing.Color.OrangeRed, // background when selected
+                    SelectionForeColor = System.Drawing.Color.White    
                 };
 
                 dataGridView1.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
                 {
                     Font = new System.Drawing.Font("Arial", 11, System.Drawing.FontStyle.Bold),
-                    //ForeColor = System.Drawing.Color.MidnightBlue
+                    ForeColor = System.Drawing.Color.MidnightBlue,
+                    BackColor = System.Drawing.Color.LightGray,
+                    SelectionBackColor = System.Drawing.Color.OrangeRed,
+                    SelectionForeColor = System.Drawing.Color.White
                 };
-
 
                 // ===== Column Sizes =====
                 foreach (DataGridViewColumn col in dataGridView1.Columns)

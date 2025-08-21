@@ -140,7 +140,7 @@ namespace HRAdmin.UserControl
                             companies.Add(reader["Company"].ToString());
                         }
 
-                        cmbCompany.Items.Clear();
+                        //cmbCompany.Items.Clear();
                         cmbCompany.Items.AddRange(companies.ToArray());
                         cmbCompany.SelectionStart = cmbCompany.Text.Length;
                     }
@@ -151,7 +151,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error loading companies: " + ex.Message);
             }
         }
-
         private void cmbCompany_TextChanged(object sender, EventArgs e)
         {
             searchTimer.Stop();
