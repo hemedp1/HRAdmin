@@ -2148,8 +2148,8 @@ namespace HRAdmin.UserControl
                     document.Add(mainLayoutTable);
 
                     Paragraph detailsHeading = new Paragraph("Details of the Order:", bodyFont);
-                    detailsHeading.SpacingBefore = 10f;
-                    detailsHeading.SpacingAfter = 5f;
+                    detailsHeading.SpacingBefore = 0f;
+                    detailsHeading.SpacingAfter = 3f;
                     document.Add(detailsHeading);
 
                     string breakfastPackage = orderDetails["BreakfastPackage"].ToString();

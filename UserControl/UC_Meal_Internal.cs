@@ -497,13 +497,13 @@ namespace HRAdmin.UserControl
                                 // Populate Delivery Times
                                 cmb_DeliveryT.Items.AddRange(new string[]
                                 {
-                            "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
+                                     "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30"
                                 });
 
                                 // Populate Delivery Places
                                 cmb_DeliveryP.Items.AddRange(new string[]
                                 {
-                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen", "KLIA training centre"
                                 });
                                 break;
 
@@ -536,7 +536,7 @@ namespace HRAdmin.UserControl
                                 // Populate Delivery Places
                                 cmb_DeliveryP.Items.AddRange(new string[]
                                 {
-                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen", "KLIA training centre"
                                 });
                                 break;
 
@@ -569,7 +569,7 @@ namespace HRAdmin.UserControl
                                 // Populate Delivery Places
                                 cmb_DeliveryP.Items.AddRange(new string[]
                                 {
-                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen", "KLIA training centre"
                                 });
                                 break;
 
@@ -600,7 +600,7 @@ namespace HRAdmin.UserControl
                                 // Populate Delivery Places
                                 cmb_DeliveryP.Items.AddRange(new string[]
                                 {
-                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen"
+                                    "Conference room 1", "Conference room 2", "Guest room", "Canteen", "KLIA training centre"
                                 });
                                 break;
                         }
