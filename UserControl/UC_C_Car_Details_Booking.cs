@@ -63,7 +63,6 @@ namespace HRAdmin.UserControl
             UC_A_Admin ug = new UC_A_Admin(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void cmbFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbFilter.SelectedItem != null)
@@ -94,6 +93,7 @@ namespace HRAdmin.UserControl
                     StatusCheck, 
                     CheckBy,
                     Acknowledgement,
+                    AcknowledgementTime,
                     CASE 
                         WHEN DateChecked IS NULL THEN 'Pending'
                         ELSE CONVERT(VARCHAR, DateChecked, 120)
@@ -125,6 +125,7 @@ namespace HRAdmin.UserControl
                     StatusCheck, 
                     CheckBy,
                     Acknowledgement,
+                    AcknowledgementTime,
                     CASE 
                         WHEN DateChecked IS NULL THEN 'Pending'
                         ELSE CONVERT(VARCHAR, DateChecked, 120)
@@ -156,6 +157,7 @@ namespace HRAdmin.UserControl
                     StatusCheck, 
                     CheckBy,
                     Acknowledgement,
+                    AcknowledgementTime,
                     CASE 
                         WHEN DateChecked IS NULL THEN 'Pending'
                         ELSE CONVERT(VARCHAR, DateChecked, 120)
@@ -180,7 +182,6 @@ namespace HRAdmin.UserControl
 
             LoadFilteredData(query, today, nowTime);
         }
-
         private void LoadFilteredData(string query, DateTime today, TimeSpan nowTime)
         {
             try
@@ -207,7 +208,7 @@ namespace HRAdmin.UserControl
                             Font = new Font("Arial", 11, FontStyle.Bold),
                         };
 
-                        string[] columnNames = { "DriverName", "IndexNo", "RequestDate", "Destination", "Purpose", "StartDate", "EndDate", "StatusCheck", "CheckBy", "DateChecked", "Status", "ApproveBy", "DateApprove", "AssignedCar", "Acknowledgement" };
+                        string[] columnNames = { "DriverName", "IndexNo", "RequestDate", "Destination", "Purpose", "StartDate", "EndDate", "StatusCheck", "CheckBy", "DateChecked", "Status", "ApproveBy", "DateApprove", "AssignedCar", "Acknowledgement", "AcknowledgementTime" };
 
                         for (int i = 0; i < columnNames.Length; i++)
                         {
@@ -244,6 +245,8 @@ namespace HRAdmin.UserControl
                                 headerText = "Car";
                             else if (col == "Acknowledgement")
                                 headerText = "Acknowledgement";
+                            else if (col == "AcknowledgementTime")
+                                headerText = "Acknowledged Time";
                             else
                                 headerText = col.Replace("_", " "); // Default formatting
 

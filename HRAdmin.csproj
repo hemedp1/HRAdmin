@@ -194,6 +194,12 @@
     <Compile Include="UserControl\UC_C_Car_Details_Booking.Designer.cs">
       <DependentUpon>UC_C_Car_Details_Booking.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\UC_C_InspectionLog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_C_InspectionLog.Designer.cs">
+      <DependentUpon>UC_C_InspectionLog.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\UC_C_Verify.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -363,6 +369,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_C_Car_Details_Booking.resx">
       <DependentUpon>UC_C_Car_Details_Booking.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_C_InspectionLog.resx">
+      <DependentUpon>UC_C_InspectionLog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_C_Verify.resx">
       <DependentUpon>UC_C_Verify.cs</DependentUpon>

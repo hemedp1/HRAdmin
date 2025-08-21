@@ -171,7 +171,7 @@ namespace HRAdmin.UserControl
 
             int rowIndex = dataGridView1.CurrentRow.Index;
             string selectedCar = cmbCarSelection.Text;
-            DateTime selectedDate = dTDay.Value.Date;
+            DateTime selectedDate = DateTime.Now;//dTDay.Value.Date;
             string meetingIDStr = dataGridView1.Rows[rowIndex].Cells[0]?.Value?.ToString();
             string selectedPerson = dataGridView1.Rows[rowIndex].Cells[1]?.Value?.ToString();
             string ReqDate = dataGridView1.Rows[rowIndex].Cells[3]?.Value?.ToString();
@@ -185,13 +185,11 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error retrieving reservation details. Please check column names.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
             if (!int.TryParse(meetingIDStr, out int meetingID))
             {
                 MessageBox.Show("Invalid Booking ID format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
             string action = rB_App.Checked ? "approve" : "reject";
             DialogResult confirm = MessageBox.Show($"Are you sure you want to {action} this reservation?",
                                                    $"Verify Confirmation",

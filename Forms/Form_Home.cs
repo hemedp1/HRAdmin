@@ -455,7 +455,6 @@ namespace HRAdmin.Forms
         {
 
         }
-
         private void btnWDcar_Click(object sender, EventArgs e)
         {
             btnApp.Visible = false;
@@ -474,7 +473,6 @@ namespace HRAdmin.Forms
             addControls(ug);
             
         }
-        
         private void btn_Accident_Click(object sender, EventArgs e)
         {
             btnApp.Visible = false;
@@ -493,7 +491,6 @@ namespace HRAdmin.Forms
             //groupBox6.Visible = false;
             addControls(ug);
         }
-
         private void btn_AccidentPDF_Click(object sender, EventArgs e)
         {
             btn_AccidentPDF.Visible = false;
@@ -502,7 +499,6 @@ namespace HRAdmin.Forms
             addControls(ug);
 
         }
-
         private void btnCarCondition_Click(object sender, EventArgs e)
         {
             btnApp.Visible = false;
@@ -521,7 +517,6 @@ namespace HRAdmin.Forms
             //groupBox6.Visible = false;
             addControls(ug);
         }
-
         private void btnAccount_Click(object sender, EventArgs e)
         {
             label1.Text = "Account";
@@ -547,7 +542,6 @@ namespace HRAdmin.Forms
             UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
-
         private void button4_Click(object sender, EventArgs e)
         {
             label1.Text = "Admin > Meal Request > Internal Menu Edit";
@@ -563,7 +557,6 @@ namespace HRAdmin.Forms
             UC_Meal_InternalMenu ug = new UC_Meal_InternalMenu(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void button5_Click(object sender, EventArgs e)
         {
             label1.Text = "Admin > Meal Request > External Menu Edit";
@@ -579,7 +572,6 @@ namespace HRAdmin.Forms
             UC_Meal_ExternalMenu ug = new UC_Meal_ExternalMenu(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void button6_Click(object sender, EventArgs e)
         {
             label1.Text = "Admin > Meal Request > View report";
@@ -597,7 +589,6 @@ namespace HRAdmin.Forms
             //UC_Meal_ViewReport ug = new UC_Meal_ViewReport(loggedInUser, loggedInDepart);
             //addControls(ug);
         }
-
         private void btnNewVisitor_Click(object sender, EventArgs e)
         {
             label1.Text = "Admin > Register New Visitor ";
@@ -617,7 +608,6 @@ namespace HRAdmin.Forms
             UC_W_RegisterVisitor ug = new UC_W_RegisterVisitor(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void btnVisitor_Click(object sender, EventArgs e)
         {
             label1.Text = "Admin > Display Visitor ";
@@ -637,7 +627,6 @@ namespace HRAdmin.Forms
             UC_W_InputVisitor ug = new UC_W_InputVisitor(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void btnWithdrawEntry_Click(object sender, EventArgs e)
         {
             label1.Text = "Admin > Withdraw ";
@@ -657,7 +646,6 @@ namespace HRAdmin.Forms
             UC_W_WithdrawVisitor ug = new UC_W_WithdrawVisitor(loggedInUser, loggedInDepart, currentWelcomeBoard);
             addControls(ug);
         }
-
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             label1.Text = "Admin > Update Company ";
@@ -677,7 +665,6 @@ namespace HRAdmin.Forms
             UC_W_UpdateCompany ug = new UC_W_UpdateCompany(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void btnMCReport_Click(object sender, EventArgs e)
         {
             label1.Text = "Account > Miscellaneous Claim > Report ";
@@ -699,7 +686,6 @@ namespace HRAdmin.Forms
             //UC_M_Report ug = new UC_M_Report(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             //addControls(ug);
         }
-
         private void btnApproval_Click(object sender, EventArgs e)
         {
             label1.Text = "Account > Miscellaneous Claim > Claim Approval ";
@@ -721,7 +707,6 @@ namespace HRAdmin.Forms
             //UC_M_Approval ug = new UC_M_Approval(loggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, logginInUserAccessLevel);
             //addControls(ug);
         }
-
         private void lblUsername_Click(object sender, EventArgs e)
         {
 

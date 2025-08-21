@@ -112,15 +112,18 @@ namespace HRAdmin.UserControl
                     con.Open();
 
                     string updateQuery;
-                    
-                    updateQuery = "UPDATE tbl_CarBookings SET Acknowledgement = 'Acknowledged' WHERE BookingID = @BookingID";
-                    
+
+                        updateQuery = @"UPDATE tbl_CarBookings 
+                    SET Acknowledgement = 'Acknowledged',
+                        AcknowledgementTime = GETDATE()
+                    WHERE BookingID = @BookingID";
+
                     using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                     {
                         cmd.Parameters.AddWithValue("@BookingID", meetingID);
-                        cmd.Parameters.AddWithValue("@loggedInUser", loggedInUser);
                         cmd.ExecuteNonQuery();
                     }
+
 
                     dataGridView2.Refresh();
 
