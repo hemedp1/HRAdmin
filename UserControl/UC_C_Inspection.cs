@@ -62,7 +62,7 @@ namespace HRAdmin.UserControl
         }
         private void btnSubmit_Click(object sender, EventArgs e)
         {
-            DateTime selectedDate = dTDay.Value.Date;
+            DateTime selectedDate = DateTime.Now;//dTDay.Value.Date;
             if (string.IsNullOrWhiteSpace(cmbCar.Text))
             {
                 MessageBox.Show("Please select car.", "Car Selection", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -146,6 +146,8 @@ namespace HRAdmin.UserControl
                         checkCmd.Parameters.AddWithValue("@CarPlate", cmbCar.Text);
                         int count = (int)checkCmd.ExecuteScalar();
 
+                        /*   DISABLE FUNCTION CHECK ACTIVE BOOKING
+                         ------------------------------------------------------------------------------------------------------------------------------------
                         if (count > 0)
                         {
                             MessageBox.Show("This car is still in an active booking and inspection cannot be done.",
@@ -153,6 +155,9 @@ namespace HRAdmin.UserControl
 
                             return;  // Exit the function to prevent the update
                         }
+                         -------------------------------------------------------------------------------------------------------------------------------------
+                        */
+
                     }
                     DialogResult confirm = MessageBox.Show("Are you sure you want to confirm this inspection record?", "Inspection Record Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (confirm == DialogResult.Yes) 
@@ -182,7 +187,7 @@ namespace HRAdmin.UserControl
                         }
 
                         // Update Use Status to 'Complete'
-                        string updateStatusUse = "UPDATE tbl_CarBookings SET CompleteUseStatus = 'Complete' WHERE AssignedCar = @CarPlate";
+                        string updateStatusUse = "UPDATE tbl_CarBookings SET CompleteUseStatus = 'Completed' WHERE AssignedCar = @CarPlate";
 
                         using (SqlCommand StatusupdateCmd = new SqlCommand(updateStatusUse, con))
                         {
@@ -389,6 +394,20 @@ namespace HRAdmin.UserControl
         private void btnBack_Click(object sender, EventArgs e)
         {
             CheckUserAccess(loggedInUser);
+        }
+        private void cmbCar_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void btn_InspectionLog_Click(object sender, EventArgs e)
+        {
+            Form_Home.sharedLabel.Text = "Admin > Car Reservation > Inspection Log";
+            UC_C_InspectionLog ug = new UC_C_InspectionLog();
+            addControls(ug);
+        }
+        private void btn_Hold_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

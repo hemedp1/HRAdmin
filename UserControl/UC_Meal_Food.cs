@@ -991,7 +991,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void btnWithdraw_Click(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
