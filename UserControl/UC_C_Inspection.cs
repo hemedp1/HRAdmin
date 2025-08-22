@@ -1,4 +1,6 @@
-﻿using HRAdmin.Forms;
+﻿using DocumentFormat.OpenXml.Office.Word;
+using HRAdmin.Components;
+using HRAdmin.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,8 +24,10 @@ namespace HRAdmin.UserControl
         {
             InitializeComponent();
             loggedInUser = username;
+          
             loadCar();
             LoadData();
+            loadDriver();
         }
         private void loadCar()
         {
@@ -241,7 +245,7 @@ namespace HRAdmin.UserControl
                 {
                     con.Open();
                     string query = @"
-            SELECT ID, Person, CarType, DateInspect, Actual_TimeIN, Milleage, Brakes, Signal_light, Head_light, Body, 
+            SELECT ID, Driver, Person, CarType, DateInspect, Actual_TimeIN, Milleage, Brakes, Signal_light, Head_light, Body, 
                    Front_Bumper, Rear_Bumper, View_Mirror, Tyres, Others
             FROM tbl_CarInspection 
             WHERE CONVERT(date, DateInspect) = @SelectedDate";
@@ -271,10 +275,10 @@ namespace HRAdmin.UserControl
                             Font = new Font("Arial", 11, FontStyle.Bold)
                         };
 
-                        string[] columnNames = { "ID", "Person", "CarType", "DateInspect", "Actual_TimeIN", "Milleage", "Brakes",
+                        string[] columnNames = { "ID", "Driver", "Person", "CarType", "DateInspect", "Actual_TimeIN", "Milleage", "Brakes",
                                          "Signal_light", "Head_light", "Body", "Front_Bumper", "Rear_Bumper",
                                          "View_Mirror", "Tyres", "Others" };
-                        string[] headers = { "ID", "Person", "Car", "Date", "Time", "Milleage", "Brakes",
+                        string[] headers = { "ID", "Driver",  "Inspector", "Car", "Date Inspect", "Time", "Milleage", "Brakes",
                                      "Signal light", "Head light", "Body", "Front Bumper", "Rear Bumper",
                                      "View Mirror", "Tyres", "Others" };
 
@@ -407,8 +411,220 @@ namespace HRAdmin.UserControl
         }
         private void btn_Hold_Click(object sender, EventArgs e)
         {
+            DateTime selectedDate = DateTime.Now;//dTDay.Value.Date;
+            if (string.IsNullOrWhiteSpace(cmbCar.Text))
+            {
+                MessageBox.Show("Please select car.", "Car Selection", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbIn.Text))
+            {
+                MessageBox.Show("Please select time.", "Time Selection", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(txtMilleage.Text))
+            {
+                MessageBox.Show("Please input mileage.", "Input Mileage", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (!double.TryParse(txtMilleage.Text, out _))
+            {
+                MessageBox.Show("Please enter a valid mileage.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbBrakes.Text))
+            {
+                MessageBox.Show("Please select brakes condition.", "Brakes Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbSignal_light.Text))
+            {
+                MessageBox.Show("Please select signal condition.", "Signal Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbHead_light.Text))
+            {
+                MessageBox.Show("Please select head light condition.", "Head Light Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbBody.Text))
+            {
+                MessageBox.Show("Please select body condition.", "Body Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbFront_Bumper.Text))
+            {
+                MessageBox.Show("Please select front bumper condition.", "Front Bumper Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbRear_Bumper.Text))
+            {
+                MessageBox.Show("Please select rear rumper condition.", "Rear Bumper Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbView_Mirror.Text))
+            {
+                MessageBox.Show("Please select view mirror condition.", "View Mirror Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(cmbTyres.Text))
+            {
+                MessageBox.Show("Please select tyres condition.", "Tyres Condition", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                return;
+            }
 
+            try
+            {
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+
+                    // Check if the car meets the condition where it should NOT be updated
+                    string checkQuery = @"SELECT COUNT(*) 
+                              FROM tbl_CarBookings cb
+                              JOIN tbl_Cars c ON cb.AssignedCar = c.CarPlate
+                              WHERE 
+                                  CAST(cb.RequestDate AS DATE) >= CAST(GETDATE() AS DATE)  
+                                  AND CAST(GETDATE() AS TIME) <= CAST(cb.EndDate AS TIME) 
+                                  AND c.Status = 'Not Available'
+                                  AND cb.AssignedCar = @CarPlate";  // Filter by the selected car
+
+                    using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
+                    {
+                        checkCmd.Parameters.AddWithValue("@CarPlate", cmbCar.Text);
+                        int count = (int)checkCmd.ExecuteScalar();
+
+                    }
+                    DialogResult confirm = MessageBox.Show("Are you sure you want to confirm this inspection record?", "Inspection Record Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (confirm == DialogResult.Yes)
+                    {
+                        // Proceed with inserting inspection data
+                        string insQuery = @"INSERT INTO tbl_CarInspection(Driver, Person, CarType, DateInspect, Actual_TimeIN, Milleage, Brakes, Signal_light, Head_light, Body, Front_Bumper, Rear_Bumper, View_Mirror, Tyres, Others) 
+                           VALUES (@Driver, @Person, @CarType, @DateInspect, @Actual_TimeIN, @Milleage, @Brakes, @Signal_light, @Head_light, @Body, @Front_Bumper, @Rear_Bumper, @View_Mirror, @Tyres, @Others)";
+
+                        using (SqlCommand Insertcmd = new SqlCommand(insQuery, con))
+                        {
+                            Insertcmd.Parameters.AddWithValue("@Driver", cmb_User.Text);
+                            Insertcmd.Parameters.AddWithValue("@Person", loggedInUser);
+                            Insertcmd.Parameters.AddWithValue("@CarType", cmbCar.Text);
+                            Insertcmd.Parameters.AddWithValue("@DateInspect", DateTime.Now);   //dTDay.Value.Date);
+                            Insertcmd.Parameters.AddWithValue("@Actual_TimeIN", cmbIn.Text);
+                            Insertcmd.Parameters.AddWithValue("@Milleage", txtMilleage.Text);
+                            Insertcmd.Parameters.AddWithValue("@Brakes", cmbBrakes.Text);
+                            Insertcmd.Parameters.AddWithValue("@Signal_light", cmbSignal_light.Text);
+                            Insertcmd.Parameters.AddWithValue("@Head_light", cmbHead_light.Text);
+                            Insertcmd.Parameters.AddWithValue("@Body", cmbBody.Text);
+                            Insertcmd.Parameters.AddWithValue("@Front_Bumper", cmbFront_Bumper.Text);
+                            Insertcmd.Parameters.AddWithValue("@Rear_Bumper", cmbRear_Bumper.Text);
+                            Insertcmd.Parameters.AddWithValue("@View_Mirror", cmbView_Mirror.Text);
+                            Insertcmd.Parameters.AddWithValue("@Tyres", cmbTyres.Text);
+                            Insertcmd.Parameters.AddWithValue("@Others", txtRemarks.Text);
+
+                            Insertcmd.ExecuteNonQuery();
+                        }
+
+                        // Update Use Status to 'Complete'
+                        string updateStatusUse = "UPDATE tbl_CarBookings SET CompleteUseStatus = 'Completed' WHERE AssignedCar = @CarPlate";
+
+                        using (SqlCommand StatusupdateCmd = new SqlCommand(updateStatusUse, con))
+                        {
+                            StatusupdateCmd.Parameters.AddWithValue("@CarPlate", cmbCar.Text);
+                            StatusupdateCmd.ExecuteNonQuery();
+                        }
+
+                        // Remain "Not Available"
+                        string updateCarQuery = "UPDATE tbl_Cars SET Status = 'Not Available' WHERE CarPlate = @CarPlate";
+
+                        using (SqlCommand updateCmd = new SqlCommand(updateCarQuery, con))
+                        {
+                            updateCmd.Parameters.AddWithValue("@CarPlate", cmbCar.Text);
+                            updateCmd.ExecuteNonQuery();
+                        }
+
+                        MessageBox.Show("Car inspection record successfully updated!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        loadCar();
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while processing the inspection: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            LoadData();
+            cmb_User.SelectedIndex = -1;
+            cmbCar.SelectedIndex = -1;
+            cmbBody.SelectedIndex = -1;
+            cmbBrakes.SelectedIndex = -1;
+            cmbCar.SelectedIndex = -1;
+            cmbFront_Bumper.SelectedIndex = -1;
+            cmbHead_light.SelectedIndex = -1;
+            cmbIn.SelectedIndex = -1;
+            cmbRear_Bumper.SelectedIndex = -1;
+            cmbSignal_light.SelectedIndex = -1;
+            cmbView_Mirror.SelectedIndex = -1;
+            cmbTyres.SelectedIndex = -1;
+            txtMilleage.Clear();
+            txtRemarks.Clear();
+            //cmbCar.Text = - 1;cmb
         }
+        private void loadDriver()
+        {
+            //MessageBox.Show($"ddd :{dTDay.Value.Date}");
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    string query = @"
+                SELECT DriverName, StartDate, EndDate, RequestDate
+                FROM tbl_CarBookings
+                WHERE CAST(RequestDate AS date) = @Today
+                  AND EndDate <= @Now
+                ORDER BY StartDate ASC;";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        
+                        // Parameters
+                        cmd.Parameters.Add("@Today", SqlDbType.Date).Value = dTDay.Value.Date; // DateTime.Now.Date;
+
+                        cmd.Parameters.Add("@Now", SqlDbType.Time).Value = DateTime.Now.TimeOfDay;
+
+                        SqlDataAdapter da = new SqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+
+                        if (dt.Rows.Count == 0)
+                        {
+                            cmb_User.DataSource = null;
+                            cmb_User.Items.Clear();
+                            cmbCar.SelectedIndex = -1;
+                            return;
+                        }
+
+                        cmb_User.DataSource = dt;
+                        cmb_User.DisplayMember = "DriverName";
+                        cmb_User.ValueMember = "DriverName";
+                        cmb_User.SelectedIndex = -1; // show placeholder
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error on Room Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void dTDay_ValueChanged(object sender, EventArgs e)
+        {
+          
+            loadDriver();
+        }
+      
     }
 
 }

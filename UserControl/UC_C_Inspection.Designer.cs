@@ -184,9 +184,9 @@
             this.label26.Font = new System.Drawing.Font("Calibri", 13F);
             this.label26.Location = new System.Drawing.Point(36, 124);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(111, 32);
+            this.label26.Size = new System.Drawing.Size(119, 48);
             this.label26.TabIndex = 49;
-            this.label26.Text = "Last User";
+            this.label26.Text = "Driver";
             // 
             // cmb_User
             // 
@@ -577,6 +577,7 @@
             this.dTDay.Name = "dTDay";
             this.dTDay.Size = new System.Drawing.Size(260, 37);
             this.dTDay.TabIndex = 22;
+            this.dTDay.ValueChanged += new System.EventHandler(this.dTDay_ValueChanged);
             // 
             // label5
             // 
