@@ -1,4 +1,5 @@
-﻿using HRAdmin.Forms;
+﻿using HRAdmin.Components;
+using HRAdmin.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -114,7 +115,6 @@ namespace HRAdmin.UserControl
                                     cmbCar.Visible = false;
                                     cmbTimeRep.Visible = false;
                                     dtRep.Visible = false;
-                                    btnAttachemnt.Visible = false;
                                     //btnChecked.Visible = false;
                                     UC_C_Car_Details_Booking ug = new UC_C_Car_Details_Booking(loggedInUser);
                                     addControls(ug);
@@ -135,7 +135,7 @@ namespace HRAdmin.UserControl
 
 
                                 }
-                                else if (AC == "11")
+                                else if (AC == "11" || AC == "12")
                                 {
                                     Form_Home.sharedLabel.Text = "Admin > Car Reservation > Accident";
                                     Form_Home.sharedButton.Visible = false;
@@ -152,8 +152,7 @@ namespace HRAdmin.UserControl
                                     cmbCar.Visible = false;
                                     cmbTimeRep.Visible = false;
                                     dtRep.Visible = false;
-                                    btnAttachemnt.Visible = false;
-                                    btnApp_Admin.Visible = false;
+                                    //btnApp_Admin.Visible = false;
                                     UC_C_Car_Details_Booking ug = new UC_C_Car_Details_Booking(loggedInUser);
                                     addControls(ug);
 
@@ -283,7 +282,7 @@ namespace HRAdmin.UserControl
                                     UC_C_Car_Details_Booking ug = new UC_C_Car_Details_Booking(loggedInUser);
                                     addControls(ug);
                                 }
-                                else if (AC == "11")
+                                else if (AC == "11" || AC == "12")
                                 {
                                     Form_Home.sharedLabel.Text = "Admin > Car Reservation";
                                     Form_Home.sharedButton.Visible = false;
@@ -484,11 +483,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Please input time of the accident occurred", "Time of Accident", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
-            if (pictureBox1.Image == null)
-            {
-                MessageBox.Show("Please select an image.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
             if (string.IsNullOrWhiteSpace(txtExplanantion.Text))                          //+++++++++++++                                              PM
             {
                 MessageBox.Show("Please input your explanation how accident occurred", "Explanation", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -556,7 +550,7 @@ namespace HRAdmin.UserControl
                                                 Dept = @Dept, Car = @Car, Destination = @Destination, DriverExternal = @DriverExternal, NoofVehicle = @NoofVehicle,
                                                 PlatNo = @PlatNo, VehicleType = @VehicleType, InsuranceClass = @InsuranceClass, InsuranceComp = @InsuranceComp,
                                             IC = @IC,Tel = @Tel, PolicyNo = @PolicyNo, Address = @Address, DateofAccident = @DateofAccident, Place = @Place,
-                                            Time = @Time, PM = @PM, PoliceStation = @PoliceStation, ReportNo = @ReportNo, Attachment = @Attachment, Explanation = @Explanation
+                                            Time = @Time, PM = @PM, PoliceStation = @PoliceStation, ReportNo = @ReportNo, Explanation = @Explanation
                                             WHERE ReportID = @ReportID";
 
                             SqlCommand updateCmd = new SqlCommand(updateQuery, con);
@@ -583,7 +577,6 @@ namespace HRAdmin.UserControl
                             updateCmd.Parameters.AddWithValue("@PoliceStation", txtPolis.Text);
                             updateCmd.Parameters.AddWithValue("@ReportNo", txtRepNo.Text);
                             updateCmd.Parameters.AddWithValue("@ReportID", loggedInUser + "_" + loggedInIndex + "_" + selectedDate.ToString("yyyy-MM-dd"));
-                            updateCmd.Parameters.AddWithValue("@Attachment", ImageToByteArray(pictureBox1.Image));
                             updateCmd.Parameters.AddWithValue("@Explanation", txtExplanantion.Text);
 
                             updateCmd.ExecuteNonQuery();
@@ -596,8 +589,8 @@ namespace HRAdmin.UserControl
                     }
 
                     string insertQuery = @"
-                    INSERT INTO tbl_AccidentCar (DateReport, DriverInternal, IndexNo, Dept, Car, Destination, DriverExternal, NoofVehicle, PlatNo, VehicleType, InsuranceClass, InsuranceComp, IC, Tel, PolicyNo, Address, DateofAccident, Place, Time, PM, PoliceStation, ReportNo, ReportID, Attachment, Explanation, CheckStatus, ApproveStatus) " +
-                               "VALUES (@DateReport, @DriverInternal, @IndexNo, @Dept, @Car, @Destination, @DriverExternal, @NoofVehicle, @PlatNo, @VehicleType, @InsuranceClass, @InsuranceComp, @IC, @Tel, @PolicyNo, @Address, @DateofAccident, @Place, @Time, @PM, @PoliceStation, @ReportNo, @ReportID, @Attachment, @Explanation, 'Pending', 'Pending')";
+                    INSERT INTO tbl_AccidentCar (DateReport, DriverInternal, IndexNo, Dept, Car, Destination, DriverExternal, NoofVehicle, PlatNo, VehicleType, InsuranceClass, InsuranceComp, IC, Tel, PolicyNo, Address, DateofAccident, Place, Time, PM, PoliceStation, ReportNo, ReportID, Explanation, CheckStatus, ApproveStatus) " +
+                               "VALUES (@DateReport, @DriverInternal, @IndexNo, @Dept, @Car, @Destination, @DriverExternal, @NoofVehicle, @PlatNo, @VehicleType, @InsuranceClass, @InsuranceComp, @IC, @Tel, @PolicyNo, @Address, @DateofAccident, @Place, @Time, @PM, @PoliceStation, @ReportNo, @ReportID, @Explanation, 'Pending', 'Pending')";
 
 
                     //08/04/2025  WO25002925 @Tel, @PolicyNo, @Address, @DateofAccident, @Place, @Time, @DestinationRep, @PlatRep, @PM, @PoliceStation, @ReportNo)";
@@ -626,7 +619,6 @@ namespace HRAdmin.UserControl
                     insertCmd.Parameters.AddWithValue("@PoliceStation", txtPolis.Text);
                     insertCmd.Parameters.AddWithValue("@ReportNo", txtRepNo.Text);
                     insertCmd.Parameters.AddWithValue("@ReportID", loggedInUser + "_" + loggedInIndex + "_" + selectedDate.ToString("yyyy-MM-dd"));
-                    insertCmd.Parameters.AddWithValue("@Attachment", ImageToByteArray(pictureBox1.Image));
                     insertCmd.Parameters.AddWithValue("@Explanation", txtExplanantion.Text);
 
                     insertCmd.ExecuteNonQuery();
@@ -638,14 +630,6 @@ namespace HRAdmin.UserControl
             catch (Exception ex)
             {
                 MessageBox.Show("QAn error occurred while submitting the report: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        private byte[] ImageToByteArray(Image img)                                      //++++++++++++++++++++++++++++++++                                                            Image conversion
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg); // Convert to byte array
-                return ms.ToArray();
             }
         }
         private void LoadUserDataForDate()
@@ -712,9 +696,6 @@ namespace HRAdmin.UserControl
                                 txtPolis.Text = reader["PoliceStation"]?.ToString();
                                 txtRepNo.Text = reader["ReportNo"]?.ToString();
                                 txtExplanantion.Text = reader["Explanation"]?.ToString();
-                                byte[] imgData = (byte[])reader["Attachment"];
-                                pictureBox1.Image = ByteArrayToImage(imgData); 
-                                pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // Adjust image display
                                 txtRemarksAdmin.Text = reader["Remarks"]?.ToString();
                                 reader.Close();
                                 string query1 = "SELECT AA, MA, AC FROM tbl_Users WHERE Username = @Username";
@@ -780,13 +761,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("An error occurred while loading datap: " + ex.Message);
             }
 
-        }
-        private Image ByteArrayToImage(byte[] byteArray)
-        {
-            using (MemoryStream ms = new MemoryStream(byteArray))
-            {
-                return Image.FromStream(ms);
-            }
         }
         private void LoadEditForUser() 
         {
@@ -866,10 +840,6 @@ namespace HRAdmin.UserControl
                                     }
                                 }
 
-
-                                byte[] imgData = (byte[])reader["Attachment"];
-                                pictureBox1.Image = ByteArrayToImage(imgData);
-                                pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; // Adjust image display
                             }
                             else
                             {
@@ -968,7 +938,7 @@ namespace HRAdmin.UserControl
                                 {
                                     DateReportAcc();
                                 }
-                                else if (AC == "11")
+                                else if (AC == "11" || AC == "12")
                                 {
                                     DateReportAcc();
                                 }
@@ -1003,15 +973,7 @@ namespace HRAdmin.UserControl
         }
         private void btnAttachemnt_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;";
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    pictureBox1.Image = Image.FromFile(ofd.FileName);
-                    pictureBox1.Tag = ofd.FileName; // Store the file path
-                }
-            }
+
         }
         private void btnChecked_Click(object sender, EventArgs e)
         {
@@ -1039,6 +1001,23 @@ namespace HRAdmin.UserControl
                     if (statusCheck == "Rejected")
                     {
                         MessageBox.Show("This accident record has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
+                string checkQuery1 = @"SELECT AC FROM tbl_Users WHERE Department = @Depart AND Username = @Username";
+
+                using (SqlCommand checkCmd1 = new SqlCommand(checkQuery1, con))
+                {
+                    checkCmd1.Parameters.Add("@Username", SqlDbType.VarChar).Value = UserSession.LoggedInUser;
+                    checkCmd1.Parameters.Add("@Depart", SqlDbType.VarChar).Value = UserSession.loggedInDepart;
+                    object AC = checkCmd1.ExecuteScalar();
+
+                    string AClvl = AC?.ToString();
+
+                    if (AClvl == "12")
+                    {
+                        MessageBox.Show("This action is not available for approvers.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                 }
@@ -1085,6 +1064,23 @@ namespace HRAdmin.UserControl
                 {
                     con.Open();
 
+                    string checkQuery1 = @"SELECT AC FROM tbl_Users WHERE Department = @Depart AND Username = @Username";
+
+                    using (SqlCommand checkCmd1 = new SqlCommand(checkQuery1, con))
+                    {
+                        checkCmd1.Parameters.Add("@Username", SqlDbType.VarChar).Value = UserSession.LoggedInUser;
+                        checkCmd1.Parameters.Add("@Depart", SqlDbType.VarChar).Value = UserSession.loggedInDepart;
+                        object AC = checkCmd1.ExecuteScalar();
+
+                        string AClvl = AC?.ToString();
+
+                        if (AClvl == "11")
+                        {
+                            MessageBox.Show("This action is not available for checkers.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
                     string checkQuery = @"SELECT CheckStatus, ApproveStatus FROM tbl_AccidentCar WHERE CAST(DateReport AS DATE) = @Date 
                                         AND ReportID = @ReportID";
 
@@ -1127,6 +1123,7 @@ namespace HRAdmin.UserControl
                         return;
                     }
 
+                   
 
                     DialogResult result = MessageBox.Show("Are you sure you want to verify this accident record?", "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 

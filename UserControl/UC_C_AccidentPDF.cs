@@ -504,6 +504,45 @@ namespace HRAdmin.UserControl
                     };
                     pdfDoc.Add(subtitle);
 
+
+                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++     Section GA contents
+                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++     Section GA contents
+                    PdfPTable verifyTable = new PdfPTable(6);
+                    Font font = FontFactory.GetFont("Arial", 9f); // Change size here
+                    verifyTable.WidthPercentage = 100;
+                    verifyTable.SpacingBefore = 5f;
+                    verifyTable.SpacingAfter = 7f;
+                    verifyTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                    verifyTable.SetWidths(new float[] { 0.2f, 0.1f, 4.2f, 0.9f, 0.1f, 2.8f });
+
+                    columnSetup1(verifyTable, "", "", "Checked by", cCheck, font);
+                    columnSetup1(verifyTable, "", "", "Approved by", cApp, font);  // c26 + " - " + c29 + " - " + c27                                   700
+                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
+                    if (File.Exists(imagePath1) && (!string.IsNullOrEmpty(cApp) && cApp != "Pending")) // Only add watermark if approved or pending
+                    {
+                        iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
+                        float xPosition = pdfDoc.PageSize.Width * 0.70f; // Approximately 75% of page width
+                        float yPosition = pdfDoc.PageSize.Height - 186f;  // Approximate Y position
+                        float width = 80f;
+                        float height = 80f;
+                        watermark.SetAbsolutePosition(xPosition, yPosition);
+                        watermark.ScaleToFit(width, height);
+
+                        PdfContentByte under = writer.DirectContentUnder;
+                        PdfGState gState = new PdfGState();
+                        gState.FillOpacity = 0.05f;
+                        under.SetGState(gState);
+                        under.AddImage(watermark);
+                    }
+
+                    pdfDoc.Add(verifyTable);
+
+                    pdfDoc.Add(new Paragraph("\n"));
+
+
+
+
+
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++     Section Driver's details
                     var DRIVER_DETAILSFONT = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10);
                     Chunk DRIVERDETAILS = new Chunk("Driver's details", DRIVER_DETAILSFONT);
@@ -525,7 +564,7 @@ namespace HRAdmin.UserControl
                     infoTable.WidthPercentage = 100;
                     infoTable.SpacingBefore = 5f;
                     infoTable.SpacingAfter = 7f;
-                    Font font = FontFactory.GetFont("Arial", 9f); // Change size here
+                    //Font font = FontFactory.GetFont("Arial", 9f); // Change size here
                     infoTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     infoTable.SetWidths(new float[] { 0.7f, 0.1f, 2.2f, 0.9f, 0.1f, 2.2f });
 
@@ -598,27 +637,9 @@ namespace HRAdmin.UserControl
                     columnSetup1(AccidentReportTable, "Date | Time of Accident", c16 + " | " + c18, "", "", font);
                     columnSetup1(AccidentReportTable, "Location", c17, "", "", font);
                     columnSetup1(AccidentReportTable, "Details of the Accident", c19, "", "", font);
-                    columnSetup1(AccidentReportTable, "Illustration", "", "", "",font);
-
                     pdfDoc.Add(AccidentReportTable);
 
-                    if (imageData != null && imageData.Length > 0)
-                    {
-                        using (MemoryStream ms = new MemoryStream(imageData))
-                        {
-                            iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(ms);
-                            
-                            img.ScaleToFit(150f, 190f); // Resize image if needed
-
-                            img.Alignment = Element.ALIGN_CENTER;
-                            
-                            img.SpacingBefore = 0f;
-                            img.SpacingAfter = 7f;
-
-                            pdfDoc.Add(img);
-                        }
-                    }
-                    pdfDoc.Add(new Paragraph("\n"));                //+++++++++++++++++++++++++++++++++++++++++++++++++++++     Section Spacing
+                    //pdfDoc.Add(new Paragraph("\n"));                //+++++++++++++++++++++++++++++++++++++++++++++++++++++     Section Spacing
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++     Section PM
 
                     var PMFont = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10);
@@ -707,35 +728,7 @@ namespace HRAdmin.UserControl
                     //columnSetup1(GATable, "", "", "Approved by", cApp, font);  // c26 + " - " + c29 + " - " + c27
                     pdfDoc.Add(GATable);
 
-                    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++     Section GA contents
-                    PdfPTable verifyTable = new PdfPTable(6);
-                    verifyTable.WidthPercentage = 100;
-                    verifyTable.SpacingBefore = 5f;
-                    verifyTable.SpacingAfter = 7f;
-                    verifyTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                    verifyTable.SetWidths(new float[] { 0.2f, 0.1f, 4.2f, 0.9f, 0.1f, 2.8f });
-
-                    columnSetup1(verifyTable, "", "", "Checked by", cCheck, font);
-                    columnSetup1(verifyTable, "", "", "Approved by", cApp, font);  // c26 + " - " + c29 + " - " + c27
-                    string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
-                    if (File.Exists(imagePath1) && (!string.IsNullOrEmpty(cApp) && cApp != "Pending")) // Only add watermark if approved or pending
-                    {
-                        iTextSharp.text.Image watermark = iTextSharp.text.Image.GetInstance(imagePath1);
-                        float xPosition = pdfDoc.PageSize.Width * 0.70f; // Approximately 75% of page width
-                        float yPosition = pdfDoc.PageSize.Height - 806f;  // Approximate Y position
-                        float width = 80f;
-                        float height = 80f;
-                        watermark.SetAbsolutePosition(xPosition, yPosition);
-                        watermark.ScaleToFit(width, height);
-
-                        PdfContentByte under = writer.DirectContentUnder;
-                        PdfGState gState = new PdfGState();
-                        gState.FillOpacity = 0.05f;
-                        under.SetGState(gState);
-                        under.AddImage(watermark);
-                    }
-
-                    pdfDoc.Add(verifyTable);
+                    
 
                     PdfPTable footerTbl = new PdfPTable(1);
                     footerTbl.TotalWidth = pdfDoc.PageSize.Width - pdfDoc.LeftMargin - pdfDoc.RightMargin;

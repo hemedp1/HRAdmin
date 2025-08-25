@@ -30,7 +30,7 @@ namespace HRAdmin.UserControl
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_C_Accident));
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -58,11 +58,7 @@ namespace HRAdmin.UserControl
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label71 = new System.Windows.Forms.Label();
-            this.label70 = new System.Windows.Forms.Label();
-            this.label69 = new System.Windows.Forms.Label();
-            this.label68 = new System.Windows.Forms.Label();
             this.txtrepTime = new System.Windows.Forms.TextBox();
-            this.btnAttachemnt = new System.Windows.Forms.Button();
             this.label66 = new System.Windows.Forms.Label();
             this.cmbTimeRep = new System.Windows.Forms.ComboBox();
             this.txtPlaceRep = new System.Windows.Forms.TextBox();
@@ -158,6 +154,10 @@ namespace HRAdmin.UserControl
             this.label2 = new System.Windows.Forms.Label();
             this.panel6 = new System.Windows.Forms.Panel();
             this.btnBack = new System.Windows.Forms.Button();
+            this.label59 = new System.Windows.Forms.Label();
+            this.label61 = new System.Windows.Forms.Label();
+            this.label68 = new System.Windows.Forms.Label();
+            this.label69 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -208,7 +208,7 @@ namespace HRAdmin.UserControl
             this.groupBox6.Controls.Add(this.txtRemarksAdmin);
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox6.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox6.Location = new System.Drawing.Point(0, 2096);
+            this.groupBox6.Location = new System.Drawing.Point(0, 2247);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(1922, 291);
             this.groupBox6.TabIndex = 65;
@@ -312,7 +312,7 @@ namespace HRAdmin.UserControl
             this.groupBox5.Controls.Add(this.label60);
             this.groupBox5.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox5.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox5.Location = new System.Drawing.Point(0, 1863);
+            this.groupBox5.Location = new System.Drawing.Point(0, 2014);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(1922, 233);
             this.groupBox5.TabIndex = 64;
@@ -399,7 +399,7 @@ namespace HRAdmin.UserControl
             this.groupBox4.Controls.Add(this.txtPM);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox4.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox4.Location = new System.Drawing.Point(0, 1619);
+            this.groupBox4.Location = new System.Drawing.Point(0, 1770);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(1922, 244);
             this.groupBox4.TabIndex = 62;
@@ -454,7 +454,7 @@ namespace HRAdmin.UserControl
             this.groupBox3.Controls.Add(this.panel2);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox3.Font = new System.Drawing.Font("Calibri", 14F);
-            this.groupBox3.Location = new System.Drawing.Point(0, 1140);
+            this.groupBox3.Location = new System.Drawing.Point(0, 1291);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(1922, 479);
             this.groupBox3.TabIndex = 60;
@@ -474,12 +474,9 @@ namespace HRAdmin.UserControl
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.label71);
-            this.panel3.Controls.Add(this.label70);
             this.panel3.Controls.Add(this.label69);
-            this.panel3.Controls.Add(this.label68);
+            this.panel3.Controls.Add(this.label71);
             this.panel3.Controls.Add(this.txtrepTime);
-            this.panel3.Controls.Add(this.btnAttachemnt);
             this.panel3.Controls.Add(this.label66);
             this.panel3.Controls.Add(this.cmbTimeRep);
             this.panel3.Controls.Add(this.txtPlaceRep);
@@ -513,37 +510,6 @@ namespace HRAdmin.UserControl
             this.label71.TabIndex = 71;
             this.label71.Text = "*";
             // 
-            // label70
-            // 
-            this.label70.AutoSize = true;
-            this.label70.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label70.Location = new System.Drawing.Point(718, 33);
-            this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(21, 32);
-            this.label70.TabIndex = 70;
-            this.label70.Text = ":";
-            // 
-            // label69
-            // 
-            this.label69.AutoSize = true;
-            this.label69.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label69.ForeColor = System.Drawing.Color.Red;
-            this.label69.Location = new System.Drawing.Point(700, 30);
-            this.label69.Name = "label69";
-            this.label69.Size = new System.Drawing.Size(27, 32);
-            this.label69.TabIndex = 69;
-            this.label69.Text = "*";
-            // 
-            // label68
-            // 
-            this.label68.AutoSize = true;
-            this.label68.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label68.Location = new System.Drawing.Point(578, 33);
-            this.label68.Name = "label68";
-            this.label68.Size = new System.Drawing.Size(128, 32);
-            this.label68.TabIndex = 67;
-            this.label68.Text = "Illustration";
-            // 
             // txtrepTime
             // 
             this.txtrepTime.Font = new System.Drawing.Font("Calibri", 12F);
@@ -551,21 +517,6 @@ namespace HRAdmin.UserControl
             this.txtrepTime.Name = "txtrepTime";
             this.txtrepTime.Size = new System.Drawing.Size(260, 37);
             this.txtrepTime.TabIndex = 33;
-            // 
-            // btnAttachemnt
-            // 
-            this.btnAttachemnt.BackColor = System.Drawing.Color.White;
-            this.btnAttachemnt.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnAttachemnt.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnAttachemnt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAttachemnt.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnAttachemnt.Location = new System.Drawing.Point(745, 33);
-            this.btnAttachemnt.Name = "btnAttachemnt";
-            this.btnAttachemnt.Size = new System.Drawing.Size(139, 43);
-            this.btnAttachemnt.TabIndex = 66;
-            this.btnAttachemnt.Text = "Browse";
-            this.btnAttachemnt.UseVisualStyleBackColor = false;
-            this.btnAttachemnt.Click += new System.EventHandler(this.btnAttachemnt_Click);
             // 
             // label66
             // 
@@ -776,6 +727,9 @@ namespace HRAdmin.UserControl
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.Color.White;
+            this.groupBox2.Controls.Add(this.label68);
+            this.groupBox2.Controls.Add(this.label61);
+            this.groupBox2.Controls.Add(this.label59);
             this.groupBox2.Controls.Add(this.label62);
             this.groupBox2.Controls.Add(this.label57);
             this.groupBox2.Controls.Add(this.label56);
@@ -817,7 +771,7 @@ namespace HRAdmin.UserControl
             this.groupBox2.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox2.Location = new System.Drawing.Point(0, 698);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1922, 442);
+            this.groupBox2.Size = new System.Drawing.Size(1922, 593);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Vehicle Involved";
@@ -827,7 +781,7 @@ namespace HRAdmin.UserControl
             this.label62.AutoSize = true;
             this.label62.Font = new System.Drawing.Font("Calibri", 13F);
             this.label62.ForeColor = System.Drawing.Color.Red;
-            this.label62.Location = new System.Drawing.Point(730, 265);
+            this.label62.Location = new System.Drawing.Point(730, 397);
             this.label62.Name = "label62";
             this.label62.Size = new System.Drawing.Size(27, 32);
             this.label62.TabIndex = 64;
@@ -838,7 +792,7 @@ namespace HRAdmin.UserControl
             this.label57.AutoSize = true;
             this.label57.Font = new System.Drawing.Font("Calibri", 13F);
             this.label57.ForeColor = System.Drawing.Color.Red;
-            this.label57.Location = new System.Drawing.Point(721, 105);
+            this.label57.Location = new System.Drawing.Point(721, 178);
             this.label57.Name = "label57";
             this.label57.Size = new System.Drawing.Size(27, 32);
             this.label57.TabIndex = 61;
@@ -849,7 +803,7 @@ namespace HRAdmin.UserControl
             this.label56.AutoSize = true;
             this.label56.Font = new System.Drawing.Font("Calibri", 13F);
             this.label56.ForeColor = System.Drawing.Color.Red;
-            this.label56.Location = new System.Drawing.Point(784, 50);
+            this.label56.Location = new System.Drawing.Point(784, 103);
             this.label56.Name = "label56";
             this.label56.Size = new System.Drawing.Size(27, 32);
             this.label56.TabIndex = 60;
@@ -860,7 +814,7 @@ namespace HRAdmin.UserControl
             this.label55.AutoSize = true;
             this.label55.Font = new System.Drawing.Font("Calibri", 13F);
             this.label55.ForeColor = System.Drawing.Color.Red;
-            this.label55.Location = new System.Drawing.Point(307, 209);
+            this.label55.Location = new System.Drawing.Point(307, 327);
             this.label55.Name = "label55";
             this.label55.Size = new System.Drawing.Size(27, 32);
             this.label55.TabIndex = 59;
@@ -871,7 +825,7 @@ namespace HRAdmin.UserControl
             this.label54.AutoSize = true;
             this.label54.Font = new System.Drawing.Font("Calibri", 13F);
             this.label54.ForeColor = System.Drawing.Color.Red;
-            this.label54.Location = new System.Drawing.Point(219, 157);
+            this.label54.Location = new System.Drawing.Point(219, 255);
             this.label54.Name = "label54";
             this.label54.Size = new System.Drawing.Size(27, 32);
             this.label54.TabIndex = 58;
@@ -882,7 +836,7 @@ namespace HRAdmin.UserControl
             this.label53.AutoSize = true;
             this.label53.Font = new System.Drawing.Font("Calibri", 13F);
             this.label53.ForeColor = System.Drawing.Color.Red;
-            this.label53.Location = new System.Drawing.Point(296, 108);
+            this.label53.Location = new System.Drawing.Point(296, 181);
             this.label53.Name = "label53";
             this.label53.Size = new System.Drawing.Size(27, 32);
             this.label53.TabIndex = 57;
@@ -893,7 +847,7 @@ namespace HRAdmin.UserControl
             this.label50.AutoSize = true;
             this.label50.Font = new System.Drawing.Font("Calibri", 13F);
             this.label50.ForeColor = System.Drawing.Color.Red;
-            this.label50.Location = new System.Drawing.Point(180, 52);
+            this.label50.Location = new System.Drawing.Point(180, 105);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(27, 32);
             this.label50.TabIndex = 56;
@@ -903,7 +857,7 @@ namespace HRAdmin.UserControl
             // 
             this.label37.AutoSize = true;
             this.label37.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label37.Location = new System.Drawing.Point(638, 267);
+            this.label37.Location = new System.Drawing.Point(638, 399);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(99, 32);
             this.label37.TabIndex = 53;
@@ -913,7 +867,7 @@ namespace HRAdmin.UserControl
             // 
             this.label38.AutoSize = true;
             this.label38.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label38.Location = new System.Drawing.Point(928, 266);
+            this.label38.Location = new System.Drawing.Point(928, 398);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(21, 32);
             this.label38.TabIndex = 54;
@@ -922,7 +876,7 @@ namespace HRAdmin.UserControl
             // txtAddress
             // 
             this.txtAddress.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtAddress.Location = new System.Drawing.Point(955, 266);
+            this.txtAddress.Location = new System.Drawing.Point(955, 398);
             this.txtAddress.Multiline = true;
             this.txtAddress.Name = "txtAddress";
             this.txtAddress.Size = new System.Drawing.Size(528, 150);
@@ -932,7 +886,7 @@ namespace HRAdmin.UserControl
             // 
             this.label39.AutoSize = true;
             this.label39.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label39.Location = new System.Drawing.Point(38, 266);
+            this.label39.Location = new System.Drawing.Point(38, 398);
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(175, 32);
             this.label39.TabIndex = 50;
@@ -942,7 +896,7 @@ namespace HRAdmin.UserControl
             // 
             this.label40.AutoSize = true;
             this.label40.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label40.Location = new System.Drawing.Point(327, 265);
+            this.label40.Location = new System.Drawing.Point(327, 397);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(21, 32);
             this.label40.TabIndex = 51;
@@ -951,7 +905,7 @@ namespace HRAdmin.UserControl
             // txtInsurantClass
             // 
             this.txtInsurantClass.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtInsurantClass.Location = new System.Drawing.Point(354, 265);
+            this.txtInsurantClass.Location = new System.Drawing.Point(354, 397);
             this.txtInsurantClass.Name = "txtInsurantClass";
             this.txtInsurantClass.Size = new System.Drawing.Size(260, 37);
             this.txtInsurantClass.TabIndex = 52;
@@ -960,7 +914,7 @@ namespace HRAdmin.UserControl
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label19.Location = new System.Drawing.Point(638, 55);
+            this.label19.Location = new System.Drawing.Point(638, 108);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(150, 32);
             this.label19.TabIndex = 47;
@@ -970,7 +924,7 @@ namespace HRAdmin.UserControl
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label20.Location = new System.Drawing.Point(928, 55);
+            this.label20.Location = new System.Drawing.Point(928, 108);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(21, 32);
             this.label20.TabIndex = 48;
@@ -979,7 +933,7 @@ namespace HRAdmin.UserControl
             // txtIC
             // 
             this.txtIC.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtIC.Location = new System.Drawing.Point(955, 50);
+            this.txtIC.Location = new System.Drawing.Point(955, 103);
             this.txtIC.Name = "txtIC";
             this.txtIC.Size = new System.Drawing.Size(260, 37);
             this.txtIC.TabIndex = 49;
@@ -988,7 +942,7 @@ namespace HRAdmin.UserControl
             // 
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label31.Location = new System.Drawing.Point(638, 210);
+            this.label31.Location = new System.Drawing.Point(638, 328);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(119, 32);
             this.label31.TabIndex = 44;
@@ -998,7 +952,7 @@ namespace HRAdmin.UserControl
             // 
             this.label32.AutoSize = true;
             this.label32.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label32.Location = new System.Drawing.Point(928, 209);
+            this.label32.Location = new System.Drawing.Point(928, 327);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(21, 32);
             this.label32.TabIndex = 45;
@@ -1007,7 +961,7 @@ namespace HRAdmin.UserControl
             // txtPolicyNo
             // 
             this.txtPolicyNo.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtPolicyNo.Location = new System.Drawing.Point(955, 209);
+            this.txtPolicyNo.Location = new System.Drawing.Point(955, 327);
             this.txtPolicyNo.Name = "txtPolicyNo";
             this.txtPolicyNo.Size = new System.Drawing.Size(260, 37);
             this.txtPolicyNo.TabIndex = 46;
@@ -1016,7 +970,7 @@ namespace HRAdmin.UserControl
             // 
             this.label33.AutoSize = true;
             this.label33.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label33.Location = new System.Drawing.Point(639, 158);
+            this.label33.Location = new System.Drawing.Point(639, 256);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(158, 32);
             this.label33.TabIndex = 41;
@@ -1026,7 +980,7 @@ namespace HRAdmin.UserControl
             // 
             this.label34.AutoSize = true;
             this.label34.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label34.Location = new System.Drawing.Point(928, 157);
+            this.label34.Location = new System.Drawing.Point(928, 255);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(21, 32);
             this.label34.TabIndex = 42;
@@ -1035,7 +989,7 @@ namespace HRAdmin.UserControl
             // txtInsurance
             // 
             this.txtInsurance.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtInsurance.Location = new System.Drawing.Point(955, 157);
+            this.txtInsurance.Location = new System.Drawing.Point(955, 255);
             this.txtInsurance.Name = "txtInsurance";
             this.txtInsurance.Size = new System.Drawing.Size(260, 37);
             this.txtInsurance.TabIndex = 43;
@@ -1044,7 +998,7 @@ namespace HRAdmin.UserControl
             // 
             this.label35.AutoSize = true;
             this.label35.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label35.Location = new System.Drawing.Point(639, 109);
+            this.label35.Location = new System.Drawing.Point(639, 182);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(88, 32);
             this.label35.TabIndex = 38;
@@ -1054,7 +1008,7 @@ namespace HRAdmin.UserControl
             // 
             this.label36.AutoSize = true;
             this.label36.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label36.Location = new System.Drawing.Point(928, 104);
+            this.label36.Location = new System.Drawing.Point(928, 177);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(21, 32);
             this.label36.TabIndex = 39;
@@ -1063,7 +1017,7 @@ namespace HRAdmin.UserControl
             // txtTel
             // 
             this.txtTel.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtTel.Location = new System.Drawing.Point(955, 104);
+            this.txtTel.Location = new System.Drawing.Point(955, 177);
             this.txtTel.Name = "txtTel";
             this.txtTel.Size = new System.Drawing.Size(260, 37);
             this.txtTel.TabIndex = 40;
@@ -1072,7 +1026,7 @@ namespace HRAdmin.UserControl
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label17.Location = new System.Drawing.Point(37, 56);
+            this.label17.Location = new System.Drawing.Point(37, 109);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(148, 32);
             this.label17.TabIndex = 35;
@@ -1082,7 +1036,7 @@ namespace HRAdmin.UserControl
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label18.Location = new System.Drawing.Point(327, 51);
+            this.label18.Location = new System.Drawing.Point(327, 104);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(21, 32);
             this.label18.TabIndex = 36;
@@ -1091,7 +1045,7 @@ namespace HRAdmin.UserControl
             // txtDriverName
             // 
             this.txtDriverName.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtDriverName.Location = new System.Drawing.Point(354, 51);
+            this.txtDriverName.Location = new System.Drawing.Point(354, 104);
             this.txtDriverName.Name = "txtDriverName";
             this.txtDriverName.Size = new System.Drawing.Size(260, 37);
             this.txtDriverName.TabIndex = 37;
@@ -1100,7 +1054,7 @@ namespace HRAdmin.UserControl
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label15.Location = new System.Drawing.Point(37, 211);
+            this.label15.Location = new System.Drawing.Point(37, 329);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(271, 32);
             this.label15.TabIndex = 32;
@@ -1110,7 +1064,7 @@ namespace HRAdmin.UserControl
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label16.Location = new System.Drawing.Point(327, 210);
+            this.label16.Location = new System.Drawing.Point(327, 328);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(21, 32);
             this.label16.TabIndex = 33;
@@ -1119,7 +1073,7 @@ namespace HRAdmin.UserControl
             // txtTypVehicle
             // 
             this.txtTypVehicle.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtTypVehicle.Location = new System.Drawing.Point(354, 210);
+            this.txtTypVehicle.Location = new System.Drawing.Point(354, 328);
             this.txtTypVehicle.Name = "txtTypVehicle";
             this.txtTypVehicle.Size = new System.Drawing.Size(260, 37);
             this.txtTypVehicle.TabIndex = 34;
@@ -1128,7 +1082,7 @@ namespace HRAdmin.UserControl
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label11.Location = new System.Drawing.Point(38, 159);
+            this.label11.Location = new System.Drawing.Point(38, 257);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(184, 32);
             this.label11.TabIndex = 29;
@@ -1138,7 +1092,7 @@ namespace HRAdmin.UserControl
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label12.Location = new System.Drawing.Point(327, 158);
+            this.label12.Location = new System.Drawing.Point(327, 256);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(21, 32);
             this.label12.TabIndex = 30;
@@ -1147,7 +1101,7 @@ namespace HRAdmin.UserControl
             // txtRegistrationNo
             // 
             this.txtRegistrationNo.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtRegistrationNo.Location = new System.Drawing.Point(354, 158);
+            this.txtRegistrationNo.Location = new System.Drawing.Point(354, 256);
             this.txtRegistrationNo.Name = "txtRegistrationNo";
             this.txtRegistrationNo.Size = new System.Drawing.Size(260, 37);
             this.txtRegistrationNo.TabIndex = 31;
@@ -1156,7 +1110,7 @@ namespace HRAdmin.UserControl
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label13.Location = new System.Drawing.Point(38, 110);
+            this.label13.Location = new System.Drawing.Point(38, 183);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(258, 32);
             this.label13.TabIndex = 26;
@@ -1166,7 +1120,7 @@ namespace HRAdmin.UserControl
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label14.Location = new System.Drawing.Point(327, 105);
+            this.label14.Location = new System.Drawing.Point(327, 178);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(21, 32);
             this.label14.TabIndex = 27;
@@ -1175,7 +1129,7 @@ namespace HRAdmin.UserControl
             // txtNoKeretaInvolve
             // 
             this.txtNoKeretaInvolve.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtNoKeretaInvolve.Location = new System.Drawing.Point(354, 105);
+            this.txtNoKeretaInvolve.Location = new System.Drawing.Point(354, 178);
             this.txtNoKeretaInvolve.Name = "txtNoKeretaInvolve";
             this.txtNoKeretaInvolve.Size = new System.Drawing.Size(260, 37);
             this.txtNoKeretaInvolve.TabIndex = 28;
@@ -1225,14 +1179,14 @@ namespace HRAdmin.UserControl
             // 
             this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
@@ -1656,6 +1610,50 @@ namespace HRAdmin.UserControl
             this.btnBack.UseVisualStyleBackColor = false;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label59.ForeColor = System.Drawing.Color.Red;
+            this.label59.Location = new System.Drawing.Point(951, 145);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(248, 19);
+            this.label59.TabIndex = 65;
+            this.label59.Text = "Without any symbol (XXXXXXXXXXXX)";
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label61.ForeColor = System.Drawing.Color.Red;
+            this.label61.Location = new System.Drawing.Point(951, 217);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(232, 19);
+            this.label61.TabIndex = 66;
+            this.label61.Text = "Without any symbol (XXXXXXXXXX)";
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label68.ForeColor = System.Drawing.Color.Red;
+            this.label68.Location = new System.Drawing.Point(37, 47);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(902, 53);
+            this.label68.TabIndex = 67;
+            this.label68.Text = "Enter details of other people involved in the accident.";
+            // 
+            // label69
+            // 
+            this.label69.AutoSize = true;
+            this.label69.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label69.ForeColor = System.Drawing.Color.Red;
+            this.label69.Location = new System.Drawing.Point(467, 211);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(638, 29);
+            this.label69.TabIndex = 72;
+            this.label69.Text = "Please explain how the accident occurred in chronological order.";
+            // 
             // UC_C_Accident
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -1803,13 +1801,9 @@ namespace HRAdmin.UserControl
         private System.Windows.Forms.Label label67;
         private System.Windows.Forms.Label label66;
         private System.Windows.Forms.Label label65;
-        private System.Windows.Forms.Button btnAttachemnt;
-        private System.Windows.Forms.Label label68;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Label label69;
-        private System.Windows.Forms.Label label70;
         private System.Windows.Forms.Label label72;
         private System.Windows.Forms.Label label71;
         private System.Windows.Forms.Button btnChecked;
@@ -1824,5 +1818,9 @@ namespace HRAdmin.UserControl
         private DateTimePicker dtp_filter;
         private Button button1;
         private Button btnRej_Admin;
+        private Label label68;
+        private Label label61;
+        private Label label59;
+        private Label label69;
     }
 }

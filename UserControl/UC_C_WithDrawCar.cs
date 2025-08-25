@@ -244,7 +244,7 @@ namespace HRAdmin.UserControl
                                 string MA = reader["MA"].ToString();
 
 
-                                if (AA == "1")
+                                if (AA == "1" || AA == "2")
                                 {
                                     Form_Home.sharedButtonbtnApp.Visible = true;
                                     Form_Home.sharedbuttonInspect.Visible = true;
