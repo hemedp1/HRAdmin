@@ -41,7 +41,6 @@
             this.label26 = new System.Windows.Forms.Label();
             this.cmb_Driver = new System.Windows.Forms.ComboBox();
             this.label27 = new System.Windows.Forms.Label();
-            this.btnSubmit = new System.Windows.Forms.Button();
             this.StartDate = new System.Windows.Forms.DateTimePicker();
             this.label10 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -87,7 +86,6 @@
             this.groupBox1.Controls.Add(this.label26);
             this.groupBox1.Controls.Add(this.cmb_Driver);
             this.groupBox1.Controls.Add(this.label27);
-            this.groupBox1.Controls.Add(this.btnSubmit);
             this.groupBox1.Controls.Add(this.StartDate);
             this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.label7);
@@ -98,7 +96,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Calibri", 14F);
             this.groupBox1.Location = new System.Drawing.Point(0, 57);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1602, 288);
+            this.groupBox1.Size = new System.Drawing.Size(1602, 206);
             this.groupBox1.TabIndex = 50;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Inspection log";
@@ -140,9 +138,9 @@
             this.label26.Font = new System.Drawing.Font("Calibri", 13F);
             this.label26.Location = new System.Drawing.Point(36, 124);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(79, 32);
+            this.label26.Size = new System.Drawing.Size(162, 48);
             this.label26.TabIndex = 49;
-            this.label26.Text = "Driver";
+            this.label26.Text = "Driver ID";
             // 
             // cmb_Driver
             // 
@@ -168,21 +166,6 @@
             this.label27.Size = new System.Drawing.Size(21, 32);
             this.label27.TabIndex = 48;
             this.label27.Text = ":";
-            // 
-            // btnSubmit
-            // 
-            this.btnSubmit.BackColor = System.Drawing.Color.White;
-            this.btnSubmit.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnSubmit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnSubmit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSubmit.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnSubmit.Location = new System.Drawing.Point(931, 173);
-            this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(130, 43);
-            this.btnSubmit.TabIndex = 17;
-            this.btnSubmit.Text = "Submit";
-            this.btnSubmit.UseVisualStyleBackColor = false;
-            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_Click);
             // 
             // StartDate
             // 
@@ -272,7 +255,7 @@
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.Color.White;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 345);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 263);
             this.dataGridView1.Name = "dataGridView1";
             dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
@@ -285,7 +268,7 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(1602, 492);
+            this.dataGridView1.Size = new System.Drawing.Size(1602, 574);
             this.dataGridView1.TabIndex = 51;
             // 
             // UC_C_InspectionLog
@@ -313,7 +296,6 @@
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.ComboBox cmb_Driver;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.Button btnSubmit;
         private System.Windows.Forms.DateTimePicker StartDate;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label7;

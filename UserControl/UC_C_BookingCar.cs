@@ -246,21 +246,22 @@ namespace HRAdmin.UserControl
 
                     // Insert new booking
                     string insertQuery = @"
-                INSERT INTO tbl_CarBookings (DriverName, IndexNo, Depart, RequestDate, Destination, StartDate, EndDate, Purpose, StatusCheck, CheckBy, Status, ApproveBy, AssignedCar) " +
-                                "VALUES (@DriverName, @IndexNo, @Depart, @RequestDate, @Destination, @StartDate, @EndDate, @Purpose, 'Pending', 'Pending', 'Pending','Pending','Pending')";
+                INSERT INTO tbl_CarBookings (DriverName, IndexNo, Depart, RequestDate, Destination, StartDate, EndDate, Purpose, StatusCheck, CheckBy, Status, ApproveBy, AssignedCar, RowID) " +
+                                "VALUES (@DriverName, @IndexNo, @Depart, @RequestDate, @Destination, @StartDate, @EndDate, @Purpose, 'Pending', 'Pending', 'Pending','Pending','Pending', @RowID)";
 
 
 
 
                     SqlCommand insertCmd = new SqlCommand(insertQuery, con);
-                    insertCmd.Parameters.AddWithValue("@DriverName", loggedInUser);
-                    insertCmd.Parameters.AddWithValue("@IndexNo", loggedInIndex);
-                    insertCmd.Parameters.AddWithValue("@Depart", loggedInDepart);
+                    insertCmd.Parameters.AddWithValue("@DriverName", UserSession.LoggedInUser);
+                    insertCmd.Parameters.AddWithValue("@IndexNo", UserSession.loggedInIndex);
+                    insertCmd.Parameters.AddWithValue("@Depart", UserSession.loggedInDepart);
                     insertCmd.Parameters.AddWithValue("@RequestDate", selectedDate);
                     insertCmd.Parameters.AddWithValue("@Destination", txtDes.Text);
                     insertCmd.Parameters.AddWithValue("@StartDate", cmbOut.Text);
                     insertCmd.Parameters.AddWithValue("@EndDate", cmbIn.Text); // Store only time
                     insertCmd.Parameters.AddWithValue("@Purpose", txtPurpose.Text);   // Store only time
+                    insertCmd.Parameters.AddWithValue("@RowID", UserSession.LoggedInUser + "_" + UserSession.loggedInDepart + "_" + dTDay.Value.ToString("dd/MM/yyyy"));   // Id
 
                     insertCmd.ExecuteNonQuery();
 

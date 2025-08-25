@@ -167,14 +167,15 @@ namespace HRAdmin.UserControl
                     if (confirm == DialogResult.Yes) 
                     {
                         // Proceed with inserting inspection data
-                        string insQuery = @"INSERT INTO tbl_CarInspection(Person, CarType, DateInspect, Actual_TimeIN, Milleage, Brakes, Signal_light, Head_light, Body, Front_Bumper, Rear_Bumper, View_Mirror, Tyres, Others) 
-                           VALUES (@Person, @CarType, @DateInspect, @Actual_TimeIN, @Milleage, @Brakes, @Signal_light, @Head_light, @Body, @Front_Bumper, @Rear_Bumper, @View_Mirror, @Tyres, @Others)";
+                        string insQuery = @"INSERT INTO tbl_CarInspection(Driver, Person, CarType, DateInspect, Actual_TimeIN, Milleage, Brakes, Signal_light, Head_light, Body, Front_Bumper, Rear_Bumper, View_Mirror, Tyres, Others) 
+                           VALUES (@Driver, @Person, @CarType, @DateInspect, @Actual_TimeIN, @Milleage, @Brakes, @Signal_light, @Head_light, @Body, @Front_Bumper, @Rear_Bumper, @View_Mirror, @Tyres, @Others)";
 
                         using (SqlCommand Insertcmd = new SqlCommand(insQuery, con))
                         {
+                            Insertcmd.Parameters.AddWithValue("@Driver", cmb_User.Text);
                             Insertcmd.Parameters.AddWithValue("@Person", loggedInUser);
                             Insertcmd.Parameters.AddWithValue("@CarType", cmbCar.Text);
-                            Insertcmd.Parameters.AddWithValue("@DateInspect", dTDay.Value.Date);
+                            Insertcmd.Parameters.AddWithValue("@DateInspect", DateTime.Now);   //dTDay.Value.Date);
                             Insertcmd.Parameters.AddWithValue("@Actual_TimeIN", cmbIn.Text);
                             Insertcmd.Parameters.AddWithValue("@Milleage", txtMilleage.Text);
                             Insertcmd.Parameters.AddWithValue("@Brakes", cmbBrakes.Text);
@@ -222,6 +223,7 @@ namespace HRAdmin.UserControl
             }
 
             LoadData();
+            cmb_User.SelectedIndex = -1;
             cmbCar.SelectedIndex = -1;
             cmbBody.SelectedIndex = -1;
             cmbBrakes.SelectedIndex = -1;
@@ -278,7 +280,7 @@ namespace HRAdmin.UserControl
                         string[] columnNames = { "ID", "Driver", "Person", "CarType", "DateInspect", "Actual_TimeIN", "Milleage", "Brakes",
                                          "Signal_light", "Head_light", "Body", "Front_Bumper", "Rear_Bumper",
                                          "View_Mirror", "Tyres", "Others" };
-                        string[] headers = { "ID", "Driver",  "Inspector", "Car", "Date Inspect", "Time", "Milleage", "Brakes",
+                        string[] headers = { "ID", "Driver ID",  "Inspector", "Car", "Date Inspect", "Time", "Milleage", "Brakes",
                                      "Signal light", "Head light", "Body", "Front Bumper", "Rear Bumper",
                                      "View Mirror", "Tyres", "Others" };
 
@@ -525,11 +527,12 @@ namespace HRAdmin.UserControl
                         }
 
                         // Update Use Status to 'Complete'
-                        string updateStatusUse = "UPDATE tbl_CarBookings SET CompleteUseStatus = 'Completed' WHERE AssignedCar = @CarPlate";
+                        string updateStatusUse = "UPDATE tbl_CarBookings SET CompleteUseStatus = 'Completed' WHERE AssignedCar = @CarPlate AND RowID = @RowID";
 
                         using (SqlCommand StatusupdateCmd = new SqlCommand(updateStatusUse, con))
                         {
                             StatusupdateCmd.Parameters.AddWithValue("@CarPlate", cmbCar.Text);
+                            StatusupdateCmd.Parameters.AddWithValue("@RowID", cmb_User.Text);
                             StatusupdateCmd.ExecuteNonQuery();
                         }
 
@@ -580,7 +583,7 @@ namespace HRAdmin.UserControl
                     con.Open();
 
                     string query = @"
-                SELECT DriverName, StartDate, EndDate, RequestDate
+                SELECT RowID, DriverName, StartDate, EndDate, RequestDate
                 FROM tbl_CarBookings
                 WHERE CAST(RequestDate AS date) = @Today
                   AND EndDate <= @Now
@@ -607,8 +610,8 @@ namespace HRAdmin.UserControl
                         }
 
                         cmb_User.DataSource = dt;
-                        cmb_User.DisplayMember = "DriverName";
-                        cmb_User.ValueMember = "DriverName";
+                        cmb_User.DisplayMember = "RowID";
+                        cmb_User.ValueMember = "RowID";
                         cmb_User.SelectedIndex = -1; // show placeholder
 
                     }
@@ -624,7 +627,10 @@ namespace HRAdmin.UserControl
           
             loadDriver();
         }
-      
+        private void cmb_User_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }

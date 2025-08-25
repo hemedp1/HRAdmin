@@ -20,6 +20,7 @@ namespace HRAdmin.UserControl
         public UC_C_InspectionLog()
         {
             InitializeComponent();
+            this.Load += UC_C_InspectionLog_Load;
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
@@ -43,6 +44,8 @@ namespace HRAdmin.UserControl
         }
         private void UC_C_InspectionLog_Load(object sender, EventArgs e)
         {
+            LoadDriversByDate();
+            LoadCarsByDate();
             LoadInspectionHistory();
         }
         private void LoadInspectionHistory()
@@ -70,7 +73,7 @@ namespace HRAdmin.UserControl
                 CarType,
                 Person
             FROM tbl_CarInspection
-            WHERE DateInspect BETWEEN @StartDate AND @EndDate
+            WHERE CAST(DateInspect AS DATE) BETWEEN @StartDate AND @EndDate
               AND (@Driver = '' OR Driver = @Driver)
               AND (@CarType = '' OR CarType = @CarType)
             ORDER BY DateInspect DESC, Actual_TimeIN DESC;";
@@ -78,15 +81,13 @@ namespace HRAdmin.UserControl
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     // Dates
-                    cmd.Parameters.AddWithValue("@StartDate", StartDate.Value.Date);
-                    cmd.Parameters.AddWithValue("@EndDate", EndDate.Value.Date);
+                    cmd.Parameters.Add("@StartDate", SqlDbType.DateTime).Value = StartDate.Value.Date;
+                    cmd.Parameters.Add("@EndDate", SqlDbType.DateTime).Value = EndDate.Value.Date.AddDays(1).AddTicks(-1);
 
-                    // Driver filter
-                    string driver = cmb_Driver.SelectedIndex >= 0 ? cmb_Driver.SelectedItem.ToString() : "";
+                    string driver = (cmb_Driver.SelectedValue != null) ? cmb_Driver.SelectedValue.ToString() : "";
                     cmd.Parameters.AddWithValue("@Driver", driver);
 
-                    // Car filter
-                    string car = cmbCar.SelectedIndex >= 0 ? cmbCar.SelectedItem.ToString() : "";
+                    string car = (cmbCar.SelectedValue != null) ? cmbCar.SelectedValue.ToString() : "";
                     cmd.Parameters.AddWithValue("@CarType", car);
 
                     // Load data
@@ -143,14 +144,6 @@ namespace HRAdmin.UserControl
                 dataGridView1.RowTemplate.Height = 28;
             }
         }
-        private void StartDate_ValueChanged(object sender, EventArgs e)
-        {
-            LoadInspectionHistory();
-        }
-        private void EndDate_ValueChanged(object sender, EventArgs e)
-        {
-            LoadInspectionHistory();
-        }
         private void cmb_Driver_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadInspectionHistory();
@@ -159,9 +152,68 @@ namespace HRAdmin.UserControl
         {
             LoadInspectionHistory();
         }
-        private void btnSubmit_Click(object sender, EventArgs e)
-        {
 
+        private void LoadDriversByDate()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                string query = @"SELECT DISTINCT Driver 
+                         FROM tbl_CarInspection
+                         WHERE DateInspect BETWEEN @StartDate AND @EndDate
+                         AND Driver IS NOT NULL AND Driver <> ''";
+
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.Add("@StartDate", SqlDbType.DateTime).Value = StartDate.Value.Date;
+                cmd.Parameters.Add("@EndDate", SqlDbType.DateTime).Value = EndDate.Value.Date.AddDays(1).AddTicks(-1);
+
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+
+                cmb_Driver.DataSource = dt;
+                cmb_Driver.DisplayMember = "Driver";
+                cmb_Driver.ValueMember = "Driver";
+                cmb_Driver.SelectedIndex = -1;
+            }
         }
+        private void LoadCarsByDate()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                string query = @"SELECT DISTINCT CarType 
+                         FROM tbl_CarInspection
+                         WHERE DateInspect BETWEEN @StartDate AND @EndDate
+                         AND CarType IS NOT NULL AND CarType <> ''";
+
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.Add("@StartDate", SqlDbType.DateTime).Value = StartDate.Value.Date;
+                cmd.Parameters.Add("@EndDate", SqlDbType.DateTime).Value = EndDate.Value.Date.AddDays(1).AddTicks(-1);
+
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                cmbCar.DataSource = dt;
+                cmbCar.DisplayMember = "CarType";
+                cmbCar.ValueMember = "CarType";
+                cmbCar.SelectedIndex = -1;
+            }
+        }
+        private void StartDate_ValueChanged(object sender, EventArgs e)
+        {
+            LoadDriversByDate();
+            LoadCarsByDate();
+            LoadInspectionHistory();
+        }
+        private void EndDate_ValueChanged(object sender, EventArgs e)
+        {
+            LoadDriversByDate();
+            LoadCarsByDate();
+            LoadInspectionHistory();
+        }
+
+
     }
 }
