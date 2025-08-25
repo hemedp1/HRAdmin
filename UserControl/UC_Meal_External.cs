@@ -273,7 +273,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 }
 
  //*************************++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- /*
+
                 List<string> approverEmails = new List<string>();
                 string getApproversQuery = @"
                                             SELECT A.Department, A.Username, B.Email, C.AccessLevel
@@ -366,8 +366,11 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                         MessageBoxIcon.Information
                     );
                 }
-                */
+                
                 //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+               
+                
+                
                 // Return to main page
                 CheckUserAccess(loggedInUser);
 

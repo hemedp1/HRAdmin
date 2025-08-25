@@ -1230,10 +1230,10 @@ namespace HRAdmin.UserControl
                                      cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
                                      dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
                                      dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
-                            /*
+                          
 
 //*************************++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-              /*       
+                 
 
                             List<string> approverEmails = new List<string>();
                             string getApproversQuery = @"
@@ -1329,7 +1329,7 @@ namespace HRAdmin.UserControl
                                     MessageBoxIcon.Information
                                 );
                             }
-              */
+           
                             //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                         }

@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -50,6 +52,56 @@ namespace HRAdmin.UserControl
 
             cmb_Drink1.SelectedIndexChanged += new EventHandler(cmb_Drink_SelectedIndexChanged);
             cmb_Drink2.SelectedIndexChanged += new EventHandler(cmb_Drink_SelectedIndexChanged);
+        }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
+
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
         }
         private void CheckUserAccess(string username)
         {
@@ -850,6 +902,107 @@ namespace HRAdmin.UserControl
                     // Show success message with "View in PDF" option
                     DialogResult result = MessageBox.Show("Submitted Successfully! Would you like to view the order in PDF?",
                         "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                    //*************************++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                    List<string> approverEmails = new List<string>();
+                    string getApproversQuery = @"
+                                            SELECT A.Department, A.Username, B.Email, C.AccessLevel
+                                            FROM tbl_Users A
+                                            LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                            LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                            WHERE Department = 'HR & ADMIN' AND AccessLevel > 0 AND AccessLevel < 2";  // First level account approver
+
+                    using (SqlCommand cmd1 = new SqlCommand(getApproversQuery, con))
+                    using (SqlDataReader reader = cmd1.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string email = reader["Email"]?.ToString();
+                            if (!string.IsNullOrWhiteSpace(email))
+                            {
+                                approverEmails.Add(email);
+                            }
+                        }
+                    }
+
+                    string requesterName = "";
+                    string EventDetai = "";
+                    string OccasionTy = "";
+                    string OrderI = "";
+                    DateTime requestDate = DateTime.MinValue;
+                    DateTime DelrequestDate = DateTime.MinValue;
+
+                    string getClaimDetailsQuery = $@"
+                                                SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email
+                                                FROM tbl_ExternalFoodOrder A
+                                                LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
+                                                WHERE OrderID = @OrderID";
+
+                    using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                    {
+                        emailCmd.Parameters.Add("@OrderID", SqlDbType.NVarChar).Value = combinedValue;
+
+                        using (SqlDataReader reader = emailCmd.ExecuteReader())
+                        {
+
+                            if (reader.Read())
+                            {
+                                requesterName = reader["RequesterID"]?.ToString();
+                                EventDetai = reader["EventDetails"]?.ToString();
+                                OccasionTy = reader["OccasionType"]?.ToString();
+                                OrderI = reader["OrderID"]?.ToString();
+                                requestDate = reader["RequestDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["RequestDate"])
+                                    : DateTime.MinValue;
+                                DelrequestDate = reader["DeliveryDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["DeliveryDate"])
+                                    : DateTime.MinValue;
+                            }
+                        }
+                    }
+
+                    if (approverEmails.Count > 0)
+                    {
+                        string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                        string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
+                        string subject = "HEM Admin Accessibility Notification: New Canteen Food Request Awaiting For Your Review And Approval";
+                        string body = $@"
+                                                    <p>Dear Mr./Ms. {requesterName},</p>
+                                                    p>A new <strong>Canteen Food Request</strong> has been <strong>checked</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+
+                    
+                                                <p><u>Canteen Food Request Details:</u></p>
+                                                <ul>
+                                                    <li><strong>Order ID:</strong> {combinedValue}</li>
+                                                    <li><strong>Occasion Type:</strong> {cmbOccasion}</li>
+                                                    <li><strong>Event Detail:</strong> {eventDetails}</li>
+                                                    <li><strong>Request Date:</strong> {formattedDate}</li>
+                                                    <li><strong>Delivery Date:</strong> {formattedDate1}</li>
+                                                </ul>
+
+                                                    <p>The approved amount will be processed on the <strong>15th</strong> and <strong>30th</strong> of each month. If either date falls on a non-working day, payment will be made on the <strong>next</strong> or <strong>before</strong> working day.</p>
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                        foreach (var email in approverEmails)
+                        {
+                            SendEmail(email, subject, body);
+                        }
+
+                        MessageBox.Show(
+                            "Notification has been sent to the requester confirming the claim status.",
+                            "Notification Sent",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                    }
+
+                    //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
 
                     if (result == DialogResult.Yes)
                     {
