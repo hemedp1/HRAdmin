@@ -135,7 +135,7 @@
             this.gbExternal.TabIndex = 124;
             this.gbExternal.TabStop = false;
             this.gbExternal.Text = "Internal food order";
-            this.gbExternal.Enter += new System.EventHandler(this.gbExternal_Enter_1);
+            //this.gbExternal.Enter += new System.EventHandler(this.gbExternal_Enter_1);
             // 
             // label2
             // 
@@ -421,7 +421,7 @@
             this.cmb_Menu.Name = "cmb_Menu";
             this.cmb_Menu.Size = new System.Drawing.Size(452, 32);
             this.cmb_Menu.TabIndex = 0;
-            this.cmb_Menu.SelectedIndexChanged += new System.EventHandler(this.cmb_Menu_SelectedIndexChanged);
+            //this.cmb_Menu.SelectedIndexChanged += new System.EventHandler(this.cmb_Menu_SelectedIndexChanged);
             // 
             // label20
             // 
@@ -507,7 +507,7 @@
             this.groupBox3.TabIndex = 128;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Order details";
-            this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
+            //this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
             // txt_Remark
             // 
@@ -529,7 +529,7 @@
             this.label5.Size = new System.Drawing.Size(23, 27);
             this.label5.TabIndex = 131;
             this.label5.Text = "*";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
+            //this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label3
             // 
@@ -580,7 +580,7 @@
             this.cmb_DeliveryP.Name = "cmb_DeliveryP";
             this.cmb_DeliveryP.Size = new System.Drawing.Size(200, 32);
             this.cmb_DeliveryP.TabIndex = 128;
-            this.cmb_DeliveryP.SelectedIndexChanged += new System.EventHandler(this.cmb_DeliveryP_SelectedIndexChanged);
+            //this.cmb_DeliveryP.SelectedIndexChanged += new System.EventHandler(this.cmb_DeliveryP_SelectedIndexChanged);
             // 
             // label47
             // 
@@ -592,7 +592,7 @@
             this.label47.Size = new System.Drawing.Size(23, 27);
             this.label47.TabIndex = 127;
             this.label47.Text = "*";
-            this.label47.Click += new System.EventHandler(this.label47_Click);
+            //this.label47.Click += new System.EventHandler(this.label47_Click);
             // 
             // label43
             // 

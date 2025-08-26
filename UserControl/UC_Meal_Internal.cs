@@ -1053,29 +1053,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-        private void cmb_Menu_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-        private void gbExternal_Enter_1(object sender, EventArgs e)
-        {
-
-        }
-        private void label47_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void groupBox3_Enter(object sender, EventArgs e)
-        {
-
-        }
-        private void cmb_DeliveryP_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+    
     }
 }

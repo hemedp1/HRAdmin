@@ -45,9 +45,9 @@ namespace HRAdmin
                             ud.BankName, ud.AccountNo, f.AccessLevel, 
                             d.Department0, d.Department1  
                             FROM tbl_Users u 
-                            FULL OUTER JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo 
-                            FULL OUTER JOIN tbl_UsersLevel f ON u.Position = f.TitlePosition 
-                            FULL OUTER JOIN tbl_Department d ON u.Department = d.Department1 
+                            LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo 
+                            LEFT JOIN tbl_UsersLevel f ON u.Position = f.TitlePosition 
+                            LEFT JOIN tbl_Department d ON u.Department = d.Department1 
                             WHERE u.Username = @Username AND u.Password = @Password";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -103,7 +103,7 @@ namespace HRAdmin
                         UserSession.UserRoles = userRoles;
                         
                         // Debug output
-                        Debug.WriteLine($"User Roles: {string.Join(", ", userRoles)}");
+                        //Debug.WriteLine($"User Roles: {string.Join(", ", userRoles)}");
 
                         this.Hide();
                         Form_Home mainForm = new Form_Home(
