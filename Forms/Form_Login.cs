@@ -48,7 +48,8 @@ namespace HRAdmin
                             LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo 
                             LEFT JOIN tbl_UsersLevel f ON u.Position = f.TitlePosition 
                             LEFT JOIN tbl_Department d ON u.Department = d.Department1 
-                            WHERE u.Username = @Username AND u.Password = @Password";
+                            WHERE u.Username = @Username COLLATE SQL_Latin1_General_CP1_CS_AS
+                            AND u.Password = @Password COLLATE SQL_Latin1_General_CP1_CS_AS";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
