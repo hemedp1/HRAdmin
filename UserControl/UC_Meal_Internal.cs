@@ -770,21 +770,18 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Please select a meal.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             // Validate number of pax
             if (string.IsNullOrWhiteSpace(txt_Npax.Text))
             {
                 MessageBox.Show("No. of Pax required", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             // Validate delivery time
             if (cmb_DeliveryT.SelectedItem == null)
             {
                 MessageBox.Show("Delivery Time required.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             // Validate delivery place
             if (cmb_DeliveryP.SelectedItem == null)
             {
@@ -903,7 +900,10 @@ namespace HRAdmin.UserControl
                     DialogResult result = MessageBox.Show("Submitted Successfully! Would you like to view the order in PDF?",
                         "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
-                    //*************************++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+//*******************************************++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
                     List<string> approverEmails = new List<string>();
                     string getApproversQuery = @"
@@ -968,8 +968,9 @@ namespace HRAdmin.UserControl
                         string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
                         string subject = "HEM Admin Accessibility Notification: New Canteen Food Request Awaiting For Your Review And Approval";
                         string body = $@"
-                                                    <p>Dear Mr./Ms. {requesterName},</p>
-                                                    p>A new <strong>Canteen Food Request</strong> has been <strong>checked</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+                                                    <p>Dear Approver - HR & ADMIN,</p>
+                                                    <p>A new <strong>Canteen Food Request</strong> has been submitted by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
+                                                    
 
                     
                                                 <p><u>Canteen Food Request Details:</u></p>
@@ -981,7 +982,7 @@ namespace HRAdmin.UserControl
                                                     <li><strong>Delivery Date:</strong> {formattedDate1}</li>
                                                 </ul>
 
-                                                    <p>The approved amount will be processed on the <strong>15th</strong> and <strong>30th</strong> of each month. If either date falls on a non-working day, payment will be made on the <strong>next</strong> or <strong>before</strong> working day.</p>
+                                                    <p>Please log in to the system to review and approve the request.</p>
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
                                                 ";
 
@@ -991,11 +992,12 @@ namespace HRAdmin.UserControl
                         }
 
                         MessageBox.Show(
-                            "Notification has been sent to the requester confirming the claim status.",
+                            "Notification has been sent to the approver regarding the canteen food request.",
                             "Notification Sent",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information
                         );
+
                     }
 
                     //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

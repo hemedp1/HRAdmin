@@ -27,6 +27,7 @@ using WinFormsApp = System.Windows.Forms.Application;
 using System.Net.Mail;
 using System.Net;
 using System.Drawing.Drawing2D;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace HRAdmin.UserControl
 {
@@ -825,9 +826,9 @@ namespace HRAdmin.UserControl
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@ApproveStatus", "Approved");
-                        cmd.Parameters.AddWithValue("@ApprovedBy", loggedInUser);
+                        cmd.Parameters.AddWithValue("@ApprovedBy", UserSession.LoggedInUser);
                         cmd.Parameters.AddWithValue("@ApprovedDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@ApprovedDepartment", loggedInDepart);
+                        cmd.Parameters.AddWithValue("@ApprovedDepartment", UserSession.loggedInDepart);
                         cmd.Parameters.AddWithValue("@OrderID", orderId);
 
                         int rowsAffected = cmd.ExecuteNonQuery();
@@ -839,6 +840,83 @@ namespace HRAdmin.UserControl
                                      cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
                                      dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
                                      dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
+
+
+//***************************************+++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                            string requesterName = "";
+                            string EventDetai = "";
+                            string OccasionTy = "";
+                            string OrderI = "";
+                            string EmailRequester = "";
+                            DateTime requestDate = DateTime.MinValue;
+                            DateTime DelrequestDate = DateTime.MinValue;
+
+                            string getClaimDetailsQuery = $@"
+                                                            SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email, C.Name1
+                                                            FROM tbl_ExternalFoodOrder A
+                                                            LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
+                                                            LEFT JOIN tbl_Users C ON C.IndexNo = B.IndexNo
+                                                            WHERE OrderID = @OrderID";
+
+                            using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                            {
+                                emailCmd.Parameters.Add("@OrderID", SqlDbType.NVarChar).Value = orderId;
+
+                                using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                {
+
+                                    if (reader.Read())
+                                    {
+                                        requesterName = reader["Name1"]?.ToString();
+                                        EventDetai = reader["EventDetails"]?.ToString();
+                                        OccasionTy = reader["OccasionType"]?.ToString();
+                                        OrderI = reader["OrderID"]?.ToString();
+                                        requestDate = reader["RequestDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["RequestDate"])
+                                            : DateTime.MinValue;
+                                        DelrequestDate = reader["DeliveryDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["DeliveryDate"])
+                                            : DateTime.MinValue;
+                                        EmailRequester = reader["Email"]?.ToString();
+                                    }
+                                }
+                            }
+                            string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                            string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
+                            string subject = "HEM Admin Accessibility Notification: Your Canteen Food Request Has Been Approved";
+                            string body = $@"
+                                                <p>Dear Mr./Ms. {requesterName},</p>
+                                                <p>Your <strong>canteen food request</strong> has been <strong>approved</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
+                    
+                                            <p><u>Canteen Food Request Details:</u></p>
+                                            <ul>
+                                                <li><strong>Order ID:</strong> {orderId}</li>
+                                                <li><strong>Occasion Type:</strong> {orderSource}</li>
+                                                <li><strong>Event Detail:</strong> {EventDetai}</li>
+                                                <li><strong>Request Date:</strong> {formattedDate}</li>
+                                                <li><strong>Delivery Date:</strong> {formattedDate1}</li>
+                                            </ul>
+
+                                                <p>You may log in to the system if you’d like to view the details of your request.</p>
+                                                <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                            ";
+
+                            
+                                SendEmail(EmailRequester, subject, body);
+
+
+                            MessageBox.Show(
+                                "Notification has been sent to the requester confirming the canteen food request approval.",
+                                "Notification Sent",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information
+                            );
+
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                         }
                         else
                         {
@@ -925,14 +1003,12 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("You do not have permission to reject this order.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
                     // Check if already rejected or approved
                     if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
                     {
                         MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
                     if (currentStatus == "Rejected")
                     {
                         MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -943,7 +1019,6 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("This order has already been approved and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
                     // Confirm action
                     DialogResult result = MessageBox.Show($"Are you sure you want to reject Order ID: {orderId}?", "Confirm Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes) return;
@@ -976,8 +1051,86 @@ namespace HRAdmin.UserControl
                                 cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
                                 cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
                                 dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
-                                dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value
+                                dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
+
+                            //***************************************+++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                            string requesterName = "";
+                            string EventDetai = "";
+                            string OccasionTy = "";
+                            string OrderI = "";
+                            string EmailRequester = "";
+                            DateTime requestDate = DateTime.MinValue;
+                            DateTime DelrequestDate = DateTime.MinValue;
+
+                            string getClaimDetailsQuery = $@"
+                                                            SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email, C.Name1
+                                                            FROM tbl_ExternalFoodOrder A
+                                                            LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
+                                                            LEFT JOIN tbl_Users C ON C.IndexNo = B.IndexNo
+                                                            WHERE OrderID = @OrderID";
+
+                            using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
+                            {
+                                emailCmd.Parameters.Add("@OrderID", SqlDbType.NVarChar).Value = orderId;
+
+                                using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                {
+
+                                    if (reader.Read())
+                                    {
+                                        requesterName = reader["Name1"]?.ToString();
+                                        EventDetai = reader["EventDetails"]?.ToString();
+                                        OccasionTy = reader["OccasionType"]?.ToString();
+                                        OrderI = reader["OrderID"]?.ToString();
+                                        requestDate = reader["RequestDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["RequestDate"])
+                                            : DateTime.MinValue;
+                                        DelrequestDate = reader["DeliveryDate"] != DBNull.Value
+                                            ? Convert.ToDateTime(reader["DeliveryDate"])
+                                            : DateTime.MinValue;
+                                        EmailRequester = reader["Email"]?.ToString();
+                                    }
+                                }
+                            }
+                            string formattedDate = requestDate.ToString("dd/MM/yyyy");
+                            string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
+                            string subject = "HEM Admin Accessibility Notification: Your Canteen Food Request Has Been Rejected";
+                            string body = $@"
+                                                <p>Dear Mr./Ms. {requesterName},</p>
+                                                <p>Your <strong>canteen food request</strong> has been <strong>rejected</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
+                    
+                                            <p><u>Canteen Food Request Details:</u></p>
+                                            <ul>
+                                                <li><strong>Order ID:</strong> {orderId}</li>
+                                                <li><strong>Occasion Type:</strong> {orderSource}</li>
+                                                <li><strong>Event Detail:</strong> {EventDetai}</li>
+                                                <li><strong>Request Date:</strong> {formattedDate}</li>
+                                                <li><strong>Delivery Date:</strong> {formattedDate1}</li>
+                                            </ul>
+
+                                                <p>For any further inquiries or assistance, please contact the HR & Admin department.</p>
+
+                                                <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                            ";
+
+
+                            SendEmail(EmailRequester, subject, body);
+
+
+                            MessageBox.Show(
+                                "Notification has been sent to the requester regarding the rejection of the canteen food request.",
+                                "Notification Sent",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information
                             );
+
+
+
+
+                            //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
                         }
                         else
                         {
@@ -1232,7 +1385,7 @@ namespace HRAdmin.UserControl
                                      dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
                           
 
-//*************************++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//*************************+++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                  
 
                             List<string> approverEmails = new List<string>();
@@ -1241,7 +1394,7 @@ namespace HRAdmin.UserControl
                                                         FROM tbl_Users A
                                                         LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
                                                         LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
-                                                        WHERE Department = 'HR & ADMIN' AND AccessLevel > 1 AND AccessLevel < 3";  // First level account approver
+                                                        WHERE Department = 'HR & ADMIN' AND AccessLevel > 1 AND AccessLevel < 5";  
 
                             using (SqlCommand cmd1 = new SqlCommand(getApproversQuery, con))
                             using (SqlDataReader reader = cmd1.ExecuteReader())
@@ -1300,12 +1453,12 @@ namespace HRAdmin.UserControl
                                 string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
                                 string subject = "HEM Admin Accessibility Notification: New Canteen Food Request Awaiting For Your Review And Approval";
                                 string body = $@"
-                                                    <p>Dear Mr./Ms. {requesterName},</p>
-                                                    p>A new <strong>Canteen Food Request</strong> has been <strong>checked</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
-
+                                                    <p>Dear Approver - HR & ADMIN,</p>
+                                                    <p>A new <strong>Canteen Food Request</strong> has been <strong>checked</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
                     
                                                 <p><u>Canteen Food Request Details:</u></p>
                                                 <ul>
+                                                    <li><strong>Requester:</strong> {requesterName}</li>
                                                     <li><strong>Order ID:</strong> {orderId}</li>
                                                     <li><strong>Occasion Type:</strong> {orderSource}</li>
                                                     <li><strong>Event Detail:</strong> {EventDetai}</li>
@@ -1313,7 +1466,7 @@ namespace HRAdmin.UserControl
                                                     <li><strong>Delivery Date:</strong> {formattedDate1}</li>
                                                 </ul>
 
-                                                    <p>The approved amount will be processed on the <strong>15th</strong> and <strong>30th</strong> of each month. If either date falls on a non-working day, payment will be made on the <strong>next</strong> or <strong>before</strong> working day.</p>
+                                                    <p>Please log in to the system to review and approve the request.</p>
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
                                                 ";
 
@@ -1323,14 +1476,14 @@ namespace HRAdmin.UserControl
                                 }
 
                                 MessageBox.Show(
-                                    "Notification has been sent to the requester confirming the claim status.",
+                                    "Notification has been sent to the approver regarding the canteen food request.",
                                     "Notification Sent",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Information
                                 );
                             }
            
-                            //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                         }
                         else

@@ -337,20 +337,19 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                     string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
                     string subject = "HEM Admin Accessibility Notification: New Canteen Food Request Awaiting For Your Review And Approval";
                     string body = $@"
-                                                    <p>Dear Mr./Ms. {requesterName},</p>
-                                                    p>A new <strong>Canteen Food Request</strong> has been <strong>checked</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+                                                    <p>Dear Approver - HR & ADMIN,</p>
+                                                    <p>A new <strong>Canteen Food Request</strong> has been submitted by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
+                                                    
+                                                    <p><u>Canteen Food Request Details:</u></p>
+                                                    <ul>
+                                                        <li><strong>Order ID:</strong> {combinedValue}</li>
+                                                        <li><strong>Occasion Type:</strong> {cmbOccasion}</li>
+                                                        <li><strong>Event Detail:</strong> {eventDetails}</li>
+                                                        <li><strong>Request Date:</strong> {formattedDate}</li>
+                                                        <li><strong>Delivery Date:</strong> {formattedDate1}</li>
+                                                    </ul>
 
-                    
-                                                <p><u>Canteen Food Request Details:</u></p>
-                                                <ul>
-                                                    <li><strong>Order ID:</strong> {combinedValue}</li>
-                                                    <li><strong>Occasion Type:</strong> {cmbOccasion}</li>
-                                                    <li><strong>Event Detail:</strong> {eventDetails}</li>
-                                                    <li><strong>Request Date:</strong> {formattedDate}</li>
-                                                    <li><strong>Delivery Date:</strong> {formattedDate1}</li>
-                                                </ul>
-
-                                                    <p>The approved amount will be processed on the <strong>15th</strong> and <strong>30th</strong> of each month. If either date falls on a non-working day, payment will be made on the <strong>next</strong> or <strong>before</strong> working day.</p>
+                                                    <p>Please log in to the system to review and approve the request.</p>
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
                                                 ";
 
@@ -360,17 +359,18 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                     }
 
                     MessageBox.Show(
-                        "Notification has been sent to the requester confirming the claim status.",
+                        "Notification has been sent to the approver regarding the canteen food request.",
                         "Notification Sent",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
+
                 }
-                
-                //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-               
-                
-                
+
+//***********************8++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
                 // Return to main page
                 CheckUserAccess(loggedInUser);
 

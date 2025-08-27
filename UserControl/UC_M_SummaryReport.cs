@@ -11,9 +11,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Drawing2D;
 
 namespace HRAdmin.UserControl
 {
@@ -41,7 +44,56 @@ namespace HRAdmin.UserControl
             string userlevel = UserSession.logginInUserAccessLevel;
             string userfullName = UserSession.loggedInName;
         }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
 
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
+        }
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -56,24 +108,20 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account";
             UC_Acc_Account ug = new UC_Acc_Account(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
-
         private void dtpStart_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
         }
-
         private void dtpEnd_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
         }
-
         private void cmbPS_SelectedIndexChanged(object sender, EventArgs e)
         {
             string PaymentStatus = cmbPS.SelectedItem?.ToString();
@@ -94,27 +142,28 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void LoadData()
         {
             string query = @"
             SELECT 
-                 A.SerialNo, 
-                 A.Requester,
-                 A.ExpensesType, 
-                 A.PaymentStatus,
-                 A.RequestDate,
-                 SUM(B.InvoiceAmount) AS TotalAmount
-            FROM tbl_MasterClaimForm A
-            LEFT JOIN tbl_DetailClaimForm B 
-            ON A.SerialNo = B.SerialNo
-            WHERE A.RequestDate BETWEEN @StartDate AND @EndDate
-            GROUP BY 
-                 A.SerialNo, 
-                 A.Requester,
-                 A.ExpensesType, 
-                 A.PaymentStatus,
-                 A.RequestDate;";
+     A.SerialNo, 
+     A.Requester,
+     A.ExpensesType, 
+     A.PaymentStatus,
+     A.RequestDate,
+     C.Email,
+     SUM(B.InvoiceAmount) AS TotalAmount
+FROM tbl_MasterClaimForm A
+LEFT JOIN tbl_DetailClaimForm B ON A.SerialNo = B.SerialNo
+LEFT JOIN tbl_UserDetail C ON C.IndexNo = A.EmpNo
+WHERE A.RequestDate BETWEEN @StartDate AND @EndDate
+GROUP BY 
+     A.SerialNo, 
+     A.Requester,
+     A.ExpensesType, 
+     A.PaymentStatus,
+     A.RequestDate,
+     C.Email;";
 
             SqlConnection con = null;
 
@@ -197,7 +246,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void BindDataGridView(DataTable dt)
         {
             // Calculate the sum of TotalAmount for rows with valid PaymentStatus
@@ -321,7 +369,6 @@ namespace HRAdmin.UserControl
 
             Debug.WriteLine("DataGridView updated successfully with total.");
         }
-
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             // Get the current data from the DataGridView
@@ -408,6 +455,50 @@ namespace HRAdmin.UserControl
                     BindDataGridView(dt);
 
                     MessageBox.Show("Payment status updated to 'Paid' for all records.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // After DB update and DataTable update
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string email = row["Email"]?.ToString();
+                        string requester = row["Requester"]?.ToString();
+                        string claimType = row["ExpensesType"]?.ToString();
+                        string serialNo = row["SerialNo"]?.ToString();
+                        DateTime requestDate = row["RequestDate"] != DBNull.Value 
+                                                ? Convert.ToDateTime(row["RequestDate"]) 
+                                                : DateTime.MinValue;
+
+                        if (!string.IsNullOrEmpty(email))
+                        {
+                            string formattedDate = requestDate.ToString("dd/MM/yyyy");
+
+                            string subject = "HEM Admin Notification: Your Miscellaneous Claim Has Been Paid!";
+                            string body = $@"
+                                <p>Dear Mr./Ms. {requester},</p>
+
+                                <p>Your <strong>Miscellaneous Claim</strong> has been <strong>paid</strong>.</p>
+
+
+                                <p><u>Claim Details:</u></p>
+                                <ul>
+                                    <li><strong>Requester:</strong> {requester}</li>
+                                    <li><strong>Claim Type:</strong> {claimType}</li>
+                                    <li><strong>Serial No:</strong> {serialNo}</li>
+                                    <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                </ul>
+
+                                <p>Thank you,<br/>HEM Admin Accessibility</p>
+                            ";
+
+                            SendEmail(email, subject, body);
+
+                        }
+                       
+
+                    }
+
+                    MessageBox.Show("Payment status updated and email notifications sent successfully.",
+                                   "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 }
                 catch (Exception ex)
                 {
