@@ -255,7 +255,6 @@ namespace HRAdmin.UserControl
                                                     <p>Dear Mr./Ms. {selectedPerson},</p>
                                                     <p>Your <strong>car booking request</strong> has been <strong>approved</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
 
-                    
                                                     <p><u>Booking Details:</u></p>
                                                     <ul>
                                                         <li><strong>Purpose:</strong> {purpose}</li>

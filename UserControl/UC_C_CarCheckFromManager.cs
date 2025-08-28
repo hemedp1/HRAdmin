@@ -565,7 +565,10 @@ namespace HRAdmin.UserControl
                             {
                                 MessageBox.Show("Reservation verified successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 LoadPendingBookings();
-                                //+++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+//++++++++++++++++++++++++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                
                                 string query1 = @"SELECT TOP 1 A.Department, A.AA, B.Email
                                                 FROM 
                                                 tbl_Users A
@@ -847,3 +850,18 @@ namespace HRAdmin.UserControl
         
     }
 }
+/*
+
+SELECT TOP 1 A.Name,A.Department, A.AA, B.Email,C.AccessLevel
+    FROM 
+    tbl_Users A
+    LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+	LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+    WHERE A.Department = 'HR & ADMIN' AND AA = '1' AND AccessLevel = '0'
+
+SELECT A.Department, A.Username, B.Email, C.AccessLevel
+FROM tbl_Users A
+LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+WHERE Department = 'HR & ADMIN' AND AccessLevel  < 1
+*/

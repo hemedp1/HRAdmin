@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Services.Description;
@@ -48,6 +50,56 @@ namespace HRAdmin.UserControl
             CheckUserAccess1(loggedInUser);
             loadCars();
             
+        }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
+
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
         }
         private void UC_C_Accident_Load(object sender, EventArgs e)
         {
@@ -582,6 +634,71 @@ namespace HRAdmin.UserControl
                             updateCmd.ExecuteNonQuery();
 
                             MessageBox.Show("Record successfully modified"); /////////
+
+//***************++++++*************************+++++++              EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                            List<string> approverEmails1 = new List<string>();
+                            string getApproversQuery2 = @"
+                                            SELECT TOP 1 A.Name,A.Department, A.AA, B.Email,C.AccessLevel
+                                            FROM 
+                                            tbl_Users A
+                                            LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+	                                        LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                            WHERE A.Department = 'HR & ADMIN' AND AA = '1' AND AccessLevel = 0 ";  // First level account approver
+
+                            using (SqlCommand cmd1 = new SqlCommand(getApproversQuery2, con))
+                            using (SqlDataReader reader = cmd1.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    string email = reader["Email"]?.ToString();
+                                    if (!string.IsNullOrWhiteSpace(email))
+                                    {
+                                        approverEmails1.Add(email);
+                                    }
+                                }
+                            }
+                            if (approverEmails1.Count > 0)
+                            {
+                                string formattedDate = dateRep.ToString("dd/MM/yyyy");
+                                string formattedDate1 = selectedDate.ToString("dd/MM/yyyy");
+                                string subject = "HEM Admin Accessibility Notification: Record Car Accident Report has been modified for Your Review";
+
+                                string body = $@"
+                                        <p>Dear Approver - HR & ADMIN,</p>
+                                        <p>A record <strong>Car Accident Report</strong> has been modified by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                                        
+                                        <p><u>Accident Report Details:</u></p>
+                                        <ul>
+                                            <li><strong>Report ID:</strong> {UserSession.LoggedInUser + "_" + UserSession.loggedInIndex + "_" + selectedDate.ToString("yyyy-MM-dd")}</li>
+                                            <li><strong>Car:</strong> {cmbCar.Text}</li>
+                                            <li><strong>Place of accident:</strong> {txtPlaceRep.Text}</li>
+                                            <li><strong>Date of Accident:</strong> {formattedDate}</li>
+                                            <li><strong>Date Reported:</strong> {formattedDate1}</li>
+                                        </ul>
+
+                                        <p>Please log in to the system to review and take the necessary action.</p>
+                                        <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                    ";
+
+                                foreach (var email in approverEmails1)
+                                {
+                                    SendEmail(email, subject, body);
+                                }
+
+                                MessageBox.Show(
+                                    "Notification has been sent to the approver regarding the car accident report.",
+                                    "Notification Sent",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information
+                                );
+                            }
+
+
+//++++++++++++++++++++++++++++++++***********************8++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
                         }
 
                         return;
@@ -618,12 +735,74 @@ namespace HRAdmin.UserControl
                     insertCmd.Parameters.AddWithValue("@PM", txtPM.Text);
                     insertCmd.Parameters.AddWithValue("@PoliceStation", txtPolis.Text);
                     insertCmd.Parameters.AddWithValue("@ReportNo", txtRepNo.Text);
-                    insertCmd.Parameters.AddWithValue("@ReportID", loggedInUser + "_" + loggedInIndex + "_" + selectedDate.ToString("yyyy-MM-dd"));
+                    insertCmd.Parameters.AddWithValue("@ReportID", UserSession.LoggedInUser + "_" + UserSession.loggedInIndex + "_" + selectedDate.ToString("yyyy-MM-dd"));
                     insertCmd.Parameters.AddWithValue("@Explanation", txtExplanantion.Text);
 
                     insertCmd.ExecuteNonQuery();
 
                     MessageBox.Show("Report details successfully submitted!", "Report Submmitted");
+
+//++++++*************************+++++++              EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                    List<string> approverEmails = new List<string>();
+                    string getApproversQuery = @"
+                                            SELECT TOP 1 A.Name,A.Department, A.AA, B.Email,C.AccessLevel
+                                            FROM 
+                                            tbl_Users A
+                                            LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+	                                        LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                            WHERE A.Department = 'HR & ADMIN' AND AA = '1' AND AccessLevel = 0 ";  // First level account approver
+
+                    using (SqlCommand cmd1 = new SqlCommand(getApproversQuery, con))
+                    using (SqlDataReader reader = cmd1.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string email = reader["Email"]?.ToString();
+                            if (!string.IsNullOrWhiteSpace(email))
+                            {
+                                approverEmails.Add(email);
+                            }
+                        }
+                    }
+                    if (approverEmails.Count > 0)
+                    {
+                        string formattedDate = dateRep.ToString("dd/MM/yyyy");
+                        string formattedDate1 = selectedDate.ToString("dd/MM/yyyy");
+                        string subject = "HEM Admin Accessibility Notification: New Car Accident Report Submitted for Your Review";
+
+                        string body = $@"
+                                        <p>Dear Approver - HR & ADMIN,</p>
+                                        <p>A new <strong>Car Accident Report</strong> has been submitted by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                                        
+                                        <p><u>Accident Report Details:</u></p>
+                                        <ul>
+                                            <li><strong>Report ID:</strong> {UserSession.LoggedInUser + "_" + UserSession.loggedInIndex + "_" + selectedDate.ToString("yyyy-MM-dd")}</li>
+                                            <li><strong>Car:</strong> {cmbCar.Text}</li>
+                                            <li><strong>Place of accident:</strong> {txtPlaceRep.Text}</li>
+                                            <li><strong>Date of Accident:</strong> {formattedDate}</li>
+                                            <li><strong>Date Reported:</strong> {formattedDate1}</li>
+                                        </ul>
+
+                                        <p>Please log in to the system to review and take the necessary action.</p>
+                                        <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                    ";
+
+                        foreach (var email in approverEmails)
+                        {
+                            SendEmail(email, subject, body);
+                        }
+
+                        MessageBox.Show(
+                            "Notification has been sent to the approver regarding the car accident report.",
+                            "Notification Sent",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                    }
+
+
+//+++++++++++***********************8++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                 }
             }
@@ -641,7 +820,6 @@ namespace HRAdmin.UserControl
             }
             try
             {
-
 
                 string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
 
@@ -1050,6 +1228,70 @@ namespace HRAdmin.UserControl
                         cmd.ExecuteNonQuery();
 
                         MessageBox.Show("Accident record verified successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        //++++++*************************+++++++              EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                        List<string> approverEmails = new List<string>();
+                        string getApproversQuery = @"
+                                            SELECT TOP 1 A.Name,A.Department, A.AA, B.Email,C.AccessLevel
+                                            FROM 
+                                            tbl_Users A
+                                            LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+	                                        LEFT JOIN tbl_UsersLevel C ON A.Position = C.TitlePosition
+                                            WHERE A.Department = 'HR & ADMIN' AND AA = '1' AND AccessLevel = 1 ";  // First level account approver
+
+                        using (SqlCommand cmd1 = new SqlCommand(getApproversQuery, con))
+                        using (SqlDataReader reader = cmd1.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string email = reader["Email"]?.ToString();
+                                if (!string.IsNullOrWhiteSpace(email))
+                                {
+                                    approverEmails.Add(email);
+                                }
+                            }
+                        }
+                        if (approverEmails.Count > 0)
+                        {
+                            string formattedDate = dTDay.Value.ToString("dd/MM/yyyy");
+                            string formattedDate1 = dtRep.Value.ToString("dd/MM/yyyy");
+                            string subject = "HEM Admin Accessibility Notification: New Car Accident Report Submitted for Your Review";
+
+                            string body = $@"
+                                        <p>Dear Approver - HR & ADMIN,</p>
+                                        <p>A new <strong>Car Accident Report</strong> has been checked by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+                                        
+                                        <p><u>Accident Report Details:</u></p>
+                                        <ul>
+                                            <li><strong>Report ID:</strong> {UserSession.LoggedInUser + "_" + UserSession.loggedInIndex + "_" + dTDay.Value.ToString("dd/MM/yyyy")}</li>
+                                            <li><strong>Car:</strong> {cmbCar.Text}</li>
+                                            <li><strong>Place of accident:</strong> {txtPlaceRep.Text}</li>
+                                            <li><strong>Date of Accident:</strong> {formattedDate}</li>
+                                            <li><strong>Date Reported:</strong> {formattedDate1}</li>
+                                        </ul>
+
+                                        <p>Please log in to the system to review and take the necessary action.</p>
+                                        <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                    ";
+
+                            foreach (var email in approverEmails)
+                            {
+                                SendEmail(email, subject, body);
+                            }
+
+                            MessageBox.Show(
+                                "Notification has been sent to the approver regarding the car accident report.",
+                                "Notification Sent",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information
+                            );
+                        }
+
+
+                        //+++++++++++***********************8++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
                     }
                 }
             }
@@ -1071,22 +1313,18 @@ namespace HRAdmin.UserControl
                         checkCmd1.Parameters.Add("@Username", SqlDbType.VarChar).Value = UserSession.LoggedInUser;
                         checkCmd1.Parameters.Add("@Depart", SqlDbType.VarChar).Value = UserSession.loggedInDepart;
                         object AC = checkCmd1.ExecuteScalar();
-
                         string AClvl = AC?.ToString();
-
                         if (AClvl == "11")
                         {
                             MessageBox.Show("This action is not available for checkers.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                     }
-
                     string checkQuery = @"SELECT CheckStatus, ApproveStatus FROM tbl_AccidentCar WHERE CAST(DateReport AS DATE) = @Date 
                                         AND ReportID = @ReportID";
 
                     string statusCheck = null;
                     string approveStatus = null;
-
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
                     {
                         checkCmd.Parameters.Add("@Date", SqlDbType.Date).Value = selectedDate;
@@ -1101,7 +1339,6 @@ namespace HRAdmin.UserControl
                             }
                         }
                     }
-
                     if (statusCheck == "Pending")
                     {
                         MessageBox.Show("Cannot proceed. Status Check must be 'Checked'.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1123,8 +1360,6 @@ namespace HRAdmin.UserControl
                         return;
                     }
 
-                   
-
                     DialogResult result = MessageBox.Show("Are you sure you want to verify this accident record?", "Verify Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                     if (result == DialogResult.Yes)
@@ -1145,7 +1380,6 @@ namespace HRAdmin.UserControl
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 
-
                                 cmd.Parameters.AddWithValue("@ApproveBy", loggedInUser);
                                 cmd.Parameters.Add("@DateApprove", SqlDbType.Date).Value = selectedDate;
                                 cmd.Parameters.Add("@Date", SqlDbType.Date).Value = selectedDate;
@@ -1157,6 +1391,78 @@ namespace HRAdmin.UserControl
                                 cmd.ExecuteNonQuery();
 
                                 MessageBox.Show("Accident record approved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                //++++++*************************+++++++              EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                List<string> RequesterEmail = new List<string>();
+                                string drivername = string.Empty;
+
+                                string getRequesterEmailQuery = @"
+                                                                SELECT B.Email, C.Name1 
+                                                                FROM tbl_AccidentCar A
+                                                                LEFT JOIN tbl_UserDetail B ON B.IndexNo = A.IndexNo
+                                                                LEFT JOIN tbl_Users C ON B.IndexNo = C.IndexNo
+                                                                WHERE A.ReportID = @RepID;";
+
+                                using (SqlCommand cmd1 = new SqlCommand(getRequesterEmailQuery, con))
+                                {
+                                    cmd1.Parameters.Add("@RepID", SqlDbType.NVarChar).Value = cmnRepID.Text.Trim();
+
+                                    using (SqlDataReader reader = cmd1.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            string email = reader["Email"]?.ToString();
+                                            if (!string.IsNullOrWhiteSpace(email))
+                                            {
+                                                RequesterEmail.Add(email);
+                                            }
+
+                                            drivername = reader["Name1"]?.ToString();
+                                        }
+                                    }
+                                }
+
+                                if (RequesterEmail.Count > 0)
+                                {
+                                    string formattedDate = dTDay.Value.ToString("dd/MM/yyyy");      // Accident date
+                                    string formattedDate1 = dtRep.Value.ToString("dd/MM/yyyy");     // Report date
+
+                                    string subject = "HEM Admin Accessibility Notification: Your Car Accident Report Has Been Reviewed and Approved";
+
+                                    string body = $@"
+                                                    <p>Dear Mr./Ms. {drivername},</p>
+                                                    <p>Your <strong>Car Accident Report</strong> submitted on <strong>{formattedDate1}</strong> has been reviewed and approved by HR & Admin.</p>
+        
+                                                    <p><u>Accident Report Details:</u></p>
+                                                    <ul>
+                                                        <li><strong>Report ID:</strong> {cmnRepID.Text}</li>
+                                                        <li><strong>Car:</strong> {cmbCar.Text}</li>
+                                                        <li><strong>Place of Accident:</strong> {txtPlaceRep.Text}</li>
+                                                        <li><strong>Date of Accident:</strong> {formattedDate}</li>
+                                                        <li><strong>Date Reported:</strong> {formattedDate1}</li>
+                                                    </ul>
+
+                                                    <p>You may contact HR & Admin for any further clarifications.</p>
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                    foreach (var email in RequesterEmail)
+                                    {
+                                        SendEmail(email, subject, body);
+                                    }
+
+                                    MessageBox.Show(
+                                        "Notification has been sent back to the reporter regarding the accident report approval.",
+                                        "Notification Sent",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information
+                                    );
+                                }
+
+                                //+++++++++++***********************++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
                             }
                         }
                     }
