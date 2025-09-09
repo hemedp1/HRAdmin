@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
 using System.Windows.Forms;
+using HRAdmin.Components;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace HRAdmin.Forms
@@ -539,6 +540,7 @@ namespace HRAdmin.Forms
             btnUpdate.Visible = false; //update
             btnMCReport.Visible = false; //miscellaneous claim report
             btnApproval.Visible = false;
+            
             UC_Acc_Account ug = new UC_Acc_Account(loggedInDepart, loggedInIndex, loggedInName, LoggedInBank, LoggedInAccNo);
             addControls(ug);
         }
@@ -709,6 +711,17 @@ namespace HRAdmin.Forms
         }
         private void lblUsername_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void btnUserprofile_Click(object sender, EventArgs e)
+        {
+            label1.Text = "User";
+            btnBookCar.Visible = false;
+            btn_New.Visible = false;
+            btnAddpeople.Visible = false;
+            UC_U_User ug = new UC_U_User();
+            addControls(ug);
 
         }
     }

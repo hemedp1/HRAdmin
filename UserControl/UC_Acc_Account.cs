@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HRAdmin.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using HRAdmin.Components;
 
 namespace HRAdmin.UserControl
 {
@@ -28,7 +29,13 @@ namespace HRAdmin.UserControl
             loggedInIndex = emp;
             LoggedInBank = bank;
             LoggedInAccNo = accountNo;
+            hideButton();
         }
+        private void hideButton()
+        {
+            btnSReport.Visible = UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS";
+        }
+
         private void btnMClaim_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim";

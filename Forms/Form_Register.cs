@@ -17,6 +17,7 @@ namespace HRAdmin.Forms
         public Form_Register()
         {
             InitializeComponent();
+            LoadPositions();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -30,9 +31,10 @@ namespace HRAdmin.Forms
             string newPassword = txtNewPassword.Text.Trim();
             string Department = comboBox1.Text.Trim();
             string IndexNo = txtIndex.Text.Trim();
+            string Email = txtEmail.Text.Trim();
 
             if (string.IsNullOrEmpty(newUsername) || string.IsNullOrEmpty(newPassword) ||
-                string.IsNullOrEmpty(Department) || string.IsNullOrEmpty(IndexNo))
+                string.IsNullOrEmpty(Department) || string.IsNullOrEmpty(IndexNo) || string.IsNullOrEmpty(Email))
             {
                 MessageBox.Show("Please fill in all fields.", "Registration Error",
                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -91,7 +93,7 @@ namespace HRAdmin.Forms
                         return;
                     }
 
-                    // Insert new user
+                    // Insert new user  -- tbl_Users
                     string insertQuery = @"INSERT INTO tbl_Users 
                                  (Username, Department, Password, IndexNo) 
                                  VALUES (@Username, @Department, @Password, @IndexNo)";
@@ -104,6 +106,18 @@ namespace HRAdmin.Forms
 
                     insertCmd.ExecuteNonQuery();
 
+                    // Insert new user  -- tbl_UsersDetails
+                    string insertQuery1 = @"INSERT INTO tbl_UserDetail 
+                                 (Username, IndexNo, Email) 
+                                 VALUES (@Username, @IndexNo, @Email)";
+
+                    SqlCommand insertCmd1 = new SqlCommand(insertQuery1, con);
+                    insertCmd1.Parameters.AddWithValue("@Username", newUsername);
+                    insertCmd1.Parameters.AddWithValue("@IndexNo", IndexNo);
+                    insertCmd1.Parameters.AddWithValue("@Email", Email);
+
+                    insertCmd1.ExecuteNonQuery();
+
                     MessageBox.Show("Registration successful!", "Success",
                                   MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.Close(); // Close registration form
@@ -115,7 +129,27 @@ namespace HRAdmin.Forms
                                MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void LoadPositions()
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT DISTINCT Position FROM tbl_Users WHERE Position IS NOT NULL";
 
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    comboBox2.DataSource = dt;
+                    comboBox2.DisplayMember = "Position";
+                    comboBox2.ValueMember = "Position";
+                    comboBox2.SelectedIndex = -1;
+                }
+            }
+        }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -125,5 +159,8 @@ namespace HRAdmin.Forms
         {
 
         }
+
+        
+
     }
 }

@@ -190,8 +190,6 @@ namespace HRAdmin.UserControl
             UC_C_Car_Details_Booking ug = new UC_C_Car_Details_Booking(loggedInUser);
             addControls(ug);
         }
-
-
         private void btnMeeting_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Admin > Reserve Meeting Room && Schedule";
@@ -206,7 +204,6 @@ namespace HRAdmin.UserControl
             UC_R_DetailsRoom ug = new UC_R_DetailsRoom(loggedInUser);
             addControls(ug);
         }
-    
         private void btnWB_Click(object sender, EventArgs e)
         {
             CheckUserAccess(loggedInUser);
@@ -225,12 +222,10 @@ namespace HRAdmin.UserControl
             UC_W_WelcomeBoard ug = new UC_W_WelcomeBoard(loggedInUser, loggedInDepart);
             addControls(ug);
         }
-
         private void btnBack_Click(object sender, EventArgs e)
         {
             this.Dispose();
         }
-
         private void groupBox1_Enter(object sender, EventArgs e)
         {
 
@@ -284,7 +279,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Error: " + ex.Message);
             }
         }
-
         private void btnMeal_Click(object sender, EventArgs e)
         {
             CheckUserAccess(loggedInUser);

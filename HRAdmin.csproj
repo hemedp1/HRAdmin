@@ -278,6 +278,18 @@
     <Compile Include="UserControl\UC_C_WithDrawCar.Designer.cs">
       <DependentUpon>UC_C_WithDrawCar.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\UC_U_User.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_U_User.Designer.cs">
+      <DependentUpon>UC_U_User.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControl\UC_U_UserProfile.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_U_UserProfile.Designer.cs">
+      <DependentUpon>UC_U_UserProfile.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\UC_W_InputVisitor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -412,6 +424,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_C_WithDrawCar.resx">
       <DependentUpon>UC_C_WithDrawCar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_U_User.resx">
+      <DependentUpon>UC_U_User.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_U_UserProfile.resx">
+      <DependentUpon>UC_U_UserProfile.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_W_InputVisitor.resx">
       <DependentUpon>UC_W_InputVisitor.cs</DependentUpon>
