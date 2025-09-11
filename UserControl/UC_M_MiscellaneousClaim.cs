@@ -837,6 +837,7 @@ namespace HRAdmin.UserControl
         }
         private void btnWithdraw_Click(object sender, EventArgs e)
         {
+            //MessageBox.Show(UserSession.loggedInName);
             // Check if a cell is selected in the DataGridView
             if (dgvMS.SelectedCells.Count == 0)
             {
@@ -868,7 +869,7 @@ namespace HRAdmin.UserControl
             }
 
             // Restrict withdrawal to only the user's own orders
-            if (requester != UserSession.LoggedInUser)
+            if (requester != UserSession.loggedInName)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -985,7 +986,7 @@ namespace HRAdmin.UserControl
             ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  ACCOUNT                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
             // Handle ACCOUNT department approvals
-            if (UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS") // && hodApprovalStatus == "Approved")
+            if (UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS" && hodApprovalStatus == "Approved")
             {
                 // Handle Account2ApprovalStatus (AccessLevel 0)
                 if (userAccessLevel == 99)
@@ -1003,6 +1004,7 @@ namespace HRAdmin.UserControl
                             MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
+
                     }
 
                     if (expensesType == "Benefit")
@@ -1015,6 +1017,16 @@ namespace HRAdmin.UserControl
                         if (hodApprovalStatus == "Rejected")
                         {
                             MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HOD approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (hrApprovalStatus == "Pending")
+                        {
+                            MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HR & ADMIN approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (hrApprovalStatus == "Rejected")
+                        {
+                            MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HR & ADMIN approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                     }
@@ -1319,7 +1331,7 @@ namespace HRAdmin.UserControl
                         return;
                     }
                     // Check if loggedInDepart is GENERAL AFFAIRS
-                    if (loggedInDepart != "GENERAL AFFAIRS")
+                    if (UserSession.loggedInDepart != "GENERAL AFFAIRS")
                     {
                         MessageBox.Show("Only users from GENERAL AFFAIRS can approve this Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -1359,7 +1371,7 @@ namespace HRAdmin.UserControl
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Miscellaneous Claim approved successfully by 3rd-Leve Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim approved successfully by 3rd-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
 
                                     //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1469,7 +1481,11 @@ namespace HRAdmin.UserControl
                     MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
+                if (requester == UserSession.loggedInName)
+                {
+                    MessageBox.Show("You cannot approve your own Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
                 // Check if HODApprovalStatus is Pending
                 if (hodApprovalStatus == "Pending" && department != "HR & ADMIN")
                 {
@@ -1739,7 +1755,7 @@ namespace HRAdmin.UserControl
             else
             {
                 // Check if the user is trying to approve their own claim
-                if (requester == LoggedInUser)
+                if (requester == UserSession.loggedInName)
                 {
                     MessageBox.Show("You cannot approve your own Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -2050,7 +2066,8 @@ namespace HRAdmin.UserControl
             }
 
             // Handle ACCOUNT department rejection
-            if ((UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS"))
+            if (UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS" && hodApprovalStatus == "Approved")
+          //if ((UserSession.loggedInDepart == "ACCOUNT" || UserSession.loggedInDepart == "GENERAL AFFAIRS"))
             {
                 // Handle Account2ApprovalStatus (AccessLevel 99)
                 if (userAccessLevel == 99)
@@ -2065,19 +2082,28 @@ namespace HRAdmin.UserControl
                     // Check if Account2ApprovalStatus is Approved
                     if (account2ApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("tThis Miscellaneous Claim cannot be rejected by 1st because it has already been approved by Account2.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by 1st-Level Account because it has already been approved by 1st-Level Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-
+                    if (hrApprovalStatus == "Pending")
+                    {
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by 1st-Level Account because HR & ADMIN approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (hrApprovalStatus == "Rejected")
+                    {
+                        MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HR & ADMIN approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                     // Check if Account2ApprovalStatus is Rejected
                     if (account2ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This Miscellaneous Claim has already been rejected by Account2.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by 1st-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account2 rejection
-                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as Account2?", "Confirm Account2 Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as 1st-Level Account?", "Confirm 1st-Level Account Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -2105,7 +2131,7 @@ namespace HRAdmin.UserControl
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Miscellaneous Claim rejected successfully by Account2.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim rejected successfully by 1st-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
                                     //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -2211,19 +2237,19 @@ namespace HRAdmin.UserControl
                     // Check if Account3ApprovalStatus is Approved
                     if (account3ApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account3 because it has already been approved by Account3.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account3 because it has already been approved by 2nd-Level Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if Account3ApprovalStatus is Rejected
                     if (account3ApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This Miscellaneous Claim has already been rejected by Account3.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by 2nd-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account3 rejection
-                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as Account3?", "Confirm Account3 Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as 2nd-Level Account?", "Confirm 2nd-Level Account Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -2251,7 +2277,7 @@ namespace HRAdmin.UserControl
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Miscellaneous Claim rejected successfully by Account3.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim rejected successfully by 2nd-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
 
                                     //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -2366,19 +2392,19 @@ namespace HRAdmin.UserControl
                     // Check if AccountApprovalStatus is Approved
                     if (accountApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account because it has already been approved by Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account because it has already been approved by 3rd-Level Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Check if AccountApprovalStatus is Rejected
                     if (accountApprovalStatus == "Rejected")
                     {
-                        MessageBox.Show("This Miscellaneous Claim has already been rejected by Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim has already been rejected by 3rd-Level Account.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     // Confirm Account rejection
-                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as Account?", "Confirm Account Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show($"Are you sure you want to reject Miscellaneous Claim for Serial No: {serialNo} as 3rd-Level Account?", "Confirm 3rd-Level Account Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes)
                     {
                         return;
@@ -2406,7 +2432,7 @@ namespace HRAdmin.UserControl
                                 int rowsAffected = cmd.ExecuteNonQuery();
                                 if (rowsAffected > 0)
                                 {
-                                    MessageBox.Show("Miscellaneous Claim rejected successfully by Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    MessageBox.Show("Miscellaneous Claim rejected successfully by 3rd-Level Account.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     LoadData();
                                     //=+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -2737,7 +2763,8 @@ namespace HRAdmin.UserControl
 
                 // Extract requester's department from SerialNo (e.g., "HR & ADMIN" from "HR & ADMIN_02072025_3")
                 string requesterDepartment = serialNo.Split('_')[0].Trim();
-                if (UserSession.loggedInDepart != requesterDepartment)
+                //if (UserSession.loggedInDepart != requesterDepartment)
+                if (((UserSession.loggedInDepart != requesterDepartment) && requesterDepartment != "EDP" && requesterDepartment != "HR & ADMIN" && requesterDepartment != "ACCOUNT" && requesterDepartment != "FACILITY") && (UserSession.loggedInDepart == "GENERAL AFFAIRS" && UserSession.loggedInDepart != requesterDepartment))
                 {
                     MessageBox.Show($"You are not authorized to reject this Miscellaneous Claim. Only HOD from {requesterDepartment} department can reject.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;

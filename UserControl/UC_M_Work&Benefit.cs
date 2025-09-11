@@ -623,15 +623,15 @@ namespace HRAdmin.UserControl
                         foreach (DataRow row in validRows.Rows)
                         {
                             row["Requester"] = row["Requester"] == DBNull.Value || string.IsNullOrEmpty(row["Requester"]?.ToString())
-                                ? loggedInName : row["Requester"];
+                                ? UserSession.loggedInName : row["Requester"];
                             row["EmpNo"] = row["EmpNo"] == DBNull.Value || string.IsNullOrEmpty(row["EmpNo"]?.ToString())
-                                ? loggedInIndex : row["EmpNo"];
+                                ? UserSession.loggedInIndex : row["EmpNo"];
                             row["Department"] = row["Department"] == DBNull.Value || string.IsNullOrEmpty(row["Department"]?.ToString())
-                                ? loggedInDepart : row["Department"];
+                                ? UserSession.loggedInDepart : row["Department"];
                             row["BankName"] = row["BankName"] == DBNull.Value || string.IsNullOrEmpty(row["BankName"]?.ToString())
-                                ? LoggedInBank : row["BankName"];
+                                ? UserSession.LoggedInBank : row["BankName"];
                             row["AccountNo"] = row["AccountNo"] == DBNull.Value || string.IsNullOrEmpty(row["AccountNo"]?.ToString())
-                                ? LoggedInAccNo : row["AccountNo"];
+                                ? UserSession.LoggedInAccNo : row["AccountNo"];
                             row["RequestDate"] = row["RequestDate"] == DBNull.Value ? DateTime.Now : row["RequestDate"];
                             row["ExpensesType"] = row["ExpensesType"] == DBNull.Value || string.IsNullOrEmpty(row["ExpensesType"]?.ToString())
                                 ? expensesType : row["ExpensesType"];
@@ -689,6 +689,8 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         //+++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                        
+
                         string query = @"
                                     DECLARE @Dept0 VARCHAR(100), @Dept1 VARCHAR(100), @Dept2 VARCHAR(100), @Level INT;
 
@@ -730,8 +732,7 @@ namespace HRAdmin.UserControl
                                             WHEN Department = @Dept1 THEN 1
                                             ELSE 2
                                         END,
-                                        AccessLevel ASC;
-";
+                                        AccessLevel ASC;";
 
                         List<string> approverEmails = new List<string>();
 
@@ -806,10 +807,25 @@ namespace HRAdmin.UserControl
                                             <p>Thank you,<br/>HEM Admin Accessibility</p>
                                         ";
 
-                            foreach (var email in approverEmails)
+                           
+                            if (UserSession.LoggedInUser == "Normala" && UserSession.loggedInDepart == "HR & ADMIN")
                             {
-                                SendEmail(email, subject, body);
+                                
+                                SendEmail("hemedp1@hosiden.com", subject, body);
                             }
+                            else if (UserSession.loggedInDepart == "ISO")
+                            {
+                                SendEmail("syazwanbunander1997@gmail.com", subject, body);
+                            }
+                            else
+                            {
+                                // Send to all approvers normally
+                                foreach (var email in approverEmails)
+                                {
+                                    SendEmail(email, subject, body);
+                                }
+                            }
+
 
                             MessageBox.Show(
                                 "Notification has been sent to the approver(s).",
