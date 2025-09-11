@@ -1419,7 +1419,7 @@ namespace HRAdmin.UserControl
                                         string subject = "HEM Admin Accessibility Notification: Your Miscellaneous Claim Has Been Approved!";
                                         string body = $@"
                                                     <p>Dear Mr./Ms. {requesterName},</p>
-                                                    <p>Your <strong>Miscellaneous Claim</strong> has been <strong>approved</strong> by <strong>Mr./Ms. {UserSession.loggedInName}</strong></p>
+                                                    <p>Your <strong>Miscellaneous Claim</strong> has been <strong>approved</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
 
                     
                                                 <p><u>Claim Details:</u></p>

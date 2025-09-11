@@ -113,12 +113,12 @@ namespace HRAdmin.UserControl
         }
         private void DgvW_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            if (e.ColumnIndex == dgvW.Columns["Invoice Date"].Index && e.Exception is FormatException)
+            if (e.ColumnIndex == dgvW.Columns["Date"].Index && e.Exception is FormatException)
             {
                 e.Cancel = true;
-                MessageBox.Show("Only can enter in date format in column Invoice Date", "Invalid Date Format",
+                MessageBox.Show("Only can enter in date format in column Date", "Invalid Date Format",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-                dgvW.Rows[e.RowIndex].Cells["Invoice Date"].Value = DBNull.Value;
+                dgvW.Rows[e.RowIndex].Cells["Date"].Value = DBNull.Value;
             }
         }
         private void InitializeDataTable()
@@ -150,9 +150,9 @@ namespace HRAdmin.UserControl
             dt.Columns.Add("Account3ApprovedDate", typeof(DateTime));
             dt.Columns.Add("Vendor", typeof(string));
             dt.Columns.Add("Item", typeof(string));
-            dt.Columns.Add("Invoice Amount", typeof(decimal));
+            dt.Columns.Add("Amount", typeof(decimal));
             dt.Columns.Add("Invoice No", typeof(string));
-            dt.Columns.Add("Invoice Date", typeof(DateTime));
+            dt.Columns.Add("Date", typeof(DateTime));
             dt.Columns.Add("Invoice", typeof(byte[]));
             dt.Columns.Add("InvoiceAttached", typeof(string));
             dt.Columns.Add("PaymentStatus", typeof(string));
@@ -239,7 +239,7 @@ namespace HRAdmin.UserControl
         }
         private void dgvW_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.ColumnIndex == dgvW.Columns["Invoice Amount"].Index && e.RowIndex >= 0)
+            if (e.ColumnIndex == dgvW.Columns["Amount"].Index && e.RowIndex >= 0)
             {
                 if (e.Value != null && e.Value != DBNull.Value)
                 {
@@ -391,9 +391,9 @@ namespace HRAdmin.UserControl
                 dgvW.Columns["ID"].Width = 30;
             }
 
-            if (dgvW.Columns.Contains("Invoice Amount"))
+            if (dgvW.Columns.Contains("Amount"))
             {
-                dgvW.Columns["Invoice Amount"].Width = 120;
+                dgvW.Columns["Amount"].Width = 120;
             }
 
             if (dgvW.Columns.Contains("Invoice No"))
@@ -401,9 +401,9 @@ namespace HRAdmin.UserControl
                 dgvW.Columns["Invoice No"].Width = 150;
             }
 
-            if (dgvW.Columns.Contains("Invoice Date"))
+            if (dgvW.Columns.Contains("Date"))
             {
-                dgvW.Columns["Invoice Date"].Width = 100;
+                dgvW.Columns["Date"].Width = 100;
             }
 
             if (dgvW.Columns.Contains("InvoiceAttached"))
@@ -497,16 +497,16 @@ namespace HRAdmin.UserControl
 
                         bool isRowEmpty = row.Cells["Vendor"].Value == null || string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
                                           row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
-                                          row.Cells["Invoice Amount"].Value == null || row.Cells["Invoice Amount"].Value == DBNull.Value &&
+                                          row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value &&
                                           row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
-                                          row.Cells["Invoice Date"].Value == null || row.Cells["Invoice Date"].Value == DBNull.Value &&
+                                          row.Cells["Date"].Value == null || row.Cells["Date"].Value == DBNull.Value &&
                                           row.Cells["Invoice"].Value == null;
 
                         bool isRowFullyFilled = row.Cells["Vendor"].Value != null && !string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
                                                row.Cells["Item"].Value != null && !string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
-                                               row.Cells["Invoice Amount"].Value != null && row.Cells["Invoice Amount"].Value != DBNull.Value &&
+                                               row.Cells["Amount"].Value != null && row.Cells["Amount"].Value != DBNull.Value &&
                                                row.Cells["Invoice No"].Value != null && !string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
-                                               row.Cells["Invoice Date"].Value != null && row.Cells["Invoice Date"].Value != DBNull.Value &&
+                                               row.Cells["Date"].Value != null && row.Cells["Date"].Value != DBNull.Value &&
                                                row.Cells["Invoice"].Value != null;
 
                         if (!isRowEmpty && !isRowFullyFilled)
@@ -516,12 +516,12 @@ namespace HRAdmin.UserControl
                                 emptyColumns.Add("Vendor");
                             if (row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()))
                                 emptyColumns.Add("Item");
-                            if (row.Cells["Invoice Amount"].Value == null || row.Cells["Invoice Amount"].Value == DBNull.Value)
-                                emptyColumns.Add("Invoice Amount");
+                            if (row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value)
+                                emptyColumns.Add("Amount");
                             if (row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()))
                                 emptyColumns.Add("Invoice No");
-                            if (row.Cells["Invoice Date"].Value == null || row.Cells["Invoice Date"].Value == DBNull.Value)
-                                emptyColumns.Add("Invoice Date");
+                            if (row.Cells["Date"].Value == null || row.Cells["Date"].Value == DBNull.Value)
+                                emptyColumns.Add("Date");
                             if (row.Cells["Invoice"].Value == null)
                                 emptyColumns.Add("Invoice");
 
@@ -579,9 +579,9 @@ namespace HRAdmin.UserControl
                     {
                         bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
                                           row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
-                                          row["Invoice Amount"] == DBNull.Value &&
+                                          row["Amount"] == DBNull.Value &&
                                           row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
-                                          row["Invoice Date"] == DBNull.Value &&
+                                          row["Date"] == DBNull.Value &&
                                           row["Invoice"] == DBNull.Value;
 
                         if (!isRowEmpty)
@@ -604,8 +604,8 @@ namespace HRAdmin.UserControl
                         {
                             cmdCheckDuplicate.Parameters.Clear();
                             cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"]);
-                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"]);
-                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"]);
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceAmount", row["Amount"]);
+                            cmdCheckDuplicate.Parameters.AddWithValue("@InvoiceDate", row["Date"]);
                             int duplicateCount = (int)cmdCheckDuplicate.ExecuteScalar();
                             if (duplicateCount > 0)
                             {
@@ -655,9 +655,9 @@ namespace HRAdmin.UserControl
                             cmdDetail.Parameters.AddWithValue("@ExpensesType", row["ExpensesType"]);
                             cmdDetail.Parameters.AddWithValue("@Vendor", row["Vendor"] ?? (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@Item", row["Item"] ?? (object)DBNull.Value);
-                            cmdDetail.Parameters.AddWithValue("@InvoiceAmount", row["Invoice Amount"] != DBNull.Value ? row["Invoice Amount"] : (object)DBNull.Value);
+                            cmdDetail.Parameters.AddWithValue("@InvoiceAmount", row["Amount"] != DBNull.Value ? row["Amount"] : (object)DBNull.Value);
                             cmdDetail.Parameters.AddWithValue("@InvoiceNo", row["Invoice No"] ?? (object)DBNull.Value);
-                            cmdDetail.Parameters.AddWithValue("@InvoiceDate", row["Invoice Date"] ?? (object)DBNull.Value);
+                            cmdDetail.Parameters.AddWithValue("@InvoiceDate", row["Date"] ?? (object)DBNull.Value);
                             cmdDetail.Parameters.Add("@Invoice", SqlDbType.VarBinary).Value = row["Invoice"] ?? (object)DBNull.Value;
 
                             cmdDetail.ExecuteNonQuery();
@@ -792,8 +792,8 @@ namespace HRAdmin.UserControl
                             string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
 
                             string body = $@"
-                                            <p>Dear Approver,</p>
-                                            <p>A new <strong>Miscellaneous Claim</strong> has been submitted by <strong>{requesterName}</strong> and is awaiting your review.</p>
+                                            <p>Dear Approver - HOD,</p>
+                                            <p>A new <strong>Miscellaneous Claim</strong> has been submitted by Mr./Ms. <strong>{requesterName}</strong> and is awaiting your review.</p>
 
                                             <p><u>Claim Details:</u></p>
                                             <ul>
@@ -811,7 +811,7 @@ namespace HRAdmin.UserControl
                             if (UserSession.LoggedInUser == "Normala" && UserSession.loggedInDepart == "HR & ADMIN")
                             {
                                 
-                                SendEmail("hemedp1@hosiden.com", subject, body);
+                                SendEmail("syazwanbunander1997@gmail.com", subject, body);
                             }
                             else if (UserSession.loggedInDepart == "ISO")
                             {
