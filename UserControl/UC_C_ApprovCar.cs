@@ -283,12 +283,12 @@ namespace HRAdmin.UserControl
                             );
                         }
 
-                        //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                     }
                     else // If Reject is selected
                     {
-                        //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                         string query1 = @"SELECT Email FROM tbl_UserDetail WHERE Username = @Username";
                         List<string> approverEmails = new List<string>();
@@ -348,7 +348,7 @@ namespace HRAdmin.UserControl
                             );
                         }
 
-                        //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                         updateQuery = "UPDATE tbl_CarBookings SET AssignedCar = 'Not Available', Status = 'Rejected', ApproveBy = @loggedInUser, DateApprove = @selectedDate WHERE BookingID = @BookingID";
                         MessageBox.Show("Car booking Rejected successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);

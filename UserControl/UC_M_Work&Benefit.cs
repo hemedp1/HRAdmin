@@ -811,11 +811,11 @@ namespace HRAdmin.UserControl
                             if (UserSession.LoggedInUser == "Normala" && UserSession.loggedInDepart == "HR & ADMIN")
                             {
                                 
-                                SendEmail("syazwanbunander1997@gmail.com", subject, body);
+                                SendEmail("k-sumi@hosiden.com", subject, body);
                             }
                             else if (UserSession.loggedInDepart == "ISO")
                             {
-                                SendEmail("syazwanbunander1997@gmail.com", subject, body);
+                                SendEmail("normala@hosiden.com.my", subject, body);
                             }
                             else
                             {

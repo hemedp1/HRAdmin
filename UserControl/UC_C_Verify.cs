@@ -1,4 +1,5 @@
-﻿using HRAdmin.Forms;
+﻿using HRAdmin.Components;
+using HRAdmin.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,9 +8,12 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace HRAdmin.UserControl
 {
@@ -31,6 +35,54 @@ namespace HRAdmin.UserControl
             gbCarInspect();
 
 
+        }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
+
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
         }
         private void LoadCar()
         {
@@ -86,7 +138,13 @@ namespace HRAdmin.UserControl
             string IDStr = dataGridView2.Rows[rowIndex].Cells[0]?.Value?.ToString();
             string selectedPerson = dataGridView2.Rows[rowIndex].Cells[1]?.Value?.ToString();
             string goDateStr = dataGridView2.Rows[rowIndex].Cells[4]?.Value?.ToString();
+            string Destination = dataGridView2.Rows[rowIndex].Cells[5]?.Value?.ToString();
+            string purpose = dataGridView2.Rows[rowIndex].Cells[6]?.Value?.ToString();
+            string timeout = dataGridView2.Rows[rowIndex].Cells[7]?.Value?.ToString();
+            string timein = dataGridView2.Rows[rowIndex].Cells[8]?.Value?.ToString();
             string car = dataGridView2.Rows[rowIndex].Cells[15]?.Value?.ToString();
+
+          
 
 
             if (string.IsNullOrEmpty(selectedPerson) || string.IsNullOrEmpty(IDStr))
@@ -159,15 +217,78 @@ namespace HRAdmin.UserControl
 
                 loadUserData();
                 MessageBox.Show("Terms and condition successfully acknowledged.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+ 
+                //++++++++++++++++++++++++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-                
+                string query1 = @"SELECT TOP 1 A.Department, A.AA, B.Email
+                                                FROM 
+                                                tbl_Users A
+                                                LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                                                WHERE A.Department = 'HR & ADMIN' AND AA = '1' OR AA = '2'";
+                List<string> approverEmails = new List<string>();
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                using (SqlCommand emailCmd = new SqlCommand(query1, con))
+                {
+                    //emailCmd.Parameters.AddWithValue("@Username", Username);
+
+                    using (SqlDataReader reader = emailCmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string email = reader["Email"]?.ToString();
+                            if (!string.IsNullOrEmpty(email))
+                            {
+                                approverEmails.Add(email);
+                            }
+                        }
+                    }
+                }
+                if (approverEmails.Count > 0)
+                {
+
+                    string subject = "HEM Admin Accessibility Notification: Car Booking Request Acknowledged";
+
+                    string body = $@"
+                                <p>Dear HR & ADMIN,</p>
+                                <p>
+                                    The <strong>car booking request</strong> has already been <strong>acknowledged</strong> by the requester, Mr./Ms. <strong>{UserSession.loggedInName}</strong>.
+                                    
+                                </p>
+
+                                <p><u>Booking Details:</u></p>
+                                <ul>
+                                    <li><strong>Purpose:</strong> {purpose}</li>
+                                    <li><strong>Destination:</strong> {Destination}</li>
+                                    <li><strong>Request Date:</strong> {goDateStr}</li>
+                                    <li><strong>Time Out:</strong> {timeout}</li>
+                                    <li><strong>Time In:</strong> {timein}</li>
+                                </ul>
+
+                                <p>Please proceed with handing over the vehicle key to the requester.</p>
+
+                                <p>Thank you,<br/>HEM Admin Accessibility</p>
+                            ";
+
+
+                    foreach (var email in approverEmails)
+                    {
+                        SendEmail(email, subject, body);
+                    }
+
+                    MessageBox.Show(
+                        "A booking acknowledgment notification has been sent to HR & ADMIN.",
+                        "Notification Sent",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+                }
+
             }
             catch (Exception ex)
             {
                 MessageBox.Show("An error occurred while acknowledging the terms and condition: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void loadUserData()
         {
             using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))

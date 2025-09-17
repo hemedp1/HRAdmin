@@ -1093,7 +1093,6 @@ namespace HRAdmin.UserControl
         }
         private void dTDay_ValueChanged(object sender, EventArgs e)
         {
-            
             try
             {
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
@@ -1392,7 +1391,7 @@ namespace HRAdmin.UserControl
 
                                 MessageBox.Show("Accident record approved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                                //++++++*************************+++++++              EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++*************************+++++++              EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                                 List<string> RequesterEmail = new List<string>();
                                 string drivername = string.Empty;
@@ -1432,7 +1431,7 @@ namespace HRAdmin.UserControl
 
                                     string body = $@"
                                                     <p>Dear Mr./Ms. {drivername},</p>
-                                                    <p>Your <strong>Car Accident Report</strong> submitted on <strong>{formattedDate1}</strong> has been reviewed and approved by HR & Admin.</p>
+                                                    <p>Your <strong>Car Accident Report</strong> submitted on <strong>{formattedDate1}</strong> has been reviewed and approved by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
         
                                                     <p><u>Accident Report Details:</u></p>
                                                     <ul>
@@ -1460,7 +1459,7 @@ namespace HRAdmin.UserControl
                                     );
                                 }
 
-                                //+++++++++++***********************++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++***********************++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
                             }
@@ -1740,6 +1739,78 @@ namespace HRAdmin.UserControl
 
                                 cmd.ExecuteNonQuery();
                                 MessageBox.Show("Accident record rejected successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+//++++++++++++++++++++++++++++++***********************++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                                List<string> RequesterEmail = new List<string>();
+                                string drivername = string.Empty;
+
+                                string getRequesterEmailQuery = @"
+                                                                SELECT B.Email, C.Name1 
+                                                                FROM tbl_AccidentCar A
+                                                                LEFT JOIN tbl_UserDetail B ON B.IndexNo = A.IndexNo
+                                                                LEFT JOIN tbl_Users C ON B.IndexNo = C.IndexNo
+                                                                WHERE A.ReportID = @RepID;";
+
+                                using (SqlCommand cmd1 = new SqlCommand(getRequesterEmailQuery, con))
+                                {
+                                    cmd1.Parameters.Add("@RepID", SqlDbType.NVarChar).Value = cmnRepID.Text.Trim();
+
+                                    using (SqlDataReader reader = cmd1.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            string email = reader["Email"]?.ToString();
+                                            if (!string.IsNullOrWhiteSpace(email))
+                                            {
+                                                RequesterEmail.Add(email);
+                                            }
+
+                                            drivername = reader["Name1"]?.ToString();
+                                        }
+                                    }
+                                }
+
+                                if (RequesterEmail.Count > 0)
+                                {
+                                    string formattedDate = dTDay.Value.ToString("dd/MM/yyyy");      // Accident date
+                                    string formattedDate1 = dtRep.Value.ToString("dd/MM/yyyy");     // Report date
+
+                                    string subject = "HEM Admin Accessibility Notification: Your Car Accident Report Has Been Rejected";
+
+                                    string body = $@"
+                                                    <p>Dear Mr./Ms. {drivername},</p>
+                                                    <p>Your <strong>Car Accident Report</strong> submitted on <strong>{formattedDate1}</strong> has been Rejected by Mr./Ms. <strong>{UserSession.loggedInName}</strong>.</p>
+        
+                                                    <p><u>Accident Report Details:</u></p>
+                                                    <ul>
+                                                        <li><strong>Report ID:</strong> {cmnRepID.Text}</li>
+                                                        <li><strong>Car:</strong> {cmbCar.Text}</li>
+                                                        <li><strong>Place of Accident:</strong> {txtPlaceRep.Text}</li>
+                                                        <li><strong>Date of Accident:</strong> {formattedDate}</li>
+                                                        <li><strong>Date Reported:</strong> {formattedDate1}</li>
+                                                    </ul>
+
+                                                    <p>You may contact HR & Admin for any further clarifications.</p>
+                                                    <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                ";
+
+                                    foreach (var email in RequesterEmail)
+                                    {
+                                        SendEmail(email, subject, body);
+                                    }
+
+                                    MessageBox.Show(
+                                        "Notification has been sent back to the reporter regarding the accident report rejection.",
+                                        "Notification Sent",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information
+                                    );
+                                }
+
+//++++++++++++++++++++++++++++++***********************++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
                             }
                         }
                     }
