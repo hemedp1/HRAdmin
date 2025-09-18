@@ -237,8 +237,8 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 string combinedValue = $"{DateTime.Now:ddMMyyyy_HHmmss}_{cmbB_Package.SelectedItem?.ToString() ?? (cmbL_Package.SelectedItem?.ToString() ?? (cmbT_Package.SelectedItem?.ToString() ?? ""))}";
 
                 insertCmd.Parameters.AddWithValue("@OrderID", combinedValue);
-                insertCmd.Parameters.AddWithValue("@RequesterID", loggedInUser);
-                insertCmd.Parameters.AddWithValue("@Department", loggedInDepart);
+                insertCmd.Parameters.AddWithValue("@RequesterID", UserSession.LoggedInUser);
+                insertCmd.Parameters.AddWithValue("@Department", UserSession.loggedInDepart);
                 insertCmd.Parameters.AddWithValue("@OccasionType", cmbOccasion);
                 insertCmd.Parameters.AddWithValue("@RequestDate", eventDate);
                 insertCmd.Parameters.AddWithValue("@DeliveryDate", DeliveryTime);
@@ -392,7 +392,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                     string query = "SELECT a.Username, a.Name1,a.AA, a.MA, a.Position, b.TitlePosition, b.AccessLevel\r\n\r\nFROM tbl_Users a\r\n\r\nLEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition WHERE a.Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Username", username);
+                        cmd.Parameters.AddWithValue("@Username", UserSession.LoggedInUser);
 
                         using (SqlDataReader reader = cmd.ExecuteReader())  // Use SqlDataReader
                         {
@@ -991,11 +991,11 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
         }
         private void button2_Click(object sender, EventArgs e)
         {
-            CheckUserAccess(loggedInUser);
+            CheckUserAccess(UserSession.LoggedInUser);
 
             Form_Home.sharedLabel.Text = "Admin > Meal Request";
             //Form_Home.sharedButton6.Visible = true;
-            UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, DeliveryTime, loggedInUser, loggedInDepart);
+            UC_Meal_Food ug = new UC_Meal_Food(EventDetails, EventTime, DeliveryTime, UserSession.LoggedInUser, UserSession.loggedInDepart);
             addControls(ug);
         }
         private void loadmenu()

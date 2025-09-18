@@ -1014,7 +1014,12 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    if (currentStatus == "Approved" || currentStatus == "Checked")
+                    if (currentStatus == "Checked")
+                    {
+                        MessageBox.Show("This order has already been checked and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (currentStatus == "Approved")
                     {
                         MessageBox.Show("This order has already been approved and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -1065,7 +1070,7 @@ namespace HRAdmin.UserControl
 
                             string getClaimDetailsQuery = $@"
                                                             SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email, C.Name1
-                                                            FROM tbl_ExternalFoodOrder A
+                                                            FROM {tableName} A
                                                             LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
                                                             LEFT JOIN tbl_Users C ON C.IndexNo = B.IndexNo
                                                             WHERE OrderID = @OrderID";
