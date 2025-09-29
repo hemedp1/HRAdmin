@@ -56,15 +56,34 @@ namespace HRAdmin.UserControl
             this.loggedInUser = loggedInUser;
             dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
             loggedInDepart = department;
-            LoadUsernames();
-            LoadDepartments();
-            LoadData();
-            cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
-            cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
-            cmbOS_Occasion.SelectedIndexChanged += cmbOS_Occasion_SelectedIndexChanged;
-            dtpStart.ValueChanged += dtpStart_ValueChanged;
-            dtpEnd.ValueChanged += dtpEnd_ValueChanged;
-            cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
+            
+            //LoadData();
+            //cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
+            //cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
+            //cmbOS_Occasion.SelectedIndexChanged += cmbOS_Occasion_SelectedIndexChanged;
+            //dtpStart.ValueChanged += dtpStart_ValueChanged;
+            //dtpEnd.ValueChanged += dtpEnd_ValueChanged;
+            //cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
+            isNetworkErrorShown = false;
+            this.Load += UC_Food_Load;
+        }
+        public UC_Meal_Food(string eventDetails, DateTime eventTime, string loggedInUser, string department)
+        {
+            InitializeComponent();
+            EventDetails = eventDetails;
+            this.eventTime = eventTime;
+            this.loggedInUser = loggedInUser;
+            loggedInDepart = department;
+            dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
+            //LoadUsernames();
+            //LoadDepartments();
+            //LoadData();
+            //cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
+            //cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
+            //cmbOS_Occasion.SelectedIndexChanged += cmbOS_Occasion_SelectedIndexChanged;
+            //dtpStart.ValueChanged += dtpStart_ValueChanged;
+            //dtpEnd.ValueChanged += dtpEnd_ValueChanged;
+            //cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
             isNetworkErrorShown = false;
             this.Load += UC_Food_Load;
         }
@@ -118,26 +137,7 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
             }
         }
-        public UC_Meal_Food(string eventDetails, DateTime eventTime, string loggedInUser, string department)
-        {
-            InitializeComponent();
-            EventDetails = eventDetails;
-            this.eventTime = eventTime;
-            this.loggedInUser = loggedInUser;
-            loggedInDepart = department;
-            dtRequest.Text = DateTime.Now.ToString("dd.MM.yyyy");
-            LoadUsernames();
-            LoadDepartments();
-            LoadData();
-            cmbRequester.SelectedIndexChanged += cmbRequester_SelectedIndexChanged;
-            cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
-            cmbOS_Occasion.SelectedIndexChanged += cmbOS_Occasion_SelectedIndexChanged;
-            dtpStart.ValueChanged += dtpStart_ValueChanged;
-            dtpEnd.ValueChanged += dtpEnd_ValueChanged;
-            cachedData = new DataTable(); // Initialize (replace with actual cache loading logic)
-            isNetworkErrorShown = false;
-            this.Load += UC_Food_Load;
-        }
+        
         private void dTDay_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
@@ -166,7 +166,7 @@ namespace HRAdmin.UserControl
                     string query = "SELECT AA FROM tbl_Users WHERE Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
+                        cmd.Parameters.AddWithValue("@Username", UserSession.LoggedInUser);
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -175,12 +175,12 @@ namespace HRAdmin.UserControl
                                 string AA = reader["AA"].ToString();
 
                                 // Set check, approve button, and labels visibility: hidden if AA = 1, visible if MA = 2
-                                if (AA == "1" && loggedInDepart == "HR & ADMIN")
+                                if (AA == "1" && UserSession.loggedInDepart == "HR & ADMIN")
                                 {
                                     GB_Authorization.Visible = true;
                                     btnApprove.Enabled = false;
                                 }
-                                else if (AA == "2" && loggedInDepart == "HR & ADMIN")
+                                else if (AA == "2" && UserSession.loggedInDepart == "HR & ADMIN")
                                 {
                                     GB_Authorization.Visible = true;
                                 }
@@ -220,17 +220,15 @@ namespace HRAdmin.UserControl
                             {
                                 string username = reader["Username"].ToString();
                                 cmbRequester.Items.Add(username);
-                                Debug.WriteLine($"Loaded username: {username}");
                             }
                         }
                     }
                     cmbRequester.SelectedIndex = 0;
-                    Debug.WriteLine("Usernames loaded successfully.");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error loading usernames: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error loading usernames: {ex.Message}");
+                
                 }
             }
         }
@@ -253,16 +251,14 @@ namespace HRAdmin.UserControl
                             {
                                 string username = reader["Username"].ToString();
                                 cmbRequester.Items.Add(username);
-                                Debug.WriteLine($"Loaded username: {username} for department: {department}");
                             }
                         }
                     }
-                    Debug.WriteLine($"Usernames loaded successfully for department: {department}");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error loading usernames: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error loading usernames for department {department}: {ex.Message}");
+            
                 }
             }
         }
@@ -291,17 +287,14 @@ namespace HRAdmin.UserControl
                             {
                                 string department = reader["Department"].ToString();
                                 cmbDepart.Items.Add(department);
-                                Debug.WriteLine($"Loaded department: {department}");
                             }
                         }
                     }
                     cmbDepart.SelectedIndex = 0;
-                    Debug.WriteLine("Departments loaded successfully.");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error loading departments: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Debug.WriteLine($"Error loading departments: {ex.Message}");
                 }
             }
         }
@@ -366,51 +359,52 @@ namespace HRAdmin.UserControl
             if (occasionType == "Internal")
             {
                 query = @"
-            SELECT 'Internal' AS OrderSource, 
-                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-            FROM tbl_InternalFoodOrder
-            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                  AND (@Department IS NULL OR Department = @Department)
-                  AND RequestDate >= @StartDate
-                  AND RequestDate <= @EndDate
-            ORDER BY RequestDate ASC";
+    SELECT 'Internal' AS OrderSource, 
+           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
+    FROM tbl_InternalFoodOrder
+    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+          AND (@Department IS NULL OR Department = @Department)
+          AND RequestDate >= @StartDate
+          AND RequestDate < @EndDate
+    ORDER BY RequestDate ASC";
             }
             else if (occasionType == "External")
             {
                 query = @"
-            SELECT 'External' AS OrderSource,
-                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-            FROM tbl_ExternalFoodOrder
-            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                  AND (@Department IS NULL OR Department = @Department)
-                  AND RequestDate >= @StartDate
-                  AND RequestDate <= @EndDate
-            ORDER BY RequestDate ASC";
+    SELECT 'External' AS OrderSource,
+           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
+    FROM tbl_ExternalFoodOrder
+    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+          AND (@Department IS NULL OR Department = @Department)
+          AND RequestDate >= @StartDate
+          AND RequestDate < @EndDate
+    ORDER BY RequestDate ASC";
             }
             else
             {
                 query = @"
-            SELECT 'Internal' AS OrderSource, 
-                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
-            FROM tbl_InternalFoodOrder
-            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                  AND (@Department IS NULL OR Department = @Department)
-                  AND RequestDate >= @StartDate
-                  AND RequestDate <= @EndDate
-            UNION ALL
-            SELECT 'External' AS OrderSource,
-                   OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
-                   CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
-            FROM tbl_ExternalFoodOrder
-            WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
-                  AND (@Department IS NULL OR Department = @Department)
-                  AND RequestDate >= @StartDate
-                  AND RequestDate <= @EndDate
-            ORDER BY RequestDate ASC";
+    SELECT 'Internal' AS OrderSource, 
+           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType 
+    FROM tbl_InternalFoodOrder
+    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+          AND (@Department IS NULL OR Department = @Department)
+          AND RequestDate >= @StartDate
+          AND RequestDate < @EndDate
+    UNION ALL
+    SELECT 'External' AS OrderSource,
+           OrderID, RequesterID, Department, OccasionType, EventDetails, RequestDate, DeliveryDate, CheckStatus,
+           CheckedBy, CheckedDate, ApproveStatus, ApprovedBy, ApprovedDate, OrderType
+    FROM tbl_ExternalFoodOrder
+    WHERE (@RequesterID IS NULL OR RequesterID = @RequesterID)
+          AND (@Department IS NULL OR Department = @Department)
+          AND RequestDate >= @StartDate
+          AND RequestDate < @EndDate
+    ORDER BY RequestDate ASC";
             }
+
 
             try
             {
@@ -436,7 +430,6 @@ namespace HRAdmin.UserControl
                         // Update cache
                         cachedData = dt.Copy();
 
-                        Debug.WriteLine($"Rows retrieved: {dt.Rows.Count}");
                         foreach (DataRow row in dt.Rows)
                         {
                             Debug.WriteLine($"Row: OrderID={row["OrderID"]}, RequesterID={row["RequesterID"]}, Department={row["Department"]}, OrderSource={row["OrderSource"]}, RequestDate={row["RequestDate"]}");
@@ -570,6 +563,8 @@ namespace HRAdmin.UserControl
         }
         private void dtpStart_ValueChanged(object sender, EventArgs e)
         {
+            LoadUsernames();
+            LoadDepartments();
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
             string selectedOccasion = cmbOS_Occasion.SelectedItem?.ToString();
@@ -593,11 +588,13 @@ namespace HRAdmin.UserControl
         }
         private void dtpEnd_ValueChanged(object sender, EventArgs e)
         {
+            LoadUsernames();
+            LoadDepartments();
             string selectedUsername = cmbRequester.SelectedItem?.ToString();
             string selectedDepartment = cmbDepart.SelectedItem?.ToString();
             string selectedOccasion = cmbOS_Occasion.SelectedItem?.ToString();
             DateTime? startDate = dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value;
-            DateTime? endDate = dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value;
+            DateTime? endDate = dtpEnd.Value == dtpEnd.MaxDate ? null : (DateTime?)dtpEnd.Value;
 
             if (selectedUsername == "All Users" || string.IsNullOrEmpty(selectedUsername))
             {
@@ -989,6 +986,27 @@ namespace HRAdmin.UserControl
                         dateColumn = "CheckedDate";
                         deptColumn = "CheckedDepartment";
                         currentStatus = checkStatus;
+
+                        if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
+                        {
+                            MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Rejected")
+                        {
+                            MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (checkStatus == "Checked")
+                        {
+                            MessageBox.Show("This order has already been checked and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (approveStatus == "Approved")
+                        {
+                            MessageBox.Show("This order has already been approved and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
                     else if (aaValue == "2" && loggedInDepart == "HR & ADMIN")
                     {
@@ -997,33 +1015,34 @@ namespace HRAdmin.UserControl
                         dateColumn = "ApprovedDate";
                         deptColumn = "ApprovedDepartment";
                         currentStatus = approveStatus;
+
+                        if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
+                        {
+                            MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Rejected")
+                        {
+                            MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (checkStatus == "Pending")
+                        {
+                            MessageBox.Show("This order has not been checked yet and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        if (approveStatus == "Approved")
+                        {
+                            MessageBox.Show("This order has already been approved and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
                     else
                     {
                         MessageBox.Show("You do not have permission to reject this order.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    // Check if already rejected or approved
-                    if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
-                    {
-                        MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    if (currentStatus == "Rejected")
-                    {
-                        MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    if (currentStatus == "Checked")
-                    {
-                        MessageBox.Show("This order has already been checked and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    if (currentStatus == "Approved")
-                    {
-                        MessageBox.Show("This order has already been approved and cannot be rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
+
                     // Confirm action
                     DialogResult result = MessageBox.Show($"Are you sure you want to reject Order ID: {orderId}?", "Confirm Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result != DialogResult.Yes) return;
@@ -1506,7 +1525,7 @@ namespace HRAdmin.UserControl
         private void UC_Food_Load(object sender, EventArgs e)
         {
             CheckUserAccess();
-            LoadData();
+            //LoadData();
         }
         private bool IsNetworkAvailable()
         {
@@ -2557,5 +2576,77 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            string searchValue = txtSearchSn.Text.Trim();
+
+            if (string.IsNullOrEmpty(searchValue))
+            {
+                // Clear DataGridView or do nothing
+                dgv_OS.DataSource = null;
+                return;
+            }
+
+            using (SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                con.Open();
+
+                string query = @"
+            SELECT 
+                OrderID,
+                RequesterID,
+                Department,
+                OccasionType,
+                OrderType,
+                EventDetails,
+                RequestDate,
+                DeliveryDate,
+                CheckStatus,
+                CheckedBy,
+                CheckedDate,
+                ApproveStatus,
+                ApprovedBy,
+                ApprovedDate,
+                'Internal' AS Source
+            FROM tbl_InternalFoodOrder
+            WHERE OrderID LIKE @search
+
+            UNION ALL
+
+            SELECT 
+                OrderID,
+                RequesterID,
+                Department,
+                OccasionType,
+                OrderType,
+                EventDetails,
+                RequestDate,
+                DeliveryDate,
+                CheckStatus,
+                CheckedBy,
+                CheckedDate,
+                ApproveStatus,
+                ApprovedBy,
+                ApprovedDate,
+                'External' AS Source
+            FROM tbl_ExternalFoodOrder
+            WHERE OrderID LIKE @search;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@search", "%" + searchValue + "%");
+
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    dgv_OS.DataSource = dt;
+                    BindDataGridView(dt);
+                }
+            }
+        }
+
+
     }
-}
+}//OrderID

@@ -26,6 +26,7 @@ using HRAdmin.Components;
 using static iTextSharp.text.pdf.PdfDocument;
 using System.Threading;
 using System.Drawing.Drawing2D;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 
 namespace HRAdmin.UserControl
@@ -186,28 +187,31 @@ namespace HRAdmin.UserControl
                         cmd.Parameters.AddWithValue("@Username", UserSession.LoggedInUser);
                         using (SqlDataReader reader2 = cmd.ExecuteReader())
                         {
-
                             if (reader2.Read())
                             {
                                 int accessLevel = Convert.ToInt32(reader2["AccessLevel"]);
 
-
-                                if (accessLevel >= 1)
+                                if (accessLevel >= 1 && accessLevel <= 9 && UserSession.loggedInDepart != "ACCOUNT")
                                 {
                                     groupBox3.Visible = true;
                                 }
-                                else if (accessLevel == 0 || accessLevel == 99)
+                                else if (accessLevel == 99 && UserSession.loggedInDepart == "ACCOUNT")
                                 {
-                                    groupBox3.Visible = false;
+                                    groupBox3.Visible = true;
+                                }
+                                else if (accessLevel >= 1 && accessLevel <= 9 && UserSession.loggedInDepart == "ACCOUNT")
+                                {
+                                    groupBox3.Visible = true;
                                 }
                                 else
                                 {
                                     groupBox3.Visible = false;
                                 }
+
                             }
                             else
                             {
-                                groupBox3.Visible = true;
+                                groupBox3.Visible = false;
                             }
                         }
                     }
@@ -221,24 +225,32 @@ namespace HRAdmin.UserControl
         }
         private void cmbECtype_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string ExpensesType = cmbECtype.SelectedItem?.ToString();
+            string expensesType = cmbECtype.SelectedItem?.ToString();
 
-            if (!string.IsNullOrEmpty(ExpensesType))
+            if (string.IsNullOrEmpty(expensesType) || masterData == null)
+                return;
+
+            if (expensesType == "-- All --")
             {
-                if (ExpensesType == "-- All --")
+                BindDataGridView(masterData); // Show all
+            }
+            else
+            {
+                var rows = masterData.AsEnumerable()
+                    .Where(r => r.Field<string>("ExpensesType") == expensesType);
+
+                if (rows.Any())
                 {
-                    BindDataGridView(masterData); // Show all
+                    BindDataGridView(rows.CopyToDataTable());
                 }
                 else
                 {
-                    var filtered = masterData.AsEnumerable()
-                        .Where(r => r.Field<string>("ExpensesType") == ExpensesType)
-                        .CopyToDataTable();
-
-                    BindDataGridView(filtered);
+                    // no match → show empty grid
+                    BindDataGridView(masterData.Clone());
                 }
             }
         }
+
         private void dtpStart_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
@@ -269,14 +281,18 @@ namespace HRAdmin.UserControl
         }
         private void LoadData()
         {
-            bool showOwnRecords = int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) && accessLevel < 1;
+            //int showOwnRecords = int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) && accessLevel < 1;
             //bool showOwnRecords = int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) && accessLevel < 1 && accessLevel < 8;
+
+            
+
 
             string query = "";
             //MessageBox.Show($"LoggedInUser: {UserSession.logginInUserAccessLevel}");
-            if (showOwnRecords)
+            if (int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) &&
+    (accessLevel == 0 || (accessLevel == 99 && UserSession.loggedInDepart != "ACCOUNT")))
             {
-                // Query 2: Show only logged-in user's own records
+                // Query 1: Show only logged-in user's own records
                 query = @"
             SELECT 
                 a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
@@ -309,48 +325,67 @@ namespace HRAdmin.UserControl
             }
             else
             {
-                // Query 1: Original query (department filtering)
+                // Query 2: Original query (department filtering)
                 query = @"
             SELECT 
-                a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
-                a.HODApprovalStatus, 
-                ISNULL(CONVERT(VARCHAR, a.ApprovedByHOD, 120), 'Pending') AS ApprovedByHOD, 
-                ISNULL(CONVERT(VARCHAR, a.HODApprovedDate, 120), 'Pending') AS HODApprovedDate, 
-                a.HRApprovalStatus,
-                ISNULL(CONVERT(VARCHAR, a.ApprovedByHR, 120), 'Pending') AS ApprovedByHR,
-                ISNULL(CONVERT(VARCHAR, a.HRApprovedDate, 120), 'Pending') AS HRApprovedDate,
-                a.AccountApprovalStatus, 
-                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount, 120), 'Pending') AS ApprovedByAccount,
-                ISNULL(CONVERT(VARCHAR, a.AccountApprovedDate, 120), 'Pending') AS AccountApprovedDate,
-                ISNULL(CONVERT(VARCHAR, a.Account2ApprovalStatus, 120), 'Pending') AS Account2ApprovalStatus,
-                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount2, 120), 'Pending') AS ApprovedByAccount2,
-                ISNULL(CONVERT(VARCHAR, a.Account2ApprovedDate, 120), 'Pending') AS Account2ApprovedDate,
-                ISNULL(CONVERT(VARCHAR, a.Account3ApprovalStatus, 120), 'Pending') AS Account3ApprovalStatus,
-                ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount3, 120), 'Pending') AS ApprovedByAccount3,
-                ISNULL(CONVERT(VARCHAR, a.Account3ApprovedDate, 120), 'Pending') AS Account3ApprovedDate,
-                b.Username, c.AccessLevel, b.SuperApprover, d.Department1
-            FROM 
-                tbl_MasterClaimForm a
-            LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
-            LEFT JOIN tbl_UsersLevel c ON b.Position = c.TitlePosition
-            LEFT JOIN tbl_Department d ON b.Department = d.Department0
-            WHERE 
-                (@StartDate IS NULL OR CAST(a.RequestDate AS DATE) >= @StartDate)
-                AND (@EndDate IS NULL OR CAST(a.RequestDate AS DATE) <= @EndDate)
-                AND (
-                    EXISTS (
-                        SELECT 1 
-                        FROM tbl_Department 
-                        WHERE Department3 = @LoggedInDept OR Department4 = @LoggedInDept OR Department5 = @LoggedInDept
-                    )
-                    OR a.Department IN (
-                        SELECT Department0
-                        FROM tbl_Department
-                        WHERE Department1 = @LoggedInDept
-                    )
-                    OR a.Department = @LoggedInDept
-                )
-            ORDER BY a.RequestDate ASC";
+    a.SerialNo, a.Requester, a.Department, a.ExpensesType, a.RequestDate, 
+    a.HODApprovalStatus, 
+    ISNULL(CONVERT(VARCHAR, a.ApprovedByHOD, 120), 'Pending') AS ApprovedByHOD, 
+    ISNULL(CONVERT(VARCHAR, a.HODApprovedDate, 120), 'Pending') AS HODApprovedDate, 
+    a.HRApprovalStatus,
+    ISNULL(CONVERT(VARCHAR, a.ApprovedByHR, 120), 'Pending') AS ApprovedByHR,
+    ISNULL(CONVERT(VARCHAR, a.HRApprovedDate, 120), 'Pending') AS HRApprovedDate,
+    a.AccountApprovalStatus, 
+    ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount, 120), 'Pending') AS ApprovedByAccount,
+    ISNULL(CONVERT(VARCHAR, a.AccountApprovedDate, 120), 'Pending') AS AccountApprovedDate,
+    ISNULL(CONVERT(VARCHAR, a.Account2ApprovalStatus, 120), 'Pending') AS Account2ApprovalStatus,
+    ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount2, 120), 'Pending') AS ApprovedByAccount2,
+    ISNULL(CONVERT(VARCHAR, a.Account2ApprovedDate, 120), 'Pending') AS Account2ApprovedDate,
+    ISNULL(CONVERT(VARCHAR, a.Account3ApprovalStatus, 120), 'Pending') AS Account3ApprovalStatus,
+    ISNULL(CONVERT(VARCHAR, a.ApprovedByAccount3, 120), 'Pending') AS ApprovedByAccount3,
+    ISNULL(CONVERT(VARCHAR, a.Account3ApprovedDate, 120), 'Pending') AS Account3ApprovedDate,
+    b.Username, c.AccessLevel, b.SuperApprover, d.Department1
+FROM 
+    tbl_MasterClaimForm a
+LEFT JOIN tbl_Users b ON a.EmpNo = b.IndexNo
+LEFT JOIN tbl_UsersLevel c ON b.Position = c.TitlePosition
+LEFT JOIN tbl_Department d ON b.Department = d.Department0
+WHERE 
+    (@StartDate IS NULL OR CAST(a.RequestDate AS DATE) >= @StartDate)
+    AND (@EndDate IS NULL OR CAST(a.RequestDate AS DATE) <= @EndDate)
+    AND (
+        EXISTS (
+            SELECT 1 
+            FROM tbl_Department d2
+            WHERE d2.Department3 = @LoggedInDept 
+               OR d2.Department4 = @LoggedInDept 
+               OR d2.Department5 = @LoggedInDept
+        )
+        OR a.Department IN (
+            SELECT Department0
+            FROM tbl_Department
+            WHERE Department1 = @LoggedInDept
+        )
+        OR a.Department = @LoggedInDept
+    )
+    AND (
+    -- Case 1: Logged in user is level 99 → see all
+    @LoggedInUserAccessLevel = 99
+
+    -- Case 2: Always see own record
+    OR b.Name1 = @LoggedInUser
+
+    -- Case 3: Department rule
+    OR a.Department <> @LoggedInDept
+
+    OR c.AccessLevel < @LoggedInUserAccessLevel
+
+OR (a.Department = @LoggedInDept AND c.AccessLevel = 99)
+
+
+)
+
+ORDER BY a.RequestDate ASC";
             }
 
             SqlConnection con = null;
@@ -365,6 +400,8 @@ namespace HRAdmin.UserControl
                     // Parameters
                     cmd.Parameters.AddWithValue("@LoggedInDept", UserSession.loggedInDepart);
                     cmd.Parameters.AddWithValue("@LoggedInUser", UserSession.loggedInName); // <-- Add user parameter
+                    cmd.Parameters.AddWithValue("@LoggedInUserAccessLevel", accessLevel);
+
 
                     DateTime startDate = dtpStart.Value.Date;
                     DateTime endDate = dtpEnd.Value.Date;
@@ -511,11 +548,217 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+        private void HandleRowSelection()
+        {
+            if (dgvMS.SelectedCells.Count == 0)
+                return; // no row selected yet
+
+            DataGridViewCell selectedCell = dgvMS.SelectedCells[0];
+            DataGridViewRow selectedRow = selectedCell.OwningRow;
+
+            string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
+            int accessLevelRequester = -1;
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    // 🔹 First query: requester info
+                    string query = @"
+                SELECT C.AccessLevel, A.Requester, A.Department, A.ExpensesType, A.HODApprovalStatus,A.HRApprovalStatus, A.Account2ApprovalStatus,A.Account3ApprovalStatus, A.AccountApprovalStatus, B.Position
+                FROM tbl_MasterClaimForm A
+                LEFT JOIN tbl_Users B ON A.Requester = B.Name1
+                LEFT JOIN tbl_UsersLevel C ON B.Position = C.TitlePosition
+                WHERE A.SerialNo = @SerialNo";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.Add("@SerialNo", SqlDbType.VarChar).Value = serialNo;
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (!reader.Read())
+                            {
+                                groupBox3.Visible = false;
+                                return;
+                            }
+
+                            accessLevelRequester = reader["AccessLevel"] != DBNull.Value
+                                ? Convert.ToInt32(reader["AccessLevel"])
+                                : 0;
+                            string requester = reader["Requester"]?.ToString() ?? string.Empty;
+                            string expensesType = reader["ExpensesType"]?.ToString() ?? string.Empty;
+                            string RequesterTitlePosition = reader["Position"]?.ToString() ?? string.Empty;
+                            string GA = reader["AccountApprovalStatus"]?.ToString() ?? string.Empty;
+                            string HR = reader["HRApprovalStatus"]?.ToString() ?? string.Empty;
+                            string HOD = reader["HODApprovalStatus"]?.ToString() ?? string.Empty;
+                            string depart = reader["Department"]?.ToString() ?? string.Empty;
+                            reader.Close(); // ✅ close before running second query
+                                            // ---------------------------------------------------------
+
+                            // 🔹 Second query: logged-in user info
+                            string query1 = @"
+                        SELECT a.Username, a.Name1, a.Position, b.TitlePosition, b.AccessLevel 
+                        FROM tbl_Users a 
+                        LEFT JOIN tbl_UsersLevel b ON a.Position = b.TitlePosition 
+                        WHERE a.Username = @Username";
+
+                            using (SqlCommand cmd1 = new SqlCommand(query1, con))
+                            {
+                                cmd1.Parameters.AddWithValue("@Username", UserSession.LoggedInUser);
+
+                                using (SqlDataReader reader2 = cmd1.ExecuteReader()) // ✅ use cmd1
+                                {
+                                    if (!reader2.Read())
+                                    {
+                                        groupBox3.Visible = false;
+                                        return;
+                                    }
+
+                                    int accessLevel = Convert.ToInt32(reader2["AccessLevel"]);
+
+                                    // 🔹 Your condition logic
+                                    if (accessLevel >= 0 && accessLevel <= 9 && UserSession.loggedInDepart != "ACCOUNT")
+                                    {
+                                        
+                                        if (int.TryParse(UserSession.logginInUserAccessLevel, out int currentAccessLevel))
+                                        {
+                                            if (currentAccessLevel < accessLevelRequester && accessLevelRequester != 99 && UserSession.loggedInDepart != "ACCOUNT")
+                                            {
+                                                //
+                                                if (UserSession.loggedInDepart == "HR & ADMIN" && expensesType != "Work" && currentAccessLevel > accessLevelRequester && depart == "HR & ADMIN")
+                                                {
+                                                    groupBox3.Visible = true;
+                                                }
+                                                else if (UserSession.loggedInDepart == "GENERAL AFFAIRS")
+                                                {
+                                                    groupBox3.Visible = true;
+                                                }
+                                                else 
+                                                {
+                                                    if (depart == "HR & ADMIN")
+                                                    {
+                                                        groupBox3.Visible = false;
+                                                    }
+                                                    else
+                                                    {
+                                                        groupBox3.Visible = true; //tukar sebab jega benefit tak sho
+                                                    }
+                                                    
+                                                }
+                                            }
+                                            else if (RequesterTitlePosition == "MANAGING DIRECTOR")
+                                            {
+                                                //if md gb tak show
+                                                groupBox3.Visible = false;
+                                            }
+                                            else if ((currentAccessLevel > accessLevelRequester || accessLevelRequester == 99) && expensesType == "Benefit")
+                                            {
+                                                if(depart == "HR & ADMIN")
+                                                {
+                                                    if(UserSession.loggedInDepart == "GENERAL AFFAIRS" && accessLevelRequester < 2)
+                                                    {
+                                                        groupBox3.Visible = false;
+                                                    }
+                                                    else 
+                                                    {
+                                                        groupBox3.Visible = true;
+                                                    }
+                                                    
+                                                }
+                                                else
+                                                {
+                                                    groupBox3.Visible = true;
+                                                }
+                                                
+                                            }
+                                            else if ((currentAccessLevel > accessLevelRequester || accessLevelRequester == 99) && expensesType == "Work"  && depart != "HR & ADMIN")
+                                            {
+                                                if(depart == "HR & ADMIN" && UserSession.loggedInDepart != "HR & ADMIN")
+                                                {
+                                                    
+                                                    groupBox3.Visible = true;
+                                                }
+                                                else
+                                                {
+                                               
+                                                    groupBox3.Visible = false;
+                                                }
+                                                
+                                            }
+                                            else if ((currentAccessLevel > accessLevelRequester || accessLevelRequester == 99) && expensesType == "Work" && depart == "HR & ADMIN")
+                                            {
+                                                if (UserSession.loggedInDepart == "GENERAL AFFAIRS" && accessLevelRequester < 2)
+                                                {
+                                                    groupBox3.Visible = false;
+                                                }
+                                                else
+                                                {
+                                                    groupBox3.Visible = true;
+                                                }
+                                            }
+                                            else if (UserSession.loggedInName == requester)
+                                            {
+                                               
+                                                //if(expensesType =="")
+                                                if (HOD == "Approved" && requester != "Normala")
+                                                {
+                                                    if(depart == "HR & ADMIN" || depart == "ACCOUNT" || depart == "GENERAL AFFAIRS")
+                                                    {
+                                                        //MessageBox.Show("ddd");
+
+                                                        groupBox3.Visible = true;  
+                                                    }
+                                                    else
+                                                    {
+                                                        groupBox3.Visible = false;
+                                                    }
+                                                    
+                                                }
+                                                else
+                                                {
+                                                    groupBox3.Visible = false;
+                                                }
+                                                
+                                            }
+                                            else
+                                            {
+                                                groupBox3.Visible = false;
+                                            }
+                                        }
+                                    }
+                                    else if (accessLevel == 99 && UserSession.loggedInDepart == "ACCOUNT")
+                                    {
+                                        groupBox3.Visible = true;
+                                    }
+                                    else
+                                    {
+                                        groupBox3.Visible = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                groupBox3.Visible = false;
+            }
+        }
         private void UC_Miscellaneous_Load(object sender, EventArgs e)
         {
+            dgvMS.SelectionChanged += dgvMS_SelectionChanged;
             cmbDepart.SelectedIndexChanged += cmbDepart_SelectedIndexChanged;
-            LoadData(); // Load data with default weekly filter
+            //LoadData(); // Load data with default weekly filter
             CheckUserAccess(); // Check user access to set button visibility
+        }
+        private void dgvMS_SelectionChanged(object sender, EventArgs e)
+        {
+           // HandleRowSelection(); 
         }
         private bool IsNetworkAvailable()
         {
@@ -933,6 +1176,93 @@ namespace HRAdmin.UserControl
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
             string department = selectedRow.Cells["Department"].Value?.ToString();
+
+            ///////////////////     ACCESSS LEVEL
+            //
+            /*
+
+            int accessLevelRequester = -1; // default value
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+                    string query = @"
+                    SELECT C.AccessLevel, A.Requester, A.Department, A.ExpensesType, A.HODApprovalStatus,A.HRApprovalStatus, A.Account2ApprovalStatus,A.Account3ApprovalStatus, A.AccountApprovalStatus, B.Position
+                    FROM tbl_MasterClaimForm A
+                    LEFT JOIN tbl_Users B ON A.Requester = B.Name1
+                    LEFT JOIN tbl_UsersLevel C ON B.Position = C.TitlePosition
+                    WHERE A.SerialNo = @SerialNo";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+                        object result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            accessLevelRequester = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            MessageBox.Show("User access level not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error retrieving user access level: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Parse current user access level safely
+            if (int.TryParse(UserSession.logginInUserAccessLevel, out int currentAccessLevel))
+            {
+                if (currentAccessLevel < accessLevelRequester && accessLevelRequester != 99 && UserSession.loggedInDepart != "ACCOUNT")
+                {
+                    if (UserSession.loggedInDepart == "HR & ADMIN")
+                    {
+                        MessageBox.Show("You are not authorized to approve this miscellaneous claim.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show("You are not authorized to approve this miscellaneous claim.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+                else if (currentAccessLevel < accessLevelRequester &&
+                         UserSession.loggedInDepart == "HR & ADMIN" &&
+                         department == "HR & ADMIN" && accessLevelRequester != 99)
+                {
+                    MessageBox.Show("You cannot approve this miscellaneous claim because the requester has a higher access level within HR & ADMIN.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                else if (UserSession.loggedInDepart != department &&
+                         UserSession.loggedInDepart == "HR & ADMIN" &&
+                         expensesType == "Work")
+                {
+                    MessageBox.Show("You are not authorized to approve this miscellaneous claim.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+
+            }
+            else
+            {
+                MessageBox.Show("Invalid access level for logged-in user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
+            */
+                //////////////////////////
+
 
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
@@ -1475,8 +1805,14 @@ namespace HRAdmin.UserControl
             // Handle HR & ADMIN department approval
             else if (UserSession.loggedInDepart == "HR & ADMIN" && department != "ISO")
             {
+                //MessageBox.Show(hrApprovalStatus);
                 // Check if the ExpensesType is Work
                 if (expensesType == "Work" && department != "HR & ADMIN" && department != "ISO")
+                {
+                    MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                if (hrApprovalStatus == "-" && department == "HR & ADMIN" && expensesType == "Work" && hodApprovalStatus == "Approved")//hr
                 {
                     MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -1790,12 +2126,31 @@ namespace HRAdmin.UserControl
                         con.Open();
 
                         // Step 1: Update the HOD approval status
-                        string updateQuery = @"
-            UPDATE tbl_MasterClaimForm 
-            SET HODApprovalStatus = @HODApprovalStatus, 
-                ApprovedByHOD = @ApprovedByHOD, 
-                HODApprovedDate = @HODApprovedDate 
-            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+                        string updateQuery = "";
+                        if (requester == "Normala")
+                        {
+                            updateQuery = @"
+                                            UPDATE tbl_MasterClaimForm 
+                                            SET HODApprovalStatus = @HODApprovalStatus, 
+                                                ApprovedByHOD = @ApprovedByHOD, 
+                                                HODApprovedDate = @HODApprovedDate,
+                                                HRApprovalStatus = @HRApprovalStatus, 
+                                                ApprovedByHR = @ApprovedByHR, 
+                                                HRApprovedDate = @HRApprovedDate 
+
+                                            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+                        }
+                        else
+                        {
+                            updateQuery = @"
+                                            UPDATE tbl_MasterClaimForm 
+                                            SET HODApprovalStatus = @HODApprovalStatus, 
+                                                ApprovedByHOD = @ApprovedByHOD, 
+                                                HODApprovedDate = @HODApprovedDate 
+
+                                            WHERE SerialNo = @SerialNo AND HODApprovalStatus = 'Pending'";
+                        }
+                        
 
                         using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                         {
@@ -1803,6 +2158,16 @@ namespace HRAdmin.UserControl
                             cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+
+                            if (requester == "Normala")
+                            {
+                                cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
+                                cmd.Parameters.AddWithValue("@ApprovedByHR", requester);
+                                cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
+                            }
+
+                                
+
 
                             int rowsAffected = cmd.ExecuteNonQuery();
 
@@ -1948,13 +2313,42 @@ namespace HRAdmin.UserControl
                                 }
                             }
 
-                            // Step 4: Send email to 1st level Account approvers
+                            // Step 4: Send email to HR
                             if (accountApproverEmails.Count > 0)
                             {
                                 string formattedDate = requestDate.ToString("dd/MM/yyyy");
                                 string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+                                string body = "";
 
-                                string body = $@"
+                                if(requesterName == "Normala")
+                                {
+                                     body = $@"
+                                            <p>Dear Approver - Account,</p>
+                                            <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HR & ADMIN</strong> and is now awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {expenType}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+
+                                    foreach (var email in accountApproverEmails)
+                                    {
+                                        SendEmail("iwanbunander1997@gmail.com", subject, body);
+                                    }
+
+                                    MessageBox.Show("Notification sent to First-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else
+                                {
+                                    body = $@"
                                             <p>Dear Approver - HR,</p>
                                             <p>The following <strong>Miscellaneous Claim</strong> has been approved by <strong>HOD</strong> and is now awaiting your review.</p>
 
@@ -1971,12 +2365,15 @@ namespace HRAdmin.UserControl
                                             <p>Thank you,<br/>HEM Admin Accessibility</p>
                                         ";
 
-                                foreach (var email in accountApproverEmails)///hemacc2@hosiden.com
-                                {
-                                    SendEmail(email, subject, body);
+                                    foreach (var email in accountApproverEmails)
+                                    {
+                                        SendEmail(email, subject, body);
+                                    }
+
+                                    MessageBox.Show("Notification sent to HR & ADMIN approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                                 }
 
-                                MessageBox.Show("Notification sent to HR & ADMIN approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
                         }
 
@@ -2541,7 +2938,12 @@ namespace HRAdmin.UserControl
                     MessageBox.Show("HR & ADMIN cannot reject Work-related expenses.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
+                // Check if HODApprovalStatus is Pending
+                if (hodApprovalStatus == "Pending" && department != "HR & ADMIN")
+                {
+                    MessageBox.Show("This Miscellaneous Claim cannot be rejected by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
                 // Check if HODApprovalStatus is Rejected
                 if (hodApprovalStatus == "Rejected")
                 {
@@ -2550,7 +2952,7 @@ namespace HRAdmin.UserControl
                 }
 
                 // Handle HR & ADMIN acting as HOD for their own department
-                if (department == "HR & ADMIN" && hodApprovalStatus == "Pending" && expensesType == "Work")
+                if (department == "HR & ADMIN" && hodApprovalStatus == "Pending" && (expensesType == "Work" || expensesType == "Benefit"))
                 {
                     // Check if HRApprovalStatus is Approved (HR & ADMIN also handles HR approval)
                     if (hrApprovalStatus == "Approved")
@@ -2699,7 +3101,11 @@ namespace HRAdmin.UserControl
                     MessageBox.Show("This Miscellaneous Claim cannot be rejected by HR because it has already been approved by HR.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
+                if (expensesType == "Work" && department == "HR & ADMIN" && (hodApprovalStatus == "Approved" || hodApprovalStatus == "Rejected"))
+                {
+                    MessageBox.Show("HR & ADMIN cannot reject Work-related expenses.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
                 // Check if HRApprovalStatus is Rejected
                 if (hrApprovalStatus == "Rejected")
                 {
@@ -2920,6 +3326,96 @@ namespace HRAdmin.UserControl
             DataGridViewRow selectedRow = selectedCell.OwningRow;
             string serialNo = selectedRow.Cells["SerialNo"].Value?.ToString();
             string requester = selectedRow.Cells["Requester"].Value?.ToString();
+            string requesterDepartment = selectedRow.Cells["Department"].Value?.ToString();
+            string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
+
+
+
+            int accessLevelRequester = -1; // default value
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+                    string query = @"
+                    SELECT C.AccessLevel, A.Requester, A.Department, A.ExpensesType, A.HODApprovalStatus,A.HRApprovalStatus, A.Account2ApprovalStatus,A.Account3ApprovalStatus, A.AccountApprovalStatus, B.Position
+                    FROM tbl_MasterClaimForm A
+                    LEFT JOIN tbl_Users B ON A.Requester = B.Name1
+                    LEFT JOIN tbl_UsersLevel C ON B.Position = C.TitlePosition
+                    WHERE A.SerialNo = @SerialNo";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@SerialNo", serialNo);
+                        object result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            accessLevelRequester = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            MessageBox.Show("User access level not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error retrieving user access level: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Parse current user access level safely
+            if (int.TryParse(UserSession.logginInUserAccessLevel, out int currentAccessLevel))
+            {
+                if (currentAccessLevel < accessLevelRequester && accessLevelRequester != 99 && UserSession.loggedInDepart != "ACCOUNT")
+                {
+                    if (UserSession.loggedInDepart == "HR & ADMIN")
+                    {
+                        MessageBox.Show("You are not authorized to view this report.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    else
+                    {
+                        if (UserSession.loggedInDepart == "GENERAL AFFAIRS")
+                        {
+
+                        }
+                        else
+                        {
+                            MessageBox.Show("You are not authorized to view this report.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                            
+                    }
+                }
+                else if (currentAccessLevel < accessLevelRequester &&
+                         UserSession.loggedInDepart == "HR & ADMIN" &&
+                         requesterDepartment == "HR & ADMIN" && accessLevelRequester != 99)
+                {
+                    MessageBox.Show("You cannot view this report because the requester has a higher access level within HR & ADMIN.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                else if (UserSession.loggedInDepart != requesterDepartment &&
+                         UserSession.loggedInDepart == "HR & ADMIN" &&
+                         expensesType == "Work")
+                {
+                    MessageBox.Show("You are not authorized to view this report.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+
+            }
+            else
+            {
+                MessageBox.Show("Invalid access level for logged-in user.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             // Validate the selection
             if (string.IsNullOrEmpty(serialNo) || string.IsNullOrEmpty(requester))
@@ -3123,8 +3619,29 @@ namespace HRAdmin.UserControl
                     Paragraph HODApprovalPara = new Paragraph();
                     string ApprovedByHOD = orderDetails["ApprovedByHOD"].ToString();
                     string HODApprovedDate = orderDetails["HODApprovedDate"].ToString();
+                    string HODstatus = orderDetails["HODApprovalStatus"].ToString();
+
                     HODApprovalPara.IndentationLeft = -50f;
-                    HODApprovalPara.Add(new Chunk($"HOD Approval      : {(string.IsNullOrEmpty(ApprovedByHOD) ? "Pending" : $"{ApprovedByHOD}   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}")}", bodyFont));
+
+                    if (HODstatus == "Rejected")
+                    {
+                        HODApprovalPara.Add(new Chunk(
+                            $"HOD Approval      : Rejected   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}",
+                            bodyFont));
+                    }
+                    else if (HODstatus == "Approved")
+                    {
+                        HODApprovalPara.Add(new Chunk(
+                            $"HOD Approval      : {(string.IsNullOrEmpty(ApprovedByHOD) ? "Approved" : ApprovedByHOD)}   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}",
+                            bodyFont));
+                    }
+                    else // Pending or null
+                    {
+                        HODApprovalPara.Add(new Chunk(
+                            "HOD Approval      : Pending",
+                            bodyFont));
+                    }
+
                     HODApprovalPara.SpacingBefore = 0f;
                     rightCell.AddElement(HODApprovalPara);
 
@@ -3340,46 +3857,60 @@ namespace HRAdmin.UserControl
         {
 
         }
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            string searchValue = txtSearchSn.Text.Trim();
+
+            if (string.IsNullOrEmpty(searchValue))
+            {
+                // Clear DataGridView or do nothing
+                dgvMS.DataSource = null;
+                return;
+            }
+
+            using (SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            {
+                con.Open();
+
+                string query = @"select 
+                                        SerialNo,
+                                        Requester,
+                                        Department,
+                                        ExpensesType,
+                                        RequestDate,
+                                        HODApprovalStatus,
+                                        ApprovedByHOD,
+                                        HODApprovedDate,
+                                        HRApprovalStatus,
+                                        ApprovedByHR,
+                                        HRApprovedDate,
+                                        Account2ApprovalStatus,
+                                        ApprovedByAccount2,
+                                        Account2ApprovedDate,
+                                        Account3ApprovalStatus,
+                                        ApprovedByAccount3,
+                                        Account3ApprovedDate,
+                                        AccountApprovalStatus,
+                                        ApprovedByAccount,
+                                        AccountApprovedDate from tbl_MasterClaimForm where SerialNo LIKE @SerialNo;";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@SerialNo", "%" + searchValue + "%");
+
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    dgvMS.DataSource = dt;
+                    BindDataGridView(dt);
+                }
+            }
+        }
+        private void dgvMS_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
-    /*
-    SELECT 
-        A.SerialNo, 
-        A.ExpensesType, 
-        A.RequestDate,
-        SUM(B.InvoiceAmount) AS TotalAmount
-    FROM tbl_MasterClaimForm A
-    LEFT JOIN tbl_DetailClaimForm B 
-        ON A.SerialNo = B.SerialNo
-    WHERE A.RequestDate BETWEEN '2025-08-01' AND '2025-08-15'
-    GROUP BY 
-        A.SerialNo, 
-        A.ExpensesType, 
-        A.RequestDate;
-
-    ------------------------------------
-        Grand total
-    ------------------------------------
-    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-
-    	SELECT SUM(TotalAmount) AS GrandTotal
-FROM (
-    SELECT 
-        A.SerialNo, 
-        A.ExpensesType, 
-        A.RequestDate,
-        C.Email,
-        SUM(B.InvoiceAmount) AS TotalAmount
-    FROM tbl_MasterClaimForm A
-    LEFT JOIN tbl_DetailClaimForm B ON A.SerialNo = B.SerialNo
-    LEFT JOIN tbl_UserDetail C ON A.EmpNo = C.IndexNo
-    WHERE A.RequestDate BETWEEN '2025-08-15' AND '2025-08-30'
-    GROUP BY 
-        A.SerialNo, 
-        A.ExpensesType, 
-        A.RequestDate,
-        C.Email
-) AS X;
-     */
-
 }

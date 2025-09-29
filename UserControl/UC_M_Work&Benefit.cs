@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Net.Mail;
 using System.Net;
 using HRAdmin.Components;
+using System.Drawing.Drawing2D;
 
 namespace HRAdmin.UserControl
 {
@@ -462,20 +463,38 @@ namespace HRAdmin.UserControl
                         }
                     }
 
-                    string serialNo = $"{loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
+                    string serialNo = $"{UserSession.loggedInDepart}_{DateTime.Now:ddMMyyyy}_{nextNumber}";
                     
-
+                    
 
 
                     string insertDetailQuery = @"INSERT INTO tbl_DetailClaimForm 
                                                         (SerialNo, ExpensesType, Vendor, Item, InvoiceAmount, InvoiceNo, InvoiceDate, Invoice) 
                                                  VALUES (@SerialNo, @ExpensesType, @Vendor, @Item, @InvoiceAmount, @InvoiceNo, @InvoiceDate, @Invoice)";
 
-                    string insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
+                    string insertMasterQuery = "";
+                    if (UserSession.LoggedInUserTitlePosition == "MANAGING DIRECTOR")
+                    {
+                        insertMasterQuery = @"
+                                            INSERT INTO tbl_MasterClaimForm 
+                                                (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
+                                                 HODApprovalStatus, ApprovedByHOD, HODApprovedDate, HRApprovalStatus, AccountApprovalStatus, 
+                                                 Account2ApprovalStatus, Account3ApprovalStatus, PaymentStatus) 
+                                            VALUES 
+                                                (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
+                                                 'Approved', @ApprovedByHOD, @HODApprovedDate, @HRApprovalStatus, @AccountApprovalStatus, 
+                                                 @Account2ApprovalStatus, @Account3ApprovalStatus, @PaymentStatus)";
+                    }
+                    
+                    else
+                    {
+                         insertMasterQuery = @"INSERT INTO tbl_MasterClaimForm 
                                         (SerialNo, Requester, EmpNo, Department, BankName, AccountNo, ExpensesType, RequestDate, 
                                          HODApprovalStatus, HRApprovalStatus, AccountApprovalStatus, Account2ApprovalStatus, Account3ApprovalStatus, PaymentStatus) 
                                         VALUES (@SerialNo, @Requester, @EmpNo, @Department, @BankName, @AccountNo, @ExpensesType, @RequestDate, 
                                                 @HODApprovalStatus, @HRApprovalStatus, @AccountApprovalStatus, @Account2ApprovalStatus, @Account3ApprovalStatus, @PaymentStatus)";
+
+                    }
 
                     string checkDuplicateQuery = @"SELECT COUNT(*) 
                                          FROM tbl_DetailClaimForm 
@@ -679,6 +698,12 @@ namespace HRAdmin.UserControl
                                 cmdMaster.Parameters.AddWithValue("@Account2ApprovalStatus", row["Account2ApprovalStatus"]);
                                 cmdMaster.Parameters.AddWithValue("@Account3ApprovalStatus", row["Account3ApprovalStatus"]);
                                 cmdMaster.Parameters.AddWithValue("@PaymentStatus", row["PaymentStatus"]);
+
+                                if (UserSession.LoggedInUserTitlePosition == "MANAGING DIRECTOR")
+                                {
+                                    cmdMaster.Parameters.AddWithValue("@ApprovedByHOD", UserSession.loggedInName);
+                                    cmdMaster.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
+                                }
                                 cmdMaster.ExecuteNonQuery();
                             }
                         }
@@ -689,50 +714,96 @@ namespace HRAdmin.UserControl
                         MessageBox.Show("New claim added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         //+++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                        
+
 
                         string query = @"
-                                    DECLARE @Dept0 VARCHAR(100), @Dept1 VARCHAR(100), @Dept2 VARCHAR(100), @Level INT;
+;WITH UserWithDepts AS (
+    SELECT 
+        u.Username        AS Requester,
+        u.Department      AS RequesterDept,
+        ul.AccessLevel    AS RequesterLevel,
+        d.Department1     AS Dept1,
+        d.Department2     AS Dept2
+    FROM tbl_Users u
+    LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
+    LEFT JOIN tbl_Department d ON u.Department = d.Department0
+    WHERE u.Username = @LoggedInUsername
+),
+PossibleApprovers AS (
+    SELECT 
+        r.Requester,
+        a.Username         AS Approver,
+        ud.Email           AS Email,
+        a.Department       AS Department,
+        al.AccessLevel     AS AccessLevel,
+        CASE WHEN e.RequesterUsername IS NOT NULL THEN 1 ELSE 0 END AS IsException,
+        ROW_NUMBER() OVER (
+            PARTITION BY r.Requester
+            ORDER BY 
+                CASE 
+                    WHEN e.RequesterUsername IS NOT NULL THEN -1
+                    WHEN EXISTS (
+                        SELECT 1 
+                        FROM tbl_DeptApprovalExceptions dd
+                        WHERE dd.RequesterDept = r.RequesterDept
+                          AND dd.ApproverDept = a.Department
+                          AND al.AccessLevel >= dd.MinApproverLevel
+                    ) THEN 0
+                    WHEN a.Department = r.RequesterDept THEN 1
+                    WHEN a.Department = r.Dept1 THEN 2
+                    ELSE 3
+                END,
+                al.AccessLevel ASC
+        ) AS rn
+    FROM UserWithDepts r
+    INNER JOIN tbl_Users a 
+        ON a.Department IN (r.RequesterDept, r.Dept1, r.Dept2)
+    LEFT JOIN tbl_UserDetail ud 
+        ON a.IndexNo = ud.IndexNo
+    LEFT JOIN tbl_UsersLevel al 
+        ON a.Position = al.TitlePosition
+    LEFT JOIN tbl_ApprovalRules ar 
+        ON ar.RequesterLevel = r.RequesterLevel
+       AND ar.ApproverLevel = al.AccessLevel
+    LEFT JOIN tbl_ApprovalExceptions e
+        ON e.RequesterUsername = r.Requester
+       AND e.ApproverUsername  = a.Username
+    WHERE 
+        e.RequesterUsername IS NOT NULL
+        OR (
+            EXISTS (SELECT 1 FROM tbl_DeptApprovalExceptions dd WHERE dd.RequesterDept = r.RequesterDept)
+            AND EXISTS (
+                SELECT 1 
+                FROM tbl_DeptApprovalExceptions dd2
+                WHERE dd2.RequesterDept = r.RequesterDept
+                  AND dd2.ApproverDept = a.Department
+                  AND al.AccessLevel >= dd2.MinApproverLevel
+            )
+        )
+        OR (
+            NOT EXISTS (SELECT 1 FROM tbl_DeptApprovalExceptions dd3 WHERE dd3.RequesterDept = r.RequesterDept)
+            AND ar.RequesterLevel IS NOT NULL
+        )
+),
+FinalApprovers AS (
+    SELECT * FROM PossibleApprovers WHERE IsException = 1
+    UNION ALL
+    SELECT * FROM PossibleApprovers pa
+    WHERE IsException = 0
+      AND NOT EXISTS (
+          SELECT 1 FROM PossibleApprovers pe
+          WHERE pe.Requester = pa.Requester
+            AND pe.IsException = 1
+      )
+)
+SELECT 
+    Approver,
+    Email
+FROM FinalApprovers
+WHERE rn <= 2
+ORDER BY rn;
+";
 
-                                    -- Get current user's department and access level
-                                    SELECT 
-                                        @Dept0 = u.Department,
-                                        @Level = ul.AccessLevel
-                                    FROM tbl_Users u
-                                    LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
-                                    WHERE u.Username = @LoggedInUsername;
-
-                                    -- Get related departments
-                                    SELECT 
-                                        @Dept1 = Department1,
-                                        @Dept2 = Department2
-                                    FROM tbl_Department
-                                    WHERE Department0 = @Dept0;
-
-                                    ;WITH PossibleApprovers AS (
-                                        SELECT 
-                                            u.Username,
-                                            u.Department,
-                                            ud.Email,
-                                            ul.Position,
-                                            ul.AccessLevel
-                                        FROM tbl_Users u
-                                        LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo
-                                        LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
-                                        INNER JOIN tbl_ApprovalRules ar 
-                                            ON ar.RequesterLevel = @Level 
-                                           AND ar.ApproverLevel = ul.AccessLevel
-                                        WHERE u.Department IN (@Dept0, @Dept1, @Dept2)
-                                    )
-                                    SELECT TOP 2 Email, Username
-                                    FROM PossibleApprovers
-                                    ORDER BY 
-                                        CASE 
-                                            WHEN Department = @Dept0 THEN 0
-                                            WHEN Department = @Dept1 THEN 1
-                                            ELSE 2
-                                        END,
-                                        AccessLevel ASC;";
 
                         List<string> approverEmails = new List<string>();
 
@@ -790,8 +861,53 @@ namespace HRAdmin.UserControl
                         {
                             string formattedDate = requestDate.ToString("dd/MM/yyyy");
                             string subject = "HEM Admin Accessibility Notification: New Miscellaneous Claim Awaiting For Your Review And Approval";
+                            string body = "";
+                            if(UserSession.LoggedInUserTitlePosition == "MANAGING DIRECTOR")
+                            {
+                                if(Jenisexpenses == "Work")
+                                {
+                                     body = $@"
+                                            <p>Dear Approver - Account,</p>
 
-                            string body = $@"
+                                            <p>A new <strong>Miscellaneous Claim</strong> has been submitted by Mr./Ms. <strong>{requesterName}</strong> and is awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {Jenisexpenses}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+                                }
+                                else if (Jenisexpenses == "Benefit")
+                                {
+                                     body = $@"
+                                            <p>Dear Approver - HR,</p>
+                                            <p>A new <strong>Miscellaneous Claim</strong> has been submitted by Mr./Ms. <strong>{requesterName}</strong> and is awaiting your review.</p>
+
+                                            <p><u>Claim Details:</u></p>
+                                            <ul>
+                                                <li><strong>Requester:</strong> {requesterName}</li>
+                                                <li><strong>Claim Type:</strong> {Jenisexpenses}</li>
+                                                <li><strong>Serial No:</strong> {serialNo}</li>
+                                                <li><strong>Submission Date:</strong> {formattedDate}</li>
+                                            </ul>
+
+                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+
+                                            <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                        ";
+                                }
+                               
+                            }
+                            else
+                            {
+                                 body = $@"
                                             <p>Dear Approver - HOD,</p>
                                             <p>A new <strong>Miscellaneous Claim</strong> has been submitted by Mr./Ms. <strong>{requesterName}</strong> and is awaiting your review.</p>
 
@@ -806,27 +922,12 @@ namespace HRAdmin.UserControl
 
                                             <p>Thank you,<br/>HEM Admin Accessibility</p>
                                         ";
-
-                           
-                            if (UserSession.LoggedInUser == "Normala" && UserSession.loggedInDepart == "HR & ADMIN")
-                            {
-                                
-                                SendEmail("k-sumi@hosiden.com", subject, body);
                             }
-                            else if (UserSession.loggedInDepart == "ISO")
-                            {
-                                SendEmail("normala@hosiden.com.my", subject, body);
-                            }
-                            else
-                            {
                                 // Send to all approvers normally
-                                foreach (var email in approverEmails)
-                                {
-                                    SendEmail(email, subject, body);
-                                }
+                            foreach (var email in approverEmails)
+                            {
+                                SendEmail(email, subject, body);
                             }
-
-
                             MessageBox.Show(
                                 "Notification has been sent to the approver(s).",
                                 "Notification Sent",
@@ -835,18 +936,34 @@ namespace HRAdmin.UserControl
                             );
                         }
                         Form_Home.sharedLabel.Text = "Account > Miscellaneous Claim > Work";
-                        UC_M_Work ug = new UC_M_Work(loggedInName, loggedInDepart, expensesType, loggedInIndex, LoggedInBank, LoggedInAccNo);
+                        UC_M_Work ug = new UC_M_Work(UserSession.loggedInName, UserSession.loggedInDepart, expensesType, UserSession.loggedInIndex, UserSession.LoggedInBank, UserSession.LoggedInAccNo);
                         addControls(ug);
                     }
                 }
                 catch (SqlException ex)
                 {
-                    transaction?.Rollback();
+                    try
+                    {
+                        transaction?.Rollback();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // Transaction already completed (committed/rolled back) → ignore
+                    }
+
                     MessageBox.Show($"A database error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (Exception ex)
                 {
-                    transaction?.Rollback();
+                    try
+                    {
+                        transaction?.Rollback();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // Transaction already completed → ignore
+                    }
+
                     MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally

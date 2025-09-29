@@ -43,7 +43,7 @@ namespace HRAdmin
                     con.Open();
                     string query = @"SELECT u.Name, u.Name1, u.Department, u.IndexNo, 
                             ud.BankName, ud.AccountNo, f.AccessLevel, 
-                            d.Department0, d.Department1  
+                            d.Department0, d.Department1, u.Position  
                             FROM tbl_Users u 
                             LEFT JOIN tbl_UserDetail ud ON u.IndexNo = ud.IndexNo 
                             LEFT JOIN tbl_UsersLevel f ON u.Position = f.TitlePosition 
@@ -89,7 +89,7 @@ namespace HRAdmin
                                     UserSession.loggedInName = reader["Name1"].ToString();
                                     UserSession.loggedInfullName = reader["Name"].ToString();
                                     UserSession.logginInUserAccessLevel = reader["AccessLevel"].ToString();
-
+                                    UserSession.LoggedInUserTitlePosition = reader["Position"].ToString();
                                     UserSession.logginDepart0Lvl = reader["Department0"].ToString();
                                     UserSession.logginDepart1stLvl = reader["Department1"].ToString();
                                     UserSession.LoggedInBank = reader["BankName"].ToString();
@@ -102,7 +102,7 @@ namespace HRAdmin
 
                         // Store all collected roles
                         UserSession.UserRoles = userRoles;
-                        
+                        //MessageBox.Show(UserSession.LoggedInUserTitlePosition);
                         // Debug output
                         //Debug.WriteLine($"User Roles: {string.Join(", ", userRoles)}");
 

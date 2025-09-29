@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UC_Meal_Food));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -43,6 +43,10 @@
             this.btnView = new System.Windows.Forms.Button();
             this.btnWithdraw = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.txtSearchSn = new System.Windows.Forms.TextBox();
             this.cmbOS_Occasion = new System.Windows.Forms.ComboBox();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
@@ -60,6 +64,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.gbFoodrequest = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label59 = new System.Windows.Forms.Label();
             this.dtDelivery = new System.Windows.Forms.DateTimePicker();
             this.dtRequest = new System.Windows.Forms.Label();
             this.btNext = new System.Windows.Forms.Button();
@@ -75,8 +81,6 @@
             this.txtEvent = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.label59 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_OS)).BeginInit();
@@ -120,14 +124,14 @@
             // 
             this.dgv_OS.BackgroundColor = System.Drawing.Color.White;
             this.dgv_OS.ColumnHeadersHeight = 29;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Calibri", 14F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.OrangeRed;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.OrangeRed;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_OS.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgv_OS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_OS.Location = new System.Drawing.Point(0, 300);
             this.dgv_OS.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -271,6 +275,10 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.btnSearch);
+            this.panel4.Controls.Add(this.label19);
+            this.panel4.Controls.Add(this.label20);
+            this.panel4.Controls.Add(this.txtSearchSn);
             this.panel4.Controls.Add(this.cmbOS_Occasion);
             this.panel4.Controls.Add(this.label17);
             this.panel4.Controls.Add(this.label16);
@@ -292,6 +300,51 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1914, 175);
             this.panel4.TabIndex = 0;
+            // 
+            // btnSearch
+            // 
+            this.btnSearch.BackColor = System.Drawing.Color.White;
+            this.btnSearch.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSearch.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnSearch.Location = new System.Drawing.Point(1519, 91);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(140, 42);
+            this.btnSearch.TabIndex = 141;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = false;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label19.Location = new System.Drawing.Point(1194, 97);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(21, 32);
+            this.label19.TabIndex = 140;
+            this.label19.Text = ":";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label20.Location = new System.Drawing.Point(1081, 97);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(105, 32);
+            this.label20.TabIndex = 139;
+            this.label20.Text = "Order ID";
+            // 
+            // txtSearchSn
+            // 
+            this.txtSearchSn.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txtSearchSn.Location = new System.Drawing.Point(1221, 92);
+            this.txtSearchSn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtSearchSn.Name = "txtSearchSn";
+            this.txtSearchSn.Size = new System.Drawing.Size(281, 37);
+            this.txtSearchSn.TabIndex = 138;
             // 
             // cmbOS_Occasion
             // 
@@ -500,6 +553,30 @@
             this.panel2.Size = new System.Drawing.Size(1914, 219);
             this.panel2.TabIndex = 18;
             // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.ForeColor = System.Drawing.Color.Red;
+            this.label18.Location = new System.Drawing.Point(234, 110);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(693, 19);
+            this.label18.TabIndex = 130;
+            this.label18.Text = "INTERNAL Order (Food): For events involving internal activities, such as training" +
+    " sessions or staff meetings.";
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label59.ForeColor = System.Drawing.Color.Red;
+            this.label59.Location = new System.Drawing.Point(234, 78);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(674, 19);
+            this.label59.TabIndex = 129;
+            this.label59.Text = "EXTERNAL Order (Food): For events involving external parties, such as visitors, a" +
+    "uditors, or other guests.";
+            // 
             // dtDelivery
             // 
             this.dtDelivery.CalendarFont = new System.Drawing.Font("Calibri", 13F);
@@ -669,30 +746,6 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(1920, 58);
             this.flowLayoutPanel1.TabIndex = 127;
             // 
-            // label59
-            // 
-            this.label59.AutoSize = true;
-            this.label59.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label59.ForeColor = System.Drawing.Color.Red;
-            this.label59.Location = new System.Drawing.Point(234, 78);
-            this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(1011, 29);
-            this.label59.TabIndex = 129;
-            this.label59.Text = "EXTERNAL Order (Food): For events involving external parties, such as visitors, a" +
-    "uditors, or other guests.";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.ForeColor = System.Drawing.Color.Red;
-            this.label18.Location = new System.Drawing.Point(234, 110);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(1040, 29);
-            this.label18.TabIndex = 130;
-            this.label18.Text = "INTERNAL Order (Food): For events involving internal activities, such as training" +
-    " sessions or staff meetings.";
-            // 
             // UC_Meal_Food
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -767,5 +820,9 @@
         private System.Windows.Forms.Button btnReject;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox txtSearchSn;
+        private System.Windows.Forms.Button btnSearch;
     }
 }

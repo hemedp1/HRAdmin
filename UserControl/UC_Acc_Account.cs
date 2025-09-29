@@ -42,7 +42,7 @@ namespace HRAdmin.UserControl
             //Form_Home.sharedbtnMCReport.Visible = true;
             //Form_Home.sharedbtnApproval.Visible = true;
 
-            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(LoggedInUser, loggedInDepart, loggedInIndex, LoggedInBank, LoggedInAccNo, loggedInName);
+            UC_M_MiscellaneousClaim ug = new UC_M_MiscellaneousClaim(UserSession.LoggedInUser, UserSession.loggedInDepart, UserSession.loggedInIndex, UserSession.LoggedInBank, UserSession.LoggedInAccNo, UserSession.loggedInName);
             addControls(ug);
         }
         private void addControls(System.Windows.Forms.UserControl userControl)
