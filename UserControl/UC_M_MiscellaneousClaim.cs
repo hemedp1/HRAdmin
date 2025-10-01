@@ -2313,7 +2313,7 @@ ORDER BY a.RequestDate ASC";
                                 }
                             }
 
-                            // Step 4: Send email to HR
+                            //
                             if (accountApproverEmails.Count > 0)
                             {
                                 string formattedDate = requestDate.ToString("dd/MM/yyyy");
@@ -2334,14 +2334,15 @@ ORDER BY a.RequestDate ASC";
                                                 <li><strong>Submission Date:</strong> {formattedDate}</li>
                                             </ul>
 
-                                            <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
+                                          <p>Please log in to the system to <strong>approve</strong> or <strong>reject</strong> this claim.</p>
 
                                             <p>Thank you,<br/>HEM Admin Accessibility</p>
                                         ";
 
                                     foreach (var email in accountApproverEmails)
                                     {
-                                        SendEmail("iwanbunander1997@gmail.com", subject, body);
+                                        //SendEmail("k-sumi@hosiden.com", subject, body);
+                                        SendEmail("syazwanbunander1997@gmail.com", subject, body);
                                     }
 
                                     MessageBox.Show("Notification sent to First-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -3657,8 +3658,31 @@ ORDER BY a.RequestDate ASC";
                         Paragraph HRApprovalPara = new Paragraph();
                         string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
                         string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
+                        string hrStatus = orderDetails["HRApprovalStatus"].ToString();
                         HRApprovalPara.IndentationLeft = -50f;
-                        HRApprovalPara.Add(new Chunk($"HR Approval         : {(string.IsNullOrEmpty(ApprovedByHR) ? "Pending" : $"{ApprovedByHR}   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}")}", bodyFont));
+
+                        if (hrStatus == "Rejected")
+                        {
+                            HRApprovalPara.Add(new Chunk(
+                                $"HR Approval      : Rejected   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}",
+                                bodyFont));
+                        }
+                        else if (hrStatus == "Approved")
+                        {
+                            HRApprovalPara.Add(new Chunk(
+                                $"HR Approval      : {(string.IsNullOrEmpty(ApprovedByHR) ? "Approved" : ApprovedByHR)}   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}",
+                                bodyFont));
+                        }
+                        else // Pending or null
+                        {
+                            HRApprovalPara.Add(new Chunk(
+                                "HR Approval      : Pending",
+                                bodyFont));
+                        }
+
+
+                        //HRApprovalPara.Add(new Chunk($"HR Approval         : {(string.IsNullOrEmpty(ApprovedByHR) ? "Pending" : $"{ApprovedByHR}   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}")}", bodyFont));
+                        
                         HRApprovalPara.SpacingBefore = 0f;
                         rightCell.AddElement(HRApprovalPara);
 
@@ -3672,8 +3696,30 @@ ORDER BY a.RequestDate ASC";
                     Paragraph AccountApprovalPara = new Paragraph();
                     string ApprovedByAccount = orderDetails["ApprovedByAccount"].ToString();
                     string AccountApprovedDate = orderDetails["AccountApprovedDate"].ToString();
+                    string accStatus = orderDetails["AccountApprovalStatus"].ToString();
                     AccountApprovalPara.IndentationLeft = -50f;
-                    AccountApprovalPara.Add(new Chunk($"Account Approval : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Pending" : $"{ApprovedByAccount}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}")}", bodyFont));
+
+                    if (accStatus == "Rejected")
+                    {
+                        AccountApprovalPara.Add(new Chunk(
+                            $"Account Approval      : Rejected   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}",
+                            bodyFont));
+                    }
+                    else if (accStatus == "Approved")
+                    {
+                        AccountApprovalPara.Add(new Chunk(
+                            $"Account Approval      : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Approved" : ApprovedByAccount)}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}",
+                            bodyFont));
+                    }
+                    else // Pending or null
+                    {
+                        AccountApprovalPara.Add(new Chunk(
+                            "Account Approval      : Pending",
+                            bodyFont));
+                    }
+                    //AccountApprovalPara.Add(new Chunk($"Account Approval : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Pending" : $"{ApprovedByAccount}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}")}", bodyFont));
+                    
+                    
                     AccountApprovalPara.SpacingBefore = 0f;
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                     // Add watermark with logo.png behind Account Approval name and date
