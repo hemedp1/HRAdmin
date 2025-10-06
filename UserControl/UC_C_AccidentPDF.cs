@@ -783,7 +783,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         public class WatermarkPageEvent : PdfPageEventHelper
         {
             public override void OnEndPage(PdfWriter writer, Document document)

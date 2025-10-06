@@ -27,6 +27,7 @@ using static iTextSharp.text.pdf.PdfDocument;
 using System.Threading;
 using System.Drawing.Drawing2D;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Rectangle = System.Drawing.Rectangle;
 
 
 namespace HRAdmin.UserControl
@@ -193,7 +194,19 @@ namespace HRAdmin.UserControl
 
                                 if (accessLevel >= 1 && accessLevel <= 9 && UserSession.loggedInDepart != "ACCOUNT")
                                 {
-                                    groupBox3.Visible = true;
+                                    if (accessLevel == 1 && UserSession.loggedInDepart == "HR & ADMIN")  // exclude zarawi
+                                    {
+                                        groupBox3.Visible = false;
+                                        label19.Visible = false;
+                                        label20.Visible = false;
+                                        txtSearchSn.Visible = false;
+                                        btnSearch.Visible = false;
+                                    }
+                                    else
+                                    {
+                                        groupBox3.Visible = true;
+                                    }
+                                    
                                 }
                                 else if (accessLevel == 99 && UserSession.loggedInDepart == "ACCOUNT")
                                 {
@@ -206,12 +219,20 @@ namespace HRAdmin.UserControl
                                 else
                                 {
                                     groupBox3.Visible = false;
+                                    label19.Visible = false;
+                                    label20.Visible = false;
+                                    txtSearchSn.Visible = false;
+                                    btnSearch.Visible = false;
                                 }
 
                             }
                             else
                             {
                                 groupBox3.Visible = false;
+                                label19.Visible = false;
+                                label20.Visible = false;
+                                txtSearchSn.Visible = false;
+                                btnSearch.Visible = false;
                             }
                         }
                     }
@@ -250,7 +271,6 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-
         private void dtpStart_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
@@ -285,12 +305,14 @@ namespace HRAdmin.UserControl
             //bool showOwnRecords = int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) && accessLevel < 1 && accessLevel < 8;
 
             
-
-
             string query = "";
             //MessageBox.Show($"LoggedInUser: {UserSession.logginInUserAccessLevel}");
             if (int.TryParse(UserSession.logginInUserAccessLevel, out int accessLevel) &&
-    (accessLevel == 0 || (accessLevel == 99 && UserSession.loggedInDepart != "ACCOUNT")))
+            (
+                accessLevel == 0 ||
+                (accessLevel == 99 && UserSession.loggedInDepart != "ACCOUNT") ||
+                (accessLevel == 1 && UserSession.loggedInDepart == "HR & ADMIN")
+            ))
             {
                 // Query 1: Show only logged-in user's own records
                 query = @"
@@ -1390,7 +1412,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account2ApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", UserSession.LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", UserSession.loggedInName);
                                 cmd.Parameters.AddWithValue("@Account2ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1540,7 +1562,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account3ApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount3", UserSession.LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount3", UserSession.loggedInName);
                                 cmd.Parameters.AddWithValue("@Account3ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1694,7 +1716,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount", UserSession.LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount", UserSession.loggedInName);
                                 cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1853,7 +1875,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                                cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.loggedInName);
                                 cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -1984,7 +2006,7 @@ ORDER BY a.RequestDate ASC";
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HRApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHR", UserSession.LoggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHR", UserSession.loggedInName);
                             cmd.Parameters.AddWithValue("@HRApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -2155,7 +2177,7 @@ ORDER BY a.RequestDate ASC";
                         using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Approved");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.loggedInName);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -2404,9 +2426,11 @@ ORDER BY a.RequestDate ASC";
             string requester = selectedRow.Cells["Requester"].Value?.ToString();
             string hodApprovalStatus = selectedRow.Cells["HODApprovalStatus"].Value?.ToString();
             string hrApprovalStatus = selectedRow.Cells["HRApprovalStatus"].Value?.ToString();
+
             string account2ApprovalStatus = selectedRow.Cells["Account2ApprovalStatus"].Value?.ToString();
             string account3ApprovalStatus = selectedRow.Cells["Account3ApprovalStatus"].Value?.ToString();
             string accountApprovalStatus = selectedRow.Cells["AccountApprovalStatus"].Value?.ToString();
+
             string expensesType = selectedRow.Cells["ExpensesType"].Value?.ToString();
             string department = selectedRow.Cells["Department"].Value?.ToString();
 
@@ -2522,7 +2546,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account2ApprovalStatus", "Rejected");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", UserSession.LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount2", UserSession.loggedInName);
                                 cmd.Parameters.AddWithValue("@Account2ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -2668,7 +2692,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@Account3ApprovalStatus", "Rejected");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount3", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount3", UserSession.loggedInName);
                                 cmd.Parameters.AddWithValue("@Account3ApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -2735,7 +2759,7 @@ ORDER BY a.RequestDate ASC";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{UserSession.loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2823,7 +2847,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd = new SqlCommand(query, con))
                             {
                                 cmd.Parameters.AddWithValue("@AccountApprovalStatus", "Rejected");
-                                cmd.Parameters.AddWithValue("@ApprovedByAccount", LoggedInUser);
+                                cmd.Parameters.AddWithValue("@ApprovedByAccount", UserSession.loggedInName);
                                 cmd.Parameters.AddWithValue("@AccountApprovedDate", DateTime.Now);
                                 cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -2889,7 +2913,7 @@ ORDER BY a.RequestDate ASC";
                                                     <li><strong>Submission Date:</strong> {formattedDate}</li>
                                                 </ul>
 
-                                                <p>For more details, you may reach out to <strong>{loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
+                                                <p>For more details, you may reach out to <strong>{UserSession.loggedInName}</strong> from the <strong>{UserSession.loggedInDepart}</strong> Department.</p>
    
 
                                                     <p>Thank you,<br/>HEM Admin Accessibility</p>
@@ -2991,7 +3015,7 @@ ORDER BY a.RequestDate ASC";
                             using (SqlCommand cmd11 = new SqlCommand(query11, con))
                             {
                                 cmd11.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
-                                cmd11.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
+                                cmd11.Parameters.AddWithValue("@ApprovedByHOD", UserSession.loggedInName);
                                 cmd11.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                                 //cmd11.Parameters.AddWithValue("@HRApprovalStatus", "Rejected");
                                 //cmd11.Parameters.AddWithValue("@ApprovedByHR", LoggedInUser);
@@ -3213,7 +3237,7 @@ ORDER BY a.RequestDate ASC";
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
                             cmd.Parameters.AddWithValue("@HODApprovalStatus", "Rejected");
-                            cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.LoggedInUser);
+                            cmd.Parameters.AddWithValue("@ApprovedByHOD", UserSession.loggedInName);
                             cmd.Parameters.AddWithValue("@HODApprovedDate", DateTime.Now);
                             cmd.Parameters.AddWithValue("@SerialNo", serialNo);
 
@@ -3373,7 +3397,7 @@ ORDER BY a.RequestDate ASC";
             {
                 if (currentAccessLevel < accessLevelRequester && accessLevelRequester != 99 && UserSession.loggedInDepart != "ACCOUNT")
                 {
-                    if (UserSession.loggedInDepart == "HR & ADMIN")
+                    if (UserSession.loggedInDepart == "HR & ADMIN" && requesterDepartment == "HR & ADMIN")
                     {
                         MessageBox.Show("You are not authorized to view this report.",
                                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -3387,9 +3411,26 @@ ORDER BY a.RequestDate ASC";
                         }
                         else
                         {
-                            MessageBox.Show("You are not authorized to view this report.",
+                            if (UserSession.loggedInDepart == "HR & ADMIN")
+                            {
+                                if (requesterDepartment != UserSession.loggedInDepart && expensesType == "Work")
+                                {
+                                    MessageBox.Show("You are not authorized to view this report.",
                                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return;
+                                    return;
+                                }
+                                else
+                                {
+
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("You are not authorized to view this report.",
+                                    "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            
                         }
                             
                     }
@@ -3398,7 +3439,7 @@ ORDER BY a.RequestDate ASC";
                          UserSession.loggedInDepart == "HR & ADMIN" &&
                          requesterDepartment == "HR & ADMIN" && accessLevelRequester != 99)
                 {
-                    MessageBox.Show("You cannot view this report because the requester has a higher access level within HR & ADMIN.",
+                    MessageBox.Show("You are not authorized to view this report.",
                                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -3406,9 +3447,17 @@ ORDER BY a.RequestDate ASC";
                          UserSession.loggedInDepart == "HR & ADMIN" &&
                          expensesType == "Work")
                 {
-                    MessageBox.Show("You are not authorized to view this report.",
+                    if(requesterDepartment == "ISO")
+                    {
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("You are not authorized to view this report.",
                                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                        return;
+                    }
+                    
                 }
 
 
@@ -3458,6 +3507,8 @@ ORDER BY a.RequestDate ASC";
             SELECT m.SerialNo, u.Name AS Requester, m.EmpNo, m.Department, ud.BankName, ud.AccountNo, m.ExpensesType, m.RequestDate, 
                    m.HODApprovalStatus, m.ApprovedByHOD, m.HODApprovedDate, 
                    m.HRApprovalStatus, m.ApprovedByHR, m.HRApprovedDate, 
+	               m.Account2ApprovalStatus, m.ApprovedByAccount2 ,m.Account2ApprovedDate,
+	               m.Account3ApprovalStatus, m.ApprovedByAccount3 ,m.Account3ApprovedDate,
                    m.AccountApprovalStatus, m.ApprovedByAccount, m.AccountApprovedDate
             FROM tbl_MasterClaimForm m
             LEFT JOIN tbl_Users u ON m.EmpNo = u.IndexNo
@@ -3484,6 +3535,19 @@ ORDER BY a.RequestDate ASC";
                                 orderDetails["HRApprovalStatus"] = reader["HRApprovalStatus"] != DBNull.Value ? reader["HRApprovalStatus"].ToString() : "";
                                 orderDetails["ApprovedByHR"] = reader["ApprovedByHR"] != DBNull.Value ? reader["ApprovedByHR"].ToString() : "";
                                 orderDetails["HRApprovedDate"] = reader["HRApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["HRApprovedDate"]).ToString("dd.MM.yyyy") : "";
+
+                                //1st App Acc
+                                orderDetails["Account2ApprovalStatus"] = reader["Account2ApprovalStatus"] != DBNull.Value ? reader["Account2ApprovalStatus"].ToString() : "";
+                                orderDetails["ApprovedByAccount2"] = reader["ApprovedByAccount2"] != DBNull.Value ? reader["ApprovedByAccount2"].ToString() : "";
+                                orderDetails["Account2ApprovedDate"] = reader["Account2ApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["Account2ApprovedDate"]).ToString("dd.MM.yyyy") : "";
+
+
+                                //2nd App Acc
+                                orderDetails["Account3ApprovalStatus"] = reader["Account3ApprovalStatus"] != DBNull.Value ? reader["Account3ApprovalStatus"].ToString() : "";
+                                orderDetails["ApprovedByAccount3"] = reader["ApprovedByAccount3"] != DBNull.Value ? reader["ApprovedByAccount3"].ToString() : "";
+                                orderDetails["Account3ApprovedDate"] = reader["Account3ApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["Account3ApprovedDate"]).ToString("dd.MM.yyyy") : "";
+
+                                //final App Acc
                                 orderDetails["AccountApprovalStatus"] = reader["AccountApprovalStatus"] != DBNull.Value ? reader["AccountApprovalStatus"].ToString() : "";
                                 orderDetails["ApprovedByAccount"] = reader["ApprovedByAccount"] != DBNull.Value ? reader["ApprovedByAccount"].ToString() : "";
                                 orderDetails["AccountApprovedDate"] = reader["AccountApprovedDate"] != DBNull.Value ? Convert.ToDateTime(reader["AccountApprovedDate"]).ToString("dd.MM.yyyy") : "";
@@ -3586,30 +3650,19 @@ ORDER BY a.RequestDate ASC";
                     leftCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     leftCell.Padding = 0f;
 
-                    PdfPTable detailsTable = new PdfPTable(2);
+                    PdfPTable detailsTable = new PdfPTable(3); // 3 columns: Label, Colon, Value
                     detailsTable.WidthPercentage = 100;
-                    detailsTable.SetWidths(new float[] { 0.2f, 0.8f });
-                    detailsTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                    detailsTable.SetWidths(new float[] { 0.15f, 0.05f, 0.55f }); // Adjust widths as needed
+                    detailsTable.DefaultCell.Border = PdfPCell.NO_BORDER;
                     detailsTable.DefaultCell.Padding = 2f;
                     detailsTable.SpacingBefore = 5f;
 
-                    detailsTable.AddCell(new Phrase("Requester     :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["Requester"].ToString(), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Emp No.       :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["EmpNo"].ToString(), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Department  :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["Department"].ToString(), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Bank name   :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["BankName"].ToString(), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Account No.  :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["AccountNo"].ToString(), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Request date:", bodyFont));
-                    detailsTable.AddCell(new Phrase(Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont));
+                    AddDetailRow(detailsTable, "Requester", orderDetails["Requester"].ToString(), bodyFont);
+                    AddDetailRow(detailsTable, "Emp No.", orderDetails["EmpNo"].ToString(), bodyFont);
+                    AddDetailRow(detailsTable, "Department", orderDetails["Department"].ToString(), bodyFont);
+                    AddDetailRow(detailsTable, "Bank name", orderDetails["BankName"].ToString(), bodyFont);
+                    AddDetailRow(detailsTable, "Account No.", orderDetails["AccountNo"].ToString(), bodyFont);
+                    AddDetailRow(detailsTable, "Request date", Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont);
 
                     leftCell.AddElement(detailsTable);
 
@@ -3617,110 +3670,103 @@ ORDER BY a.RequestDate ASC";
                     rightCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     rightCell.Padding = 0f;
 
-                    Paragraph HODApprovalPara = new Paragraph();
+                    // Create a table for approval sections with proper alignment
+                    PdfPTable approvalTable = new PdfPTable(3); // 3 columns: Label, Colon, Value
+                    approvalTable.WidthPercentage = 100;
+                    approvalTable.SpacingBefore = 10f;
+
+                    // Set column widths to align colons properly
+                    float[] columnWidths = new float[] { 50f, 5f, 50f }; // Adjust widths as needed
+                    approvalTable.SetWidths(columnWidths);
+
+                    // HOD Approval
                     string ApprovedByHOD = orderDetails["ApprovedByHOD"].ToString();
                     string HODApprovedDate = orderDetails["HODApprovedDate"].ToString();
                     string HODstatus = orderDetails["HODApprovalStatus"].ToString();
 
-                    HODApprovalPara.IndentationLeft = -50f;
+                    string hodValue = HODstatus == "Rejected" ?
+                        $"Rejected   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}" :
+                        HODstatus == "Approved" ?
+                        $"{(string.IsNullOrEmpty(ApprovedByHOD) ? "Approved" : ApprovedByHOD)}   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}" :
+                        "Pending";
 
-                    if (HODstatus == "Rejected")
-                    {
-                        HODApprovalPara.Add(new Chunk(
-                            $"HOD Approval      : Rejected   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}",
-                            bodyFont));
-                    }
-                    else if (HODstatus == "Approved")
-                    {
-                        HODApprovalPara.Add(new Chunk(
-                            $"HOD Approval      : {(string.IsNullOrEmpty(ApprovedByHOD) ? "Approved" : ApprovedByHOD)}   {(string.IsNullOrEmpty(HODApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HODApprovedDate)}",
-                            bodyFont));
-                    }
-                    else // Pending or null
-                    {
-                        HODApprovalPara.Add(new Chunk(
-                            "HOD Approval      : Pending",
-                            bodyFont));
-                    }
+                    AddApprovalRow(approvalTable, "HOD Approval", hodValue, bodyFont);
 
-                    HODApprovalPara.SpacingBefore = 0f;
-                    rightCell.AddElement(HODApprovalPara);
-
-                    Paragraph approvedHODPara = new Paragraph();
-                    approvedHODPara.Add(new Chunk("", bodyFont));
-                    approvedHODPara.SpacingBefore = 0f;
-                    approvedHODPara.SpacingAfter = 0f;
-                    rightCell.AddElement(approvedHODPara);
-
-                    // Remove HR Approval section if ExpensesType is "work"
+                    // HR Approval (conditionally added)
                     if (orderDetails["ExpensesType"].ToString().ToLower() != "work")
                     {
-                        Paragraph HRApprovalPara = new Paragraph();
                         string ApprovedByHR = orderDetails["ApprovedByHR"].ToString();
                         string HRApprovedDate = orderDetails["HRApprovedDate"].ToString();
                         string hrStatus = orderDetails["HRApprovalStatus"].ToString();
-                        HRApprovalPara.IndentationLeft = -50f;
 
-                        if (hrStatus == "Rejected")
-                        {
-                            HRApprovalPara.Add(new Chunk(
-                                $"HR Approval      : Rejected   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}",
-                                bodyFont));
-                        }
-                        else if (hrStatus == "Approved")
-                        {
-                            HRApprovalPara.Add(new Chunk(
-                                $"HR Approval      : {(string.IsNullOrEmpty(ApprovedByHR) ? "Approved" : ApprovedByHR)}   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}",
-                                bodyFont));
-                        }
-                        else // Pending or null
-                        {
-                            HRApprovalPara.Add(new Chunk(
-                                "HR Approval      : Pending",
-                                bodyFont));
-                        }
+                        string hrValue = hrStatus == "Rejected" ?
+                            $"Rejected   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}" :
+                            hrStatus == "Approved" ?
+                            $"{(string.IsNullOrEmpty(ApprovedByHR) ? "Approved" : ApprovedByHR)}   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}" :
+                            "Pending";
 
-
-                        //HRApprovalPara.Add(new Chunk($"HR Approval         : {(string.IsNullOrEmpty(ApprovedByHR) ? "Pending" : $"{ApprovedByHR}   {(string.IsNullOrEmpty(HRApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : HRApprovedDate)}")}", bodyFont));
-                        
-                        HRApprovalPara.SpacingBefore = 0f;
-                        rightCell.AddElement(HRApprovalPara);
-
-                        Paragraph approvedHRPara = new Paragraph();
-                        approvedHRPara.Add(new Chunk("", bodyFont));
-                        approvedHRPara.SpacingBefore = 0f;
-                        approvedHRPara.SpacingAfter = 0f;
-                        rightCell.AddElement(approvedHRPara);
+                        AddApprovalRow(approvalTable, "HR Approval", hrValue, bodyFont);
                     }
 
-                    Paragraph AccountApprovalPara = new Paragraph();
+                    /// 1st Account Approval
+                    string ApprovedByAccount1 = orderDetails["ApprovedByAccount2"].ToString();
+                    string AccountApprovedDate1 = orderDetails["Account2ApprovedDate"].ToString();
+                    string accStatus1 = orderDetails["Account2ApprovalStatus"].ToString();
+
+                    // 2nd Account Approval
+                    string ApprovedByAccount2 = orderDetails["ApprovedByAccount3"].ToString();
+                    string AccountApprovedDate2 = orderDetails["Account3ApprovedDate"].ToString();
+                    string accStatus2 = orderDetails["Account3ApprovalStatus"].ToString();
+
+                    // Final Account Approval
                     string ApprovedByAccount = orderDetails["ApprovedByAccount"].ToString();
                     string AccountApprovedDate = orderDetails["AccountApprovedDate"].ToString();
                     string accStatus = orderDetails["AccountApprovalStatus"].ToString();
-                    AccountApprovalPara.IndentationLeft = -50f;
 
-                    if (accStatus == "Rejected")
+                    string displayName = "";
+                    string displayDate = "";
+                    string displayStatus = "";
+
+                    // --- Determine which stage to show ---
+                    if (accStatus1 == "Rejected")
                     {
-                        AccountApprovalPara.Add(new Chunk(
-                            $"Account Approval      : Rejected   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}",
-                            bodyFont));
+                        displayStatus = accStatus1;
+                        displayName = ApprovedByAccount1;
+                        displayDate = AccountApprovedDate1;
                     }
-                    else if (accStatus == "Approved")
+                    else if (accStatus2 == "Rejected")
                     {
-                        AccountApprovalPara.Add(new Chunk(
-                            $"Account Approval      : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Approved" : ApprovedByAccount)}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}",
-                            bodyFont));
+                        displayStatus = accStatus2;
+                        displayName = ApprovedByAccount2;
+                        displayDate = AccountApprovedDate2;
                     }
-                    else // Pending or null
+                    else if (accStatus == "Rejected" || accStatus == "Approved")
                     {
-                        AccountApprovalPara.Add(new Chunk(
-                            "Account Approval      : Pending",
-                            bodyFont));
+                        displayStatus = accStatus;
+                        displayName = ApprovedByAccount;
+                        displayDate = AccountApprovedDate;
                     }
+                    else
+                    {
+                        displayStatus = "Pending";
+                    }
+
+                    // --- Build the display value ---
+                    string accountValue = displayStatus == "Rejected"
+                        ? $"Rejected   {(string.IsNullOrEmpty(displayDate) ? DateTime.Now.ToString("dd.MM.yyyy") : displayDate)}"
+                        : displayStatus == "Approved"
+                            ? $"{(string.IsNullOrEmpty(displayName) ? "Approved" : displayName)}   {(string.IsNullOrEmpty(displayDate) ? DateTime.Now.ToString("dd.MM.yyyy") : displayDate)}"
+                            : "Pending";
+
+                    // --- Add row ---
+                    AddApprovalRow(approvalTable, "Account Approval", accountValue, bodyFont);
+
+                    // Add the approval table to your document
+                    rightCell.AddElement(approvalTable);
                     //AccountApprovalPara.Add(new Chunk($"Account Approval : {(string.IsNullOrEmpty(ApprovedByAccount) ? "Pending" : $"{ApprovedByAccount}   {(string.IsNullOrEmpty(AccountApprovedDate) ? DateTime.Now.ToString("dd.MM.yyyy") : AccountApprovedDate)}")}", bodyFont));
-                    
-                    
-                    AccountApprovalPara.SpacingBefore = 0f;
+
+
+                    // AccountApprovalPara.SpacingBefore = 0f;
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                     // Add watermark with logo.png behind Account Approval name and date
                     string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
@@ -3741,7 +3787,7 @@ ORDER BY a.RequestDate ASC";
                         under.AddImage(watermark);
                     }
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                    rightCell.AddElement(AccountApprovalPara);
+                    //rightCell.AddElement(AccountApprovalPara);
 
                     Paragraph approvedAccountPara = new Paragraph();
                     approvedAccountPara.Add(new Chunk("", bodyFont));
@@ -3902,6 +3948,89 @@ ORDER BY a.RequestDate ASC";
         private void groupBox3_Enter(object sender, EventArgs e)
         {
 
+        }
+        void columnSetup1(PdfPTable table, string label1, string value1, string label2, string value2, iTextSharp.text.Font font)
+        {
+            AddLabelValuePair1(table, label1, value1, font);
+            AddLabelValuePair1(table, label2, value2, font);
+        }
+
+        void AddLabelValuePair1(PdfPTable table, string label, string value, iTextSharp.text.Font font)
+        {
+            if (!string.IsNullOrEmpty(label))
+            {
+                // Label
+                PdfPCell labelCell = new PdfPCell(new Phrase(label, font));
+                labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                labelCell.Border = PdfPCell.NO_BORDER;
+                labelCell.PaddingRight = 5f;
+                table.AddCell(labelCell);
+
+                // Colon
+                PdfPCell colonCell = new PdfPCell(new Phrase(":", font));
+                colonCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                colonCell.Border = PdfPCell.NO_BORDER;
+                table.AddCell(colonCell);
+            }
+            else
+            {
+                // Empty label and colon cells
+                table.AddCell(new PdfPCell(new Phrase("", font)) { Border = PdfPCell.NO_BORDER });
+                table.AddCell(new PdfPCell(new Phrase("", font)) { Border = PdfPCell.NO_BORDER });
+            }
+
+            // Value
+            PdfPCell valueCell = new PdfPCell(new Phrase(value ?? "", font));
+            valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            valueCell.Border = PdfPCell.NO_BORDER;
+            valueCell.PaddingLeft = 5f;
+            table.AddCell(valueCell);
+        }
+        void AddApprovalRow(PdfPTable table, string label, string value, iTextSharp.text.Font font)
+        {
+            // Label cell
+            PdfPCell labelCell = new PdfPCell(new Phrase(label, font));
+            labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            labelCell.Border = PdfPCell.NO_BORDER;
+            labelCell.PaddingRight = 5f;
+            table.AddCell(labelCell);
+
+            // Colon cell
+            PdfPCell colonCell = new PdfPCell(new Phrase(":", font));
+            colonCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            colonCell.Border = PdfPCell.NO_BORDER;
+            colonCell.PaddingRight = 5f;
+            table.AddCell(colonCell);
+
+            // Value cell
+            PdfPCell valueCell = new PdfPCell(new Phrase(value ?? "", font));
+            valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            valueCell.Border = PdfPCell.NO_BORDER;
+            valueCell.PaddingLeft = 5f;
+            table.AddCell(valueCell);
+        }
+        void AddDetailRow(PdfPTable table, string label, string value, iTextSharp.text.Font font)
+        {
+            // Label cell
+            PdfPCell labelCell = new PdfPCell(new Phrase(label, font));
+            labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            labelCell.Border = PdfPCell.NO_BORDER;
+            labelCell.PaddingRight = 5f;
+            table.AddCell(labelCell);
+
+            // Colon cell
+            PdfPCell colonCell = new PdfPCell(new Phrase(":", font));
+            colonCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            colonCell.Border = PdfPCell.NO_BORDER;
+            colonCell.PaddingRight = 5f;
+            table.AddCell(colonCell);
+
+            // Value cell
+            PdfPCell valueCell = new PdfPCell(new Phrase(value ?? "", font));
+            valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            valueCell.Border = PdfPCell.NO_BORDER;
+            valueCell.PaddingLeft = 5f;
+            table.AddCell(valueCell);
         }
         private void btnSearch_Click(object sender, EventArgs e)
         {

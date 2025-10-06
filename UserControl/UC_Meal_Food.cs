@@ -137,7 +137,6 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
             }
         }
-        
         private void dTDay_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
@@ -851,7 +850,7 @@ namespace HRAdmin.UserControl
 
                             string getClaimDetailsQuery = $@"
                                                             SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email, C.Name1
-                                                            FROM tbl_ExternalFoodOrder A
+                                                            FROM {tableName}  A
                                                             LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
                                                             LEFT JOIN tbl_Users C ON C.IndexNo = B.IndexNo
                                                             WHERE OrderID = @OrderID";
@@ -1865,92 +1864,76 @@ namespace HRAdmin.UserControl
                     titlePara.SpacingAfter = 5f;
                     document.Add(titlePara);
 
+                    
+                    //+++++++++++++++
+
+                    // Create a two-column layout
                     PdfPTable mainLayoutTable = new PdfPTable(2);
                     mainLayoutTable.WidthPercentage = 100;
-                    mainLayoutTable.SetWidths(new float[] { 1.5f, 0.8f });
-                    mainLayoutTable.SpacingBefore = 10f;
+                    mainLayoutTable.SetWidths(new float[] { 1.4f, 0.6f });
+                    mainLayoutTable.SpacingBefore = 5f;
 
+                    // Left column: Request details
                     PdfPCell leftCell = new PdfPCell();
                     leftCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     leftCell.Padding = 0f;
 
-                    PdfPTable detailsTable = new PdfPTable(4);
+                    // Create a nested table with 6 columns for proper colon alignment
+                    PdfPTable detailsTable = new PdfPTable(6); // 6 columns for two label:value pairs
                     detailsTable.WidthPercentage = 100;
-                    detailsTable.SetWidths(new float[] { 0.22f, 0.5f, 0.24f, 0.7f });
+                    detailsTable.SetWidths(new float[] { 0.07f, 0.02f, 0.20f, 0.07f, 0.02f, 0.20f });
                     detailsTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     detailsTable.DefaultCell.Padding = 2f;
                     detailsTable.SpacingBefore = 5f;
 
-                    detailsTable.AddCell(new Phrase("OrderID      :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["OrderID"].ToString(), bodyFont));
-                    detailsTable.AddCell(new Phrase("Request date:", bodyFont));
-                    detailsTable.AddCell(new Phrase(Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Requester  :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["RequesterID"].ToString(), bodyFont));
-                    detailsTable.AddCell(new Phrase("Delivery date:", bodyFont));
-                    detailsTable.AddCell(new Phrase(Convert.ToDateTime(orderDetails["DeliveryDate"]).ToString("dd.MM.yyyy"), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Department:", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["Department"].ToString(), bodyFont));
-                    detailsTable.AddCell(new Phrase("Event details:", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["EventDetails"].ToString(), bodyFont));
+                    // Add rows with proper colon alignment
+                    AddDetailPair(detailsTable, "OrderID", orderDetails["OrderID"].ToString(), "Request date", Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont);
+                    AddDetailPair(detailsTable, "Requester", orderDetails["RequesterID"].ToString(), "Delivery date", Convert.ToDateTime(orderDetails["DeliveryDate"]).ToString("dd.MM.yyyy"), bodyFont);
+                    AddDetailPair(detailsTable, "Department", orderDetails["Department"].ToString(), "Event details", orderDetails["EventDetails"].ToString(), bodyFont);
 
                     leftCell.AddElement(detailsTable);
 
+                    // Right column: Approval statuses with aligned colons
                     PdfPCell rightCell = new PdfPCell();
                     rightCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     rightCell.Padding = 0f;
 
-                    Paragraph checkedPara = new Paragraph();
+                    // Create a table for approval statuses to align colons
+                    PdfPTable approvalTable = new PdfPTable(3);
+                    approvalTable.WidthPercentage = 100;
+                    approvalTable.SetWidths(new float[] { 0.20f, 0.04f, 0.5f });
+                    approvalTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                    approvalTable.DefaultCell.Padding = 2f;
+
+                    // Checked by
                     string checkedBy = orderDetails["CheckedBy"].ToString();
                     string checkedDate = orderDetails["CheckedDate"].ToString();
                     string checkedDepartment = orderDetails["CheckedDepartment"].ToString();
-                    if (string.IsNullOrEmpty(checkedBy))
-                    {
-                        checkedPara.Add(new Chunk("Checked by : Pending", bodyFont));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(checkedDate))
-                        {
-                            checkedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-                        }
-                        string checkedText = string.IsNullOrEmpty(checkedDepartment) || checkedDepartment == "-"
-                            ? $"Checked by : {checkedBy}   {checkedDate}"
-                            : $"Checked by : {checkedBy}   {checkedDate}   \n                      {checkedDepartment}";
-                        checkedPara.Add(new Chunk(checkedText, bodyFont));
-                    }
-                    checkedPara.SpacingBefore = 0f;
-                    rightCell.AddElement(checkedPara);
+                    string checkedValue = string.IsNullOrEmpty(checkedBy) ?
+                        "Pending" :
+                        FormatApprovalValue(checkedBy, checkedDate, checkedDepartment);
 
-                    Paragraph checkedAdminPara = new Paragraph();
-                    checkedAdminPara.Add(new Chunk("", bodyFont));
-                    checkedAdminPara.SpacingBefore = 0f;
-                    checkedAdminPara.SpacingAfter = 0f;
-                    rightCell.AddElement(checkedAdminPara);
+                    AddApprovalRow(approvalTable, "Checked by", checkedValue, bodyFont);
 
-                    Paragraph approvedPara = new Paragraph();
+                    // Approved by
                     string approvedBy = orderDetails["ApprovedBy"].ToString();
                     string approvedDate = orderDetails["ApprovedDate"].ToString();
                     string approvedDepartment = orderDetails["ApprovedDepartment"].ToString();
-                    if (string.IsNullOrEmpty(approvedBy))
-                    {
-                        approvedPara.Add(new Chunk("Approved by: Pending", bodyFont));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(approvedDate))
-                        {
-                            approvedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-                        }
-                        string approvedText = string.IsNullOrEmpty(approvedDepartment) || approvedDepartment == "-"
-                            ? $"Approved by: {approvedBy}   {approvedDate}"
-                            : $"Approved by: {approvedBy}   {approvedDate}   \n                      {approvedDepartment}";
-                        approvedPara.Add(new Chunk(approvedText, bodyFont));
-                    }
-                    approvedPara.SpacingBefore = 0f;
-                    rightCell.AddElement(approvedPara);
+                    string approvedValue = string.IsNullOrEmpty(approvedBy) ?
+                        "Pending" :
+                        FormatApprovalValue(approvedBy, approvedDate, approvedDepartment);
+
+                    AddApprovalRow(approvalTable, "Approved by", approvedValue, bodyFont);
+
+                    // Received by
+                    AddApprovalRow(approvalTable, "Received by", "Canteen", bodyFont);
+
+                    rightCell.AddElement(approvalTable);
+
+                    mainLayoutTable.AddCell(leftCell);
+                    mainLayoutTable.AddCell(rightCell);
+                    document.Add(mainLayoutTable);
+
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                     // Add watermark with logo.png behind Account Approval name and date
                     string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
@@ -1972,21 +1955,7 @@ namespace HRAdmin.UserControl
                     }
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-                    Paragraph approvedHrPara = new Paragraph();
-                    approvedHrPara.Add(new Chunk("", bodyFont));
-                    approvedHrPara.SpacingBefore = 0f;
-                    approvedHrPara.SpacingAfter = 0f;
-                    rightCell.AddElement(approvedHrPara);
 
-                    Paragraph issuedPara = new Paragraph();
-                    issuedPara.Add(new Chunk("Received by: Canteen", bodyFont));
-                    issuedPara.SpacingBefore = 0f;
-                    issuedPara.SpacingAfter = 0f;
-                    rightCell.AddElement(issuedPara);
-
-                    mainLayoutTable.AddCell(leftCell);
-                    mainLayoutTable.AddCell(rightCell);
-                    document.Add(mainLayoutTable);
 
                     Paragraph detailsHeading = new Paragraph("Details of the order:", bodyFont);
                     detailsHeading.SpacingBefore = 10f;
@@ -2013,7 +1982,7 @@ namespace HRAdmin.UserControl
 
                     AddStyledTableRow(detailsTable2, "Meal Type:", mealType, bodyFont, italicBodyFont, 0);
                     AddStyledTableRow(detailsTable2, "Dish:", orderDetails["Menu"].ToString(), bodyFont, italicBodyFont, 0);
-                    AddStyledTableRow(detailsTable2, "Fruit:", orderDetails["Fruit"].ToString(), bodyFont, italicBodyFont, 1);
+                    //AddStyledTableRow(detailsTable2, "Fruit:", orderDetails["Fruit"].ToString(), bodyFont, italicBodyFont, 1);
                     AddStyledTableRow(detailsTable2, "Other:", orderDetails["Snack"].ToString(), bodyFont, italicBodyFont, 0);
 
                     string drink1Value = orderDetails["Drink1"].ToString();
@@ -2201,92 +2170,73 @@ namespace HRAdmin.UserControl
                     titlePara.SpacingAfter = 5f;
                     document.Add(titlePara);
 
+                    // Create a two-column layout
                     PdfPTable mainLayoutTable = new PdfPTable(2);
                     mainLayoutTable.WidthPercentage = 100;
-                    mainLayoutTable.SetWidths(new float[] { 1.5f, 0.8f });
+                    mainLayoutTable.SetWidths(new float[] { 1.4f, 0.6f });
                     mainLayoutTable.SpacingBefore = 10f;
 
+                    // Left column: Request details
                     PdfPCell leftCell = new PdfPCell();
                     leftCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     leftCell.Padding = 0f;
 
-                    PdfPTable detailsTable = new PdfPTable(4);
+                    // Create a nested table with 6 columns for proper colon alignment
+                    PdfPTable detailsTable = new PdfPTable(6); // 6 columns for two label:value pairs
                     detailsTable.WidthPercentage = 100;
-                    detailsTable.SetWidths(new float[] { 0.22f, 0.5f, 0.24f, 0.7f });
+                    detailsTable.SetWidths(new float[] { 0.08f, 0.02f, 0.20f, 0.08f, 0.02f, 0.20f });
                     detailsTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     detailsTable.DefaultCell.Padding = 2f;
                     detailsTable.SpacingBefore = 5f;
 
-                    detailsTable.AddCell(new Phrase("OrderID      :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["OrderID"].ToString(), bodyFont));
-                    detailsTable.AddCell(new Phrase("Request date:", bodyFont));
-                    detailsTable.AddCell(new Phrase(Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Requester  :", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["RequesterID"].ToString(), bodyFont));
-                    detailsTable.AddCell(new Phrase("Delivery date:", bodyFont));
-                    detailsTable.AddCell(new Phrase(Convert.ToDateTime(orderDetails["DeliveryDate"]).ToString("dd.MM.yyyy"), bodyFont));
-
-                    detailsTable.AddCell(new Phrase("Department:", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["Department"].ToString(), bodyFont));
-                    detailsTable.AddCell(new Phrase("Event details:", bodyFont));
-                    detailsTable.AddCell(new Phrase(orderDetails["EventDetails"].ToString(), bodyFont));
+                    // Add rows using helper method
+                    AddDetailPair(detailsTable, "OrderID", orderDetails["OrderID"].ToString(), "Request date", Convert.ToDateTime(orderDetails["RequestDate"]).ToString("dd.MM.yyyy"), bodyFont);
+                    AddDetailPair(detailsTable, "Requester", orderDetails["RequesterID"].ToString(), "Delivery date", Convert.ToDateTime(orderDetails["DeliveryDate"]).ToString("dd.MM.yyyy"), bodyFont);
+                    AddDetailPair(detailsTable, "Department", orderDetails["Department"].ToString(), "Event details", orderDetails["EventDetails"].ToString(), bodyFont);
 
                     leftCell.AddElement(detailsTable);
 
+                    // Right column: Approval statuses with aligned colons
                     PdfPCell rightCell = new PdfPCell();
                     rightCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
                     rightCell.Padding = 0f;
 
-                    Paragraph checkedPara = new Paragraph();
+                    // Create a table for approval statuses to align colons
+                    PdfPTable approvalTable = new PdfPTable(3);
+                    approvalTable.WidthPercentage = 100;
+                    approvalTable.SetWidths(new float[] { 0.20f, 0.04f, 0.5f });
+                    approvalTable.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                    approvalTable.DefaultCell.Padding = 2f;
+
+                    // Checked by
                     string checkedBy = orderDetails["CheckedBy"].ToString();
                     string checkedDate = orderDetails["CheckedDate"].ToString();
                     string checkedDepartment = orderDetails["CheckedDepartment"].ToString();
-                    if (string.IsNullOrEmpty(checkedBy))
-                    {
-                        checkedPara.Add(new Chunk("Checked by : Pending", bodyFont));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(checkedDate))
-                        {
-                            checkedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-                        }
-                        string checkedText = string.IsNullOrEmpty(checkedDepartment) || checkedDepartment == "-"
-                            ? $"Checked by : {checkedBy}   {checkedDate}"
-                            : $"Checked by : {checkedBy}   {checkedDate}   \n                      {checkedDepartment}";
-                        checkedPara.Add(new Chunk(checkedText, bodyFont));
-                    }
-                    checkedPara.SpacingBefore = 0f;
-                    rightCell.AddElement(checkedPara);
+                    string checkedValue = string.IsNullOrEmpty(checkedBy) ?
+                        "Pending" :
+                        FormatApprovalValue(checkedBy, checkedDate, checkedDepartment);
 
-                    Paragraph checkedAdminPara = new Paragraph();
-                    checkedAdminPara.Add(new Chunk("", bodyFont));
-                    checkedAdminPara.SpacingBefore = 0f;
-                    checkedAdminPara.SpacingAfter = 0f;
-                    rightCell.AddElement(checkedAdminPara);
+                    AddApprovalRow(approvalTable, "Checked by", checkedValue, bodyFont);
 
-                    Paragraph approvedPara = new Paragraph();
+                    // Approved by
                     string approvedBy = orderDetails["ApprovedBy"].ToString();
                     string approvedDate = orderDetails["ApprovedDate"].ToString();
                     string approvedDepartment = orderDetails["ApprovedDepartment"].ToString();
-                    if (string.IsNullOrEmpty(approvedBy))
-                    {
-                        approvedPara.Add(new Chunk("Approved by: Pending", bodyFont));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(approvedDate))
-                        {
-                            approvedDate = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-                        }
-                        string approvedText = string.IsNullOrEmpty(approvedDepartment) || approvedDepartment == "-"
-                            ? $"Approved by: {approvedBy}   {approvedDate}"
-                            : $"Approved by: {approvedBy}   {approvedDate}   \n                      {approvedDepartment}";
-                        approvedPara.Add(new Chunk(approvedText, bodyFont));
-                    }
-                    approvedPara.SpacingBefore = 0f;
-                    rightCell.AddElement(approvedPara);
+                    string approvedValue = string.IsNullOrEmpty(approvedBy) ?
+                        "Pending" :
+                        FormatApprovalValue(approvedBy, approvedDate, approvedDepartment);
+
+                    AddApprovalRow(approvalTable, "Approved by", approvedValue, bodyFont);
+
+                    // Received by
+                    AddApprovalRow(approvalTable, "Received by", "Canteen", bodyFont);
+
+                    rightCell.AddElement(approvalTable);
+
+                    mainLayoutTable.AddCell(leftCell);
+                    mainLayoutTable.AddCell(rightCell);
+                    document.Add(mainLayoutTable);
+
                     // Add watermark with logo.png behind Account Approval name and date
                     string imagePath1 = Path.Combine(WinFormsApp.StartupPath, "Img", "logo.png");
                     if (File.Exists(imagePath1) && !string.IsNullOrEmpty(approvedBy)) // Only add watermark if approved
@@ -2307,21 +2257,6 @@ namespace HRAdmin.UserControl
                     }
                     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-                    Paragraph approvedHrPara = new Paragraph();
-                    approvedHrPara.Add(new Chunk("", bodyFont));
-                    approvedHrPara.SpacingBefore = 0f;
-                    approvedHrPara.SpacingAfter = 0f;
-                    rightCell.AddElement(approvedHrPara);
-
-                    Paragraph issuedPara = new Paragraph();
-                    issuedPara.Add(new Chunk("Received by: Canteen", bodyFont));
-                    issuedPara.SpacingBefore = 0f;
-                    issuedPara.SpacingAfter = 0f;
-                    rightCell.AddElement(issuedPara);
-
-                    mainLayoutTable.AddCell(leftCell);
-                    mainLayoutTable.AddCell(rightCell);
-                    document.Add(mainLayoutTable);
 
                     Paragraph detailsHeading = new Paragraph("Details of the Order:", bodyFont);
                     detailsHeading.SpacingBefore = 0f;
@@ -2646,7 +2581,78 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+        void AddDetailPair(PdfPTable table, string label1, string value1, string label2, string value2, iTextSharp.text.Font font)
+        {
+            // First label-value pair
+            AddDetailCell(table, label1, value1, font);
+            // Second label-value pair
+            AddDetailCell(table, label2, value2, font);
+        }
 
+        void AddDetailCell(PdfPTable table, string label, string value, iTextSharp.text.Font font)
+        {
+            // Label cell
+            PdfPCell labelCell = new PdfPCell(new Phrase(label, font));
+            labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            labelCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+            labelCell.PaddingRight = 2f;
+            table.AddCell(labelCell);
+
+            // Colon cell
+            PdfPCell colonCell = new PdfPCell(new Phrase(":", font));
+            colonCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            colonCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+            colonCell.PaddingRight = 2f;
+            table.AddCell(colonCell);
+
+            // Value cell
+            PdfPCell valueCell = new PdfPCell(new Phrase(value ?? "", font));
+            valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            valueCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+            valueCell.PaddingLeft = 2f;
+            table.AddCell(valueCell);
+        }
+
+        void AddApprovalRow(PdfPTable table, string label, string value, iTextSharp.text.Font font)
+        {
+            // Label cell
+            PdfPCell labelCell = new PdfPCell(new Phrase(label, font));
+            labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            labelCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+            labelCell.PaddingRight = 2f;
+            table.AddCell(labelCell);
+
+            // Colon cell
+            PdfPCell colonCell = new PdfPCell(new Phrase(":", font));
+            colonCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            colonCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+            colonCell.PaddingRight = 2f;
+            table.AddCell(colonCell);
+
+            // Value cell (can handle multi-line values)
+            PdfPCell valueCell = new PdfPCell(new Phrase(value ?? "", font));
+            valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            valueCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+            valueCell.PaddingLeft = 2f;
+            table.AddCell(valueCell);
+        }
+
+        string FormatApprovalValue(string name, string date, string department)
+        {
+            if (string.IsNullOrEmpty(date))
+            {
+                date = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+            }
+
+            if (string.IsNullOrEmpty(department) || department == "-")
+            {
+                return $"{name}   {date}";
+            }
+            else
+            {
+                return $"{name}   {date}\n{department}";
+            }
+        }
 
     }
 }//OrderID

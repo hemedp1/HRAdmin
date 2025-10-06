@@ -246,7 +246,8 @@ namespace HRAdmin.UserControl
                             }
                         }
                     }
-
+                    ///+++++++++++++
+                    /*
                     // Create a two-column layout
                     PdfPTable mainLayoutTable = new PdfPTable(2);
                     mainLayoutTable.WidthPercentage = 100;
@@ -324,8 +325,70 @@ namespace HRAdmin.UserControl
 
                     mainLayoutTable.AddCell(leftCell);
                     mainLayoutTable.AddCell(rightCell);
+                    document.Add(mainLayoutTable);  */
+
+                    // Create a two-column layout for request details and approval statuses
+                    PdfPTable mainLayoutTable = new PdfPTable(2);
+                    mainLayoutTable.WidthPercentage = 100;
+                    mainLayoutTable.SetWidths(new float[] { 1.4f, 0.6f });
+                    mainLayoutTable.SpacingBefore = 10f;
+
+                    // Left column: Request details
+                    PdfPCell leftCell = new PdfPCell();
+                    leftCell.Border = PdfPCell.NO_BORDER;
+                    leftCell.Padding = 0f;
+
+                    // Create a nested table for the two-column layout with proper colon alignment
+                    PdfPTable detailsTable = new PdfPTable(6); // 6 columns for two sets of label:value pairs
+                    detailsTable.WidthPercentage = 100;
+                    detailsTable.SetWidths(new float[] { 0.07f, 0.02f, 0.20f, 0.07f, 0.02f, 0.20f }); // Adjust widths as needed
+                    detailsTable.DefaultCell.Border = PdfPCell.NO_BORDER;
+                    detailsTable.DefaultCell.Padding = 2f;
+                    detailsTable.SpacingBefore = 5f;
+
+                    // Row 1: OrderID and Request date
+                    AddDetailPair(detailsTable, "OrderID", orderId, "Request date", eventText.ToString("dd.MM.yyyy"), bodyFont);
+
+                    // Row 2: Requester and Delivery date
+                    AddDetailPair(detailsTable, "Requester", loggedInUser, "Delivery date", deliveryTime.ToString("dd.MM.yyyy"), bodyFont);
+
+                    // Row 3: Department and Event details
+                    AddDetailPair(detailsTable, "Department", loggedInDepart, "Event details", eventDetails, bodyFont);
+
+                    // Add the nested table to the left cell
+                    leftCell.AddElement(detailsTable);
+
+                    // Right column: Approval statuses with aligned colons
+                    PdfPCell rightCell = new PdfPCell();
+                    rightCell.Border = PdfPCell.NO_BORDER;
+                    rightCell.Padding = 0f;
+
+                    // Create a table for approval statuses to align colons
+                    PdfPTable approvalStatusTable = new PdfPTable(3);
+                    approvalStatusTable.WidthPercentage = 100;
+                    approvalStatusTable.SetWidths(new float[] { 0.25f, 0.1f, 0.5f });
+                    approvalStatusTable.DefaultCell.Border = PdfPCell.NO_BORDER;
+                    approvalStatusTable.DefaultCell.Padding = 2f;
+
+                    // Checked by
+                    AddStatusRow(approvalStatusTable, "Checked by", checkStatus, bodyFont);
+
+                    // Approved by
+                    AddStatusRow(approvalStatusTable, "Approved by", approveStatus, bodyFont);
+
+                    // Received by
+                    AddStatusRow(approvalStatusTable, "Received by", "Canteen", bodyFont);
+
+                    rightCell.AddElement(approvalStatusTable);
+
+                    // Add both cells to main table
+                    mainLayoutTable.AddCell(leftCell);
+                    mainLayoutTable.AddCell(rightCell);
+
+                    // Add main table to document
                     document.Add(mainLayoutTable);
 
+                    ///++++++++++++++++++++++++++
                     // Add "Details of the meals:" heading
                     Paragraph detailsHeading = new Paragraph("Details of the order:", bodyFont);
                     detailsHeading.SpacingBefore = 10f;
@@ -1055,6 +1118,70 @@ namespace HRAdmin.UserControl
                 }
             }
         }
-    
+        void AddDetailPair(PdfPTable table, string label1, string value1, string label2, string value2, iTextSharp.text.Font font)
+        {
+            // First label-value pair
+            AddDetailCell(table, label1, value1, font);
+            // Second label-value pair
+            AddDetailCell(table, label2, value2, font);
+        }
+
+        void AddDetailCell(PdfPTable table, string label, string value, iTextSharp.text.Font font)
+        {
+            if (!string.IsNullOrEmpty(label))
+            {
+                // Label cell
+                PdfPCell labelCell = new PdfPCell(new Phrase(label, font));
+                labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                labelCell.Border = PdfPCell.NO_BORDER;
+                labelCell.PaddingRight = 2f;
+                table.AddCell(labelCell);
+
+                // Colon cell
+                PdfPCell colonCell = new PdfPCell(new Phrase(":", font));
+                colonCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                colonCell.Border = PdfPCell.NO_BORDER;
+                colonCell.PaddingRight = 2f;
+                table.AddCell(colonCell);
+
+                // Value cell
+                PdfPCell valueCell = new PdfPCell(new Phrase(value ?? "", font));
+                valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                valueCell.Border = PdfPCell.NO_BORDER;
+                valueCell.PaddingLeft = 2f;
+                table.AddCell(valueCell);
+            }
+            else
+            {
+                // Add empty cells if no label
+                table.AddCell(new PdfPCell(new Phrase("", font)) { Border = PdfPCell.NO_BORDER });
+                table.AddCell(new PdfPCell(new Phrase("", font)) { Border = PdfPCell.NO_BORDER });
+                table.AddCell(new PdfPCell(new Phrase("", font)) { Border = PdfPCell.NO_BORDER });
+            }
+        }
+
+        void AddStatusRow(PdfPTable table, string label, string value, iTextSharp.text.Font font)
+        {
+            // Label cell
+            PdfPCell labelCell = new PdfPCell(new Phrase(label, font));
+            labelCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            labelCell.Border = PdfPCell.NO_BORDER;
+            labelCell.PaddingRight = 2f;
+            table.AddCell(labelCell);
+
+            // Colon cell
+            PdfPCell colonCell = new PdfPCell(new Phrase(":", font));
+            colonCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            colonCell.Border = PdfPCell.NO_BORDER;
+            colonCell.PaddingRight = 2f;
+            table.AddCell(colonCell);
+
+            // Value cell
+            PdfPCell valueCell = new PdfPCell(new Phrase(value ?? "", font));
+            valueCell.HorizontalAlignment = Element.ALIGN_LEFT;
+            valueCell.Border = PdfPCell.NO_BORDER;
+            valueCell.PaddingLeft = 2f;
+            table.AddCell(valueCell);
+        }
     }
 }
