@@ -208,7 +208,11 @@ namespace HRAdmin.UserControl
                 try
                 {
                     con.Open();
-                    string query = "SELECT Username FROM tbl_Users";
+                    string query = @"
+            SELECT DISTINCT RequesterID FROM tbl_InternalFoodOrder
+            UNION
+            SELECT DISTINCT RequesterID FROM tbl_ExternalFoodOrder";
+
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -217,8 +221,8 @@ namespace HRAdmin.UserControl
                             cmbRequester.Items.Add("All Users");
                             while (reader.Read())
                             {
-                                string username = reader["Username"].ToString();
-                                cmbRequester.Items.Add(username);
+                                string requesterID = reader["RequesterID"].ToString();
+                                cmbRequester.Items.Add(requesterID);
                             }
                         }
                     }
@@ -226,10 +230,10 @@ namespace HRAdmin.UserControl
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error loading usernames: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
+                    MessageBox.Show("Error loading requester IDs: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
         }
         private void LoadUsernamesByDepartment(string department)
         {
@@ -718,7 +722,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@CheckStatus", "Checked");
-                        cmd.Parameters.AddWithValue("@CheckedBy", loggedInUser);
+                        cmd.Parameters.AddWithValue("@CheckedBy", UserSession.loggedInName);
                         cmd.Parameters.AddWithValue("@CheckedDate", DateTime.Now);
                         cmd.Parameters.AddWithValue("@CheckedDepartment", loggedInDepart);
                         cmd.Parameters.AddWithValue("@OrderID", orderId);
@@ -822,7 +826,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@ApproveStatus", "Approved");
-                        cmd.Parameters.AddWithValue("@ApprovedBy", UserSession.LoggedInUser);
+                        cmd.Parameters.AddWithValue("@ApprovedBy", UserSession.loggedInName);
                         cmd.Parameters.AddWithValue("@ApprovedDate", DateTime.Now);
                         cmd.Parameters.AddWithValue("@ApprovedDepartment", UserSession.loggedInDepart);
                         cmd.Parameters.AddWithValue("@OrderID", orderId);
@@ -1059,7 +1063,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                     {
                         updateCmd.Parameters.AddWithValue("@Status", "Rejected");
-                        updateCmd.Parameters.AddWithValue("@ByUser", loggedInUser);
+                        updateCmd.Parameters.AddWithValue("@ByUser", UserSession.loggedInName);
                         updateCmd.Parameters.AddWithValue("@Date", DateTime.Now);
                         updateCmd.Parameters.AddWithValue("@Department", loggedInDepart);
                         updateCmd.Parameters.AddWithValue("@OrderID", orderId);
@@ -1209,7 +1213,7 @@ namespace HRAdmin.UserControl
                     string query = "SELECT AA FROM tbl_Users WHERE Username = @Username";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@Username", loggedInUser);
+                        cmd.Parameters.AddWithValue("@Username", UserSession.LoggedInUser);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
@@ -1228,7 +1232,7 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            if (requesterID != loggedInUser)
+            if (requesterID != UserSession.loggedInName)
             {
                 MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -1392,7 +1396,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@CheckStatus", "Checked");
-                        cmd.Parameters.AddWithValue("@CheckedBy", loggedInUser);
+                        cmd.Parameters.AddWithValue("@CheckedBy", UserSession.loggedInName);
                         cmd.Parameters.AddWithValue("@CheckedDate", DateTime.Now);
                         cmd.Parameters.AddWithValue("@CheckedDepartment", loggedInDepart);
                         cmd.Parameters.AddWithValue("@OrderID", orderId);
@@ -1752,7 +1756,7 @@ namespace HRAdmin.UserControl
                 return;
             }
 
-            if (requesterID != UserSession.LoggedInUser && UserSession.loggedInDepart != "HR & ADMIN")
+            if (requesterID != UserSession.loggedInName && UserSession.loggedInDepart != "HR & ADMIN")
             {
                 MessageBox.Show("You can only view your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -2588,7 +2592,6 @@ namespace HRAdmin.UserControl
             // Second label-value pair
             AddDetailCell(table, label2, value2, font);
         }
-
         void AddDetailCell(PdfPTable table, string label, string value, iTextSharp.text.Font font)
         {
             // Label cell
@@ -2612,7 +2615,6 @@ namespace HRAdmin.UserControl
             valueCell.PaddingLeft = 2f;
             table.AddCell(valueCell);
         }
-
         void AddApprovalRow(PdfPTable table, string label, string value, iTextSharp.text.Font font)
         {
             // Label cell
@@ -2636,7 +2638,6 @@ namespace HRAdmin.UserControl
             valueCell.PaddingLeft = 2f;
             table.AddCell(valueCell);
         }
-
         string FormatApprovalValue(string name, string date, string department)
         {
             if (string.IsNullOrEmpty(date))

@@ -933,7 +933,7 @@ namespace HRAdmin.UserControl
                 string combinedValue = $"{DateTime.Now:ddMmyyyy_HHmmss}_{mealCode}";
 
                 insertCmd.Parameters.AddWithValue("@OrderID", combinedValue);
-                insertCmd.Parameters.AddWithValue("@RequesterID", UserSession.LoggedInUser);
+                insertCmd.Parameters.AddWithValue("@RequesterID", UserSession.loggedInName);
                 insertCmd.Parameters.AddWithValue("@Department", UserSession.loggedInDepart);
                 insertCmd.Parameters.AddWithValue("@OccasionType", cmbOccasion);
                 insertCmd.Parameters.AddWithValue("@RequestDate", eventText);

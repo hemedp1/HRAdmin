@@ -237,7 +237,7 @@ VALUES (@OrderID, @RequesterID, @Department, @OccasionType, @RequestDate, @Deliv
                 string combinedValue = $"{DateTime.Now:ddMMyyyy_HHmmss}_{cmbB_Package.SelectedItem?.ToString() ?? (cmbL_Package.SelectedItem?.ToString() ?? (cmbT_Package.SelectedItem?.ToString() ?? ""))}";
 
                 insertCmd.Parameters.AddWithValue("@OrderID", combinedValue);
-                insertCmd.Parameters.AddWithValue("@RequesterID", UserSession.LoggedInUser);
+                insertCmd.Parameters.AddWithValue("@RequesterID", UserSession.loggedInName);
                 insertCmd.Parameters.AddWithValue("@Department", UserSession.loggedInDepart);
                 insertCmd.Parameters.AddWithValue("@OccasionType", cmbOccasion);
                 insertCmd.Parameters.AddWithValue("@RequestDate", eventDate);
