@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.ModelBinding;
 using System.Windows.Forms;
 
 namespace HRAdmin.Forms
@@ -32,6 +33,7 @@ namespace HRAdmin.Forms
             string Department = comboBox1.Text.Trim();
             string IndexNo = txtIndex.Text.Trim();
             string Email = txtEmail.Text.Trim();
+            string titlepOsition = comboBox2.Text.Trim();
 
             if (string.IsNullOrEmpty(newUsername) || string.IsNullOrEmpty(newPassword) ||
                 string.IsNullOrEmpty(Department) || string.IsNullOrEmpty(IndexNo) || string.IsNullOrEmpty(Email))
@@ -95,14 +97,15 @@ namespace HRAdmin.Forms
 
                     // Insert new user  -- tbl_Users
                     string insertQuery = @"INSERT INTO tbl_Users 
-                                 (Username, Department, Password, IndexNo) 
-                                 VALUES (@Username, @Department, @Password, @IndexNo)";
+                                 (Username, Department, Password, IndexNo, Position) 
+                                 VALUES (@Username, @Department, @Password, @IndexNo, @titlePosition)";
 
                     SqlCommand insertCmd = new SqlCommand(insertQuery, con);
                     insertCmd.Parameters.AddWithValue("@Username", newUsername);
                     insertCmd.Parameters.AddWithValue("@Department", Department);
                     insertCmd.Parameters.AddWithValue("@Password", newPassword); // ❗ Store hashed passwords in real apps!
                     insertCmd.Parameters.AddWithValue("@IndexNo", IndexNo);
+                    insertCmd.Parameters.AddWithValue("@titlePosition", titlepOsition);
 
                     insertCmd.ExecuteNonQuery();
 
