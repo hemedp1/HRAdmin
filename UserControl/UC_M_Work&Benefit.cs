@@ -43,10 +43,80 @@ namespace HRAdmin.UserControl
             InitializeDataTable();
             ConfigureDataGridView();
             StyleDataGridView(dgvW);
+
+            AddNewRow();
+
             dgvW.DataError += DgvW_DataError;
-            dgvW.CellEndEdit += DgvW_CellEndEdit;
             dgvW.CellValueChanged += dgvW_CellValueChanged;
             dgvW.CellFormatting += dgvW_CellFormatting;
+            dgvW.CellEndEdit += DgvW_CellEndEdit;
+
+            dgvW.CellBeginEdit += DgvW_CellBeginEdit_ClearErrors;
+            dgvW.CellValueChanged += DgvW_CellValueChanged_ClearErrors;
+        }
+        private void DgvW_CellBeginEdit_ClearErrors(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                DataGridViewCell cell = dgvW.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                // Clear red background when user starts editing the cell
+                if (cell.Style.BackColor == Color.Red)
+                {
+                    cell.Style.BackColor = defaultCellStyle.BackColor;
+                    cell.Style.ForeColor = defaultCellStyle.ForeColor;
+                    cell.Style.Font = defaultCellStyle.Font;
+                }
+            }
+        }
+        private void DgvW_CellValueChanged_ClearErrors(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                DataGridViewRow row = dgvW.Rows[e.RowIndex];
+                DataGridViewCell cell = row.Cells[e.ColumnIndex];
+
+                // Clear red background when value changes
+                if (cell.Style.BackColor == Color.Red)
+                {
+                    cell.Style.BackColor = defaultCellStyle.BackColor;
+                    cell.Style.ForeColor = defaultCellStyle.ForeColor;
+                    cell.Style.Font = defaultCellStyle.Font;
+                }
+
+                // Also check if the row is now complete and clear all red cells
+                bool rowIsComplete = CheckIfRowIsComplete(row);
+                if (rowIsComplete)
+                {
+                    foreach (DataGridViewCell rowCell in row.Cells)
+                    {
+                        if (rowCell.Style.BackColor == Color.Red)
+                        {
+                            rowCell.Style.BackColor = defaultCellStyle.BackColor;
+                            rowCell.Style.ForeColor = defaultCellStyle.ForeColor;
+                            rowCell.Style.Font = defaultCellStyle.Font;
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool CheckIfRowIsComplete(DataGridViewRow row)
+        {
+            return row.Cells["Vendor"].Value != null && !string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
+                   row.Cells["Item"].Value != null && !string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
+                   row.Cells["Amount"].Value != null && row.Cells["Amount"].Value != DBNull.Value &&
+                   row.Cells["Invoice No"].Value != null && !string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
+                   row.Cells["Date"].Value != null && row.Cells["Date"].Value != DBNull.Value &&
+                   row.Cells["Invoice"].Value != null;
+        }
+        private void AddNewRow()
+        {
+            DataTable dt = (DataTable)dgvW.DataSource;
+            DataRow newRow = dt.NewRow();
+
+
+            dt.Rows.Add(newRow);
         }
         private void SendEmail(string toEmail, string subject, string body)
         {
@@ -147,6 +217,7 @@ namespace HRAdmin.UserControl
                 }
             }
         }
+
         private void InitializeDataTable()
         {
             DataTable dt = new DataTable();
@@ -226,13 +297,14 @@ namespace HRAdmin.UserControl
                 {
                     AssignNextId(row);
                 }
-
+                /*
                 // Automatically add a new row when the user starts entering data
                 if (!dgvW.Rows.Cast<DataGridViewRow>().Any(r => r.IsNewRow && r.Index == dgvW.Rows.Count - 1))
                 {
                     int newRowIndex = dgvW.Rows.Add();
                     AssignNextId(dgvW.Rows[newRowIndex]);
                 }
+                */
             }
         }
         private void UpdateInvoiceButtonState(DataGridViewRow row, bool forceUpdate = false)
@@ -318,6 +390,8 @@ namespace HRAdmin.UserControl
                                 byte[] fileBytes = File.ReadAllBytes(ofd.FileName);
                                 row.Cells["Invoice"].Value = fileBytes;
                                 UpdateInvoiceButtonState(row);
+
+                                AddNewRow();
                             }
                             catch (Exception ex)
                             {
@@ -399,7 +473,7 @@ namespace HRAdmin.UserControl
             dgv.Dock = DockStyle.Fill;
             dgv.AllowUserToResizeRows = false;
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgv.AllowUserToAddRows = true;
+            dgv.AllowUserToAddRows = false;
             dgv.ReadOnly = false;
 
             // Set the row height for all rows
@@ -456,6 +530,8 @@ namespace HRAdmin.UserControl
             {
                 column.DefaultCellStyle = defaultCellStyle;
             }
+
+            dgv.DefaultCellStyle = defaultCellStyle;
         }
         private void btnSubmit_Click(object sender, EventArgs e)       //-------------------------------------
         {
@@ -535,72 +611,82 @@ namespace HRAdmin.UserControl
                     }
 
                     // Validate that each row is either fully completed or fully empty
+                    // Validate that each row is either fully completed or fully empty
                     foreach (DataGridViewRow row in dgvW.Rows)
                     {
                         if (row.IsNewRow) continue; // Skip the new row placeholder
 
-                        bool isRowEmpty = row.Cells["Vendor"].Value == null || string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
-                                          row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
-                                          row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value &&
-                                          row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
-                                          row.Cells["Date"].Value == null || row.Cells["Date"].Value == DBNull.Value &&
-                                          row.Cells["Invoice"].Value == null;
-
-                        bool isRowFullyFilled = row.Cells["Vendor"].Value != null && !string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
-                                               row.Cells["Item"].Value != null && !string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
-                                               row.Cells["Amount"].Value != null && row.Cells["Amount"].Value != DBNull.Value &&
-                                               row.Cells["Invoice No"].Value != null && !string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
-                                               row.Cells["Date"].Value != null && row.Cells["Date"].Value != DBNull.Value &&
-                                               row.Cells["Invoice"].Value != null;
-
-                        if (!isRowEmpty && !isRowFullyFilled)
+                        // Only validate rows that have an ID assigned (real data rows)
+                        if (row.Cells["ID"].Value != null && row.Cells["ID"].Value != DBNull.Value)
                         {
-                            List<string> emptyColumns = new List<string>();
-                            if (row.Cells["Vendor"].Value == null || string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()))
-                                emptyColumns.Add("Vendor");
-                            if (row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()))
-                                emptyColumns.Add("Item");
-                            if (row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value)
-                                emptyColumns.Add("Amount");
-                            if (row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()))
-                                emptyColumns.Add("Invoice No");
-                            if (row.Cells["Date"].Value == null || row.Cells["Date"].Value == DBNull.Value)
-                                emptyColumns.Add("Date");
-                            if (row.Cells["Invoice"].Value == null)
-                                emptyColumns.Add("Invoice");
+                            bool isRowEmpty = row.Cells["Vendor"].Value == null || string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
+                                              row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
+                                              row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value &&
+                                              row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
+                                              row.Cells["Date"].Value == null || row.Cells["Date"].Value == DBNull.Value &&
+                                              row.Cells["Invoice"].Value == null;
 
-                            // Highlight empty cells in red
-                            foreach (string colName in emptyColumns)
+                            bool isRowFullyFilled = row.Cells["Vendor"].Value != null && !string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()) &&
+                                                   row.Cells["Item"].Value != null && !string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()) &&
+                                                   row.Cells["Amount"].Value != null && row.Cells["Amount"].Value != DBNull.Value &&
+                                                   row.Cells["Invoice No"].Value != null && !string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()) &&
+                                                   row.Cells["Date"].Value != null && row.Cells["Date"].Value != DBNull.Value &&
+                                                   row.Cells["Invoice"].Value != null;
+
+                            if (!isRowEmpty && !isRowFullyFilled)
                             {
-                                row.Cells[colName].Style.BackColor = Color.Red;
-                            }
+                                List<string> emptyColumns = new List<string>();
+                                if (row.Cells["Vendor"].Value == null || string.IsNullOrEmpty(row.Cells["Vendor"].Value?.ToString()))
+                                    emptyColumns.Add("Vendor");
+                                if (row.Cells["Item"].Value == null || string.IsNullOrEmpty(row.Cells["Item"].Value?.ToString()))
+                                    emptyColumns.Add("Item");
+                                if (row.Cells["Amount"].Value == null || row.Cells["Amount"].Value == DBNull.Value)
+                                    emptyColumns.Add("Amount");
+                                if (row.Cells["Invoice No"].Value == null || string.IsNullOrEmpty(row.Cells["Invoice No"].Value?.ToString()))
+                                    emptyColumns.Add("Invoice No");
+                                if (row.Cells["Date"].Value == null || row.Cells["Date"].Value == DBNull.Value)
+                                    emptyColumns.Add("Date");
+                                if (row.Cells["Invoice"].Value == null)
+                                    emptyColumns.Add("Invoice");
 
-                            transaction?.Rollback();
-                            string errorMessage = $"Row {row.Index + 1} is incomplete. Missing values in: {string.Join(", ", emptyColumns)}.";
-                            MessageBox.Show(errorMessage, "Incomplete Submission", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                // Store which rows/cells need to be highlighted
+                                var errorCells = new List<Tuple<int, string>>();
+                                foreach (string colName in emptyColumns)
+                                {
+                                    errorCells.Add(Tuple.Create(row.Index, colName));
+                                }
 
-                            // Revert cell colors to original after OK is clicked
-                            foreach (string colName in emptyColumns)
-                            {
-                                row.Cells[colName].Style = defaultCellStyle;
+                                transaction?.Rollback();
+                                string errorMessage = $"Row {row.Index + 1} is incomplete. Missing values in: {string.Join(", ", emptyColumns)}.";
+                                MessageBox.Show(errorMessage, "Incomplete Submission", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                // Apply red styling only after user clicks OK
+                                foreach (var errorCell in errorCells)
+                                {
+                                    dgvW.Rows[errorCell.Item1].Cells[errorCell.Item2].Style.BackColor = Color.Red;
+                                }
+                                return;
                             }
-                            return;
                         }
                     }
+
+                    // Check for missing PDF only in rows that have data
                     foreach (DataGridViewRow row in dgvW.Rows)
                     {
                         if (row.IsNewRow) continue;
 
-                        int rowNumber = row.Index + 1; // 1-based index for user display
-
-
-
-                        // Check for missing PDF only if row has data
-                        bool hasPdf = row.Cells["Invoice"].Value is byte[] pdfData && pdfData.Length > 0;
-                        if (!hasPdf)
+                        // Only check PDF for rows that have an ID assigned (real data rows)
+                        if (row.Cells["ID"].Value != null && row.Cells["ID"].Value != DBNull.Value)
                         {
-                            missingPdfRows.Add(rowNumber);
-                            hasValidationErrors = true;
+                            int rowNumber = row.Index + 1; // 1-based index for user display
+
+                            // Check for missing PDF only if row has data
+                            bool hasPdf = row.Cells["Invoice"].Value is byte[] pdfData && pdfData.Length > 0;
+                            if (!hasPdf)
+                            {
+                                missingPdfRows.Add(rowNumber);
+                                hasValidationErrors = true;
+                            }
                         }
                     }
 
@@ -617,20 +703,25 @@ namespace HRAdmin.UserControl
                     {
                         return; // Stop submission if any validation failed
                     }
+
                     // Filter out completely empty rows and check if there are any valid rows to submit
                     DataTable validRows = newRows.Clone();
                     foreach (DataRow row in newRows.Rows)
                     {
-                        bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
-                                          row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
-                                          row["Amount"] == DBNull.Value &&
-                                          row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
-                                          row["Date"] == DBNull.Value &&
-                                          row["Invoice"] == DBNull.Value;
-
-                        if (!isRowEmpty)
+                        // Only include rows that have an ID (real data rows)
+                        if (row["ID"] != DBNull.Value)
                         {
-                            validRows.ImportRow(row);
+                            bool isRowEmpty = row["Vendor"] == DBNull.Value && string.IsNullOrEmpty(row["Vendor"]?.ToString()) &&
+                                              row["Item"] == DBNull.Value && string.IsNullOrEmpty(row["Item"]?.ToString()) &&
+                                              row["Amount"] == DBNull.Value &&
+                                              row["Invoice No"] == DBNull.Value && string.IsNullOrEmpty(row["Invoice No"]?.ToString()) &&
+                                              row["Date"] == DBNull.Value &&
+                                              row["Invoice"] == DBNull.Value;
+
+                            if (!isRowEmpty)
+                            {
+                                validRows.ImportRow(row);
+                            }
                         }
                     }
 
