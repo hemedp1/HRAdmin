@@ -417,14 +417,15 @@ namespace HRAdmin.UserControl
                 ["Destination"] = "Destination",
                 ["StartDate"] = "Start Time",
                 ["EndDate"] = "End Time",
-                ["Status"] = "Admin Status Approval",
                 ["Purpose"] = "Purpose",
                 ["AssignedCar"] = "Car",
-                ["ApproveBy"] = "Approve By",
-                ["DateApprove"] = "Approved Date",
                 ["StatusCheck"] = "HOD Status Check",
                 ["CheckBy"] = "Check By",
-                ["DateChecked"] = "Checked Date"
+                ["DateChecked"] = "Checked Date",
+                ["Status"] = "Admin Status Approval",
+                ["ApproveBy"] = "Approve By",
+                ["DateApprove"] = "Approved Date"
+                
             };
 
             // Add remaining columns
@@ -554,7 +555,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@BookingID", bookingID);
-                        cmd.Parameters.AddWithValue("@DateChecked", selectedDate);
+                        cmd.Parameters.AddWithValue("@DateChecked", DateTime.Now);
                         cmd.Parameters.AddWithValue("@loggedInUser", loggedInUser);
 
                         try
@@ -569,7 +570,7 @@ namespace HRAdmin.UserControl
 
 //++++++++++++++++++++++++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                                 
-                                string query1 = @"SELECT TOP 1 A.Department, A.AA, B.Email
+                                string query1 = @"SELECT TOP 2 A.Department, A.AA, B.Email
                                                 FROM 
                                                 tbl_Users A
                                                 LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
@@ -751,7 +752,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@BookingID", bookingID);
-                        cmd.Parameters.AddWithValue("@DateChecked", selectedDate);
+                        cmd.Parameters.AddWithValue("@DateChecked", DateTime.Now);
                         cmd.Parameters.AddWithValue("@loggedInUser", loggedInUser);
 
                         try

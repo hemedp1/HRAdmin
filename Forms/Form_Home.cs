@@ -717,9 +717,26 @@ namespace HRAdmin.Forms
         private void btnUserprofile_Click(object sender, EventArgs e)
         {
             label1.Text = "User";
-            btnBookCar.Visible = false;
             btn_New.Visible = false;
             btnAddpeople.Visible = false;
+            btnBookCar.Visible = false;
+            button2.Visible = false;   //withdra
+            button3.Visible = false;  //replace
+            btnWDcar.Visible = false;
+            btnApp.Visible = false;
+            btn_AccidentPDF.Visible = false;
+            btnInspect.Visible = false;
+            btn_Accident.Visible = false;
+            button4.Visible = false; //external
+            button5.Visible = false; //internal
+            button6.Visible = false; //view report
+            btnVisitor.Visible = false; //visitor
+            btnWithdrawEntry.Visible = false; //withdraw entry
+            btnNewVisitor.Visible = false; //new visitor
+            btnUpdate.Visible = false; //update
+            btnMCReport.Visible = false; //miscellaneous claim report
+            btnApproval.Visible = false;
+            btnCarCondition.Visible = false;
             UC_U_User ug = new UC_U_User();
             addControls(ug);
 

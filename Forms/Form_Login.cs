@@ -146,7 +146,13 @@ namespace HRAdmin
 
         private void pictureBox8_Click(object sender, EventArgs e)
         {
+            
+        }
 
+        private void LlGorgetPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Form_ForgetPass ForgetPass = new Form_ForgetPass();
+            ForgetPass.Show();
         }
     }
 }

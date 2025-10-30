@@ -1126,6 +1126,13 @@ ORDER BY a.RequestDate ASC";
                 return;
             }
 
+            // Restrict withdrawal to only the user's own orders
+            if (requester != UserSession.loggedInName)
+            {
+                MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             // Check if the order has been approved by any department
             if (hodApprovalStatus == "Approved" || hrApprovalStatus == "Approved" || accountApprovalStatus == "Approved")
             {
@@ -1133,12 +1140,7 @@ ORDER BY a.RequestDate ASC";
                 return;
             }
 
-            // Restrict withdrawal to only the user's own orders
-            if (requester != UserSession.loggedInName)
-            {
-                MessageBox.Show("You can only withdraw your own orders.", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            
 
             // Confirm deletion with the user
             DialogResult result = MessageBox.Show($"Are you sure you want to withdraw Serial No: {serialNo}?", "Confirm Withdrawal", MessageBoxButtons.YesNo, MessageBoxIcon.Question);

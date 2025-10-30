@@ -422,7 +422,7 @@ namespace HRAdmin.UserControl
                         cmd.Parameters.AddWithValue("@StartDate", startDate.Value);
                         cmd.Parameters.AddWithValue("@EndDate", endDate.Value);
 
-                        Debug.WriteLine($"Executing LoadData with RequesterID: {(string.IsNullOrEmpty(requesterID) ? "NULL" : requesterID)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, OccasionType: {(string.IsNullOrEmpty(occasionType) ? "NULL" : occasionType)}, StartDate: {startDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}, EndDate: {endDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}");
+                        //Debug.WriteLine($"Executing LoadData with RequesterID: {(string.IsNullOrEmpty(requesterID) ? "NULL" : requesterID)}, Department: {(string.IsNullOrEmpty(department) ? "NULL" : department)}, OccasionType: {(string.IsNullOrEmpty(occasionType) ? "NULL" : occasionType)}, StartDate: {startDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}, EndDate: {endDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}");
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -433,10 +433,10 @@ namespace HRAdmin.UserControl
                         // Update cache
                         cachedData = dt.Copy();
 
-                        foreach (DataRow row in dt.Rows)
-                        {
-                            Debug.WriteLine($"Row: OrderID={row["OrderID"]}, RequesterID={row["RequesterID"]}, Department={row["Department"]}, OrderSource={row["OrderSource"]}, RequestDate={row["RequestDate"]}");
-                        }
+                        //foreach (DataRow row in dt.Rows)
+                        //{
+                        //    Debug.WriteLine($"Row: OrderID={row["OrderID"]}, RequesterID={row["RequesterID"]}, Department={row["Department"]}, OrderSource={row["OrderSource"]}, RequestDate={row["RequestDate"]}");
+                        //}
 
                         // Bind to DataGridView
                         BindDataGridView(dt);
@@ -855,8 +855,8 @@ namespace HRAdmin.UserControl
                             string getClaimDetailsQuery = $@"
                                                             SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email, C.Name1
                                                             FROM {tableName}  A
-                                                            LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
-                                                            LEFT JOIN tbl_Users C ON C.IndexNo = B.IndexNo
+                                                            LEFT JOIN tbl_Users C ON C.Name1 = A.RequesterID
+                                                            LEFT JOIN tbl_UserDetail B ON C.IndexNo = B.IndexNo
                                                             WHERE OrderID = @OrderID";
 
                             using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
@@ -1091,10 +1091,10 @@ namespace HRAdmin.UserControl
                             DateTime DelrequestDate = DateTime.MinValue;
 
                             string getClaimDetailsQuery = $@"
-                                                            SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email, C.Name1
+                                                            SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, C.Email, B.Name1
                                                             FROM {tableName} A
-                                                            LEFT JOIN tbl_UserDetail B ON A.RequesterID = B.Username
-                                                            LEFT JOIN tbl_Users C ON C.IndexNo = B.IndexNo
+                                                            LEFT JOIN tbl_Users B ON B.NAME1 = A.RequesterID
+                                                            LEFT JOIN tbl_UserDetail C ON C.IndexNo = B.IndexNo
                                                             WHERE OrderID = @OrderID";
 
                             using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
@@ -1304,7 +1304,7 @@ namespace HRAdmin.UserControl
 
             if (eventDate.Date >= deliveryTime?.Date)
             {
-                MessageBox.Show("Delivery date cannot be on or before the request date.", "Invalid Date Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Delivery date cannot be on the same day or before the request date.", "Invalid Date Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -2547,7 +2547,7 @@ namespace HRAdmin.UserControl
                 ApproveStatus,
                 ApprovedBy,
                 ApprovedDate,
-                'Internal' AS Source
+                'Internal' AS OrderSource
             FROM tbl_InternalFoodOrder
             WHERE OrderID LIKE @search
 
@@ -2568,7 +2568,7 @@ namespace HRAdmin.UserControl
                 ApproveStatus,
                 ApprovedBy,
                 ApprovedDate,
-                'External' AS Source
+                'External' AS OrderSource
             FROM tbl_ExternalFoodOrder
             WHERE OrderID LIKE @search;";
 

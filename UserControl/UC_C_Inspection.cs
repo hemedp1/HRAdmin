@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Office.Word;
+﻿using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using DocumentFormat.OpenXml.Office.Word;
 using HRAdmin.Components;
 using HRAdmin.Forms;
 using System;
@@ -24,44 +25,62 @@ namespace HRAdmin.UserControl
         {
             InitializeComponent();
             loggedInUser = username;
-          
-            loadCar();
+
+            //cmb_User.SelectedIndexChanged += cmb_User_SelectedIndexChanged;
+            
             LoadData();
             loadDriver();
+      
+            this.Load += UC_C_Inspection_Load;
         }
-        private void loadCar()
+        private void UC_C_Inspection_Load(object sender, EventArgs e)
+        {
+            loadDriver();
+         
+        }
+        private void loadCar()   // not use
         {
             try
             {
+                if (cmb_User.SelectedValue == null)
+                    return;
+
+                object selectedValue = cmb_User.SelectedValue;
+                if (selectedValue is DataRowView drv)
+                    selectedValue = drv["RowID"]; // Extract the actual RowID from DataRowView
+                //MessageBox.Show(selectedValue?.ToString().Trim());
+
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
 
-                    // Load Room Data
-                    string query = "SELECT DISTINCT CarPlate FROM tbl_Cars where Status = 'Not Available'";
-                    SqlDataAdapter da = new SqlDataAdapter(query, con);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
+                    string query = @"
+                SELECT A.AssignedCar 
+                FROM tbl_CarBookings A
+                LEFT JOIN tbl_Cars B ON B.CarPlate = A.AssignedCar  
+                WHERE A.RowID = @RowID";
 
-                    // Debugging: Check if data exists
-                    if (dt.Rows.Count == 0)
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        //MessageBox.Show("No Car found in the database!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        cmd.Parameters.AddWithValue("@RowID", selectedValue.ToString().Trim());
+
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            string assignedCar = result.ToString();
+                            cmbCar.SelectedValue = assignedCar;
+                        }
+                        else
+                        {
+                            cmbCar.SelectedIndex = -1;
+                        }
                     }
-
-                    cmbCar.DataSource = dt;
-                    cmbCar.DisplayMember = "CarPlate";
-                    cmbCar.ValueMember = "CarPlate";
-
-                    cmbCar.SelectedIndex = -1; // Ensure nothing is pre-selected
-
-
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error on Room Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error loading assigned car: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void btnSubmit_Click(object sender, EventArgs e)
@@ -212,7 +231,7 @@ namespace HRAdmin.UserControl
                         }
 
                         MessageBox.Show("Car inspection record successfully updated!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        loadCar();
+                        //loadCar();
                     }
 
                 }
@@ -546,7 +565,7 @@ namespace HRAdmin.UserControl
                         }
 
                         MessageBox.Show("Car inspection record successfully updated!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        loadCar();
+                        //loadCar();
                     }
 
                 }
@@ -581,12 +600,24 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
                     con.Open();
-
+                    /*
                     string query = @"
                 SELECT RowID, DriverName, StartDate, EndDate, RequestDate
                 FROM tbl_CarBookings
                 WHERE CAST(RequestDate AS date) = @Today
                   AND EndDate <= @Now
+                ORDER BY StartDate ASC;";
+                    
+                    string query = @"
+                SELECT RowID, DriverName, StartDate, EndDate, RequestDate
+                FROM tbl_CarBookings
+                WHERE CAST(RequestDate AS date) >= @Today
+                ORDER BY StartDate ASC;";
+                    */
+                    string query = @"
+                SELECT RowID, DriverName, StartDate, EndDate, RequestDate
+                FROM tbl_CarBookings
+                WHERE CAST(RequestDate AS date) >= @Today AND Acknowledgement = 'Acknowledged' AND CompleteUseStatus IS NULL
                 ORDER BY StartDate ASC;";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -619,7 +650,7 @@ namespace HRAdmin.UserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error on Room Selection: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error : {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void dTDay_ValueChanged(object sender, EventArgs e)
@@ -629,7 +660,57 @@ namespace HRAdmin.UserControl
         }
         private void cmb_User_SelectedIndexChanged(object sender, EventArgs e)
         {
+           // MessageBox.Show(cmb_User.SelectedValue?.ToString());
 
+            // Prevent running when data is still loading
+            if (cmb_User.SelectedIndex != -1)
+               // loadCar();
+
+            try
+            {
+
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                {
+                    con.Open();
+
+                    string query = @"
+                SELECT A.AssignedCar 
+                FROM tbl_CarBookings A
+                LEFT JOIN tbl_Cars B ON B.CarPlate = A.AssignedCar  
+                WHERE A.RowID = @RowID AND A.CompleteUseStatus IS NULL";
+
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                           //  MessageBox.Show(cmb_User.SelectedValue?.ToString());
+                            cmd.Parameters.AddWithValue("@RowID", cmb_User.SelectedValue?.ToString().Trim());
+
+                        object result = cmd.ExecuteScalar();
+
+                        SqlDataAdapter da = new SqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
+
+                            if (dt.Rows.Count == 0)
+                        {
+                            cmbCar.DataSource = null;
+                            cmbCar.Items.Clear();
+                            cmbCar.SelectedIndex = -1;
+                            return;
+                        }
+
+                            cmbCar.DataSource = dt;
+                            cmbCar.DisplayMember = "AssignedCar";
+                            cmbCar.ValueMember = "AssignedCar";
+                            cmbCar.SelectedIndex = -1; // show placeholder
+
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading assigned car: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 

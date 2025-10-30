@@ -89,6 +89,7 @@ namespace HRAdmin.UserControl
 
                                 if (AA == "1" || AA == "2")
                                 {
+                                    //MessageBox.Show($"444");
                                     Form_Home.sharedButtonbtnApp.Visible = true;
                                     Form_Home.sharedbuttonInspect.Visible = true;
                                     if (accessLevel >= 0 && UserSession.loggedInDepart == "HR & ADMIN")
@@ -122,10 +123,12 @@ namespace HRAdmin.UserControl
                                     Form_Home.sharedbtnNewVisitor.Visible = false;
                                     Form_Home.sharedbtnUpdate.Visible = false;
                                     Form_Home.sharedbtnMCReport.Visible = false; // Car Booking
+
                                     //MessageBox.Show($"444");
                                 }
                                 else
                                 {
+                                    
                                     //MessageBox.Show($"555");
                                     Form_Home.sharedButtonbtnApp.Visible = false;
                                     if (accessLevel > 0 && UserSession.loggedInDepart == "HR & Admin")
@@ -142,6 +145,7 @@ namespace HRAdmin.UserControl
                                     Form_Home.sharedbtnWithdrawEntry.Visible = false;
                                     Form_Home.sharedbtnNewVisitor.Visible = false;
                                     Form_Home.sharedbtnUpdate.Visible = false;
+                                    
                                 }
                             }
                             else
@@ -153,6 +157,7 @@ namespace HRAdmin.UserControl
                                 Form_Home.sharedbtnWithdrawEntry.Visible = false;
                                 Form_Home.sharedbtnNewVisitor.Visible = false;
                                 Form_Home.sharedbtnUpdate.Visible = false;
+                                
                             }
                         }
                     }

@@ -142,9 +142,10 @@ namespace HRAdmin.UserControl
             string purpose = dataGridView2.Rows[rowIndex].Cells[6]?.Value?.ToString();
             string timeout = dataGridView2.Rows[rowIndex].Cells[7]?.Value?.ToString();
             string timein = dataGridView2.Rows[rowIndex].Cells[8]?.Value?.ToString();
-            string car = dataGridView2.Rows[rowIndex].Cells[15]?.Value?.ToString();
+            
+            string car = dataGridView2.Rows[rowIndex].Cells[9]?.Value?.ToString();
 
-          
+           
 
 
             if (string.IsNullOrEmpty(selectedPerson) || string.IsNullOrEmpty(IDStr))
@@ -205,7 +206,7 @@ namespace HRAdmin.UserControl
 
 
                     dataGridView2.Refresh();
-
+                    //MessageBox.Show(car);
                     string updateCarQuery = "UPDATE tbl_Cars SET Status = 'Not Available' WHERE CarPlate = @CarPlate";          // update car status
                     using (SqlCommand cmd = new SqlCommand(updateCarQuery, con))
                     {
@@ -220,16 +221,17 @@ namespace HRAdmin.UserControl
  
                 //++++++++++++++++++++++++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-                string query1 = @"SELECT TOP 1 A.Department, A.AA, B.Email
+                string query1 = @"SELECT TOP 2 A.Department, A.AA, B.Email
                                                 FROM 
                                                 tbl_Users A
                                                 LEFT JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
-                                                WHERE A.Department = 'HR & ADMIN' AND AA = '1' OR AA = '2'";
+                                                WHERE A.Department = 'HR & ADMIN' AND AA = '1'";
                 List<string> approverEmails = new List<string>();
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 using (SqlCommand emailCmd = new SqlCommand(query1, con))
                 {
                     //emailCmd.Parameters.AddWithValue("@Username", Username);
+                    con.Open(); // 
 
                     using (SqlDataReader reader = emailCmd.ExecuteReader())
                     {
@@ -316,13 +318,19 @@ namespace HRAdmin.UserControl
                                         CONVERT(VARCHAR(5), StartDate, 108) AS StartDate, 
                                         CONVERT(VARCHAR(5), EndDate, 108) AS EndDate 
                                     FROM tbl_CarBookings 
-                                    WHERE DriverName = @DriverName AND Depart = @Depart AND CompleteUseStatus IS NULL AND Status = 'Approved' AND Acknowledgement IS NULL";
+                                    WHERE 
+                                        DriverName = @DriverName 
+                                        AND Depart = @Depart 
+                                        AND CompleteUseStatus IS NULL 
+                                        AND Status = 'Approved' 
+                                        AND Acknowledgement IS NULL
+                                        AND CAST(RequestDate AS DATE) = CAST(GETDATE() AS DATE)";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@DriverName", loggedInUser);
                         cmd.Parameters.AddWithValue("@Depart", loggedInDepart);
-                        cmd.Parameters.AddWithValue("RequestDate", DateTime.Now.ToString("dd.MM.yyyy")); 
+                        //cmd.Parameters.AddWithValue("@RequestDate", DateTime.Now); 
 
                         DataTable dt = new DataTable();
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
@@ -342,7 +350,7 @@ namespace HRAdmin.UserControl
                             Font = new Font("Arial", 11, FontStyle.Bold),
                         };
 
-                        string[] columnNames = { "BookingID", "DriverName", "Depart", "IndexNo", "RequestDate", "Destination", "Purpose", "StartDate", "EndDate", "StatusCheck", "CheckBy", "DateChecked", "Status", "ApproveBy", "DateApprove", "AssignedCar" };
+                        string[] columnNames = { "BookingID", "DriverName", "Depart", "IndexNo", "RequestDate", "Destination", "Purpose", "StartDate", "EndDate", "AssignedCar", "StatusCheck", "CheckBy", "DateChecked", "Status", "ApproveBy", "DateApprove" };
 
                         for (int i = 0; i < columnNames.Length; i++)
                         {
@@ -379,6 +387,9 @@ namespace HRAdmin.UserControl
                             else if (col == "Purpose")
                                 headerText = "Purpose";
 
+                            else if (col == "AssignedCar")
+                                headerText = "Car";
+
                             else if (col == "StatusCheck")
                                 headerText = "HOD Status Check";
 
@@ -394,8 +405,7 @@ namespace HRAdmin.UserControl
                             else if (col == "DateApprove")
                                 headerText = "Approved Date";
 
-                            else if (col == "AssignedCar")
-                                headerText = "Car";
+                            
                             //else if (col == "CompleteUseStatus")
                             //    headerText = "Trip Status";
                             else
@@ -434,7 +444,7 @@ namespace HRAdmin.UserControl
                     try
                     {
                         con.Open();
-                        string query = "SELECT ID, Person, DateInspect, Milleage, Brakes, Signal_light, Head_light, Body, Front_Bumper, Rear_Bumper, View_Mirror, Tyres, Others FROM tbl_CarInspection WHERE CarType = @Plat";
+                        string query = "SELECT TOP 3 ID, Person, DateInspect, Milleage, Brakes, Signal_light, Head_light, Body, Front_Bumper, Rear_Bumper, View_Mirror, Tyres, Others, LEFT(Driver, CHARINDEX('_', Driver + '_') - 1) AS DriverName FROM tbl_CarInspection WHERE CarType = @Plat ORDER BY DateInspect DESC";
 
                         using (SqlCommand cmd = new SqlCommand(query, con))
                         {
@@ -459,12 +469,14 @@ namespace HRAdmin.UserControl
                                 Font = new Font("Arial", 11, FontStyle.Bold),
                             };
 
-                            string[] columnNames = { "Person", "DateInspect", "Milleage", "Brakes", "Signal_light", "Head_light", "Body", "Front_Bumper", "Rear_Bumper", "View_Mirror", "Tyres" };
+                            string[] columnNames = { "Person", "DateInspect", "Milleage", "Brakes", "Signal_light", "Head_light", "Body", "Front_Bumper", "Rear_Bumper", "View_Mirror", "Tyres", "DriverName" };
 
                             // Optional: custom display names for headers
                             Dictionary<string, string> headerMappings = new Dictionary<string, string>
                             {
-                                { "DateInspect", "Date Inspect" }
+                                { "Person", "Inspect By" },
+                                { "DateInspect", "Date Inspect" },
+                                { "DriverName", "Drive By" }
                             };
 
                             foreach (var col in columnNames)
@@ -530,6 +542,15 @@ namespace HRAdmin.UserControl
                 MessageBox.Show("Panel not found!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void gbCarInspect()
+        {
+            groupBox3.Text = car + " Inspection Log"; // This updates the title of the GroupBox
+
+        }
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
+        }
         private void btnBack_Click(object sender, EventArgs e)
         {
             Form_Home.sharedLabel.Text = "Admin > Car Reservation > Reservation";
@@ -557,17 +578,6 @@ namespace HRAdmin.UserControl
             //sharedbtnWithdrawEntry = btnWithdrawEntry;
             //sharedbtnNewVisitor = btnNewVisitor;
             //sharedbtnUpdate = btnUpdate;
-        }
-
-        private void gbCarInspect()
-        {
-            groupBox3.Text = car + " Inspection Log"; // This updates the title of the GroupBox
-
-        }
-
-        private void groupBox3_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

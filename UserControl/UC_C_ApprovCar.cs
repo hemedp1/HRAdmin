@@ -178,7 +178,7 @@ namespace HRAdmin.UserControl
             string Destination = dataGridView1.Rows[rowIndex].Cells[4]?.Value?.ToString();
             string timeout = dataGridView1.Rows[rowIndex].Cells[5]?.Value?.ToString();
             string timeIN = dataGridView1.Rows[rowIndex].Cells[6]?.Value?.ToString();
-            string purpose = dataGridView1.Rows[rowIndex].Cells[8]?.Value?.ToString();
+            string purpose = dataGridView1.Rows[rowIndex].Cells[7]?.Value?.ToString();
 
             if (string.IsNullOrEmpty(selectedPerson) || string.IsNullOrEmpty(meetingIDStr))
             {
@@ -224,6 +224,7 @@ namespace HRAdmin.UserControl
                         updateQuery = "UPDATE tbl_CarBookings SET AssignedCar = @Car, Status = 'Approved', ApproveBy = @loggedInUser, DateApprove = @selectedDate WHERE BookingID = @BookingID";
                         MessageBox.Show("Car booking approved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                        
                         //++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                         string query1 = @"SELECT Email FROM tbl_UserDetail WHERE Username = @Username";
@@ -248,6 +249,7 @@ namespace HRAdmin.UserControl
 
                         if (approverEmails.Count > 0)
                         {
+                            string car = dataGridView1.Rows[rowIndex].Cells[8]?.Value?.ToString();
                             DateTime parsedDate = DateTime.Parse(ReqDate);
                             string formattedDate = parsedDate.ToString("dd/MM/yyyy");
                             string subject = "HEM Admin Accessibility Notification: Your Car Booking Has Been Approved";
@@ -262,6 +264,8 @@ namespace HRAdmin.UserControl
                                                         <li><strong>Request Date:</strong> {formattedDate}</li>
                                                         <li><strong>Time Out:</strong> {timeout}</li>
                                                         <li><strong>Time In:</strong> {timeIN}</li>
+
+                                                        <li><strong>Assigned Car by HR & ADMIN:</strong> {cmbCarSelection.Text}</li>
                                                 
                                                     </ul>
 
@@ -514,8 +518,8 @@ namespace HRAdmin.UserControl
                                 Font = new Font("Arial", 11)
                             }
                         });
-
-                        string[] columnNames = { "DriverName", "IndexNo", "RequestDate", "Destination", "StartDate", "EndDate", "Status", "Purpose", "AssignedCar", "ApproveBy", "DateApprove", "StatusCheck", "CheckBy", "DateChecked" };
+                                                                                                                            //, "Purpose", "AssignedCar", "Status", "ApproveBy", "DateApprove", "StatusCheck", "CheckBy", "DateChecked"
+                        string[] columnNames = { "DriverName", "IndexNo", "RequestDate", "Destination", "StartDate", "EndDate", "Purpose", "AssignedCar", "StatusCheck", "CheckBy", "DateChecked", "Status", "ApproveBy", "DateApprove"};
 
                         foreach (var col in columnNames)
                         {
@@ -533,22 +537,23 @@ namespace HRAdmin.UserControl
                                 headerText = "Start Time";
                             else if (col == "EndDate")
                                 headerText = "End Time";
-                            else if (col == "Status")
-                                headerText = "Admin Status Approval";
                             else if (col == "Purpose")
                                 headerText = "Purpose";
                             else if (col == "AssignedCar")
                                 headerText = "Car";
-                            else if (col == "ApproveBy")
-                                headerText = "Approve By";
-                            else if (col == "DateApprove")
-                                headerText = "Approved Date";
                             else if (col == "StatusCheck")
                                 headerText = "HOD Status Check";
                             else if (col == "CheckBy")
                                 headerText = "Check By";
                             else if (col == "DateChecked")
                                 headerText = "Checked Date";
+                            else if (col == "Status")
+                                headerText = "Admin Status Approval";
+                            else if (col == "ApproveBy")
+                                headerText = "Approve By";
+                            else if (col == "DateApprove")
+                                headerText = "Approved Date";
+
                             else
                                 headerText = col.Replace("_", " "); // Default formatting
 

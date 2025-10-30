@@ -36,8 +36,8 @@ namespace HRAdmin.UserControl
             // Initialize the array of visitor comboboxes
             visitorComboBoxes = new ComboBox[]
             {
-                cmbVisitor1, cmbVisitor2, cmbVisitor3, cmbVisitor4, cmbVisitor5,
-                cmbVisitor6, cmbVisitor7, cmbVisitor8, cmbVisitor9, cmbVisitor10
+        cmbVisitor1, cmbVisitor2, cmbVisitor3, cmbVisitor4, cmbVisitor5,
+        cmbVisitor6, cmbVisitor7, cmbVisitor8, cmbVisitor9, cmbVisitor10
             };
 
             // Attach event handlers for each combobox
@@ -45,8 +45,12 @@ namespace HRAdmin.UserControl
             {
                 comboBox.SelectedIndexChanged += VisitorComboBox_SelectedIndexChanged;
             }
-            // In constructor
-            cmbCompany.TextChanged += cmbCompany_TextChanged;   
+
+            // Add the DropDown event handler
+            cmbCompany.DropDown += cmbCompany_DropDown;
+            cmbCompany.TextChanged += cmbCompany_TextChanged;
+            cmbCompany.SelectedIndexChanged += cmbCompany_SelectedIndexChanged;
+
             isUpdatingComboBoxes = false; // Initialize flag
 
             // Initially disable NOP and visitor comboboxes until a company is selected
@@ -56,6 +60,7 @@ namespace HRAdmin.UserControl
                 comboBox.Enabled = false;
             }
         }
+
         private void addControls(System.Windows.Forms.UserControl userControl)
         {
             if (Form_Home.sharedPanel != null && Form_Home.sharedLabel != null)
@@ -140,9 +145,26 @@ namespace HRAdmin.UserControl
                             companies.Add(reader["Company"].ToString());
                         }
 
-                        //cmbCompany.Items.Clear();
+                        // Store current text before clearing
+                        string currentText = cmbCompany.Text;
+                        string currentSelection = cmbCompany.SelectedItem?.ToString();
+
+                        // Clear existing items
+                        cmbCompany.Items.Clear();
+
+                        // Add new items
                         cmbCompany.Items.AddRange(companies.ToArray());
-                        cmbCompany.SelectionStart = cmbCompany.Text.Length;
+
+                        // If there was a selection and it exists in the new list, keep it selected
+                        if (!string.IsNullOrEmpty(currentSelection) && companies.Contains(currentSelection))
+                        {
+                            cmbCompany.SelectedItem = currentSelection;
+                        }
+                        // If there was text that matches an item, select that
+                        else if (!string.IsNullOrEmpty(currentText) && companies.Contains(currentText))
+                        {
+                            cmbCompany.SelectedItem = currentText;
+                        }
                     }
                 }
             }
@@ -153,20 +175,42 @@ namespace HRAdmin.UserControl
         }
         private void cmbCompany_TextChanged(object sender, EventArgs e)
         {
+            // Only trigger search if the user is typing (not just selecting)
+            if (cmbCompany.DroppedDown || cmbCompany.Focused)
+            {
+                searchTimer.Stop();
+                searchTimer.Start();
+            }
+        }
+
+        private void cmbCompany_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // When user selects an item, stop the search timer
             searchTimer.Stop();
-            searchTimer.Start();
-            PopulateCompanyComboBox();
+
+            // Don't populate here - let the selection work normally
+            // Your existing company selection logic
+            PopulateVisitorComboBoxes();
         }
         private void SearchTimer_Tick(object sender, EventArgs e)
         {
             searchTimer.Stop();
-            PopulateCompanyComboBox(); // query DB only once after typing pauses
+
+            // Only populate if the combo box still has focus or was recently interacted with
+            PopulateCompanyComboBox();
         }
-        private void cmbCompany_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void cmbCompany_DropDown(object sender, EventArgs e)
         {
-            // When company selection changes, update visitor comboboxes
-            PopulateVisitorComboBoxes();
+            // When dropdown opens, if text is empty or user wants to search again,
+            // clear selection and populate all companies
+            if (string.IsNullOrEmpty(cmbCompany.Text))
+            {
+                cmbCompany.SelectedIndex = -1;
+                PopulateCompanyComboBox();
+            }
         }
+        
         private void PopulateVisitorComboBoxes()
         {
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
@@ -479,7 +523,7 @@ namespace HRAdmin.UserControl
         {
 
         }
-
+       
       
     }
 }

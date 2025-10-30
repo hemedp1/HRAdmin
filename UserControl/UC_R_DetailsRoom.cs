@@ -308,14 +308,33 @@ namespace HRAdmin.UserControl
                     SqlCommand roomCmd = new SqlCommand(roomQuery, con);
                     SqlDataReader dr = roomCmd.ExecuteReader();
 
+                    /* 
                     var newRoomNames = new List<string>();
                     while (dr.Read())
                     {
                         newRoomNames.Add(dr["MeetingRoom"].ToString());
                     }
                     dr.Close();
+                    */
 
+                    ////  replacement for code above
+                    var newRoomNames = new List<string>();
+                    while (dr.Read())
+                    {
+                        var roomName = dr["MeetingRoom"].ToString();
+                        if (!string.IsNullOrWhiteSpace(roomName))
+                            newRoomNames.Add(roomName);
+                    }
+                    dr.Close();
+
+                    // 👇 ADD THIS LINE TO SORT NATURALLY
+                    newRoomNames = newRoomNames.OrderBy(r => r, new NaturalStringComparer()).ToList();
+
+                    /////
+
+                    /*
                     var existingConfigs = _spaceConfigs.ToDictionary(c => c.Name, c => c);
+
                     _spaceConfigs.Clear();
                     foreach (var roomName in newRoomNames)
                     {
@@ -328,6 +347,13 @@ namespace HRAdmin.UserControl
                             _spaceConfigs.Add(new MeetingSpaceConfig { Name = roomName });
                         }
                     }
+                    */
+                    var existingConfigs = _spaceConfigs.ToDictionary(c => c.Name, c => c);
+                    // Rebuild _spaceConfigs in natural sorted order
+                    _spaceConfigs = newRoomNames.Select(room =>
+                    {
+                        return existingConfigs.TryGetValue(room, out var config) ? config : new MeetingSpaceConfig { Name = room };
+                    }).ToList();
 
                     var spacesToRemove = _meetingSpaces.Where(s => !newRoomNames.Contains(s.Label.Text)).ToList();
                     foreach (var space in spacesToRemove)
@@ -739,6 +765,18 @@ namespace HRAdmin.UserControl
             SaveSpaceConfigs();
             flowLayoutPanel1.Invalidate();
             AdjustPanelWidths();
+        }
+
+        // Add this inside UC_R_DetailsRoom class
+        private class NaturalStringComparer : IComparer<string>
+        {
+            [System.Runtime.InteropServices.DllImport("shlwapi.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+            private static extern int StrCmpLogicalW(string x, string y);
+
+            public int Compare(string x, string y)
+            {
+                return StrCmpLogicalW(x, y);
+            }
         }
     }
 }

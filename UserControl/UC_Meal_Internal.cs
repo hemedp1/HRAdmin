@@ -993,8 +993,8 @@ namespace HRAdmin.UserControl
                     string EventDetai = "";
                     string OccasionTy = "";
                     string OrderI = "";
-                    DateTime requestDate = DateTime.MinValue;
-                    DateTime DelrequestDate = DateTime.MinValue;
+                    //DateTime requestDate = DateTime.MinValue;
+                    //DateTime DelrequestDate = DateTime.MinValue;
 
                     string getClaimDetailsQuery = $@"
                                                 SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email
@@ -1015,20 +1015,26 @@ namespace HRAdmin.UserControl
                                 EventDetai = reader["EventDetails"]?.ToString();
                                 OccasionTy = reader["OccasionType"]?.ToString();
                                 OrderI = reader["OrderID"]?.ToString();
+                                /*
                                 requestDate = reader["RequestDate"] != DBNull.Value
                                     ? Convert.ToDateTime(reader["RequestDate"])
                                     : DateTime.MinValue;
                                 DelrequestDate = reader["DeliveryDate"] != DBNull.Value
                                     ? Convert.ToDateTime(reader["DeliveryDate"])
                                     : DateTime.MinValue;
+                                */
                             }
                         }
                     }
 
                     if (approverEmails.Count > 0)
                     {
+                        DateTime requestDate = DateTime.Parse(lblRequestDate1.Text);
+                        DateTime deliveryDate = DateTime.Parse(lblDeliveryDate1.Text);
+
                         string formattedDate = requestDate.ToString("dd/MM/yyyy");
-                        string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
+                        string formattedDate1 = deliveryDate.ToString("dd/MM/yyyy");
+
                         string subject = "HEM Admin Accessibility Notification: New Canteen Food Request Awaiting For Your Review And Approval";
                         string body = $@"
                                                     <p>Dear Approver - HR & ADMIN,</p>

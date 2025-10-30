@@ -36,6 +36,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.LlGorgetPassword = new System.Windows.Forms.LinkLabel();
             this.LLregiester = new System.Windows.Forms.LinkLabel();
             this.btnLogin = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -138,6 +139,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.LlGorgetPassword);
             this.groupBox1.Controls.Add(this.LLregiester);
             this.groupBox1.Controls.Add(this.btnLogin);
             this.groupBox1.Controls.Add(this.label5);
@@ -151,6 +153,18 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Log In";
+            // 
+            // LlGorgetPassword
+            // 
+            this.LlGorgetPassword.AutoSize = true;
+            this.LlGorgetPassword.Font = new System.Drawing.Font("Calibri", 12F);
+            this.LlGorgetPassword.Location = new System.Drawing.Point(209, 273);
+            this.LlGorgetPassword.Name = "LlGorgetPassword";
+            this.LlGorgetPassword.Size = new System.Drawing.Size(185, 29);
+            this.LlGorgetPassword.TabIndex = 6;
+            this.LlGorgetPassword.TabStop = true;
+            this.LlGorgetPassword.Text = "Forgot Password?";
+            this.LlGorgetPassword.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LlGorgetPassword_LinkClicked);
             // 
             // LLregiester
             // 
@@ -389,6 +403,7 @@
         private System.Windows.Forms.PictureBox pictureBox8;
         private System.Windows.Forms.PictureBox pictureBox7;
         private System.Windows.Forms.PictureBox pictureBox6;
+        private System.Windows.Forms.LinkLabel LlGorgetPassword;
     }
 }
 

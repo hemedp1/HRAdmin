@@ -50,6 +50,10 @@
             this.btnViewInvoice = new System.Windows.Forms.Button();
             this.btnWithdraw = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.txtSearchSn = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.cmbECtype = new System.Windows.Forms.ComboBox();
@@ -69,10 +73,6 @@
             this.dtRequest = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.txtSearchSn = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMS)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -371,6 +371,51 @@
             this.panel4.Size = new System.Drawing.Size(2085, 175);
             this.panel4.TabIndex = 1;
             // 
+            // btnSearch
+            // 
+            this.btnSearch.BackColor = System.Drawing.Color.White;
+            this.btnSearch.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
+            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSearch.Font = new System.Drawing.Font("Calibri", 12F);
+            this.btnSearch.Location = new System.Drawing.Point(1527, 92);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(140, 42);
+            this.btnSearch.TabIndex = 145;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = false;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label19.Location = new System.Drawing.Point(1204, 98);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(21, 32);
+            this.label19.TabIndex = 144;
+            this.label19.Text = ":";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Calibri", 13F);
+            this.label20.Location = new System.Drawing.Point(1091, 98);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(109, 32);
+            this.label20.TabIndex = 143;
+            this.label20.Text = "Serial No";
+            // 
+            // txtSearchSn
+            // 
+            this.txtSearchSn.Font = new System.Drawing.Font("Calibri", 12F);
+            this.txtSearchSn.Location = new System.Drawing.Point(1231, 93);
+            this.txtSearchSn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtSearchSn.Name = "txtSearchSn";
+            this.txtSearchSn.Size = new System.Drawing.Size(281, 37);
+            this.txtSearchSn.TabIndex = 142;
+            // 
             // label13
             // 
             this.label13.AutoSize = true;
@@ -596,51 +641,6 @@
             this.label4.Size = new System.Drawing.Size(21, 32);
             this.label4.TabIndex = 166;
             this.label4.Text = ":";
-            // 
-            // btnSearch
-            // 
-            this.btnSearch.BackColor = System.Drawing.Color.White;
-            this.btnSearch.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
-            this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSearch.Font = new System.Drawing.Font("Calibri", 12F);
-            this.btnSearch.Location = new System.Drawing.Point(1527, 92);
-            this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(140, 42);
-            this.btnSearch.TabIndex = 145;
-            this.btnSearch.Text = "Search";
-            this.btnSearch.UseVisualStyleBackColor = false;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label19.Location = new System.Drawing.Point(1204, 98);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(21, 32);
-            this.label19.TabIndex = 144;
-            this.label19.Text = ":";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Calibri", 13F);
-            this.label20.Location = new System.Drawing.Point(1091, 98);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(109, 32);
-            this.label20.TabIndex = 143;
-            this.label20.Text = "Serial No";
-            // 
-            // txtSearchSn
-            // 
-            this.txtSearchSn.Font = new System.Drawing.Font("Calibri", 12F);
-            this.txtSearchSn.Location = new System.Drawing.Point(1231, 93);
-            this.txtSearchSn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.txtSearchSn.Name = "txtSearchSn";
-            this.txtSearchSn.Size = new System.Drawing.Size(281, 37);
-            this.txtSearchSn.TabIndex = 142;
             // 
             // UC_M_MiscellaneousClaim
             // 

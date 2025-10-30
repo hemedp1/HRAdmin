@@ -44,6 +44,7 @@ namespace HRAdmin.UserControl
             ConfigureDataGridView();
             StyleDataGridView(dgvW);
             dgvW.DataError += DgvW_DataError;
+            dgvW.CellEndEdit += DgvW_CellEndEdit;
             dgvW.CellValueChanged += dgvW_CellValueChanged;
             dgvW.CellFormatting += dgvW_CellFormatting;
         }
@@ -122,6 +123,30 @@ namespace HRAdmin.UserControl
                 dgvW.Rows[e.RowIndex].Cells["Date"].Value = DBNull.Value;
             }
         }
+        private void DgvW_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dgvW.Columns[e.ColumnIndex].Name == "Date")
+            {
+                var cellValue = dgvW.Rows[e.RowIndex].Cells["Date"].Value;
+
+                if (cellValue == null || cellValue == DBNull.Value)
+                    return;
+
+                if (DateTime.TryParse(cellValue.ToString(), out DateTime enteredDate))
+                {
+                    DateTime now = DateTime.Now;
+                    DateTime threeMonthsAgo = now.AddMonths(-3);
+                    DateTime threeMonthsLater = now.AddMonths(3);
+
+                    if (enteredDate < threeMonthsAgo || enteredDate > threeMonthsLater)
+                    {
+                        MessageBox.Show("Date cannot be more than 3 months from the current date.",
+                            "Date Out of Range", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        dgvW.Rows[e.RowIndex].Cells["Date"].Value = DBNull.Value;
+                    }
+                }
+            }
+        }
         private void InitializeDataTable()
         {
             DataTable dt = new DataTable();
@@ -168,7 +193,7 @@ namespace HRAdmin.UserControl
                 Name = "btnInvoice"
             };
             dgvW.Columns.Add(btnCol);
-            dgvW.AllowUserToAddRows = true;
+            dgvW.AllowUserToAddRows = false;
         }
         private void AssignNextId(DataGridViewRow row)
         {
