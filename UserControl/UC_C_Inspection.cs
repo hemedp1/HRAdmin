@@ -35,6 +35,7 @@ namespace HRAdmin.UserControl
         }
         private void UC_C_Inspection_Load(object sender, EventArgs e)
         {
+            btn_Hold.Visible = false;
             loadDriver();
          
         }

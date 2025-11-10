@@ -2365,8 +2365,8 @@ ORDER BY a.RequestDate ASC";
 
                                     foreach (var email in accountApproverEmails)
                                     {
-                                        //SendEmail("k-sumi@hosiden.com", subject, body);
-                                        SendEmail("syazwanbunander1997@gmail.com", subject, body);
+                                        SendEmail("k-sumi@hosiden.com", subject, body);
+                                       // SendEmail("syazwanbunander1997@gmail.com", subject, body);
                                     }
 
                                     MessageBox.Show("Notification sent to First-Level Account approvers.", "Notification Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -2819,6 +2819,14 @@ ORDER BY a.RequestDate ASC";
                         MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account because it has already been approved by 3rd-Level Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
+
+                    // Check if Account 2 ApprovalStatus is pending
+                    if (account2ApprovalStatus == "Pending")
+                    {
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account because 2nd-Level Account still did not verify approve/reject.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
 
                     // Check if AccountApprovalStatus is Rejected
                     if (accountApprovalStatus == "Rejected")

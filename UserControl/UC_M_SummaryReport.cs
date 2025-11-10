@@ -371,10 +371,18 @@ GROUP BY
         }
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            // Get the current data from the DataGridView
+            if (dgvSR.DataSource == null || ((DataTable)dgvSR.DataSource).Rows.Count <= 1) // <=1 because last row is footer
+            {
+                MessageBox.Show("No data available in the table.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Safe to proceed
             DataTable dt = ((DataTable)dgvSR.DataSource).AsEnumerable()
                 .Take(((DataTable)dgvSR.DataSource).Rows.Count - 1) // Exclude footer row
                 .CopyToDataTable();
+
 
             if (dt == null || dt.Rows.Count == 0)
             {
@@ -522,7 +530,14 @@ GROUP BY
         }
         private void btnExcel_Click(object sender, EventArgs e)
         {
-            // Get the current filtered data from the DataGridView, excluding the footer row
+            if (dgvSR.DataSource == null || ((DataTable)dgvSR.DataSource).Rows.Count <= 1) // <=1 because last row is footer
+            {
+                MessageBox.Show("No data available in the table.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Safe to proceed
             DataTable dt = ((DataTable)dgvSR.DataSource).AsEnumerable()
                 .Take(((DataTable)dgvSR.DataSource).Rows.Count - 1) // Exclude footer row
                 .CopyToDataTable();

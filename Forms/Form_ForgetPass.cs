@@ -9,6 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net.Mail;
+using System.Net;
+using HRAdmin.Components;
+using System.Threading;
 
 namespace HRAdmin.Forms
 {
@@ -18,7 +22,56 @@ namespace HRAdmin.Forms
         {
             InitializeComponent();
         }
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                // Connection string (replace with your actual connection string)
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string fromEmail = reader["Mail"].ToString();
+                                string password = reader["Password"].ToString();
+                                int port = Convert.ToInt32(reader["Port"]);
+                                string smtpClient = reader["SmtpClient"].ToString();
 
+                                MailMessage mail = new MailMessage();
+                                mail.From = new MailAddress(fromEmail);
+                                mail.To.Add(toEmail);
+                                mail.Subject = subject;
+                                mail.Body = body;
+                                mail.IsBodyHtml = true;
+
+                                SmtpClient smtp = new SmtpClient(smtpClient, port);
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+
+                                smtp.Send(mail);
+
+                                //MessageBox.Show("Notification for your booking will be sent to your approver.",
+                                //    "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                MessageBox.Show($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}\n\nFull Details:\n{smtpEx.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
+            }
+        }
         private void btnChange_Click(object sender, EventArgs e)
         {
             string indexNo = txtIndex.Text.Trim();
@@ -72,6 +125,75 @@ namespace HRAdmin.Forms
                         if (rows > 0)
                         {
                             MessageBox.Show("Password changed successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            //++++++++++++++++++++++++++++++++++++++         Email Fx        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                            string query1 = @"SELECT A.Email, B.Name1 
+                                              FROM tbl_UserDetail A 
+                                              LEFT JOIN tbl_Users B ON B.IndexNo = A.IndexNo 
+                                              WHERE A.IndexNo = @IndexNumber";
+
+                            List<string> approverEmails = new List<string>();
+                            string namefull = ""; // <--- move here
+                            using (SqlCommand emailCmd = new SqlCommand(query1, con))
+                            {
+                                emailCmd.Parameters.AddWithValue("@IndexNumber", indexNo);
+                                //con.Open(); // 
+
+                                using (SqlDataReader reader = emailCmd.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        string email = reader["Email"]?.ToString();
+                                        namefull = reader["Name1"]?.ToString();
+                                        if (!string.IsNullOrEmpty(email))
+                                        {
+                                            approverEmails.Add(email);
+                                        }
+                                    }
+                                }
+                            }
+                            if (approverEmails.Count > 0)
+                            {
+
+                                string subject = "HEM Admin Accessibility Notification: Password Successfully Changed";
+
+                                string body = $@"                   
+                                                <p>Dear Mr./Ms. <strong>{namefull}</strong>,</p>
+
+                                                <p>
+                                                    This is to notify you that your account password has been successfully changed.<br/>
+                                                    <strong>New Password:</strong> {newPassword}
+                                                </p>
+
+                                                <p><u>Security Reminder:</u></p>
+                                                <ul>
+                                                    <li>Please keep your password confidential.</li>
+                                                    <li>Do not share it with anyone.</li>
+                                                    <li>If this change was not done by you, contact HR & Admin immediately.</li>
+                                                </ul>
+
+                                                <p>Thank you,<br/>HEM Admin Accessibility</p>
+                                                 ";
+
+
+                                foreach (var email in approverEmails)
+                                {
+                                    SendEmail(email, subject, body);
+                                }
+
+                                MessageBox.Show(
+                                    "Your password has been successfully changed. A confirmation email has been sent to your email address.",
+                                    "Password Updated",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information
+                                );
+
+                            }
+
+
+
+
                             txtIndex.Clear();
                             txtNewPassword.Clear();
                             txtReenterPassword.Clear();
