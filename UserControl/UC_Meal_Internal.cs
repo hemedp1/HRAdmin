@@ -1061,7 +1061,7 @@ namespace HRAdmin.UserControl
                         }
 
                         MessageBox.Show(
-                            "Notification has been sent to the approver regarding the canteen food request.",
+                            "Meal request successfully submitted. A notification email has been sent to the approver.",
                             "Notification Sent",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information

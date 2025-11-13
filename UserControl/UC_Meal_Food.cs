@@ -907,15 +907,15 @@ namespace HRAdmin.UserControl
 
 
                             MessageBox.Show(
-                                "Notification has been sent to the requester confirming the canteen food request approval.",
-                                "Notification Sent",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information
-                            );
+                                    "Meal request successfully approved. A notification email has been sent to the requester",
+                                    "Notification Sent",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information
+                                );
 
 
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
                         }
                         else
@@ -1072,7 +1072,7 @@ namespace HRAdmin.UserControl
 
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Order status updated to Rejected.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            //MessageBox.Show("Order status updated to Rejected.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             LoadData(
                                 cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
                                 cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
@@ -1093,7 +1093,7 @@ namespace HRAdmin.UserControl
                             string getClaimDetailsQuery = $@"
                                                             SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, C.Email, B.Name1
                                                             FROM {tableName} A
-                                                            LEFT JOIN tbl_Users B ON B.NAME1 = A.RequesterID
+                                                            LEFT JOIN tbl_Users B ON B.Name1 = A.RequesterID
                                                             LEFT JOIN tbl_UserDetail C ON C.IndexNo = B.IndexNo
                                                             WHERE OrderID = @OrderID";
 
@@ -1146,11 +1146,11 @@ namespace HRAdmin.UserControl
 
 
                             MessageBox.Show(
-                                "Notification has been sent to the requester regarding the rejection of the canteen food request.",
-                                "Notification Sent",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information
-                            );
+                                    "Meal request successfully rejected. A notification email has been sent to the requester",
+                                    "Notification Sent",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Information
+                                );
 
 
 
@@ -1503,7 +1503,7 @@ namespace HRAdmin.UserControl
                                 }
 
                                 MessageBox.Show(
-                                    "Notification has been sent to the approver regarding the canteen food request.",
+                                    "Meal request successfully verified. A notification email has been sent to the approver",
                                     "Notification Sent",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Information

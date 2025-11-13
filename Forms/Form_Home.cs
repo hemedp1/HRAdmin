@@ -178,7 +178,7 @@ namespace HRAdmin.Forms
         }
         private void Menu_Click(object sender, EventArgs e)
         {
-            label1.Text = "Hosiden Electronic (M) Sdn. Bhd.";
+            //label1.Text = "Hosiden Electronic (M) Sdn. Bhd.";
 
             CollapseMenu();
         }
