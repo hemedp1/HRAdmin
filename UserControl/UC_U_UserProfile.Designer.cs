@@ -35,10 +35,10 @@
             this.btnBack = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             this.label59 = new System.Windows.Forms.Label();
             this.LblUsername = new System.Windows.Forms.Label();
-            this.cmbPosition = new System.Windows.Forms.ComboBox();
-            this.cmbDepartment = new System.Windows.Forms.ComboBox();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -62,11 +62,11 @@
             this.label14 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.TxtBankName = new System.Windows.Forms.TextBox();
-            this.TxtIndexNo = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
+            this.lblDepartment = new System.Windows.Forms.Label();
+            this.lblPosition = new System.Windows.Forms.Label();
+            this.lblIndexNo = new System.Windows.Forms.Label();
             this.panel6.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -127,12 +127,13 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lblIndexNo);
+            this.groupBox1.Controls.Add(this.lblPosition);
+            this.groupBox1.Controls.Add(this.lblDepartment);
             this.groupBox1.Controls.Add(this.label22);
             this.groupBox1.Controls.Add(this.label19);
             this.groupBox1.Controls.Add(this.label59);
             this.groupBox1.Controls.Add(this.LblUsername);
-            this.groupBox1.Controls.Add(this.cmbPosition);
-            this.groupBox1.Controls.Add(this.cmbDepartment);
             this.groupBox1.Controls.Add(this.btnUpdate);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Controls.Add(this.label11);
@@ -158,7 +159,6 @@
             this.groupBox1.Controls.Add(this.label14);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.TxtBankName);
-            this.groupBox1.Controls.Add(this.TxtIndexNo);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -169,6 +169,28 @@
             this.groupBox1.TabIndex = 90;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "User profile";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.ForeColor = System.Drawing.Color.Red;
+            this.label22.Location = new System.Drawing.Point(1251, 139);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(216, 19);
+            this.label22.TabIndex = 95;
+            this.label22.Text = "Name before (Bin.Binti,A/L,A/P)";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.ForeColor = System.Drawing.Color.Red;
+            this.label19.Location = new System.Drawing.Point(1251, 79);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(259, 19);
+            this.label19.TabIndex = 94;
+            this.label19.Text = "Full Name (AAA Bin,Binti,A/L,A/P BBB)";
             // 
             // label59
             // 
@@ -190,30 +212,6 @@
             this.LblUsername.Size = new System.Drawing.Size(123, 32);
             this.LblUsername.TabIndex = 92;
             this.LblUsername.Text = "Username";
-            // 
-            // cmbPosition
-            // 
-            this.cmbPosition.DropDownWidth = 200;
-            this.cmbPosition.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmbPosition.FormattingEnabled = true;
-            this.cmbPosition.ItemHeight = 29;
-            this.cmbPosition.Location = new System.Drawing.Point(246, 295);
-            this.cmbPosition.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.cmbPosition.Name = "cmbPosition";
-            this.cmbPosition.Size = new System.Drawing.Size(260, 37);
-            this.cmbPosition.TabIndex = 91;
-            // 
-            // cmbDepartment
-            // 
-            this.cmbDepartment.DropDownWidth = 200;
-            this.cmbDepartment.Font = new System.Drawing.Font("Calibri", 12F);
-            this.cmbDepartment.FormattingEnabled = true;
-            this.cmbDepartment.ItemHeight = 29;
-            this.cmbDepartment.Location = new System.Drawing.Point(246, 170);
-            this.cmbDepartment.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.cmbDepartment.Name = "cmbDepartment";
-            this.cmbDepartment.Size = new System.Drawing.Size(260, 37);
-            this.cmbDepartment.TabIndex = 90;
             // 
             // btnUpdate
             // 
@@ -442,14 +440,6 @@
             this.TxtBankName.Size = new System.Drawing.Size(286, 37);
             this.TxtBankName.TabIndex = 76;
             // 
-            // TxtIndexNo
-            // 
-            this.TxtIndexNo.Font = new System.Drawing.Font("Calibri", 12F);
-            this.TxtIndexNo.Location = new System.Drawing.Point(246, 235);
-            this.TxtIndexNo.Name = "TxtIndexNo";
-            this.TxtIndexNo.Size = new System.Drawing.Size(260, 37);
-            this.TxtIndexNo.TabIndex = 73;
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -470,27 +460,35 @@
             this.label10.TabIndex = 75;
             this.label10.Text = ":";
             // 
-            // label19
+            // lblDepartment
             // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.ForeColor = System.Drawing.Color.Red;
-            this.label19.Location = new System.Drawing.Point(1251, 79);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(389, 29);
-            this.label19.TabIndex = 94;
-            this.label19.Text = "Full Name (AAA Bin,Binti,A/L,A/P BBB)";
+            this.lblDepartment.AutoSize = true;
+            this.lblDepartment.Font = new System.Drawing.Font("Calibri", 13F);
+            this.lblDepartment.Location = new System.Drawing.Point(246, 175);
+            this.lblDepartment.Name = "lblDepartment";
+            this.lblDepartment.Size = new System.Drawing.Size(144, 32);
+            this.lblDepartment.TabIndex = 96;
+            this.lblDepartment.Text = "Department";
             // 
-            // label22
+            // lblPosition
             // 
-            this.label22.AutoSize = true;
-            this.label22.Font = new System.Drawing.Font("Calibri", 8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.ForeColor = System.Drawing.Color.Red;
-            this.label22.Location = new System.Drawing.Point(1251, 139);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(324, 29);
-            this.label22.TabIndex = 95;
-            this.label22.Text = "Name before (Bin.Binti,A/L,A/P)";
+            this.lblPosition.AutoSize = true;
+            this.lblPosition.Font = new System.Drawing.Font("Calibri", 13F);
+            this.lblPosition.Location = new System.Drawing.Point(246, 295);
+            this.lblPosition.Name = "lblPosition";
+            this.lblPosition.Size = new System.Drawing.Size(98, 32);
+            this.lblPosition.TabIndex = 97;
+            this.lblPosition.Text = "Position";
+            // 
+            // lblIndexNo
+            // 
+            this.lblIndexNo.AutoSize = true;
+            this.lblIndexNo.Font = new System.Drawing.Font("Calibri", 13F);
+            this.lblIndexNo.Location = new System.Drawing.Point(246, 236);
+            this.lblIndexNo.Name = "lblIndexNo";
+            this.lblIndexNo.Size = new System.Drawing.Size(104, 32);
+            this.lblIndexNo.TabIndex = 98;
+            this.lblIndexNo.Text = "IndexNo";
             // 
             // UC_U_UserProfile
             // 
@@ -528,7 +526,6 @@
         private System.Windows.Forms.TextBox TxtBankName;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox TxtIndexNo;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label5;
@@ -543,11 +540,12 @@
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ComboBox cmbPosition;
-        private System.Windows.Forms.ComboBox cmbDepartment;
         private System.Windows.Forms.Label LblUsername;
         private System.Windows.Forms.Label label59;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label lblPosition;
+        private System.Windows.Forms.Label lblDepartment;
+        private System.Windows.Forms.Label lblIndexNo;
     }
 }

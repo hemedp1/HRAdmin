@@ -87,9 +87,9 @@ namespace HRAdmin.UserControl
                             {
                                 LblUsername.Text = reader["Username"]?.ToString();
                                 LblPassword.Text = reader["Password"]?.ToString();
-                                cmbDepartment.Text = reader["Department"]?.ToString();
-                                TxtIndexNo.Text = reader["IndexNo"]?.ToString();
-                                cmbPosition.Text = reader["Position"]?.ToString();
+                                lblDepartment.Text = reader["Department"]?.ToString();
+                                lblIndexNo.Text = reader["IndexNo"]?.ToString();
+                                lblPosition.Text = reader["Position"]?.ToString();
                                 TxtEmail.Text = reader["Email"]?.ToString();
                                 TxtName1.Text = reader["Name"]?.ToString();
                                 TxtName2.Text = reader["Name1"]?.ToString();
@@ -131,7 +131,7 @@ namespace HRAdmin.UserControl
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
                     {
                         checkCmd.Parameters.AddWithValue("@Username", LblUsername.Text.Trim());
-                        checkCmd.Parameters.AddWithValue("@IndexNo", TxtIndexNo.Text.Trim());
+                        checkCmd.Parameters.AddWithValue("@IndexNo", lblIndexNo.Text.Trim());
 
                         int exists = (int)checkCmd.ExecuteScalar();
                         if (exists > 0)
@@ -166,10 +166,10 @@ namespace HRAdmin.UserControl
                                 cmd.Parameters.AddWithValue("@Username", LblUsername.Text.Trim());
                                 cmd.Parameters.AddWithValue("@Name", TxtName1.Text.Trim());
                                 cmd.Parameters.AddWithValue("@Name1", TxtName2.Text.Trim());
-                                cmd.Parameters.AddWithValue("@Department", cmbDepartment.Text.Trim());
-                                cmd.Parameters.AddWithValue("@Position", cmbPosition.Text.Trim());
+                                cmd.Parameters.AddWithValue("@Department", lblDepartment.Text.Trim());
+                                cmd.Parameters.AddWithValue("@Position", lblPosition.Text.Trim());
                                 cmd.Parameters.AddWithValue("@Password", LblPassword.Text.Trim());
-                                cmd.Parameters.AddWithValue("@IndexNo", TxtIndexNo.Text.Trim());
+                                cmd.Parameters.AddWithValue("@IndexNo", lblIndexNo.Text.Trim());
                                 cmd.ExecuteNonQuery();
                             }
 
@@ -187,7 +187,7 @@ namespace HRAdmin.UserControl
                                 cmd.Parameters.AddWithValue("@BankName", TxtBankName.Text.Trim());
                                 cmd.Parameters.AddWithValue("@AccountNo", TxtAccountNo.Text.Trim());
                                 cmd.Parameters.AddWithValue("@Email", TxtEmail.Text.Trim());
-                                cmd.Parameters.AddWithValue("@IndexNo", TxtIndexNo.Text.Trim());
+                                cmd.Parameters.AddWithValue("@IndexNo", lblIndexNo.Text.Trim());
                                 cmd.ExecuteNonQuery();
                             }
 
@@ -320,11 +320,20 @@ namespace HRAdmin.UserControl
         }
         private void LoadDepartmentAndPosition()
         {
+            //Load Departments
+            lblDepartment.Text = UserSession.loggedInDepart;
+            lblIndexNo.Text = UserSession.loggedInIndex;
+            lblPosition.Text = UserSession.LoggedInUserTitlePosition;
+
+            /*
             string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 con.Open();
+
+
+
 
                 // Load Departments
                 string deptQuery = "SELECT DISTINCT Department FROM tbl_Users WHERE Department IS NOT NULL ORDER BY Department";
@@ -335,7 +344,8 @@ namespace HRAdmin.UserControl
                     {
                         cmbDepartment.Items.Add(reader["Department"].ToString());
                     }
-                }
+                } 
+                
 
                 // Load Positions
                 string posQuery = "SELECT DISTINCT Position FROM tbl_Users WHERE Position IS NOT NULL ORDER BY Position";
@@ -347,17 +357,21 @@ namespace HRAdmin.UserControl
                         cmbPosition.Items.Add(reader["Position"].ToString());
                     }
                 }
-            }
-
+                
+        }
+            */
             // Enable AutoComplete for Department
-            cmbDepartment.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cmbDepartment.AutoCompleteSource = AutoCompleteSource.ListItems;
+            //cmbDepartment.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            //cmbDepartment.AutoCompleteSource = AutoCompleteSource.ListItems;
 
             // Enable AutoComplete for Position
-            cmbPosition.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cmbPosition.AutoCompleteSource = AutoCompleteSource.ListItems;
+            //cmbPosition.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            //cmbPosition.AutoCompleteSource = AutoCompleteSource.ListItems;
         }
 
+        private void cmbDepartment_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
+        }
     }
 }

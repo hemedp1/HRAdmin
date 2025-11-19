@@ -135,8 +135,8 @@ namespace HRAdmin
 
         private void LLregiester_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Form_Register registerForm = new Form_Register();
-            registerForm.Show();
+            Form_Administrator Form_Administrator = new Form_Administrator();
+            Form_Administrator.Show();
         }
 
         private void button1_Click(object sender, EventArgs e)

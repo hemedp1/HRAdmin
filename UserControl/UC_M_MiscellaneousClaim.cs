@@ -2496,6 +2496,14 @@ ORDER BY a.RequestDate ASC";
                 // Handle Account2ApprovalStatus (AccessLevel 99)
                 if (userAccessLevel == 99)
                 {
+
+                    // Check if  HOD ApprovalStatus is Approved   -- Add on 19/11/25
+                    if (hodApprovalStatus == "Pending")
+                    {
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     // Check if HODApprovalStatus is Rejected (no need to reject if already rejected)
                     if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected")
                     {
@@ -2514,6 +2522,7 @@ ORDER BY a.RequestDate ASC";
                         MessageBox.Show("This Miscellaneous Claim cannot be rejected by 1st-Level Account because HR & ADMIN approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
+                    
                     if (hrApprovalStatus == "Rejected")
                     {
                         MessageBox.Show("This Miscellaneous Claim cannot be approved by 1st-Level Account because HR & ADMIN approval was Rejected.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2651,6 +2660,15 @@ ORDER BY a.RequestDate ASC";
                 // Handle Account3ApprovalStatus (AccessLevel 1)
                 else if (userAccessLevel == 1)
                 {
+
+                    // Check if  HOD ApprovalStatus is Approved    -- Add on 19/11/25
+                    if (hodApprovalStatus == "Pending")
+                    {
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected because HOD approval is Pending.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+
                     // Check if HODApprovalStatus or Account2ApprovalStatus is Rejected
                     if (hodApprovalStatus == "Rejected" || hrApprovalStatus == "Rejected" || account2ApprovalStatus == "Rejected")
                     {
@@ -2661,7 +2679,7 @@ ORDER BY a.RequestDate ASC";
                     // Check if Account3ApprovalStatus is Approved
                     if (account3ApprovalStatus == "Approved")
                     {
-                        MessageBox.Show("This Miscellaneous Claim cannot be rejected by Account3 because it has already been approved by 2nd-Level Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected because it has already been approved by 2nd-Level Account.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -2802,6 +2820,13 @@ ORDER BY a.RequestDate ASC";
                     if (UserSession.loggedInDepart != "GENERAL AFFAIRS")
                     {
                         MessageBox.Show("Only users from GENERAL AFFAIRS can reject this Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    //----Add on 19 / 11 / 25
+                    if (hodApprovalStatus == "Pending")
+                    {
+                        MessageBox.Show("This Miscellaneous Claim cannot be rejected because HOD approval is Pending.", "Rejection Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
