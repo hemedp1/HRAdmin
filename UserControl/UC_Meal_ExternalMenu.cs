@@ -39,8 +39,8 @@ namespace HRAdmin.UserControl
             cmbPackage.Items.Clear();
             cmbStyle.Items.Clear();
             cmbPackage.Items.AddRange(new string[] { "A", "B", "C" });
-            cmbMeal.Items.AddRange(new string[] { "Breakfast", "Lunch", "Tea" });
-            cmbStyle.Items.AddRange(new string[] { "Buffet", "Packing" });
+            cmbMeal.Items.AddRange(new string[] { "BREAKFAST", "LUNCH", "TEA" });
+            cmbStyle.Items.AddRange(new string[] { "BUFFET", "PACKING" });
 
             // Set default selections to load initial data
             cmbPackage.SelectedIndex = -1; // Default to Package A
@@ -86,7 +86,7 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     // Updated query to include Package, Meal, and Style
-                    string query = "SELECT id, Package, Meal, Style, Menu FROM tbl_Menu WHERE Package = @Package AND Meal = @Meal AND Style = @Style";
+                    string query = "SELECT ID, Package, Meal, Style, Menu FROM tbl_Menu WHERE Package = @Package AND Meal = @Meal AND Style = @Style";
                     using (SqlDataAdapter da = new SqlDataAdapter(query, con))
                     {
                         da.SelectCommand.Parameters.AddWithValue("@Package", package);
@@ -99,9 +99,9 @@ namespace HRAdmin.UserControl
 
                     // Configure DataGridView properties
                     dgv_EM.ReadOnly = false;
-                    if (dgv_EM.Columns.Contains("id"))
+                    if (dgv_EM.Columns.Contains("ID"))
                     {
-                        dgv_EM.Columns["id"].ReadOnly = true;
+                        dgv_EM.Columns["ID"].ReadOnly = true;
                     }
                     if (dgv_EM.Columns.Contains("Package"))
                     {
@@ -136,10 +136,10 @@ namespace HRAdmin.UserControl
             dgv.AllowUserToAddRows = false;
 
             dgv.ReadOnly = false;
-            if (dgv.Columns.Contains("id"))
+            if (dgv.Columns.Contains("ID"))
             {
-                dgv.Columns["id"].ReadOnly = true;
-                dgv.Columns["id"].Width = 35;
+                dgv.Columns["ID"].ReadOnly = true;
+                dgv.Columns["ID"].Width = 35;
 
             }
             dgv.AllowUserToAddRows = true;
@@ -215,7 +215,7 @@ namespace HRAdmin.UserControl
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     // Updated query to include Package, Meal, and Style
-                    string query = "SELECT id, Package, Meal, Style, Menu FROM tbl_Menu WHERE Package = @Package AND Meal = @Meal AND Style = @Style";
+                    string query = "SELECT ID, Package, Meal, Style, Menu FROM tbl_Menu WHERE Package = @Package AND Meal = @Meal AND Style = @Style";
                     using (SqlDataAdapter adapter = new SqlDataAdapter(query, con))
                     {
                         adapter.SelectCommand.Parameters.AddWithValue("@Package", cmbPackage.SelectedItem.ToString());

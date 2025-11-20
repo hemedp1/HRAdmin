@@ -41,11 +41,11 @@ namespace HRAdmin.UserControl
         private void InitializeComboBox()
         {
             // Assuming a ComboBox named cmbMeal is added to the designer
-            cmbMeal.Items.AddRange(new string[] { "Breakfast", "Lunch", "Tea", "Dinner" });
+            cmbMeal.Items.AddRange(new string[] { "BREAKFAST", "LUNCH", "TEA", "DINNER" });
             cmbMeal.SelectedIndex = -1; // No default selection
             cmbMeal.SelectedIndexChanged += cbMealType_SelectedIndexChanged;
 
-            cmbType.Items.AddRange(new string[] { "Food", "Other", "Water" });
+            cmbType.Items.AddRange(new string[] { "FOOD", "OTHER", "WATER" });
             cmbType.SelectedIndex = -1; // No default selection
             cmbType.SelectedIndexChanged += cmbType_SelectedIndexChanged;
         }
@@ -57,7 +57,7 @@ namespace HRAdmin.UserControl
                 string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT id, Meal, Menu, Type FROM tbl_InternalMenu WHERE 1=1";
+                    string query = "SELECT ID, Meal, Menu, Type FROM tbl_InternalMenu WHERE 1=1";
                     if (!string.IsNullOrEmpty(mealType))
                     {
                         query += " AND Meal = @mealType";
@@ -85,9 +85,9 @@ namespace HRAdmin.UserControl
 
                     // Configure DataGridView properties
                     dgv_FD.ReadOnly = false;
-                    if (dgv_FD.Columns.Contains("id"))
+                    if (dgv_FD.Columns.Contains("ID"))
                     {
-                        dgv_FD.Columns["id"].ReadOnly = true; // Set column id to read-only
+                        dgv_FD.Columns["ID"].ReadOnly = true; // Set column id to read-only
                     }
                     dgv_FD.AllowUserToAddRows = true;
                 }
@@ -110,10 +110,10 @@ namespace HRAdmin.UserControl
             dgv.AllowUserToAddRows = false;
 
             dgv.ReadOnly = false;
-            if (dgv.Columns.Contains("id"))
+            if (dgv.Columns.Contains("ID"))
             {
-                dgv.Columns["id"].ReadOnly = true; // Set column id to read-only
-                dgv.Columns["id"].Width = 35; // Set a smaller width for the id column (e.g., 50 pixels)
+                dgv.Columns["ID"].ReadOnly = true; // Set column id to read-only
+                dgv.Columns["ID"].Width = 35; // Set a smaller width for the id column (e.g., 50 pixels)
             }
             if (dgv.Columns.Contains("Meal"))
             {
@@ -248,7 +248,7 @@ namespace HRAdmin.UserControl
             {
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
                 {
-                    SqlDataAdapter adapter = new SqlDataAdapter("SELECT id, Meal, Menu, Type FROM tbl_InternalMenu", con);
+                    SqlDataAdapter adapter = new SqlDataAdapter("SELECT ID, Meal, Menu, Type FROM tbl_InternalMenu", con);
                     SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
 
                     DataTable dt = (DataTable)dgv_FD.DataSource;
@@ -262,6 +262,16 @@ namespace HRAdmin.UserControl
             {
                 MessageBox.Show($"Error updating data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void cmbMeal_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgv_FD_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
