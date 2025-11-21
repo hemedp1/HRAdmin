@@ -833,92 +833,92 @@ namespace HRAdmin.UserControl
 
 
                         string query = @"
-;WITH UserWithDepts AS (
-    SELECT 
-        u.Username        AS Requester,
-        u.Department      AS RequesterDept,
-        ul.AccessLevel    AS RequesterLevel,
-        d.Department1     AS Dept1,
-        d.Department2     AS Dept2
-    FROM tbl_Users u
-    LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
-    LEFT JOIN tbl_Department d ON u.Department = d.Department0
-    WHERE u.Username = @LoggedInUsername
-),
-PossibleApprovers AS (
-    SELECT 
-        r.Requester,
-        a.Username         AS Approver,
-        ud.Email           AS Email,
-        a.Department       AS Department,
-        al.AccessLevel     AS AccessLevel,
-        CASE WHEN e.RequesterUsername IS NOT NULL THEN 1 ELSE 0 END AS IsException,
-        ROW_NUMBER() OVER (
-            PARTITION BY r.Requester
-            ORDER BY 
-                CASE 
-                    WHEN e.RequesterUsername IS NOT NULL THEN -1
-                    WHEN EXISTS (
-                        SELECT 1 
-                        FROM tbl_DeptApprovalExceptions dd
-                        WHERE dd.RequesterDept = r.RequesterDept
-                          AND dd.ApproverDept = a.Department
-                          AND al.AccessLevel >= dd.MinApproverLevel
-                    ) THEN 0
-                    WHEN a.Department = r.RequesterDept THEN 1
-                    WHEN a.Department = r.Dept1 THEN 2
-                    ELSE 3
-                END,
-                al.AccessLevel ASC
-        ) AS rn
-    FROM UserWithDepts r
-    INNER JOIN tbl_Users a 
-        ON a.Department IN (r.RequesterDept, r.Dept1, r.Dept2)
-    LEFT JOIN tbl_UserDetail ud 
-        ON a.IndexNo = ud.IndexNo
-    LEFT JOIN tbl_UsersLevel al 
-        ON a.Position = al.TitlePosition
-    LEFT JOIN tbl_ApprovalRules ar 
-        ON ar.RequesterLevel = r.RequesterLevel
-       AND ar.ApproverLevel = al.AccessLevel
-    LEFT JOIN tbl_ApprovalExceptions e
-        ON e.RequesterUsername = r.Requester
-       AND e.ApproverUsername  = a.Username
-    WHERE 
-        e.RequesterUsername IS NOT NULL
-        OR (
-            EXISTS (SELECT 1 FROM tbl_DeptApprovalExceptions dd WHERE dd.RequesterDept = r.RequesterDept)
-            AND EXISTS (
-                SELECT 1 
-                FROM tbl_DeptApprovalExceptions dd2
-                WHERE dd2.RequesterDept = r.RequesterDept
-                  AND dd2.ApproverDept = a.Department
-                  AND al.AccessLevel >= dd2.MinApproverLevel
-            )
-        )
-        OR (
-            NOT EXISTS (SELECT 1 FROM tbl_DeptApprovalExceptions dd3 WHERE dd3.RequesterDept = r.RequesterDept)
-            AND ar.RequesterLevel IS NOT NULL
-        )
-),
-FinalApprovers AS (
-    SELECT * FROM PossibleApprovers WHERE IsException = 1
-    UNION ALL
-    SELECT * FROM PossibleApprovers pa
-    WHERE IsException = 0
-      AND NOT EXISTS (
-          SELECT 1 FROM PossibleApprovers pe
-          WHERE pe.Requester = pa.Requester
-            AND pe.IsException = 1
-      )
-)
-SELECT 
-    Approver,
-    Email
-FROM FinalApprovers
-WHERE rn <= 2
-ORDER BY rn;
-";
+                                        ;WITH UserWithDepts AS (
+                                            SELECT 
+                                                u.Username        AS Requester,
+                                                u.Department      AS RequesterDept,
+                                                ul.AccessLevel    AS RequesterLevel,
+                                                d.Department1     AS Dept1,
+                                                d.Department2     AS Dept2
+                                            FROM tbl_Users u
+                                            LEFT JOIN tbl_UsersLevel ul ON u.Position = ul.TitlePosition
+                                            LEFT JOIN tbl_Department d ON u.Department = d.Department0
+                                            WHERE u.Username = @LoggedInUsername
+                                        ),
+                                        PossibleApprovers AS (
+                                            SELECT 
+                                                r.Requester,
+                                                a.Username         AS Approver,
+                                                ud.Email           AS Email,
+                                                a.Department       AS Department,
+                                                al.AccessLevel     AS AccessLevel,
+                                                CASE WHEN e.RequesterUsername IS NOT NULL THEN 1 ELSE 0 END AS IsException,
+                                                ROW_NUMBER() OVER (
+                                                    PARTITION BY r.Requester
+                                                    ORDER BY 
+                                                        CASE 
+                                                            WHEN e.RequesterUsername IS NOT NULL THEN -1
+                                                            WHEN EXISTS (
+                                                                SELECT 1 
+                                                                FROM tbl_DeptApprovalExceptions dd
+                                                                WHERE dd.RequesterDept = r.RequesterDept
+                                                                  AND dd.ApproverDept = a.Department
+                                                                  AND al.AccessLevel >= dd.MinApproverLevel
+                                                            ) THEN 0
+                                                            WHEN a.Department = r.RequesterDept THEN 1
+                                                            WHEN a.Department = r.Dept1 THEN 2
+                                                            ELSE 3
+                                                        END,
+                                                        al.AccessLevel ASC
+                                                ) AS rn
+                                            FROM UserWithDepts r
+                                            INNER JOIN tbl_Users a 
+                                                ON a.Department IN (r.RequesterDept, r.Dept1, r.Dept2)
+                                            LEFT JOIN tbl_UserDetail ud 
+                                                ON a.IndexNo = ud.IndexNo
+                                            LEFT JOIN tbl_UsersLevel al 
+                                                ON a.Position = al.TitlePosition
+                                            LEFT JOIN tbl_ApprovalRules ar 
+                                                ON ar.RequesterLevel = r.RequesterLevel
+                                               AND ar.ApproverLevel = al.AccessLevel
+                                            LEFT JOIN tbl_ApprovalExceptions e
+                                                ON e.RequesterUsername = r.Requester
+                                               AND e.ApproverUsername  = a.Username
+                                            WHERE 
+                                                e.RequesterUsername IS NOT NULL
+                                                OR (
+                                                    EXISTS (SELECT 1 FROM tbl_DeptApprovalExceptions dd WHERE dd.RequesterDept = r.RequesterDept)
+                                                    AND EXISTS (
+                                                        SELECT 1 
+                                                        FROM tbl_DeptApprovalExceptions dd2
+                                                        WHERE dd2.RequesterDept = r.RequesterDept
+                                                          AND dd2.ApproverDept = a.Department
+                                                          AND al.AccessLevel >= dd2.MinApproverLevel
+                                                    )
+                                                )
+                                                OR (
+                                                    NOT EXISTS (SELECT 1 FROM tbl_DeptApprovalExceptions dd3 WHERE dd3.RequesterDept = r.RequesterDept)
+                                                    AND ar.RequesterLevel IS NOT NULL
+                                                )
+                                        ),
+                                        FinalApprovers AS (
+                                            SELECT * FROM PossibleApprovers WHERE IsException = 1
+                                            UNION ALL
+                                            SELECT * FROM PossibleApprovers pa
+                                            WHERE IsException = 0
+                                              AND NOT EXISTS (
+                                                  SELECT 1 FROM PossibleApprovers pe
+                                                  WHERE pe.Requester = pa.Requester
+                                                    AND pe.IsException = 1
+                                              )
+                                        )
+                                        SELECT 
+                                            Approver,
+                                            Email
+                                        FROM FinalApprovers
+                                        WHERE rn <= 2
+                                        ORDER BY rn;
+                                        ";
 
 
                         List<string> approverEmails = new List<string>();
