@@ -1826,12 +1826,12 @@ ORDER BY a.RequestDate ASC";
 
             ///+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  HR & ADMIN                 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-            // Handle HR & ADMIN department approval
-            else if (UserSession.loggedInDepart == "HR & ADMIN" && department != "ISO")
+            // Handle HR & ADMIN department approval  -- CHANGE ON 21/1/26 ADD FACILITY
+            else if (UserSession.loggedInDepart == "HR & ADMIN" && department != "ISO" && department != "FACILITY")
             {
                 //MessageBox.Show(hrApprovalStatus);
-                // Check if the ExpensesType is Work
-                if (expensesType == "Work" && department != "HR & ADMIN" && department != "ISO")
+                // Check if the ExpensesType is Work    -- CHANGE ON 21/1/26 ADD FACILITY
+                if (expensesType == "Work" && department != "HR & ADMIN" && department != "ISO"  && department != "FACILITY")
                 {
                     MessageBox.Show("HR & ADMIN cannot approve Work-related expenses.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -1846,7 +1846,7 @@ ORDER BY a.RequestDate ASC";
                     MessageBox.Show("You cannot approve your own Miscellaneous Claim.", "Unauthorized", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                // Check if HODApprovalStatus is Pending
+                // Check if HODApprovalStatus is Pending 
                 if (hodApprovalStatus == "Pending" && department != "HR & ADMIN")
                 {
                     MessageBox.Show("This Miscellaneous Claim cannot be approved by HR because HOD approval is Pending.", "Approval Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -3486,9 +3486,13 @@ ORDER BY a.RequestDate ASC";
                     {
 
                     }
+                    else if (requesterDepartment == "FACILITY")
+                    {
+                        
+                    }
                     else
                     {
-                        MessageBox.Show("You are not authorized to view this report.",
+                        MessageBox.Show("You are not authorized to view this report1.",
                                     "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }

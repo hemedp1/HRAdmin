@@ -1,33 +1,34 @@
-﻿using System;
+﻿using HRAdmin.Components;
+using HRAdmin.Forms;
+using HRAdmin.UserControl;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Net.Mime;
+using System.Net.NetworkInformation;
+using System.Reflection.Emit;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using HRAdmin.UserControl;
-using HRAdmin.Forms;
-using System.Runtime.Serialization.Formatters;
-using HRAdmin.Components;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using System.Reflection.Emit;
-using System.Configuration;
-using System.Data.SqlClient;
-using DrawingFont = System.Drawing.Font;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.Web.UI;
-using iTextSharp.text.pdf;
-using iTextSharp.text;
-using System.IO;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using DrawingFont = System.Drawing.Font;
 using iTextRectangle = iTextSharp.text.Rectangle;
 using WinFormsApp = System.Windows.Forms.Application;
-using System.Net.Mail;
-using System.Net;
-using System.Drawing.Drawing2D;
-using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace HRAdmin.UserControl
 {
@@ -137,6 +138,66 @@ namespace HRAdmin.UserControl
                 MessageBox.Show($"General Error: {ex.Message}\n\nFull Details:\n{ex.ToString()}");
             }
         }
+
+        private void SendEmail(
+    string toEmail,
+    string subject,
+    string body,
+    byte[] pdfBytes,
+    string pdfFileName)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT Mail, Password, Port, SmtpClient FROM tbl_Administrator WHERE ID = 1";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                            return;
+
+                        string fromEmail = reader["Mail"].ToString();
+                        string password = reader["Password"].ToString();
+                        int port = Convert.ToInt32(reader["Port"]);
+                        string smtpClient = reader["SmtpClient"].ToString();
+
+                        using (MailMessage mail = new MailMessage())
+                        {
+                            mail.From = new MailAddress(fromEmail);
+                            mail.To.Add(toEmail);
+                            mail.Subject = subject;
+                            mail.Body = body;
+                            mail.IsBodyHtml = true;
+
+                            // ✅ PDF Attachment
+                            if (pdfBytes != null && pdfBytes.Length > 0)
+                            {
+                                MemoryStream ms = new MemoryStream(pdfBytes);
+                                Attachment attachment =
+                                    new Attachment(ms, pdfFileName, MediaTypeNames.Application.Pdf);
+                                mail.Attachments.Add(attachment);
+                            }
+
+                            using (SmtpClient smtp = new SmtpClient(smtpClient, port))
+                            {
+                                smtp.Credentials = new NetworkCredential(fromEmail, password);
+                                smtp.EnableSsl = false;
+                                smtp.Send(mail);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Email Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void dTDay_ValueChanged(object sender, EventArgs e)
         {
             LoadData();
@@ -753,12 +814,13 @@ namespace HRAdmin.UserControl
         {
             if (dgv_OS.SelectedCells.Count == 0)
             {
-                MessageBox.Show("Please select a cell in the order row to approve.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please select a cell in the order row to approve.", "Selection Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            DataGridViewCell selectedCell = dgv_OS.SelectedCells[0];
-            DataGridViewRow selectedRow = selectedCell.OwningRow;
+            DataGridViewRow selectedRow = dgv_OS.SelectedCells[0].OwningRow;
+
             string orderId = selectedRow.Cells["OrderID"].Value?.ToString();
             string orderSource = selectedRow.Cells["OrderSource"].Value?.ToString();
             string checkStatus = selectedRow.Cells["CheckStatus"].Value?.ToString();
@@ -766,170 +828,181 @@ namespace HRAdmin.UserControl
 
             if (string.IsNullOrEmpty(orderId) || string.IsNullOrEmpty(orderSource))
             {
-                MessageBox.Show("Invalid order selection.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Invalid order selection.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
+            if (checkStatus != "Checked")
             {
-                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please check the order before approving.", "Check Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Check if the order has been checked
-            if (string.IsNullOrEmpty(checkStatus) || checkStatus != "Checked")
+            if (approveStatus == "Approved")
             {
-                MessageBox.Show("Please check the order before approving.", "Check Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("This order has already been approved.", "Action Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Prevent re-approving if already approved
-            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Approved")
-            {
-                MessageBox.Show("This order has already been approved.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DialogResult confirm = MessageBox.Show(
+                $"Are you sure you want to approve Order ID: {orderId}?",
+                "Confirm Approval",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm != DialogResult.Yes)
                 return;
-            }
 
-            if (!string.IsNullOrEmpty(checkStatus) && checkStatus == "Rejected")
-            {
-                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            string tableName = orderSource == "Internal"
+                ? "tbl_InternalFoodOrder"
+                : "tbl_ExternalFoodOrder";
 
-            if (!string.IsNullOrEmpty(approveStatus) && approveStatus == "Rejected")
-            {
-                MessageBox.Show("This order has already been rejected.", "Action Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Confirmation prompt before approving
-            DialogResult result = MessageBox.Show($"Are you sure you want to approve Order ID: {orderId}?", "Confirm Approval", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result != DialogResult.Yes)
-            {
-                return; // Exit if user clicks "No" or closes the dialog
-            }
-
-            string tableName = orderSource == "Internal" ? "tbl_InternalFoodOrder" : "tbl_ExternalFoodOrder";
-
-            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+            using (SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
             {
                 try
                 {
                     con.Open();
-                    string query = $@"UPDATE {tableName} 
-                             SET ApproveStatus = @ApproveStatus, 
-                                 ApprovedBy = @ApprovedBy, 
-                                 ApprovedDate = @ApprovedDate,
-                                 ApprovedDepartment = @ApprovedDepartment
-                             WHERE OrderID = @OrderID";
 
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    // ================= UPDATE APPROVAL =================
+                    string updateQuery = $@"
+                UPDATE {tableName}
+                SET ApproveStatus = 'Approved',
+                    ApprovedBy = @ApprovedBy,
+                    ApprovedDate = @ApprovedDate,
+                    ApprovedDepartment = @ApprovedDepartment
+                WHERE OrderID = @OrderID";
+
+                    using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                     {
-                        cmd.Parameters.AddWithValue("@ApproveStatus", "Approved");
                         cmd.Parameters.AddWithValue("@ApprovedBy", UserSession.loggedInName);
                         cmd.Parameters.AddWithValue("@ApprovedDate", DateTime.Now);
                         cmd.Parameters.AddWithValue("@ApprovedDepartment", UserSession.loggedInDepart);
                         cmd.Parameters.AddWithValue("@OrderID", orderId);
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        if (cmd.ExecuteNonQuery() <= 0)
                         {
-                            MessageBox.Show("Order status updated to Approved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            LoadData(cmbRequester.SelectedItem?.ToString() == "All Users" ? null : cmbRequester.SelectedItem?.ToString(),
-                                     cmbDepart.SelectedItem?.ToString() == "All Departments" ? null : cmbDepart.SelectedItem?.ToString(),
-                                     cmbOS_Occasion.SelectedItem?.ToString() == "All" ? null : cmbOS_Occasion.SelectedItem?.ToString(),
-                                     dtpStart.Value == dtpStart.MinDate ? null : (DateTime?)dtpStart.Value,
-                                     dtpEnd.Value == dtpEnd.MinDate ? null : (DateTime?)dtpEnd.Value);
-
-
-//***************************************+++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-                            string requesterName = "";
-                            string EventDetai = "";
-                            string OccasionTy = "";
-                            string OrderI = "";
-                            string EmailRequester = "";
-                            DateTime requestDate = DateTime.MinValue;
-                            DateTime DelrequestDate = DateTime.MinValue;
-
-                            string getClaimDetailsQuery = $@"
-                                                            SELECT A.OrderID, A.RequesterID, A.OccasionType, A.RequestDate, A.DeliveryDate, A.EventDetails, B.Email, C.Name1
-                                                            FROM {tableName}  A
-                                                            LEFT JOIN tbl_Users C ON C.Name1 = A.RequesterID
-                                                            LEFT JOIN tbl_UserDetail B ON C.IndexNo = B.IndexNo
-                                                            WHERE OrderID = @OrderID";
-
-                            using (SqlCommand emailCmd = new SqlCommand(getClaimDetailsQuery, con))
-                            {
-                                emailCmd.Parameters.Add("@OrderID", SqlDbType.NVarChar).Value = orderId;
-
-                                using (SqlDataReader reader = emailCmd.ExecuteReader())
-                                {
-
-                                    if (reader.Read())
-                                    {
-                                        requesterName = reader["Name1"]?.ToString();
-                                        EventDetai = reader["EventDetails"]?.ToString();
-                                        OccasionTy = reader["OccasionType"]?.ToString();
-                                        OrderI = reader["OrderID"]?.ToString();
-                                        requestDate = reader["RequestDate"] != DBNull.Value
-                                            ? Convert.ToDateTime(reader["RequestDate"])
-                                            : DateTime.MinValue;
-                                        DelrequestDate = reader["DeliveryDate"] != DBNull.Value
-                                            ? Convert.ToDateTime(reader["DeliveryDate"])
-                                            : DateTime.MinValue;
-                                        EmailRequester = reader["Email"]?.ToString();
-                                    }
-                                }
-                            }
-                            string formattedDate = requestDate.ToString("dd/MM/yyyy");
-                            string formattedDate1 = DelrequestDate.ToString("dd/MM/yyyy");
-                            string subject = "HEM Admin Accessibility Notification: Your Canteen Food Request Has Been Approved";
-                            string body = $@"
-                                                <p>Dear Mr./Ms. {requesterName},</p>
-                                                <p>Your <strong>canteen food request</strong> has been <strong>approved</strong> by Mr./Ms. <strong>{UserSession.loggedInName}</strong></p>
-                    
-                                            <p><u>Canteen Food Request Details:</u></p>
-                                            <ul>
-                                                <li><strong>Order ID:</strong> {orderId}</li>
-                                                <li><strong>Occasion Type:</strong> {orderSource}</li>
-                                                <li><strong>Event Detail:</strong> {EventDetai}</li>
-                                                <li><strong>Request Date:</strong> {formattedDate}</li>
-                                                <li><strong>Delivery Date:</strong> {formattedDate1}</li>
-                                            </ul>
-
-                                                <p>You may log in to the system if you’d like to view the details of your request.</p>
-                                                <p>Thank you,<br/>HEM Admin Accessibility</p>
-                                            ";
-
-                            
-                                SendEmail(EmailRequester, subject, body);
-
-
-                            MessageBox.Show(
-                                    "Meal request successfully approved. A notification email has been sent to the requester",
-                                    "Notification Sent",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Information
-                                );
-
-
-
-                            //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                  EMAIL FX               ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to update approval status.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Failed to update approval status.", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
                         }
                     }
+
+                    // ================= LOAD DETAILS =================
+                    string requesterName = "";
+                    string eventDetail = "";
+                    string requesterEmail = "";
+                    DateTime requestDate = DateTime.MinValue;
+                    DateTime deliveryDate = DateTime.MinValue;
+
+                    string detailQuery = $@"
+                SELECT A.RequesterID, A.EventDetails, A.RequestDate, A.DeliveryDate,
+                       B.Email, C.Name1
+                FROM {tableName} A
+                LEFT JOIN tbl_Users C ON C.Name1 = A.RequesterID
+                LEFT JOIN tbl_UserDetail B ON C.IndexNo = B.IndexNo
+                WHERE A.OrderID = @OrderID";
+
+                    using (SqlCommand cmd = new SqlCommand(detailQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderID", orderId);
+                        using (SqlDataReader r = cmd.ExecuteReader())
+                        {
+                            if (r.Read())
+                            {
+                                requesterName = r["Name1"]?.ToString();
+                                eventDetail = r["EventDetails"]?.ToString();
+                                requesterEmail = r["Email"]?.ToString();
+                                requestDate = r["RequestDate"] != DBNull.Value ? Convert.ToDateTime(r["RequestDate"]) : DateTime.MinValue;
+                                deliveryDate = r["DeliveryDate"] != DBNull.Value ? Convert.ToDateTime(r["DeliveryDate"]) : DateTime.MinValue;
+                            }
+                        }
+                    }
+
+                    // ================= GET APPROVER EMAIL =================
+                    string approverEmail = "";
+
+                    string approverEmailQuery = @"
+                SELECT B.Email
+                FROM tbl_Users A
+                INNER JOIN tbl_UserDetail B ON A.IndexNo = B.IndexNo
+                WHERE A.Name1 = @Name";
+
+                    using (SqlCommand cmd = new SqlCommand(approverEmailQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@Name", UserSession.loggedInName);
+                        approverEmail = cmd.ExecuteScalar()?.ToString();
+                    }
+
+                    // ================= GENERATE PDF =================
+                    byte[] pdfBytes = null;
+                    if (orderSource == "Internal")
+                    {
+                        pdfBytes = GenerateInternalPDF(orderId);
+                        if (pdfBytes == null)
+                        {
+                            MessageBox.Show("Approval completed but PDF generation failed.",
+                                "PDF Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
+                    // ================= EMAIL TO APPROVER =================
+                    string approverSubject = $"Approved Canteen Meal Request – Order {orderId}";
+                    string approverBody = $@"
+                <p>Dear Mr./Ms. {UserSession.loggedInName},</p>
+                <p>You have <strong>successfully approved</strong> a canteen food request.</p>
+
+                <ul>
+                    <li><strong>Order ID:</strong> {orderId}</li>
+                    <li><strong>Requester:</strong> {requesterName}</li>
+                    <li><strong>Event Detail:</strong> {eventDetail}</li>
+                    <li><strong>Delivery Date:</strong> {deliveryDate:dd/MM/yyyy}</li>
+                </ul>
+
+                <p>The <strong>approved PDF</strong> is attached for your record.</p>
+                <p>Thank you,<br/>HEM Admin Accessibility</p>";
+
+                    SendEmail(
+                        approverEmail,
+                        approverSubject,
+                        approverBody,
+                        pdfBytes,
+                        $"CanteenMealRequest_{orderId}.pdf"
+                    );
+
+                    // ================= OPTIONAL: EMAIL REQUESTER (NO PDF) =================
+                    if (!string.IsNullOrEmpty(requesterEmail))
+                    {
+                        string requesterSubject = "Your Canteen Food Request Has Been Approved";
+                        string requesterBody = $@"
+                    <p>Dear Mr./Ms. {requesterName},</p>
+                    <p>Your canteen food request has been <strong>approved</strong>.</p>
+                    <p>Delivery Date: {deliveryDate:dd/MM/yyyy}</p>
+                    <p>Thank you.</p>";
+
+                        SendEmail(requesterEmail, requesterSubject, requesterBody);
+                    }
+
+                    MessageBox.Show(
+                        "Final approval completed.\nApproved PDF has been emailed to the approver.",
+                        "Approval Completed",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    LoadData(null, null, null, null, null);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error: " + ex.Message, "System Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
+
         private void btnReject_Click(object sender, EventArgs e)
         {
             if (dgv_OS.SelectedCells.Count == 0)
